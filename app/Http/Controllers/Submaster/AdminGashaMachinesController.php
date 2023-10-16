@@ -4,6 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Submaster\Locations;
 
 	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -337,7 +338,9 @@
 			}
 			$data = [];
 
-			return $this->view("Submaster.add-machine", $data);
+			$data['locations'] = Locations::datas();
+			
+			return $this->view("Submaster/Gasha-machine.add-machine", $data);
 		}
 
 
