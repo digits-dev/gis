@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use DB;
 
 class CmsMenuPrivilegeSeeder extends Seeder
 {
@@ -13,6 +14,14 @@ class CmsMenuPrivilegeSeeder extends Seeder
      */
     public function run()
     {
-        //
+        
+        $arr_num = [1,2,3,4,5,6];
+
+        foreach($arr_num as $num){
+            DB::table('cms_menus_privileges')->updateOrInsert(['id_cms_menus' => $num], [
+                'id_cms_menus' => $num,
+                'id_cms_privileges' => 1
+            ]);
+        }
     }
 }
