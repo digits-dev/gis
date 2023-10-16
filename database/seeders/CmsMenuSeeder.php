@@ -14,24 +14,7 @@ class CmsMenuSeeder extends Seeder
      */
     public function run()
     {
-        //SUB MASTER DROPDOWN
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Submaster',
-            ],
-            [
-                'name'              => 'Submaster',
-                'type'              => 'URL',
-                'path'              => '#',
-                'color'             => 'normal',
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 0,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 1
-            ]
-        );
+        DB::table('cms_menus')->truncate();
 
         //SUB MASTER Gasha Machine List
         DB::table('cms_menus')->updateOrInsert(
@@ -122,6 +105,25 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 2
+            ]
+        );
+
+        //SUB MASTER DROPDOWN
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Submaster',
+            ],
+            [
+                'name'              => 'Submaster',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
             ]
         );
     }
