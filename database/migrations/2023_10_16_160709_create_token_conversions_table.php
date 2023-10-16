@@ -15,7 +15,7 @@ class CreateTokenConversionsTable extends Migration
     {
         Schema::create('token_conversions', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('cash_value')->length(10)->unsigned()->nullable();
+            $table->decimal('cash_value')->length(18, 2)->unsigned()->nullable();
             $table->integer('token_qty')->length(10)->unsigned()->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
