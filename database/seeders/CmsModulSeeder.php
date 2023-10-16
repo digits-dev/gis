@@ -88,5 +88,20 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 1
             ]
         );
+
+                DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Pullout Defective Token',
+            ],
+            [
+                'name'         => 'Pullout Defective Token',
+                'icon'         => 'fa fa-circle',
+                'path'         => 'pullout_tokens',
+                'table_name'   => 'pullout_tokens',
+                'controller'   => 'Token\AdminPulloutTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
     }
 }

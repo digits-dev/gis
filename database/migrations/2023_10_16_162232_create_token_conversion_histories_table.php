@@ -16,8 +16,8 @@ class CreateTokenConversionHistoriesTable extends Migration
         Schema::create('token_conversion_histories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('token_conversions_id')->length(10)->unsigned()->nullable();
-            $table->integer('old_cash_value')->length(10)->unsigned()->nullable();
-            $table->integer('new_cash_value')->length(10)->unsigned()->nullable();
+            $table->decimal('old_cash_value')->length(18, 2)->unsigned()->nullable();
+            $table->decimal('new_cash_value')->length(18, 2)->unsigned()->nullable();
             $table->integer('old_token_qty')->length(10)->unsigned()->nullable();
             $table->integer('new_token_qty')->length(10)->unsigned()->nullable();
             $table->integer('created_by')->length(10)->unsigned()->nullable();

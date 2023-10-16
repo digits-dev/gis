@@ -1,55 +1,54 @@
-<?php namespace App\Http\Controllers\Submaster;
+<?php namespace App\Http\Controllers\Token;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
 
-	class AdminLocationsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "location_name";
+			$this->title_field = "reference_number";
 			$this->limit = "20";
-			$this->orderby = "location_name,asc";
+			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = true;
-			$this->button_delete = false;
+			$this->button_delete = true;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "locations";
+			$this->table = "pullout_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Location Name","name"=>"location_name"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+
+
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Location Name','name'=>'location_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
-			}
-			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
-				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
-				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'datetime'];
-			}# END FORM DO NOT REMOVE THIS LINE
+            if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
+			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
+            }
+			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
+			# END FORM DO NOT REMOVE THIS LINE
 
 			/*
 	        | ----------------------------------------------------------------------
@@ -258,7 +257,8 @@
 	    */
 	    public function hook_before_add(&$postdata) {
 	        //Your code here
-            $postdata['created_by']=CRUDBooster::myId();
+			$postdata['created_by'] = CRUDBooster::myId();
+
 	    }
 
 	    /*
@@ -268,10 +268,16 @@
 	    | @id = last insert id
 	    |
 	    */
-	    public function hook_after_add($id) {
-	        //Your code here
+		public function hook_after_add($id) {
+			// Your code here
 
-	    }
+			$refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
+
+			DB::table('pullout_tokens')->where('id', $id)->update([
+				'reference_number' => 'PT-' . $refNumber
+			]);
+		}
+
 
 	    /*
 	    | ----------------------------------------------------------------------
@@ -283,7 +289,7 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {
 	        //Your code here
-            $postdata['updated_by']=CRUDBooster::myId();
+			$postdata['updated_by'] = CRUDBooster::myId();
 	    }
 
 	    /*
