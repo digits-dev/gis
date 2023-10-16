@@ -21,7 +21,7 @@ class CmsMenuSeeder extends Seeder
             [
                 'name'              => 'Submaster',
                 'type'              => 'URL',
-                'path'              => 'submaster',
+                'path'              => '#',
                 'color'             => 'normal',
                 'icon'              => 'fa fa-list',
                 'parent_id'         => 0,
