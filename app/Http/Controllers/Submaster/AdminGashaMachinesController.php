@@ -330,7 +330,7 @@
 			$data = [];
             $data['locations'] = Locations::active();
 
-			return view('submaster.add-machine', $data);
+			return view('submaster.gasha-machine.add-machine', $data);
 		}
 
 
