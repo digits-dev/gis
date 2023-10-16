@@ -13,16 +13,34 @@ class CmsModulSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('cms_moduls')->insert([
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Gasha Machine Lists',
+            ],
             [
                 'name'         => 'Gasha Machine Lists',
                 'icon'         => 'fa fa-list',
                 'path'         => 'gasha_machines',
                 'table_name'   => 'gasha_machines',
-                'controller'   => 'Submaster\AdminGashaMachineListsController',
+                'controller'   => 'Submaster\AdminGashaMachinesController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ]
-          ]);
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Location',
+            ],
+            [
+                'name'         => 'Location',
+                'icon'         => 'fa fa-list',
+                'path'         => 'locations',
+                'table_name'   => 'locations',
+                'controller'   => 'Submaster\AdminLocationsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
     }
 }
