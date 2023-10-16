@@ -15,7 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call([
+            CmsMenuPrivilegeSeeder::class,
+            CmsMenuSeeder::class,
             CmsModulSeeder::class,
+            CmsPrivilegeRoleSeeder::class,
+            CmsPrivilegeSeeder::class,
+            FloatEntrySeeder::class,
+            FloatTypesSeeder::class,
             LocationsSeeder::class,
             ModeOfPaymentSeeder::class,
         ]);
