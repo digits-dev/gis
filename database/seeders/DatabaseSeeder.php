@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             CmsPrivilegeRoleSeeder::class,
             CmsPrivilegeSeeder::class,
             FloatEntrySeeder::class,
-            FloatTypesSeeder::class,
+            FloatTypeSeeder::class,
             LocationsSeeder::class,
             ModeOfPaymentSeeder::class,
         ]);
