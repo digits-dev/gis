@@ -44,7 +44,7 @@ class CmsMenuSeeder extends Seeder
                 'path'              => 'Submaster\AdminGashaMachinesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-list',
-                'parent_id'         => 3,
+                'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
@@ -63,7 +63,61 @@ class CmsMenuSeeder extends Seeder
                 'path'              => 'Submaster\AdminLocationsControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-list',
-                'parent_id'         => 3,
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Float Types',
+            ],
+            [
+                'name'              => 'Float Types',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminFloatTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Float Entries',
+            ],
+            [
+                'name'              => 'Float Entries',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminFloatEntriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Cash Float History',
+            ],
+            [
+                'name'              => 'Cash Float History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
