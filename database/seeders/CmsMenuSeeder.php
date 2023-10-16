@@ -127,6 +127,43 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Pullout Defective Token',
+            ],
+            [
+                'name'              => 'Pullout Defective Token',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminPulloutTokensControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle',
+                'parent_id'         => 8,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        //SUB MASTER DROPDOWN
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token',
+            ],
+            [
+                'name'              => 'Token',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
 
     }
 }
