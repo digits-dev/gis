@@ -33,6 +33,6 @@ class CreateGashaMachinesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('gasha_machine_lists');
+        Schema::dropIfExists('gasha_machines');
     }
 }
