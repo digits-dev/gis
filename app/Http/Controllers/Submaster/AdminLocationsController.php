@@ -5,12 +5,12 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminGashaMachineListsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminLocationsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "id";
+			$this->title_field = "location_name";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -25,37 +25,28 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "gasha_machines";
+			$this->table = "locations";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			$this->col[] = ["label"=>"Location Id","name"=>"location_id","join"=>"locations,id"];
-			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Machine Statuses Id","name"=>"machine_statuses_id","join"=>"statuses,id"];
+			$this->col[] = ["label"=>"Location Name","name"=>"location_name"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location Id','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'location,id'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Machine Statuses Id','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'machine_statuses,id'];
+			$this->form[] = ['label'=>'Location Name','name'=>'location_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Serial Number","name"=>"serial_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Location Id","name"=>"location_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"location,id"];
-			//$this->form[] = ["label"=>"No Of Token","name"=>"no_of_token","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Machine Statuses Id","name"=>"machine_statuses_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"machine_statuses,id"];
+			//$this->form[] = ["label"=>"Location Name","name"=>"location_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
