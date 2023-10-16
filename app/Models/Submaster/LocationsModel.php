@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class LocationsModel extends Model
 {
     use HasFactory;
+    protected $table = 'locations';
 }

@@ -31,7 +31,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			$this->col[] = ["label"=>"Location Id","name"=>"location_id","join"=>"location,id"];
+			$this->col[] = ["label"=>"Location Id","name"=>"location_id","join"=>"locations,id"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Machine Statuses Id","name"=>"machine_statuses_id","join"=>"machine_statuses,id"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];

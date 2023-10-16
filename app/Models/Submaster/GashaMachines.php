@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class GashaMachines extends Model
 {
     use HasFactory;
+    protected $table = 'gasha_machines';
 }
