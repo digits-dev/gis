@@ -19,7 +19,7 @@ class LocationsSeeder extends Seeder
             ],
             [
                 'location_name' => 'Digits Head Office',
-                'status' => 'Active'
+                'status' => 'ACTIVE'
             ]);
 
         DB::table('locations')->updateOrInsert([
@@ -27,7 +27,7 @@ class LocationsSeeder extends Seeder
             ],
             [
                 'location_name' => 'Mitsukoshi',
-                'status' => 'Active'
+                'status' => 'ACTIVE'
             ]);
     }
 }
