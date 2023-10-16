@@ -41,7 +41,7 @@ class CmsMenuSeeder extends Seeder
             [
                 'name'              => 'Gasha Machine Lists',
                 'type'              => 'Route',
-                'path'              => 'Submaster\AdminGashaMachineListsControllerGetIndex',
+                'path'              => 'Submaster\AdminGashaMachinesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-list',
                 'parent_id'         => 3,
