@@ -113,7 +113,7 @@ class CmsModulSeeder extends Seeder
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'mode_of_payment',
                 'table_name'   => 'mode_of_payment',
-                'controller'   => 'Token\AdminModeOfPaymentsController',
+                'controller'   => 'Submaster\AdminModeOfPaymentsController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ]
