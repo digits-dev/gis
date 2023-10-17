@@ -18,7 +18,7 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -33,8 +33,7 @@
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -261,7 +260,8 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-
+			$postdata['created_at'] = date('Y-m-d H:i:s');
+			$postdata['created_by'] = CRUDBooster::myId();
 	    }
 
 	    /* 
@@ -275,7 +275,7 @@
 	        //Your code here
 			$refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
 
-			DB::table('pullout_tokens')->where('id', $id)->update([
+			DB::table('receiving_tokens')->where('id', $id)->update([
 				'reference_number' => 'RT-' . $refNumber
 			]);
 	    }
@@ -290,7 +290,8 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-
+			$postdata['updated_at'] = date('Y-m-d H:i:s');
+			$postdata['updated_by'] = CRUDBooster::myId();
 	    }
 
 	    /* 
