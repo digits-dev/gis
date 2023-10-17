@@ -17,9 +17,9 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
-			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_add = false;
+			$this->button_edit = false;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -30,22 +30,21 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"New Cash Value","name"=>"new_cash_value"];
-			$this->col[] = ["label"=>"New Token Qty","name"=>"new_token_qty"];
 			$this->col[] = ["label"=>"Old Cash Value","name"=>"old_cash_value"];
+			$this->col[] = ["label"=>"New Cash Value","name"=>"new_cash_value"];
 			$this->col[] = ["label"=>"Old Token Qty","name"=>"old_token_qty"];
+			$this->col[] = ["label"=>"New Token Qty","name"=>"new_token_qty"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'New Cash Value','name'=>'new_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'New Token Qty','name'=>'new_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Old Cash Value','name'=>'old_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Old Token Qty','name'=>'old_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Token Conversions Id','name'=>'token_conversions_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'token_conversions,id'];
-			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'New Cash Value','name'=>'new_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Old Token  Qty','name'=>'old_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'New Token Qty','name'=>'new_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
