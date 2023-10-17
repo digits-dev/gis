@@ -4,6 +4,9 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Token\PulloutToken;
+	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
 
 	class AdminPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -18,8 +21,8 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_edit = false;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -35,8 +38,8 @@
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			// $this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			// $this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -258,7 +261,8 @@
 	    public function hook_before_add(&$postdata) {
 	        //Your code here
 			$postdata['created_by'] = CRUDBooster::myId();
-
+			
+			
 	    }
 
 	    /*
@@ -269,13 +273,41 @@
 	    |
 	    */
 		public function hook_after_add($id) {
-			// Your code here
-
+			
 			$refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
 
 			DB::table('pullout_tokens')->where('id', $id)->update([
 				'reference_number' => 'PT-' . $refNumber
 			]);
+
+			$typeId = DB::table('token_action_types')->select('id')->where('description', 'Deduct')->first()->id;
+			
+			$tokenInfo = PulloutToken::where('id', $id)->first();
+			$token_inventory = TokenInventory::where('locations_id', $location_id);
+			$location_id = $tokenInfo->locations_id;
+
+			$qtyToDeduct = $tokenInfo->qty;
+			$token_inventory_qty = $token_inventory->first()->qty ?? 0;
+			$total_qty = $token_inventory_qty - $qtyToDeduct;
+
+			TokenInventory::updateOrInsert(['locations_id' => $location_id],
+				['qty' => $total_qty,
+				'locations_id' => $location_id,
+				'updated_by' => CRUDBooster::myId(),
+				'updated_at' => date('Y-m-d H:i:s'),
+				]
+			);
+
+			$tokenHistory = new TokenHistory;
+
+			$tokenHistory->reference_number = $tokenInfo->reference_number;
+			$tokenHistory->qty = $tokenInfo->qty * -1;
+			$tokenHistory->types_id = $typeId;
+			$tokenHistory->locations_id = $tokenInfo->locations_id;
+			$tokenHistory->created_by = $tokenInfo->created_by;
+			$tokenHistory->created_at = $tokenInfo->created_at;
+			
+			$tokenHistory->save();
 		}
 
 
