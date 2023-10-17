@@ -1,13 +1,25 @@
-<?php namespace App\Http\Controllers\Submaster;
+<?php namespace App\Http\Controllers\Token;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
 	use App\Models\Submaster\Locations;
+	use App\Models\Token\StoreRrToken;
+	use App\Models\Submaster\TokenActionType;
+	use App\Models\Token\TokenHistory;
 
-	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminStoreRrTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forPrint;
+		private $forReceiving;
+		private $closed;
 
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forPrint         =  2;    
+			$this->forReceiving     =  3;
+			$this->closed           =  4;      
+		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -26,29 +38,47 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "gasha_machines";
+			$this->table = "store_rr_token";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
+			$this->col[] = ["label"=>"Disburse Number","name"=>"disburse_number"];
+			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
+			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"From Location","name"=>"from_locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"To Location","name"=>"to_locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
+			$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'From Locations Id','name'=>'from_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_locations,id'];
+			$this->form[] = ['label'=>'To Locations Id','name'=>'to_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_locations,id'];
+			$this->form[] = ['label'=>'Statuses Id','name'=>'statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,id'];
+			$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Disburse Number","name"=>"disburse_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Released Qty","name"=>"released_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Received Qty","name"=>"received_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"From Locations Id","name"=>"from_locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"from_locations,id"];
+			//$this->form[] = ["label"=>"To Locations Id","name"=>"to_locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"to_locations,id"];
+			//$this->form[] = ["label"=>"Statuses Id","name"=>"statuses_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"statuses,id"];
+			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -115,7 +145,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
 			}
 
 
@@ -149,27 +179,25 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-			$main_path = CRUDBooster::mainPath();
-			$admin_path = CRUDBooster::adminPath();
-	        $this->script_js = "
-				$('.user-footer .pull-right a').on('click', function () {
-					const currentMainPath = window.location.origin;
-					Swal.fire({
-						title: 'Do you want to logout?',
-						icon: 'warning',
-						showCancelButton: true,
-						confirmButtonColor: '#d33',
-						cancelButtonColor: '#b9b9b9',
-						confirmButtonText: 'Logout',
-						reverseButtons: true,
-					}).then((result) => {
-						if (result.isConfirmed) {
-							location.assign(`$admin_path/logout`);
-						}
-					});
-				});			
-			";
-
+	        $this->script_js = NULL;
+			$this->script_js = "
+			$('.user-footer .pull-right a').on('click', function () {
+				const currentMainPath = window.location.origin;
+				Swal.fire({
+					title: 'Do you want to logout?',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#b9b9b9',
+					confirmButtonText: 'Logout',
+					reverseButtons: true,
+				}).then((result) => {
+					if (result.isConfirmed) {
+						location.assign(`$admin_path/logout`);
+					}
+				});
+			});			
+		";
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -204,8 +232,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = '//cdn.jsdelivr.net/npm/sweetalert2@11';
-	        $this->load_js[] = asset("jsHelper/isNumber.js");
+			$this->load_js[] = asset("jsHelper/isNumber.js");
 	        
 	        
 	        /*
@@ -218,7 +245,8 @@
 	        */
 	        $this->style_css = NULL;
 	        
-	    
+	        
+	        
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 
@@ -230,6 +258,7 @@
 	        $this->load_css = array();
 	        $this->load_css[] = asset("css/font-family.css");
 	        $this->load_css[] = asset('css/gasha-style.css');
+	        
 	    }
 
 
@@ -266,7 +295,18 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
+			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
+			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			if($column_index == 2){
+				if($column_value == $forPrint){
+					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
+				}else if($column_value == $forReceiving){
+					$column_value = '<span class="label label-info">'.$forReceiving.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -278,17 +318,24 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 			$fields = Request::all();
-			$count_header       = DB::table('gasha_machines')->count();
-			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);				
-			$serial_number	    = "GM-".$header_ref;
-			$location           = $fields['location'];
-			$no_of_tokens       = $fields['no_of_tokens'];
 
-			$postdata['serial_number']         = $serial_number;
-			$postdata['location_id']           = $location;
-			$postdata['no_of_token']           = intval(str_replace(',', '', $no_of_tokens));
-			$postdata['machine_statuses_id']   = 1;
-			$postdata['status']                = 'ACTIVE';
+			$count_header       = DB::table('store_rr_token')->count();
+			$header_ref         = str_pad($count_header + 1, 3, '0', STR_PAD_LEFT);				
+			$disburse_number	= "DB1".$header_ref;
+			$location           = $fields['location'];
+			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
+
+			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
+			if($release_qty > $checkTokenInventory->qty){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token Qty Exceed in Token Inventory!","danger");
+			}
+
+			DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
+
+			$postdata['disburse_number']       = $disburse_number;
+			$postdata['from_locations_id']     = $location;
+			$postdata['released_qty']          = $release_qty;
+			$postdata['statuses_id']           = $this->forPrint;
 			$postdata['created_by']            = CRUDBooster::myId();
 
 	    }
@@ -300,8 +347,19 @@
 	    | @id = last insert id
 	    | 
 	    */
-	    public function hook_after_add($id) {        
-	        //Your code here
+	    public function hook_after_add($id) {    
+			$disburse_token = StoreRrToken::find($id);   
+			$qty = $disburse_token->released_qty;
+			$location_id = $disburse_token->from_locations_id;
+			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
+	        TokenHistory::insert([
+				'reference_number' => $disburse_token->disburse_number,
+				'qty' => $qty,
+				'types_id' => $tat_add_token->id,
+				'locations_id' => $location_id,
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s'),
+			]);
 
 	    }
 
@@ -362,7 +420,7 @@
 
 			$data['locations'] = Locations::active();
 			
-			return $this->view("submaster.gasha-machine.add-machine", $data);
+			return $this->view("token.disburse-token.add-disburse-token", $data);
 		}
 
 

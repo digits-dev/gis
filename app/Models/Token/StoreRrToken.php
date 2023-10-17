@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\Submaster;
+namespace App\Models\Token;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GashaMachines extends Model
+class StoreRrToken extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 'gasha_machines';
+    protected $table = 'store_rr_token';
 }

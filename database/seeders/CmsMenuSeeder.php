@@ -139,6 +139,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Disburse Token',
+            ],
+            [
+                'name'              => 'Disburse Token',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminStoreRrTokenControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Token Inventory	',
             ],
             [

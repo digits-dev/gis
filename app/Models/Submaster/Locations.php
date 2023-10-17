@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Locations extends Model
 {
     use HasFactory;
+    protected $guarded = [];
     protected $table = 'locations';
 
     public function scopeActive($query){

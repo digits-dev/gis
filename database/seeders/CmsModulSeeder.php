@@ -141,7 +141,16 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminStatusesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ] 
+            ],
+            [
+                'name'         => 'Disburse Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'store_rr_token',
+                'table_name'   => 'store_rr_token',
+                'controller'   => 'Token\AdminStoreRrTokenController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]  
         ];
 
         foreach ($modules as $module) {

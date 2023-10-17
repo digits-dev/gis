@@ -18,6 +18,18 @@ class StatusesSeeder extends Seeder
                         [   
                             'status_description' => 'GOOD',
                             'type'               => 'Gasha Machine'
+                        ],
+                        [   
+                            'status_description' => 'For Print',
+                            'type'               => 'Diburse Token'
+                        ],
+                        [   
+                            'status_description' => 'For Receiving',
+                            'type'               => 'Diburse Token'
+                        ],
+                        [   
+                            'status_description' => 'Closed',
+                            'type'               => 'Diburse Token'
                         ]
                     ];
     
