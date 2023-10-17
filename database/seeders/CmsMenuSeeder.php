@@ -14,18 +14,20 @@ class CmsMenuSeeder extends Seeder
      */
     public function run() {
         DB::table('cms_menus')->truncate();
+        self::indexMenu();
         self::tokenMenu();
         self::capsuleMenu();
         self::auditMenu();
         self::submasterMenu();
     }
 
-    public function tokenMenu() {
+    public function indexMenu() {
         DB::table('cms_menus')->updateOrInsert(
             [
                 'name'              => 'Token',
             ],
             [
+                'id'                => 1,
                 'name'              => 'Token',
                 'type'              => 'URL',
                 'path'              => '#',
@@ -38,6 +40,66 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 1
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule',
+            ],
+            [
+                'id'                => 2,
+                'name'              => 'Capsule',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Audit',
+            ],
+            [
+                'id'                => 3,
+                'name'              => 'Audit',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Submaster',
+            ],
+            [
+                'id'                => 4,
+                'name'              => 'Submaster',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+    }
+
+    public function tokenMenu() {
 
         DB::table('cms_menus')->updateOrInsert(
             [
@@ -74,6 +136,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 3
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token History',
+            ],
+            [
+                'name'              => 'Token History',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminTokenHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 8
+            ]
+        );
     }
 
     public function capsuleMenu() {
@@ -85,23 +165,6 @@ class CmsMenuSeeder extends Seeder
     }
 
     public function submasterMenu() {
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Submaster',
-            ],
-            [
-                'name'              => 'Submaster',
-                'type'              => 'URL',
-                'path'              => '#',
-                'color'             => 'normal',
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 0,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 4
-            ]
-        );
 
         DB::table('cms_menus')->updateOrInsert(
             [
@@ -226,6 +289,24 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 9
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token Action Type',
+            ],
+            [
+                'name'              => 'Token Action Type',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminTokenActionTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 10
             ]
         );
     }

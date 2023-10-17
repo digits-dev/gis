@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             FloatTypeSeeder::class,
             LocationsSeeder::class,
             ModeOfPaymentSeeder::class,
+            TokenActionTypeSeeder::class,
         ]);
 
     }

@@ -148,5 +148,35 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]
         );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Token Action Type',
+            ],
+            [
+                'name'         => 'Token Action Type',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_action_types',
+                'table_name'   => 'token_action_types',
+                'controller'   => 'Submaster\AdminTokenActionTypesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Token History',
+            ],
+            [
+                'name'         => 'Token History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_histories',
+                'table_name'   => 'token_histories',
+                'controller'   => 'Token\AdminTokenHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
     }
 }
