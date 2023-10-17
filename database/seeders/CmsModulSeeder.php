@@ -14,10 +14,8 @@ class CmsModulSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Gasha Machine Lists',
-            ],
+
+        $modules = [
             [
                 'name'         => 'Gasha Machine Lists',
                 'icon'         => 'fa fa-circle-o',
@@ -26,12 +24,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminGashaMachinesController',
                 'is_protected' => 0,
                 'is_active'    => 1
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Location',
             ],
             [
                 'name'         => 'Location',
@@ -41,12 +33,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminLocationsController',
                 'is_protected' => 0,
                 'is_active'    => 1
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Float Types',
             ],
             [
                 'name'         => 'Float Types',
@@ -56,12 +42,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminFloatTypesController',
                 'is_protected' => 0,
                 'is_active'    => 1
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Float Entries',
             ],
             [
                 'name'         => 'Float Entries',
@@ -71,12 +51,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminFloatEntriesController',
                 'is_protected' => 0,
                 'is_active'    => 1
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Cash Float History',
             ],
             [
                 'name'         => 'Cash Float History',
@@ -86,12 +60,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminCashFloatHistoriesController',
                 'is_protected' => 0,
                 'is_active'    => 1
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Pullout Defective Token',
             ],
             [
                 'name'         => 'Pullout Defective Token',
@@ -101,12 +69,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminPulloutTokensController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Mode of Payment',
             ],
             [
                 'name'         => 'Mode of Payment',
@@ -116,12 +78,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminModeOfPaymentsController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Add Token Balance',
             ],
             [
                 'name'         => 'Add Token Balance',
@@ -131,12 +87,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminReceivingTokensController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Token Conversion',
             ],
             [
                 'name'         => 'Token Conversion',
@@ -146,12 +96,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminTokenConversionsController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Token Action Type',
             ],
             [
                 'name'         => 'Token Action Type',
@@ -161,12 +105,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminTokenActionTypesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Token Inventory	',
             ],
             [
                 'name'         => 'Token Inventory	',
@@ -176,12 +114,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminTokenInventoriesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Token History',
             ],
             [
                 'name'         => 'Token History',
@@ -191,12 +123,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminTokenHistoriesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Token Conversion History',
             ],
             [
                 'name'         => 'Token Conversion History',
@@ -206,12 +132,6 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminTokenConversionHistoriesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
-
-        DB::table('cms_moduls')->updateOrInsert(
-            [
-                'name'         => 'Statuses',
             ],
             [
                 'name'         => 'Statuses',
@@ -221,8 +141,12 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminStatusesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
-        );
+            ] 
+        ];
+
+        foreach ($modules as $module) {
+            DB::table('cms_moduls')->updateOrInsert(['name' => $module['name']], $module);
+        }
 
     }
 }
