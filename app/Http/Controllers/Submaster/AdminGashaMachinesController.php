@@ -369,7 +369,7 @@
 			}
 			$data = [];
 
-			$data['locations'] = Locations::datas();
+			$data['locations'] = Locations::active();
 			
 			return $this->view("Submaster/Gasha-machine.add-machine", $data);
 		}

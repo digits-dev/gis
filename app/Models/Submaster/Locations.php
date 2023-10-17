@@ -10,7 +10,7 @@ class Locations extends Model
     use HasFactory;
     protected $table = 'locations';
 
-    public function scopeDatas($query){
+    public function scopeActive($query){
         return $query->where('status','ACTIVE')->get();
     }
 }
