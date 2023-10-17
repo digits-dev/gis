@@ -238,7 +238,10 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	            
+			// $tokenInfo = DB::table('receiving_tokens')
+			// ->get()
+			// ->toArray();
+			// dd($tokenInfo);
 	    }
 
 	    /*
@@ -278,6 +281,26 @@
 			DB::table('receiving_tokens')->where('id', $id)->update([
 				'reference_number' => 'RT-' . $refNumber
 			]);
+
+			$tokenInfo = DB::table('receiving_tokens')
+				->where('id',$id)
+				->first();
+		
+			$typeID = DB::table('token_action_types')
+				->where('description','Add Token')
+				->pluck('id')
+				->first();
+				
+			DB::table('token_histories')
+				->insert([
+					'reference_number' => $tokenInfo->reference_number,
+					'qty' => $tokenInfo->qty,
+					'locations_id' => $tokenInfo->locations_id,
+					'types_id' => $typeID,
+					'created_by' => $tokenInfo->created_by,
+					'created_at' => $tokenInfo->created_at,
+				]);
+
 	    }
 
 	    /* 
