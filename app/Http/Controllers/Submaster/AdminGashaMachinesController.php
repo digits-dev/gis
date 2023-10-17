@@ -45,9 +45,9 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location Id','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,id'];
+			$this->form[] = ['label'=>'Location Id','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Machine Statuses Id','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,id'];
+			$this->form[] = ['label'=>'Machine Statuses Id','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -288,7 +288,7 @@
 	    public function hook_before_add(&$postdata) {        
 			$fields = Request::all();
 			$count_header       = DB::table('gasha_machines')->count();
-			$header_ref         = $count_header + 1;			
+			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);				
 			$serial_number	    = "GM-".$header_ref;
 			$location           = $fields['location'];
 			$no_of_tokens       = $fields['no_of_tokens'];
@@ -297,7 +297,7 @@
 			$postdata['location_id']           = $location;
 			$postdata['no_of_token']           = $no_of_tokens;
 			$postdata['machine_statuses_id']   = 1;
-			$postdata['status']                = 'STATUS';
+			$postdata['status']                = 'ACTIVE';
 			$postdata['created_by']            = CRUDBooster::myId();
 
 	    }
