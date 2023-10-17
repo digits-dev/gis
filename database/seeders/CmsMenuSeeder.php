@@ -45,7 +45,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminGashaMachinesControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -64,7 +64,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminLocationsControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -82,7 +82,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminFloatTypesControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -100,7 +100,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminFloatEntriesControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -118,7 +118,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -136,7 +136,7 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Token\AdminPulloutTokensControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-circle',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 8,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
@@ -164,6 +164,22 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
-
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Mode of Payment',
+            ],
+            [
+                'name'              => 'Mode of Payment',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminModeOfPaymentsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
     }
 }
