@@ -345,5 +345,23 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 10
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Statuses',
+            ],
+            [
+                'name'              => 'Statuses',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminStatusesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 11
+            ]
+        );
     }
 }

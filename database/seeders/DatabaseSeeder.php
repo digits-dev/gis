@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             LocationsSeeder::class,
             ModeOfPaymentSeeder::class,
             TokenActionTypeSeeder::class,
+            StatusesSeeder::class,
         ]);
 
     }

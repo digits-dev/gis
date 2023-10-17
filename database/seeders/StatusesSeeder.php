@@ -14,12 +14,17 @@ class StatusesSeeder extends Seeder
      */
     public function run()
     {
-        $statuses = ['GOOD'];
-        $type     = ['Gasha Machine'];
-        foreach ($statuses as $key => $status) {
-            Statuses::updateOrInsert(['status_description' => $status], [
-                'status_description' => $status,
-                'type'               => $type[$key],
+        $statuses = [
+                        [   
+                            'status_description' => 'GOOD',
+                            'type'               => 'Gasha Machine'
+                        ]
+                    ];
+    
+        foreach ($statuses as $status) {
+            Statuses::updateOrInsert(['status_description' => $status['status_description']], [
+                'status_description' => $status['status_description'],
+                'type'               => $status['type'],
                 'created_at'         => date('Y-m-d H:i:s'),
                 'created_by'         => 1,
             ]);
