@@ -166,6 +166,21 @@ class CmsModulSeeder extends Seeder
 
         DB::table('cms_moduls')->updateOrInsert(
             [
+                'name'         => 'Token Inventory	',
+            ],
+            [
+                'name'         => 'Token Inventory	',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_inventories',
+                'table_name'   => 'token_inventories',
+                'controller'   => 'Token\AdminTokenInventoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
                 'name'         => 'Token History',
             ],
             [
