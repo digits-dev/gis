@@ -32,8 +32,8 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Type","name"=>"types_id","join"=>"token_action_types,description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Updated By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
