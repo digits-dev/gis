@@ -178,5 +178,20 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]
         );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Token Conversion History',
+            ],
+            [
+                'name'         => 'Token Conversion History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_conversion_histories',
+                'table_name'   => 'token_conversion_histories',
+                'controller'   => 'Submaster\AdminTokenConversionHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
     }
 }
