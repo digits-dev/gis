@@ -32,9 +32,9 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			$this->col[] = ["label"=>"Location Id","name"=>"location_id","join"=>"locations,id"];
+			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Machine Statuses Id","name"=>"machine_statuses_id","join"=>"statuses,id"];
+			$this->col[] = ["label"=>"Machine Statuses Id","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
@@ -158,7 +158,26 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+			$main_path = CRUDBooster::mainPath();
+			$admin_path = CRUDBooster::adminPath();
+	        $this->script_js = "
+				$('.user-footer .pull-right a').on('click', function () {
+					const currentMainPath = window.location.origin;
+					Swal.fire({
+						title: 'Do you want to logout?',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#d33',
+						cancelButtonColor: '#b9b9b9',
+						confirmButtonText: 'Logout',
+						reverseButtons: true,
+					}).then((result) => {
+						if (result.isConfirmed) {
+							location.assign(`$admin_path/logout`);
+						}
+					});
+				});			
+			";
 
 
             /*
@@ -194,7 +213,8 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+			$this->load_js[] = '//cdn.jsdelivr.net/npm/sweetalert2@11';
+	        $this->load_js[] = asset("jsHelper/isNumber.js");
 	        
 	        
 	        /*
@@ -207,8 +227,7 @@
 	        */
 	        $this->style_css = NULL;
 	        
-	        
-	        
+	    
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 
@@ -219,7 +238,7 @@
 	        */
 	        $this->load_css = array();
 	        $this->load_css[] = asset("css/font-family.css");
-	        
+	        $this->load_css[] = asset('css/gasha-style.css');
 	    }
 
 
@@ -267,7 +286,19 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$fields = Request::all();
+			$count_header       = DB::table('gasha_machines')->count();
+			$header_ref         = $count_header + 1;			
+			$serial_number	    = "GM-".$header_ref;
+			$location           = $fields['location'];
+			$no_of_tokens       = $fields['no_of_tokens'];
+
+			$postdata['serial_number']         = $serial_number;
+			$postdata['location_id']           = $location;
+			$postdata['no_of_token']           = $no_of_tokens;
+			$postdata['machine_statuses_id']   = 1;
+			$postdata['status']                = 'STATUS';
+			$postdata['created_by']            = CRUDBooster::myId();
 
 	    }
 

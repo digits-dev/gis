@@ -11,7 +11,7 @@ return [
     'text_view_all_notification' => 'View All',
     'label_button_profile' => "Profile",
     'filter_dialog_title' => 'Advanced Sort & Filter',
-    'there_is_no_option' => 'There is no any options setting for this inputType',
+    'there_is_no_option' => 'There is no any options setting for this input type',
     'no' => 'No.',
 
     'text_enter_the_password' => 'Enter your password to retrieve your session',
@@ -20,9 +20,9 @@ return [
     'text_default_list_module' => 'List :module',
     'text_default_help_password' => 'Minimum 5 characters. Please leave empty if you did not change the password.',
     'text_default_help_upload' => 'File types support : JPG, JPEG, PNG, GIF, BMP',
-    'text_default_help_number' => 'You can only enter the number only',
+    'text_default_help_number' => 'You can only enter numbers only',
     'text_default_help_email' => 'Please enter a valid email address',
-    'text_default_help_text' => 'You can only enter the letter only',
+    'text_default_help_text' => 'You can only enter letters only',
     'text_default_help_url' => 'Please enter a valid URL',
     'text_dashboard' => 'Dashboard',
     'text_delete' => 'Delete',
@@ -39,14 +39,14 @@ return [
                 * Maybe the page that you are looking for has been deleted by Admin<br/>
                 * You can go back by click Back Button at browser<br/>',
 
-    'log_try_view' => 'Tried to view the data :name at :module',
-    'log_try_edit' => 'Tried to edit the data :name at :module',
-    'log_try_add' => 'Tried to add data at :module',
-    'log_try_add_save' => 'Tried to add the data :name data at :module',
-    'log_try_delete' => 'Tried to delete the :name data at :module',
-    'log_try_delete_selected' => 'Tried to delete selected at :module',
-    'log_try_delete_image' => 'Tried to delete the image of :name data at :module',
-    'log_try_update' => 'Tried to update the :name data at :module',
+    'log_try_view' => 'Try view the data :name at :module',
+    'log_try_edit' => 'Try edit the data :name at :module',
+    'log_try_add' => 'Try add data at :module',
+    'log_try_add_save' => 'Try add the data :name data at :module',
+    'log_try_delete' => 'Try delete the :name data at :module',
+    'log_try_delete_selected' => 'Try delete selected at :module',
+    'log_try_delete_image' => 'Try delete the image of :name data at :module',
+    'log_try_update' => 'Try update the :name data at :module',
     'log_add' => 'Add New Data :name at :module',
     'log_update' => 'Update data :name at :module',
     'log_delete' => 'Delete data :name at :module',
@@ -55,6 +55,45 @@ return [
     'log_forgot' => 'Someone with IP :ip request a password for :email',
     'log_logout' => ':email logout',
 
+    'alert_add_employee'    => ':reference_number has been created successfully!',
+
+    'alert_edit_employee'    => ':reference_number has been updated successfully!',
+
+    'alert_add_success'    => ':reference_number has been created successfully!',
+
+    'alert_petty_cash_edit_success'    => ':reference_number has been edited successfully!',
+
+    'alert_petty_cash_reject_success'    => ':reference_number has been rejected successfully!',
+
+    'alert_petty_cash_approve_success'    => ':reference_number has been approved successfully!',
+
+    'alert_for_hired_success'    => ':reference_number Has Been Successfully Hired!',
+
+    'alert_petty_cash_validate_success'    => ':reference_number has been validated successfully!',
+
+    'alert_petty_cash_record_success'    => ':reference_number has been recorded successfully!',
+
+    'alert_petty_cash_paid_success'    => ':reference_number has been paid successfully!',
+
+
+    'alert_petty_cash_close_success'    => ':reference_number has been closed successfully!',
+
+    'arf_recommended_success'    => ':reference_number has been recommended successfully!',
+
+    'arf_purchasing_success'    => ':reference_number has been processed successfully!',
+
+    'arf_proceed_success'    => ':reference_number has been proceeded successfully!',
+    
+    'arf_print_success'    => ':reference_number has been printed successfully!',
+
+    'arf_picked_success'    => ':reference_number has been picked successfully!',
+
+    'alert_receiving_success'    => ':reference_number has been received successfully!',
+
+    'alert_closing_success'    => ':reference_number has been closed successfully!',
+
+    'mo_success'    => ':reference_number has been moved order successfully!',
+    
     'alert_delete_selected' => 'Are you sure want to delete all selected data ?',
     'alert_delete_selected_success' => 'Delete selected success !',
     'alert_bulk_action_button' => 'Are you sure want to',
@@ -64,18 +103,45 @@ return [
     'alert_update_data_success' => 'The data has been updated !',
     'alert_update_data_failed' => 'Failed to update the data',
     'alert_delete_data_success' => 'Delete the data success !',
+    'alert_add_save_order_schedule_failed' => 'Failed to save Order Schedule due to overlapping dates',
+    'alert_upload_inventory_success' => 'Upload inventory success !',
+    'alert_upload_inventory_failed' => 'Failed to upload inventory! Please check the uploaded file.',
+    'alert_upload_inventory_format_failed'  => 'Failed to upload inventory! Please check your uploaded file.',
+    'alert_upload_inventory_failed_active_order_schedule' => 'Failed to upload inventory due to existing active order schedules! Please deactivate active order schedule.',
+    'alert_uploadskulegend_data_success' => 'Total :total_row records uploaded, :success updated successfully and :fail records have the same value !',
+    'alert_upload_orderlogic_success' => 'Total :total_row records uploaded, :success uploaded successfully and :fail records have the same value !',
+    'alert_upload_user_success' => 'Total :total_row records uploaded, :success uploaded successfully and :fail records have the same value !',
+    'alert_item_updates_success' => 'Total :total_row records for update, :success records updated successfully and :fail records have the same value !',
+    'alert_item_creation_success' => 'Total of :success records created successfully',
+    'alert_uploadskulegend_data_failed' => 'Failed to upload sku legend !',
+
+    'alert_upload_employee_failed' => 'Failed to upload employees !',
+
+    'alert_uploadorderlogic_data_failed' => 'Failed to upload order logic !',
+    'alert_user_data_failed' => 'Failed to upload user account !',
+    'alert_excelfulfillment_data_failed' => 'Failed to upload order fulfillment !',
+    'alert_excelfulfillment_data_success' => 'Upload order fulfillment successful !',
+    'alert_excelpo_data_success' => 'Upload purchase order qty successful !',
+    'alert_excelpo_data_failed' => 'Failed to purchase order qty !',
     'alert_want_to_logout' => 'Do you want to logout ?',
-    'alert_warning' => "Warning!",
-    'alert_danger' => 'Fail!',
+    'alert_warning' => 'Warning!',
+    'alert_danger' => 'Failed!',
     'alert_success' => 'Success!',
     'alert_info' => 'Information',
     'alert_primary' => 'Information',
+    'alert_'=>'Success!',
     'alert_session_expired' => 'Your session was expired, please login again !',
     'alert_password_wrong' => 'Sorry your username/password is invalid !',
     'alert_required' => 'Please make sure to fill out all the required fields correctly',
     'alert_error_ajax' => 'Okay, It is embarasing, something went wrong, we will fix it soon !',
     'alert_validation_error' => 'Please fill out the form correctly : :error',
     'alert_select_a_data' => 'Please select at least one data!',
+    'alert_duplicate' => ':duplicate_data has been detected !',
+    'alert_database_error' => ':database_error has been detected !',
+
+    'alert_replenishment_data_success' => ':mrs_reference has been created successfully !',
+    'alert_approved_data_success' => ':mrs_reference has been approved successfully !',
+    'alert_rejected_data_success' => ':mrs_reference has been rejected successfully !',
 
     'add_data_page_title' => 'Add :module',
     'edit_data_page_title' => 'Edit :module',
@@ -86,7 +152,7 @@ return [
     'delete_description_confirm' => "You will not be able to recover this record data!",
     'delete_title_confirm' => "Are you sure ?",
 
-    'action_show_data' => 'Show Data',
+    'action_show_data' => 'Refresh Data',
     'action_add_data' => 'Add Data',
     'action_delete_selected' => 'Delete Selected',
 
@@ -115,9 +181,9 @@ return [
 
     'export_dialog_title' => "Export Data",
     'export_dialog_filename' => 'File Name',
-    'export_dialog_help_filename' => 'You can rename the filename according to your preference',
+    'export_dialog_help_filename' => 'You can rename the filename according to your preferences',
     'export_dialog_maxdata' => "Max Data",
-    'export_dialog_help_maxdata' => 'Minimum 1 and maximum 100,000 rows per export session',
+    'export_dialog_help_maxdata' => 'Minimum 1 and maximum 10,000 rows per export session',
     'export_dialog_columns' => 'Columns',
     'export_dialog_format_export' => 'Format Export',
     'export_dialog_show_advanced' => 'Show Advanced Export',
@@ -129,10 +195,11 @@ return [
     'dashboard_default_text' => 'Welcome to the dashboard of :appname',
     'form_back_to_list' => 'Back To List Data :module',
     'not_logged_in' => 'You are not logged in !',
+    'user_not_exist' => 'User doesn\'t exist! Please try again.',
     'menu_navigation' => "Navigation",
     'table_data_not_found' => "No Data Avaliable",
-    "notice_delete_file_upload" => "* If you want to upload other file, please first delete the file.",
-    "file_broken" => "Oops looks like File was Broken !. Click Delete and Re-Upload.",
+    "notice_delete_file_upload" => "* If you want to upload other file, please delete the old file first.",
+    "file_broken" => "Oops looks like File was broken !. Click delete and re-upload.",
 
     'denied_access' => 'Sorry you do not have privilege to access this area !',
     'denied_update' => 'Sorry you do not have privilege to update the data !',
@@ -193,32 +260,31 @@ return [
     'email_setting' => 'Email Setting',
     'application_setting' => 'Application Setting',
 
-    // table filter & sort
+    // table filter & sort 
     'filter_select_operator_type' => 'Select Operator Type',
     'filter_ascending' => 'ASCENDING',
     'filter_descending' => 'DESCENDING',
-    'filter_equal_to' => '=(Equal to)',
-    'filter_like' => 'LIKE',
-    'filter_not_like' => 'NOT LIKE',
-    'filter_greater_than_or_equal' => '>= (Greater Than or Equal)',
-    'filter_less_than_or_equal' => '<= (Less Than or Equal)',
-    'filter_less_than' => '< (Less Than)',
-    'filter_greater_than' => '> (Greater Than)',
-    'filter_not_equal_to' => '!= (Not Equal to)',
+    'filter_equal_to' => '=Equals',
+    'filter_like' => 'Contains',
+    'filter_not_like' => 'Does Not Contain',
+    'filter_greater_than_or_equal' => 'Is Greater Than or Equal To',
+    'filter_less_than_or_equal' => 'Is Less Than or Equal To',
+    'filter_less_than' => 'Is Less Than',
+    'filter_greater_than' => 'Is Greater Than',
+    'filter_not_equal_to' => 'Does Not Equal',
     'filter_in' => 'IN',
     'filter_not_in' => 'NOT IN',
     'filter_between' => 'BETWEEN',
-    'filter_empty_or_null' => 'Empty ( or Null)',
     'filter_sort_ascending' => 'Sort ascending',
     'filter_sort_descending' => 'Sort Descending',
     'filter_eg' => 'e.g',
-    'filter_lorem_ipsum' => 'Lorem ipsum',
-    'filter_lorem_ipsum_dolor_sit' => ' Lorem,Ipsum,Dolor Sit',
+    'filter_lorem_ipsum' => 'Value',
+    'filter_lorem_ipsum_dolor_sit' => 'Value 1,Value 2,Value 3',
     'filter_search' => 'Search',
     'filter_from' => 'from',
     'filter_to' => 'to',
     'filter_sorting' => 'Sorting',
-    'filter_rows_total' => 'Total rows',
+    'filter_rows_total' => 'Showing record(s)',
     'filter_rows_to' => 'to',
     'filter_rows_of' => 'of',
 
@@ -252,14 +318,14 @@ return [
     'privileges_module_list_update' => 'Update',
     'privileges_module_list_delete' => 'Delete',
 
-    //datamodal
+    //datamodal 
     'datamodal_select' => 'Select',
     'datamodal_search_and_enter' => 'Search and enter...',
     'datamodal_enter_to_search' => 'Enter to search',
     'datamodal_browse_data' => 'Browse Data',
     'datamodal_browse_file' => 'Browse File',
 
-    //child
+    //child 
     'table_detail' => 'Table Detail',
     'your_file_size_is_too_big' => 'Your file size is too big',
     'save_changes' => 'Save Changes',
