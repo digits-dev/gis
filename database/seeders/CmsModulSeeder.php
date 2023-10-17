@@ -20,7 +20,7 @@ class CmsModulSeeder extends Seeder
             ],
             [
                 'name'         => 'Gasha Machine Lists',
-                'icon'         => 'fa fa-list',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'gasha_machines',
                 'table_name'   => 'gasha_machines',
                 'controller'   => 'Submaster\AdminGashaMachinesController',
@@ -35,7 +35,7 @@ class CmsModulSeeder extends Seeder
             ],
             [
                 'name'         => 'Location',
-                'icon'         => 'fa fa-list',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'locations',
                 'table_name'   => 'locations',
                 'controller'   => 'Submaster\AdminLocationsController',
@@ -50,7 +50,7 @@ class CmsModulSeeder extends Seeder
             ],
             [
                 'name'         => 'Float Types',
-                'icon'         => 'fa fa-list',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'float_types',
                 'table_name'   => 'float_types',
                 'controller'   => 'Submaster\AdminFloatTypesController',
@@ -65,7 +65,7 @@ class CmsModulSeeder extends Seeder
             ],
             [
                 'name'         => 'Float Entries',
-                'icon'         => 'fa fa-list',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'float_entries',
                 'table_name'   => 'float_entries',
                 'controller'   => 'Submaster\AdminFloatEntriesController',
@@ -80,7 +80,7 @@ class CmsModulSeeder extends Seeder
             ],
             [
                 'name'         => 'Cash Float History',
-                'icon'         => 'fa fa-list',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'cash_float_histories',
                 'table_name'   => 'cash_float_histories',
                 'controller'   => 'Submaster\AdminCashFloatHistoriesController',
@@ -89,16 +89,46 @@ class CmsModulSeeder extends Seeder
             ]
         );
 
-                DB::table('cms_moduls')->updateOrInsert(
+        DB::table('cms_moduls')->updateOrInsert(
             [
                 'name'         => 'Pullout Defective Token',
             ],
             [
                 'name'         => 'Pullout Defective Token',
-                'icon'         => 'fa fa-circle',
+                'icon'         => 'fa fa-circle-o',
                 'path'         => 'pullout_tokens',
                 'table_name'   => 'pullout_tokens',
                 'controller'   => 'Token\AdminPulloutTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Mode of Payment',
+            ],
+            [
+                'name'         => 'Mode of Payment',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'mode_of_payment',
+                'table_name'   => 'mode_of_payment',
+                'controller'   => 'Submaster\AdminModeOfPaymentsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Add Token Balance',
+            ],
+            [
+                'name'         => 'Add Token Balance',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'receiving_tokens',
+                'table_name'   => 'receiving_tokens',
+                'controller'   => 'Token\AdminReceivingTokensController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ]

@@ -14,12 +14,11 @@ class CmsMenuPrivilegeSeeder extends Seeder
      */
     public function run()
     {
-        
-        $arr_num = [1,2,3,4,5,6,7,8];
+        $last_menu_id = 10;
 
-        foreach($arr_num as $num){
-            DB::table('cms_menus_privileges')->updateOrInsert(['id_cms_menus' => $num], [
-                'id_cms_menus' => $num,
+        for ($i=1; $i<=$last_menu_id; $i++) {
+            DB::table('cms_menus_privileges')->updateOrInsert(['id_cms_menus' => $i], [
+                'id_cms_menus' => $i,
                 'id_cms_privileges' => 1
             ]);
         }

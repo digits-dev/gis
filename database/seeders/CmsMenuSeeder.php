@@ -12,17 +12,21 @@ class CmsMenuSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         DB::table('cms_menus')->truncate();
+        self::tokenMenu();
+        self::capsuleMenu();
+        self::auditMenu();
+        self::submasterMenu();
+    }
 
-        //SUB MASTER DROPDOWN
+    public function tokenMenu() {
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Submaster',
+                'name'              => 'Token',
             ],
             [
-                'name'              => 'Submaster',
+                'name'              => 'Token',
                 'type'              => 'URL',
                 'path'              => '#',
                 'color'             => 'normal',
@@ -35,95 +39,21 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
-        //SUB MASTER Gasha Machine List
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Gasha Machine Lists',
+                'name'              => 'Add Token Balance',
             ],
             [
-                'name'              => 'Gasha Machine Lists',
+                'name'              => 'Add Token Balance',
                 'type'              => 'Route',
-                'path'              => 'Submaster\AdminGashaMachinesControllerGetIndex',
+                'path'              => 'Token\AdminReceivingTokensControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-list',
+                'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 1
-            ]
-        );
-
-        //SUB MASTER Location
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Location',
-            ],
-            [
-                'name'              => 'Location',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminLocationsControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 1,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 2
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Float Types',
-            ],
-            [
-                'name'              => 'Float Types',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminFloatTypesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 1,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 2
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Float Entries',
-            ],
-            [
-                'name'              => 'Float Entries',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminFloatEntriesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 1,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 2
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Cash Float History',
-            ],
-            [
-                'name'              => 'Cash Float History',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-list',
-                'parent_id'         => 1,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 2
             ]
         );
 
@@ -136,22 +66,31 @@ class CmsMenuSeeder extends Seeder
                 'type'              => 'Route',
                 'path'              => 'Token\AdminPulloutTokensControllerGetIndex',
                 'color'             => NULL,
-                'icon'              => 'fa fa-circle',
-                'parent_id'         => 8,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 2
+                'sorting'           => 3
             ]
         );
+    }
 
-        //SUB MASTER DROPDOWN
+    public function capsuleMenu() {
+        return;
+    }
+
+    public function auditMenu() {
+        return;
+    }
+
+    public function submasterMenu() {
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Token',
+                'name'              => 'Submaster',
             ],
             [
-                'name'              => 'Token',
+                'name'              => 'Submaster',
                 'type'              => 'URL',
                 'path'              => '#',
                 'color'             => 'normal',
@@ -160,10 +99,116 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Gasha Machine Lists',
+            ],
+            [
+                'name'              => 'Gasha Machine Lists',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminGashaMachinesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
                 'sorting'           => 1
             ]
         );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Location',
+            ],
+            [
+                'name'              => 'Location',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminLocationsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Mode of Payment',
+            ],
+            [
+                'name'              => 'Mode of Payment',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminModeOfPaymentsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Float Types',
+            ],
+            [
+                'name'              => 'Float Types',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminFloatTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 5
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Float Entries',
+            ],
+            [
+                'name'              => 'Float Entries',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminFloatEntriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 6
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Cash Float History',
+            ],
+            [
+                'name'              => 'Cash Float History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 7
+            ]
+        );
     }
 }
