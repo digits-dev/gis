@@ -1,10 +1,18 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-
             .select2-selection__choice{
                     font-size:14px !important;
                     color:black !important;
+            }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
             }
 
         </style>
@@ -29,39 +37,21 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="require control-label">*Privilege Name:</label>
-                        <select class="form-control select2" style="width: 100%;" name="id_cms_privileges" id="id_cms_privileges">
-                            <option value="">** Please a Privilege Name</option>
-                        
+                        <label class="control-label"><span style="color:red">*</span> Location</label>
+                        <select  id="location" name="location" class="form-select select2" style="width:100%;">
+                        @foreach($locations as $location)
+                            <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                        @endforeach
                         </select>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="require control-label">*Username:</label>
-                        <select class="form-control select2" style="width: 100%;" name="cms_users_id" id="cms_users_id">
-                            <option value="">** Please a Username</option>
-                        
-                        </select>
+                        <label class="require control-label"> No of tokens:</label>
+                        <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens">
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="require control-label">*Department:</label>
-                        <select   class="js-example-basic-multiple" required name="verified_items_included[]" id="verified_items_included" multiple="multiple" style="width:100%;">
-                        
-                        
-                        </select>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <div class='panel-footer'>
@@ -92,5 +82,6 @@
         };
         setTimeout("preventBack()", 0);
 
+        $('#location').select2()
     </script>
 @endpush
