@@ -44,7 +44,7 @@ use App\Models\Token\ReceivingToken;
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','type'=>'hidden', 'value' => 1];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','disabled'=>true, 'value' => 1];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -156,7 +156,9 @@ use App\Models\Token\ReceivingToken;
 	        |
 	        */
 	        $this->script_js = NULL;
-
+			$this->script_js = '
+				$("#qty").attr("onkeypress","inputIsNumber()");
+			';
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -191,7 +193,7 @@ use App\Models\Token\ReceivingToken;
 	        |
 	        */
 	        $this->load_js = array();
-	        
+	        $this->load_js[] = asset('jsHelper\isNumber.js');
 	        
 	        
 	        /*
@@ -265,6 +267,8 @@ use App\Models\Token\ReceivingToken;
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
+
+			$postdata['qty'] = intval(str_replace(',', '', $postdata['qty']));
 			$postdata['created_at'] = date('Y-m-d H:i:s');
 			$postdata['created_by'] = CRUDBooster::myId();
 	    }
