@@ -118,5 +118,20 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]
         );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Add Token Balance',
+            ],
+            [
+                'name'         => 'Add Token Balance',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'receiving_tokens',
+                'table_name'   => 'receiving_tokens',
+                'controller'   => 'Token\AdminReceivingTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
     }
 }
