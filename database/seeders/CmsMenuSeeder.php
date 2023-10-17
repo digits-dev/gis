@@ -139,6 +139,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Token Inventory	',
+            ],
+            [
+                'name'              => 'Token Inventory	',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminTokenInventoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 7
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Token History',
             ],
             [
@@ -240,6 +258,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Token Conversion History',
+            ],
+            [
+                'name'              => 'Token Conversion History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminTokenConversionHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 6
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Float Types',
             ],
             [
@@ -307,6 +343,24 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 10
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Statuses',
+            ],
+            [
+                'name'              => 'Statuses',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminStatusesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 11
             ]
         );
     }

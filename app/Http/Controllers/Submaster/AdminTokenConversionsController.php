@@ -4,6 +4,8 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Submaster\TokenConversion;
+	use App\Models\Submaster\TokenConversionHistory;
 
 	class AdminTokenConversionsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -282,7 +284,16 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
+			$inserted_item = TokenConversion::where('id', $id)->first()->toArray();
+			$data = [
+				'token_conversions_id' => $id,
+				'new_token_qty' => $inserted_item['token_qty'],
+				'new_cash_value' => $inserted_item['cash_value'],
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s'),
+			];
 
+			TokenConversionHistory::insert($data);
 	    }
 
 	    /* 
@@ -297,6 +308,19 @@
 	        //Your code here
 			$postdata['updated_at'] = date('Y-m-d H:i:s');
 			$postdata['updated_by'] = CRUDBooster::myId();
+			$old_values = TokenConversion::where('id', $id)->first()->toArray();
+			$new_values = $postdata;
+
+			$data = [
+				'token_conversions_id' => $id,
+				'old_token_qty' => $old_values['token_qty'],
+				'old_cash_value' => $old_values['cash_value'],
+				'new_token_qty' => $postdata['token_qty'],
+				'new_cash_value' => $postdata['cash_value'],
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s'),
+			];
+			TokenConversionHistory::insert($data);
 
 	    }
 

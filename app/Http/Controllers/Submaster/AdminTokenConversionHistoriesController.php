@@ -1,11 +1,11 @@
-<?php namespace App\Http\Controllers\Token;
+<?php namespace App\Http\Controllers\Submaster;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
 
-	class AdminTokenHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminTokenConversionHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -19,41 +19,43 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
-			$this->table = "token_histories";
+			$this->button_export = false;
+			$this->table = "token_conversion_histories";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Type","name"=>"types_id","join"=>"token_action_types,description"];
-			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Updated By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Old Cash Value","name"=>"old_cash_value"];
+			$this->col[] = ["label"=>"New Cash Value","name"=>"new_cash_value"];
+			$this->col[] = ["label"=>"Old Token Qty","name"=>"old_token_qty"];
+			$this->col[] = ["label"=>"New Token Qty","name"=>"new_token_qty"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10',"datatable"=>"locations,location_name"];
-			$this->form[] = ['label'=>'Updated By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10',"datatable"=>"cms_users,name"];
-			$this->form[] = ['label'=>'Updated At','name'=>'created_at','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Old Cash Value','name'=>'old_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'New Cash Value','name'=>'new_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Old Token  Qty','name'=>'old_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'New Token Qty','name'=>'new_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Locations Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			//$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"New Cash Value","name"=>"new_cash_value","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"New Token Qty","name"=>"new_token_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Old Cash Value","name"=>"old_cash_value","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Old Token Qty","name"=>"old_token_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Token Conversions Id","name"=>"token_conversions_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"token_conversions,id"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
@@ -241,7 +243,7 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-		
+	            
 	    }
 
 	    /*

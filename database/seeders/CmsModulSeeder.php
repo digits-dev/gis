@@ -166,6 +166,21 @@ class CmsModulSeeder extends Seeder
 
         DB::table('cms_moduls')->updateOrInsert(
             [
+                'name'         => 'Token Inventory	',
+            ],
+            [
+                'name'         => 'Token Inventory	',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_inventories',
+                'table_name'   => 'token_inventories',
+                'controller'   => 'Token\AdminTokenInventoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
                 'name'         => 'Token History',
             ],
             [
@@ -178,5 +193,36 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]
         );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Token Conversion History',
+            ],
+            [
+                'name'         => 'Token Conversion History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_conversion_histories',
+                'table_name'   => 'token_conversion_histories',
+                'controller'   => 'Submaster\AdminTokenConversionHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Statuses',
+            ],
+            [
+                'name'         => 'Statuses',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'statuses',
+                'table_name'   => 'statuses',
+                'controller'   => 'Submaster\AdminStatusesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
     }
 }

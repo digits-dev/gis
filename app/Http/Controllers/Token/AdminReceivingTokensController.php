@@ -1,5 +1,9 @@
 <?php namespace App\Http\Controllers\Token;
 
+use App\Models\Submaster\TokenActionType;
+use App\Models\Token\ReceivingToken;
+	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
 	use Session;
 	use Request;
 	use DB;
@@ -34,12 +38,13 @@
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','type'=>'hidden', 'value' => 1];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','disabled'=>true, 'value' => 1];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -151,7 +156,9 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-
+			$this->script_js = '
+				$("#qty").attr("onkeypress","inputIsNumber()");
+			';
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -186,7 +193,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+	        $this->load_js[] = asset('jsHelper\isNumber.js');
 	        
 	        
 	        /*
@@ -263,6 +270,8 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
+
+			$postdata['qty'] = intval(str_replace(',', '', $postdata['qty']));
 			$postdata['created_at'] = date('Y-m-d H:i:s');
 			$postdata['created_by'] = CRUDBooster::myId();
 	    }
@@ -282,24 +291,32 @@
 				'reference_number' => 'RT-' . $refNumber
 			]);
 
-			$tokenInfo = DB::table('receiving_tokens')
-				->where('id',$id)
-				->first();
-		
-			$typeID = DB::table('token_action_types')
-				->where('description','Add Token')
-				->pluck('id')
-				->first();
-				
-			DB::table('token_histories')
-				->insert([
-					'reference_number' => $tokenInfo->reference_number,
-					'qty' => $tokenInfo->qty,
-					'locations_id' => $tokenInfo->locations_id,
-					'types_id' => $typeID,
-					'created_by' => $tokenInfo->created_by,
-					'created_at' => $tokenInfo->created_at,
-				]);
+			$receiving_token = ReceivingToken::find($id);
+			$location_id = $receiving_token->locations_id;
+			$token_inventory = TokenInventory::where('locations_id', $location_id);
+			$tat_add_token = TokenActionType::where('description', 'Add Token')->first();
+
+			$qty = $receiving_token->qty;
+			$token_inventory_qty = $token_inventory->first()->qty ?? 0;
+			$total_qty = $qty + $token_inventory_qty;
+
+			TokenInventory::updateOrInsert(['locations_id' => $location_id],
+				['qty' => $total_qty,
+				'locations_id' => $location_id,
+				'updated_by' => CRUDBooster::myId(),
+				'updated_at' => date('Y-m-d H:i:s'),
+				]
+			);
+
+			TokenHistory::insert([
+				'reference_number' => $receiving_token->reference_number,
+				'qty' => $qty,
+				'types_id' => $tat_add_token->id,
+				'locations_id' => $location_id,
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s'),
+			]);
+
 
 	    }
 
