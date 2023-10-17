@@ -258,7 +258,9 @@
 	    */
 	    public function hook_before_add(&$postdata) {
 	        //Your code here
+			$postdata['status'] = 'ACTIVE';
             $postdata['created_by']=CRUDBooster::myId();
+
 	    }
 
 	    /*

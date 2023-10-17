@@ -1,5 +1,9 @@
 <?php namespace App\Http\Controllers\Token;
 
+use App\Models\Submaster\TokenActionType;
+use App\Models\Token\ReceivingToken;
+	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
 	use Session;
 	use Request;
 	use DB;
@@ -34,6 +38,7 @@
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -278,6 +283,34 @@
 			DB::table('receiving_tokens')->where('id', $id)->update([
 				'reference_number' => 'RT-' . $refNumber
 			]);
+
+			$receiving_token = ReceivingToken::find($id);
+			$location_id = $receiving_token->locations_id;
+			$token_inventory = TokenInventory::where('locations_id', $location_id);
+			$tat_add_token = TokenActionType::where('description', 'Add Token')->first();
+
+			$qty = $receiving_token->qty;
+			$token_inventory_qty = $token_inventory->first()->qty ?? 0;
+			$total_qty = $qty + $token_inventory_qty;
+
+			TokenInventory::updateOrInsert(['locations_id' => $location_id],
+				['qty' => $total_qty,
+				'locations_id' => $location_id,
+				'updated_by' => CRUDBooster::myId(),
+				'updated_at' => date('Y-m-d H:i:s'),
+				]
+			);
+
+			TokenHistory::insert([
+				'reference_number' => $receiving_token->reference_number,
+				'qty' => $qty,
+				'types_id' => $tat_add_token->id,
+				'locations_id' => $location_id,
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s'),
+			]);
+
+
 	    }
 
 	    /* 

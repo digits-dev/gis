@@ -208,5 +208,21 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]
         );
+
+        DB::table('cms_moduls')->updateOrInsert(
+            [
+                'name'         => 'Statuses',
+            ],
+            [
+                'name'         => 'Statuses',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'statuses',
+                'table_name'   => 'statuses',
+                'controller'   => 'Submaster\AdminStatusesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+        );
+
     }
 }
