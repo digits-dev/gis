@@ -32,7 +32,7 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -61,9 +61,9 @@
 			$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'From Locations Id','name'=>'from_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_locations,id'];
-			$this->form[] = ['label'=>'To Locations Id','name'=>'to_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_locations,id'];
-			$this->form[] = ['label'=>'Statuses Id','name'=>'statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,id'];
+			$this->form[] = ['label'=>'From Locations Id','name'=>'from_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'To Locations Id','name'=>'to_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Statuses Id','name'=>'statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
 			$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -109,7 +109,9 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestForPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[statuses_id] == 2"];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -369,7 +371,7 @@
 				'locations_id' => $location_id,
 			],
 			[
-				'qty'          => DB::raw("qty + '".(int)$qty."'"),
+				'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
 				'locations_id' => $location_id,
 				'created_by'   => CRUDBooster::myId(),
 				'created_at'   => date('Y-m-d H:i:s'),
@@ -437,15 +439,31 @@
 	    }
 
 		public function getDisburseToken(){
+			$this->cbLoader();
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
 			$data = [];
-
 			$data['locations'] = Locations::activeDisburseToken();
-			
 			return $this->view("token.disburse-token.add-disburse-token", $data);
 		}
 
+		public function getRequestForPrint($id){
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+			$data = array();
+			$data['page_title'] = 'Print';
+			$data['disburseToken'] = StoreRrToken::getDatas($id);
+
+			return $this->view("token.disburse-token.disburse-token-print", $data);
+		}
+
+		public function forPrintUpdate(){
+			$data = Request::all();
+			dd($data);	
+		}
 
 	}
