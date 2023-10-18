@@ -40,6 +40,10 @@
     color: rgb(44, 140, 231);
 }
 
+.success-color{
+    color: rgb(61, 209, 118);
+}
+
 .danger-color{
     color: #fe3e3e;
 }
@@ -62,17 +66,23 @@ body{
 .login-box{
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     display: flex;
-    width: 1400px;
+    max-width: 1400px;
     height: 700px;
 }
 
 .store-logo-box{
     min-width: 700px;
-    min-height: 700px;
-    /* background-color: red; */
-    /* border-right: 3px solid red; */
     position: relative;
     background-color: #fff;
+}
+
+.store-login-box{
+    min-width: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to top right, #fe3e3e, #8a2121);
+
 }
 
 .store-logo-box-content{
@@ -81,7 +91,11 @@ body{
     align-items: center;
     flex-direction: column;
     height: 100%;
-    margin-top: -40px;
+    /* margin-top: -40px; */
+}
+
+.store-logo-brand{
+    margin-top: -60px;
 }
 
 .store-logo-brand img{
@@ -118,18 +132,9 @@ body{
     color: red;
 }
 
-.store-login-box{
-    min-width: 700px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* background-color: #E60213; */
-    background: linear-gradient(to top right, #fe3e3e, #8a2121);
-
-}
-
 .store-login-content{
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     height: 450px;
     border-radius: 10px;
     background-color: #fff;
@@ -195,4 +200,18 @@ body{
 .login-btn:focus, .store-login-inputs input:focus {
     outline: 2px solid rgb(44, 140, 231);
     outline-offset: 2px;
+}
+
+@media only screen and (max-width: 1400px) {
+    .store-logo-box {
+        display: none;
+    }
+
+    .store-login-box{
+        background: aliceblue;
+    }
+
+    .login-box{
+        box-shadow: none;
+    }
 }

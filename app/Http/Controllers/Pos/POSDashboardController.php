@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pos;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class POSDashboardController extends Controller
 {
@@ -13,7 +14,8 @@ class POSDashboardController extends Controller
      */
     public function index()
     {
-        //
+        
+        return view('Pos Frontend.views.dashboard');
     }
 
     /**

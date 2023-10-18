@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border:none;
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+body{
+    background: #dfe9f5;
+}
+nav{
+    /* position: absolute;
+    top: 0;
+    bottom: 0; */
+    height: 100vh;
+    /* left: 0; */
+    background: #fff;
+    overflow: hidden;
+    -webkit-transition: width 0,5s ease-out;
+    -moz-transition: width 0.5s ease-out;
+    -o-transition: width 0.5s ease-out;
+    transition: width 0.5s ease-out;
+    /* box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1); */
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    width: 90px;
+}
+.gashapon_logo{
+    text-align: center;
+    display: flex;
+    margin: 10px 0 0 10px;
+}
+.gashapon_logo img{
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+}
+.gashapon_logo span{
+    font-weight: bold;
+    padding-left:15px;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+a{
+    position: relative;
+    /* color: rgb(85, 83, 83); */
+    font-size: 14px;
+    display: table;
+    width: 300px;
+    padding: 10px;
+}
+.fa,
+.fa-solid{
+    position: relative;
+    width: 70px;
+    height: 40px;
+    top: 14px;
+    font-size: 25px;
+    text-align: center;
+}
+.nav-item{
+    position: relative;
+    top: 12px;
+    margin-left: 10px;
+}
+a:hover{
+    background: #eee;
+}
+nav:hover{
+    width: 280px;
+
+}
+.log-out{
+    position: absolute;
+    bottom: 0;
+}
+
+.dashboard_section{
+    display: flex;
+}
+
+/* .sidebar_section, .content_section{
+    display: inline-block;
+} */
