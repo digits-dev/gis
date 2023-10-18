@@ -31,6 +31,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
 });
 
-Route::get('login', [POSLoginController::class, 'index']);
-Route::post('login_account', [POSLoginController::class, 'authenticate'])->name('login');
+Route::get('pos_login', [POSLoginController::class, 'index']);
+Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
 // Route::get('login/logged', [POSLoginController::class, 'lo'])->name('login');
