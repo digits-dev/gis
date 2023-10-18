@@ -334,7 +334,7 @@
 				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token Qty Exceed in Token Inventory!","danger");
 			}
 
-			DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
+			//DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
 
 			$postdata['disburse_number']       = $disburse_number;
 			$postdata['from_locations_id']     = $checkTokenInventory->id;
@@ -359,25 +359,25 @@
 			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
 
 			//Save Inventory
-			TokenInventory::updateOrcreate([
-				'locations_id' => $location_id,
-			],
-			[
-				'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
-				'locations_id' => $location_id,
-				'created_by'   => CRUDBooster::myId(),
-				'created_at'   => date('Y-m-d H:i:s'),
-			]);
+			// TokenInventory::updateOrcreate([
+			// 	'locations_id' => $location_id,
+			// ],
+			// [
+			// 	'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
+			// 	'locations_id' => $location_id,
+			// 	'created_by'   => CRUDBooster::myId(),
+			// 	'created_at'   => date('Y-m-d H:i:s'),
+			// ]);
 
 			//Save History
-	        TokenHistory::insert([
-				'reference_number' => $disburse_token->disburse_number,
-				'qty'              => $qty,
-				'types_id'         => $tat_add_token->id,
-				'locations_id'     => $location_id,
-				'created_by'       => CRUDBooster::myId(),
-				'created_at'       => date('Y-m-d H:i:s'),
-			]);
+	        // TokenHistory::insert([
+			// 	'reference_number' => $disburse_token->disburse_number,
+			// 	'qty'              => $qty,
+			// 	'types_id'         => $tat_add_token->id,
+			// 	'locations_id'     => $location_id,
+			// 	'created_by'       => CRUDBooster::myId(),
+			// 	'created_at'       => date('Y-m-d H:i:s'),
+			// ]);
 
 	    }
 
@@ -460,6 +460,24 @@
 			StoreRrToken::where('id',$header_id)
 			->update([
 				'statuses_id'=> $this->forReceiving,
+			]);
+
+			$disburse_token = StoreRrToken::find($header_id);   
+			$qty = $disburse_token->released_qty;
+			$location_id = $disburse_token->to_locations_id;
+			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
+
+			//less in inventory
+			DB::table('token_inventories')->where('id',1)->decrement('qty', $qty);
+
+			//Save History
+	        TokenHistory::insert([
+				'reference_number' => $disburse_token->disburse_number,
+				'qty'              => $qty,
+				'types_id'         => $tat_add_token->id,
+				'locations_id'     => $location_id,
+				'created_by'       => CRUDBooster::myId(),
+				'created_at'       => date('Y-m-d H:i:s'),
 			]);
 		}
 

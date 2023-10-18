@@ -358,6 +358,19 @@
 	    public function hook_after_edit($id) {
 			$receivedToken = StoreRrToken::find($id);   
 			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
+			$qty = $receivedToken->released_qty;
+			
+			//Save Inventory
+			TokenInventory::updateOrcreate([
+				'locations_id' => $receivedToken->to_locations_id,
+			],
+			[
+				'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
+				'locations_id' => $receivedToken->to_locations_id,
+				'created_by'   => CRUDBooster::myId(),
+				'created_at'   => date('Y-m-d H:i:s'),
+			]);
+
 	        TokenHistory::insert([
 				'reference_number' => $receivedToken->disburse_number,
 				'qty'              => $receivedToken->received_qty,

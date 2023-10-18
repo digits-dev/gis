@@ -35,12 +35,13 @@
 <form action="{{ CRUDBooster::mainpath('edit-save/'.$disburseToken->dt_id) }}" method="POST" id="receiveToken" enctype="multipart/form-data">
     <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
     <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
+    <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
     <div class='panel-body'>
         <div class="col-md-6 col-sm-offset-3">
         
             <div class="form-group">
                 <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
-                <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
+                <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off">
             </div>
             <div class="form-group">
                 <label class="require control-label"><span style="color:red">*</span> Variance:</label>
@@ -121,29 +122,12 @@
             }
         });
 
-        //SHOW EDIT FORM
+        //Variance
         $('#received_qty').on('keyup', function() {
             const received_qty = this.value.replace(/,/g, '');
-            
-            $.ajaxSetup({
-                headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                         }
-            });
-            $.ajax({
-                url: "{{ route('check-released-token') }}",
-                dataType: "json",
-                type: "POST",
-                data: {
-                    'disburse_id': $('#disburse_id').val()
-                },
-                success: function (data) {
-                    const total = Math.abs(received_qty - data.released_qty);
-                    $('#variance_qty').val(total);
-                   
-                }
-            })
-
+            const released_qty = $('#released_qty').val();
+            const total = Math.abs(received_qty - released_qty);
+            $('#variance_qty').val(total);
         });
     });
 </script>
