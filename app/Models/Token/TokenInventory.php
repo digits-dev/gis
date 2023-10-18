@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class TokenInventory extends Model
 {
     use HasFactory;
+
+    protected $table = 'token_inventories';
+    protected $fillable = [
+        'qty', 
+        'locations_id',
+        'created_by',
+        'created_at	',
+        'updated_by',
+        'updated_at	',
+   
+    ];
 }

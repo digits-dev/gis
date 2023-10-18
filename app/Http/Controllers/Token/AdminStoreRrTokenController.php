@@ -8,6 +8,7 @@
 	use App\Models\Token\StoreRrToken;
 	use App\Models\Submaster\TokenActionType;
 	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
 
 	class AdminStoreRrTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forPrint;
@@ -28,7 +29,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = true;
@@ -43,14 +44,15 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Disburse Number","name"=>"disburse_number"];
+			$this->col[] = ["label"=>"Disburse#","name"=>"disburse_number"];
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty"];
-			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
 			$this->col[] = ["label"=>"From Location","name"=>"from_locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
 			$this->col[] = ["label"=>"To Location","name"=>"to_locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
+			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -145,7 +147,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"success"];
 			}
 
 
@@ -298,7 +300,7 @@
 	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
 			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
 			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
-			if($column_index == 2){
+			if($column_index == 1){
 				if($column_value == $forPrint){
 					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
 				}else if($column_value == $forReceiving){
@@ -320,12 +322,20 @@
 			$fields = Request::all();
 
 			$count_header       = DB::table('store_rr_token')->count();
-			$header_ref         = str_pad($count_header + 1, 3, '0', STR_PAD_LEFT);				
-			$disburse_number	= "DB1".$header_ref;
-			$location           = $fields['location'];
+			$header_ref         = str_pad($count_header + 1, 4, '0', STR_PAD_LEFT);				
+			$disburse_number	= "DB1-".$header_ref;
+			$to_location        = $fields['location'];
 			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
 
 			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
+			if(empty($release_qty)){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token required!","danger");
+			}
+
+			if(empty($to_location)){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Location required!","danger");
+			}
+			
 			if($release_qty > $checkTokenInventory->qty){
 				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token Qty Exceed in Token Inventory!","danger");
 			}
@@ -333,7 +343,8 @@
 			DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
 
 			$postdata['disburse_number']       = $disburse_number;
-			$postdata['from_locations_id']     = $location;
+			$postdata['from_locations_id']     = $checkTokenInventory->id;
+			$postdata['to_locations_id']       = $to_location;
 			$postdata['released_qty']          = $release_qty;
 			$postdata['statuses_id']           = $this->forPrint;
 			$postdata['created_by']            = CRUDBooster::myId();
@@ -350,15 +361,28 @@
 	    public function hook_after_add($id) {    
 			$disburse_token = StoreRrToken::find($id);   
 			$qty = $disburse_token->released_qty;
-			$location_id = $disburse_token->from_locations_id;
+			$location_id = $disburse_token->to_locations_id;
 			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
+
+			//Save Inventory
+			TokenInventory::updateOrcreate([
+				'locations_id' => $location_id,
+			],
+			[
+				'qty'          => DB::raw("qty + '".(int)$qty."'"),
+				'locations_id' => $location_id,
+				'created_by'   => CRUDBooster::myId(),
+				'created_at'   => date('Y-m-d H:i:s'),
+			]);
+
+			//Save History
 	        TokenHistory::insert([
 				'reference_number' => $disburse_token->disburse_number,
-				'qty' => $qty,
-				'types_id' => $tat_add_token->id,
-				'locations_id' => $location_id,
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => date('Y-m-d H:i:s'),
+				'qty'              => $qty,
+				'types_id'         => $tat_add_token->id,
+				'locations_id'     => $location_id,
+				'created_by'       => CRUDBooster::myId(),
+				'created_at'       => date('Y-m-d H:i:s'),
 			]);
 
 	    }
@@ -412,13 +436,13 @@
 
 	    }
 
-		public function getAddMachine(){
+		public function getDisburseToken(){
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
 			$data = [];
 
-			$data['locations'] = Locations::active();
+			$data['locations'] = Locations::activeDisburseToken();
 			
 			return $this->view("token.disburse-token.add-disburse-token", $data);
 		}

@@ -28,7 +28,7 @@
 @endif
 
 <div class='panel panel-default'>
-    <div class='panel-heading'>
+    <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
         Add Machine Form
     </div>
 
@@ -36,24 +36,23 @@
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
        
         <div class='panel-body'>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label"><span style="color:red">*</span> Location</label>
-                        <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
-                        @foreach($locations as $location)
-                        <option value=""></option>
-                            <option value="{{ $location->id }}">{{ $location->location_name }}</option>
-                        @endforeach
-                        </select>
-                    </div>
+            <div class="col-md-6 col-sm-offset-3">
+
+                <div class="form-group">
+                    <label class="require control-label"> No of tokens:</label>
+                    <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" onkeypress="inputIsNumber()" validation-name="No of tokens">
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="require control-label"> No of tokens:</label>
-                        <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" onkeypress="inputIsNumber()" validation-name="No of tokens">
-                    </div>
+
+                <div class="form-group">
+                    <label class="control-label"><span style="color:red">*</span> Location</label>
+                    <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
+                    @foreach($locations as $location)
+                    <option value=""></option>
+                        <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                    @endforeach
+                    </select>
                 </div>
+            
             </div>
         </div>
         <div class='panel-footer'>
@@ -81,17 +80,17 @@
         $(document).ready(function() {
             $('#btnSubmit').click(function(event) {
                 event.preventDefault();
-                if($('#location').val() === ''){
+                if($('#no_of_tokens').val() === ''){
                     Swal.fire({
                         type: 'error',
-                        title:'Please choose location!',
+                        title:'Token required!',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     });
-                }else if($('#no_of_tokens').val() === ''){
+                }else if($('#location').val() === ''){
                     Swal.fire({
                             type: 'error',
-                            title: 'Token required!',
+                            title: 'Please choose location!',
                             icon: 'error',
                             confirmButtonColor: "#367fa9",
                         });

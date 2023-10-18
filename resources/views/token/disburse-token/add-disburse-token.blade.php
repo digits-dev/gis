@@ -1,7 +1,7 @@
-
 @push('head')
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style type="text/css">   
         .select2-selection__choice{
                 font-size:14px !important;
@@ -28,7 +28,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading'>
+<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
     Add Disburse Token Form
 </div>
 
@@ -36,26 +36,23 @@
     <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
    
     <div class='panel-body'>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="require control-label"><span style="color:red">*</span> Token Qty:</label>
-                    <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
-                </div>
+        <div class="col-md-6 col-sm-offset-3">
+        
+            <div class="form-group">
+                <label class="require control-label"><span style="color:red">*</span> Token Qty:</label>
+                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
             </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label"><span style="color:red">*</span> Location</label>
-                    <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
-                    @foreach($locations as $location)
-                    <option value=""></option>
-                        <option value="{{ $location->id }}">{{ $location->location_name }}</option>
-                    @endforeach
-                    </select>
-                </div>
+    
+            <div class="form-group">
+                <label class="control-label"><span style="color:red">*</span> Location</label>
+                <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
+                @foreach($locations as $location)
+                <option value=""></option>
+                    <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                @endforeach
+                </select>
             </div>
-           
+          
         </div>
     </div>
     <div class='panel-footer'>
@@ -65,13 +62,11 @@
 </form>
 </div>
 
-
-
 @endsection
-
 @push('bottom')
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script type="text/javascript">
+
     function preventBack() {
         window.history.forward();
     }
@@ -134,7 +129,7 @@
 
                         }
                     }
-                 });  
+                });  
             }
         });
     });
