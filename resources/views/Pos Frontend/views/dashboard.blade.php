@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    @include('Pos Frontend.plugins.pos_frontend_plugin')
+    <title>Dashboard</title>
 </head>
 <body>
-    @include('Pos Frontend.assets.topbar')
+    <section class="dashboard_section">
+        @include('Pos Frontend.assets.sidebar')
+        @include('Pos Frontend.assets.content')
+    </section>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Pos\POSDashboardController;
 use App\Http\Controllers\Pos\POSLoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
@@ -33,4 +34,5 @@ Route::group(['middleware' => ['web']], function() {
 
 Route::get('pos_login', [POSLoginController::class, 'index']);
 Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
-// Route::get('login/logged', [POSLoginController::class, 'lo'])->name('login');
+Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
+Route::get('pos_dashboard', [POSDashboardController::class, 'index']);

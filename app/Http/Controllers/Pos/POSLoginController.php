@@ -96,11 +96,22 @@ class POSLoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('admin');
+            return redirect()->intended('pos_dashboard');
         }
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+    
+        $request->session()->invalidate();
+    
+        $request->session()->regenerateToken();
+    
+        return redirect('/pos_login')->with(['logged_out_success'=>'Successfully logout']);
     }
 }

@@ -58,6 +58,12 @@
                             <div class="fw-bold title-color fs-15">
                                 <p>Forgot the password? <a href="/admin/forgot" class="primary-color cursor-p">Click here</a></p>
                             </div>
+                            <div class="fw-bold title-color fs-15 success-color">
+                                @if(Session::has('logged_out_success'))
+                                    <br>
+                                    <p>Successfully logged out</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
