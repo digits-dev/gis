@@ -2,6 +2,9 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <style type="text/css">   
+    #border-table {
+    padding: 15px;
+    }
 </style>
 @endpush
 @section('content')
@@ -19,10 +22,10 @@
         <div class='panel-body'>    
             <div id="printableArea"> 
                     <table width="100%" style="font-size: 13px;">
-
+                        
                         <tr>
                             <td colspan="4">
-                                <h4 align="center" ><strong>Pick List Report (GIS)</strong></h4> 
+                                <h4 align="center" ><strong>DR Form (GIS)</strong></h4> 
                             </td>
                         </tr>
 
@@ -31,17 +34,62 @@
                           
                         </tr>
                         <tr>
-                            <td width="20%"><label><strong>Arf Number: <strong></label></td>
+                            <td width="20%"><label><strong>Disburse#: <strong></label></td>
                             <td width="40%"><p>{{$disburseToken->disburse_number}}</p></td>
+
+                            <td width="20%"><label><strong>Created date:<strong></label></td>
+                            <td width="40%"><p>{{$disburseToken->created_at}}</p></td>
                         </tr>
                         
                         <tr>
-                            <td width="20%"><label><strong>Requested By:<strong></label></td>
-                            <td width="40%"><p>{{$disburseToken->requestedby}}</p></td>
+                            <td colspan="4"><hr/></td>
+                        </tr>
 
-                            <td width="10%"><label><strong>Requested Date:<strong></label></td>
-                            <td><p>{{ date('Y-m-d', strtotime($disburseToken->created)) }}</p></td>
+                        <tr style="margin-bottom:50px">
+                            <td colspan="4">
+                                <table border="1" width="100%" style="text-align:center; border-collapse: collapse; font-size: 15px; height:20px">
+                                    
+                                    <thead>
+                                        <tr id="border-table">
+                                            <th id="border-table" style="text-align:center" width="10%;">Disburse#</th>
+                                            <th id="border-table" style="text-align:center" width="8%">Released Qty</th>
+                                            <th id="border-table" style="text-align:center" width="30%">From location</th>          
+                                            <th id="border-table" style="text-align:center" width="10%">To location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="border-table">
+                                            <td id="border-table">
+                                                {{$disburseToken->disburse_number}}
+                                            </td>
+                                            <td id="border-table">
+                                                {{$disburseToken->released_qty}}
+                                            </td>
+                                            <td id="border-table">
+                                                {{$disburseToken->from_location}}
+                                            </td>
+                                            <td id="border-table">
+                                                {{$disburseToken->to_location}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table> 
+                            </td>
+                        </tr>
 
+                      
+       
+                        <tr>
+                            <td colspan="4"><hr/></td>
+                        </tr>
+
+                        <tr>
+                            <td width="20%">
+                                <label><strong>Processed By:<strong></label>
+                            </td>
+                            <td width="40%"><p>{{$disburseToken->requested_name}}</p></td>
+                            <td width="20%"><label><strong>Processed Date:<strong></label></td>
+                            <td><p>{{$disburseToken->created_at}}</p></td>
                         </tr>
 
                         <tr>
@@ -50,38 +98,37 @@
 
                         <tr>
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; font-size: 13px;">
-                                    
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align:center" height="10" width="10%">Disburse#</th>
-                                            <th style="text-align:center" height="10" width="8%">Released Qty</th>
-                                            <th style="text-align:center" height="10" width="30%">From location</th>          
-                                            <th style="text-align:center" height="10" width="10%">To location</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td height="10">
-                                                {{$disburseToken->disburse_number}}
-                                            </td>
-                                            <td height="10">
-                                                {{$disburseToken->released_qty}}
-                                            </td>
-                                            <td height="10">
-                                                {{$disburseToken->from_location}}
-                                            </td>
-                                            <td height="10">
-                                                {{$disburseToken->to_location}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                <h5 align="center" ><strong>UNDERTAKING</strong></h5> 
+                            </td>
+                        </tr>
 
-                                    <tr>
+                        <tr>
+                            <td colspan="4">
+                                <p>
+                                    I, <strong>{{$disburseToken->requested_name}}</strong> will ensure that this form is signed by the receiver and received in system before receiving of company assets
+                                </p>
+                            </td>
+                        </tr>
 
-                                    </tr>
+                        <tr>
+                            <td colspan="4"><hr/></td>
+                        </tr>
 
-                                </table> 
+                        <tr>
+                            <td width="20%">
+                                <label><strong>Received By:<strong></label>
+                            </td>
+
+                            <td width="40%">
+                                <p></p>
+                            </td>
+
+                            <td width="20%">
+                                <label><strong>Received Date:<strong></label>
+                            </td>
+
+                            <td>
+                                <p></p>
                             </td>
                         </tr>
 
@@ -89,11 +136,11 @@
             </div>
         </div>
         <div class='panel-footer'>
-            <input type="hidden" value="{{$Header->requestid}}" name="requestid">
+            <input type="hidden" id="header_id" name="header_id" value="{{ $disburseToken->dt_id }}">
             
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
 
-            <button class="btn btn-primary pull-right" type="submit" id="printARF" onclick="printDivision('printableArea')"> <i class="fa fa-print" ></i> Print as PDF</button>
+            <button class="btn btn-primary pull-right" type="submit" id="printARF" onclick="printDivision('printableArea')"> <i class="fa fa-print" ></i> Print</button>
        
         </div>
     </form> 

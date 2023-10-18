@@ -159,7 +159,26 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Capsule\AdminInventoryCapsulesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]  
+            ],
+            [  
+                'name'         => 'Receive Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'receive_token',
+                'table_name'   => 'store_rr_token',
+                'controller'   => 'Token\AdminReceiveTokenStoreController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Receive Token History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'receive_token_history',
+                'table_name'   => 'store_rr_token',
+                'controller'   => 'History\AdminReceiveTokenHistoryController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]       
+
         ];
 
         foreach ($modules as $module) {

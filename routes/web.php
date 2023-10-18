@@ -5,6 +5,7 @@ use App\Http\Controllers\Pos\POSLoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
+use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
 
 
 
@@ -28,11 +29,13 @@ Route::get('/', function () {
 Route::group(['middleware' => ['web']], function() {
     //Disburse Token
     Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
+    Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
-});
 
-Route::get('pos_login', [POSLoginController::class, 'index']);
-Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
-Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
-Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
+    Route::get('pos_login', [POSLoginController::class, 'index']);
+    Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
+    Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
+    Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
+    Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
+});

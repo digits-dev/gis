@@ -18,6 +18,7 @@ class CreateStoreRrTokenTable extends Migration
             $table->string('disburse_number')->nullable();
             $table->integer('released_qty')->nullable();
             $table->integer('received_qty')->nullable();
+            $table->integer('variance_qty')->nullable();
             $table->integer('from_locations_id')->nullable();
             $table->integer('to_locations_id')->nullable();
             $table->integer('statuses_id')->nullable();

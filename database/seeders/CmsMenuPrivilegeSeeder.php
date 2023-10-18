@@ -22,5 +22,25 @@ class CmsMenuPrivilegeSeeder extends Seeder
                 'id_cms_privileges' => 1
             ]);
         }
+
+        // //Store Menus Priviles
+        // DB::table('cms_menus_privileges')->insert([
+        //     'id_cms_menus' => 1,
+        //     'id_cms_privileges' => 3
+        // ]);
+        // DB::table('cms_menus_privileges')->insert([
+        //     'id_cms_menus' => 9,
+        //     'id_cms_privileges' => 3
+        // ]);
+
+        // //Histories
+        // DB::table('cms_menus_privileges')->insert([
+        //     'id_cms_menus' => 5,
+        //     'id_cms_privileges' => 3
+        // ]);
+        // DB::table('cms_menus_privileges')->insert([
+        //     'id_cms_menus' => 22,
+        //     'id_cms_privileges' => 3
+        // ]);
     }
 }

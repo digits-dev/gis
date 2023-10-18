@@ -29,35 +29,29 @@
 
 <div class='panel panel-default'>
 <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
-    Add Disburse Token Form
+    Receiving Token Form
 </div>
 
-<form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="disburseToken" enctype="multipart/form-data">
+<form action="{{ CRUDBooster::mainpath('edit-save/'.$disburseToken->dt_id) }}" method="POST" id="receiveToken" enctype="multipart/form-data">
     <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-   
+    <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
     <div class='panel-body'>
         <div class="col-md-6 col-sm-offset-3">
         
             <div class="form-group">
-                <label class="require control-label"><span style="color:red">*</span> Token Qty:</label>
-                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
+                <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
+                <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
             </div>
-    
             <div class="form-group">
-                <label class="control-label"><span style="color:red">*</span> Location</label>
-                <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
-                @foreach($locations as $location)
-                <option value=""></option>
-                    <option value="{{ $location->id }}">{{ $location->location_name }}</option>
-                @endforeach
-                </select>
+                <label class="require control-label"><span style="color:red">*</span> Variance:</label>
+                <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
             </div>
           
         </div>
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
     </div>
 </form>
 </div>
@@ -78,36 +72,30 @@
     $(document).ready(function() {
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
-            if($('#release_qty').val() === ''){
+            if($('#received_qty').val() === ''){
                 Swal.fire({
                     type: 'error',
-                    title:'Token required!',
+                    title:'Receive token required!',
                     icon: 'error',
-                    confirmButtonColor: '#367fa9',
+                    confirmButtonColor: "#367fa9",
                 });
-            }else if($('#location').val() === ''){
-                Swal.fire({
-                        type: 'error',
-                        title: 'Please choose location!',
-                        icon: 'error',
-                        confirmButtonColor: '#367fa9',
-                    });
             }else{
                  $.ajax({
-                    url: '{{ route("disburse.get.token.inventory") }}',
+                    url: '{{ route("check-released-token") }}',
                     dataType: 'json',
                     type: 'POST',
                     data: {
                         '_token': '{{ csrf_token() }}',
+                        'disburse_id': $('#disburse_id').val()
                     },
                     success: function (data) {
                         //alert($('#release_qty').val().replace(/,/g, ''));
-                        if($('#release_qty').val().replace(/,/g, '') > data.qty){
+                        if($('#received_qty').val().replace(/,/g, '') < data.released_qty){
                             Swal.fire({
                                 type: 'info',
-                                title: 'Token Qty Exceed in Token Inventory!',
+                                title: 'Token must be equal or higher than release token!',
                                 icon: 'error',
-                                confirmButtonColor: '#359D9D',
+                                confirmButtonColor: "#359D9D",
                             }); 
                             event.preventDefault();
                 
@@ -118,12 +106,12 @@
                                 showCancelButton: true,
                                 confirmButtonColor: '#3085d6',
                                 cancelButtonColor: '#d33',
-                                confirmButtonText: 'Save',
+                                confirmButtonText: 'Receive',
                                 returnFocus: false,
                                 reverseButtons: true,
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    $('#disburseToken').submit();
+                                    $('#receiveToken').submit();
                                 }
                             });
 
@@ -131,6 +119,31 @@
                     }
                 });  
             }
+        });
+
+        //SHOW EDIT FORM
+        $('#received_qty').on('keyup', function() {
+            const received_qty = this.value.replace(/,/g, '');
+            
+            $.ajaxSetup({
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                         }
+            });
+            $.ajax({
+                url: "{{ route('check-released-token') }}",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    'disburse_id': $('#disburse_id').val()
+                },
+                success: function (data) {
+                    const total = Math.abs(received_qty - data.released_qty);
+                    $('#variance_qty').val(total);
+                   
+                }
+            })
+
         });
     });
 </script>

@@ -18,6 +18,7 @@ class CmsMenuSeeder extends Seeder
         self::tokenMenu();
         self::capsuleMenu();
         self::auditMenu();
+        self::historyMenu();
         self::submasterMenu();
     }
 
@@ -97,6 +98,25 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 4
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'History',
+            ],
+            [
+                'id'                => 5,
+                'name'              => 'History',
+                'type'              => 'URL',
+                'path'              => '#',
+                'color'             => 'normal',
+                'icon'              => 'fa fa-list',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 5
+            ]
+        );
     }
 
     public function tokenMenu() {
@@ -152,6 +172,24 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Receive Token',
+            ],
+            [
+                'name'              => 'Receive Token',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminReceiveTokenStoreControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 5
             ]
         );
 
@@ -214,6 +252,26 @@ class CmsMenuSeeder extends Seeder
 
     public function auditMenu() {
         return;
+    }
+
+    public function historyMenu() {
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Receive Token History',
+            ],
+            [
+                'name'              => 'Receive Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminReceiveTokenHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function submasterMenu() {

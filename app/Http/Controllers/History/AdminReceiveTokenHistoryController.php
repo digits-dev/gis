@@ -1,16 +1,11 @@
-<?php namespace App\Http\Controllers\Token;
+<?php namespace App\Http\Controllers\History;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\Locations;
-	use App\Models\Token\StoreRrToken;
-	use App\Models\Submaster\TokenActionType;
-	use App\Models\Token\TokenHistory;
-	use App\Models\Token\TokenInventory;
 
-	class AdminStoreRrTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminReceiveTokenHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forPrint;
 		private $forReceiving;
 		private $closed;
@@ -68,21 +63,8 @@
 			$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
 			$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
-			# END FORM DO NOT REMOVE THIS LINE
 
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Disburse Number","name"=>"disburse_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Released Qty","name"=>"released_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received Qty","name"=>"received_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"From Locations Id","name"=>"from_locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"from_locations,id"];
-			//$this->form[] = ["label"=>"To Locations Id","name"=>"to_locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"to_locations,id"];
-			//$this->form[] = ["label"=>"Statuses Id","name"=>"statuses_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"statuses,id"];
-			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
+			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -111,9 +93,7 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::isUpdate()) {
-				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestForPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[statuses_id] == 2"];
-			}
+
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -150,9 +130,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"success"];
-			}
+
 
 
 	        /* 
@@ -186,27 +164,11 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-			$this->script_js = "
-			$(function(){
-				$('body').addClass('sidebar-collapse');
-			});
-			$('.user-footer .pull-right a').on('click', function () {
-				const currentMainPath = window.location.origin;
-				Swal.fire({
-					title: 'Do you want to logout?',
-					icon: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#d33',
-					cancelButtonColor: '#b9b9b9',
-					confirmButtonText: 'Logout',
-					reverseButtons: true,
-				}).then((result) => {
-					if (result.isConfirmed) {
-						location.assign(`$admin_path/logout`);
-					}
+			$this->script_js = '
+				$(function(){
+					$("body").addClass("sidebar-collapse");
 				});
-			});			
-		";
+			';
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -241,7 +203,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset("jsHelper/isNumber.js");
+	        
 	        
 	        
 	        /*
@@ -293,7 +255,17 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('store_rr_token.deleted_at')
+					  ->orderBy('store_rr_token.statuses_id', 'asc')
+					  ->orderBy('store_rr_token.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('store_rr_token.received_by', CRUDBooster::myId())
+					  ->where('store_rr_token.statuses_id',$this->closed)
+					  ->whereNull('store_rr_token.deleted_at')
+					  ->orderBy('store_rr_token.statuses_id', 'asc')
+					  ->orderBy('store_rr_token.id', 'desc');
+			}
 	            
 	    }
 
@@ -326,35 +298,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-
-			$count_header       = DB::table('store_rr_token')->count();
-			$header_ref         = str_pad($count_header + 1, 4, '0', STR_PAD_LEFT);				
-			$disburse_number	= "DB1-".$header_ref;
-			$to_location        = $fields['location'];
-			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
-
-			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
-			if(empty($release_qty)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token required!","danger");
-			}
-
-			if(empty($to_location)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Location required!","danger");
-			}
-			
-			if($release_qty > $checkTokenInventory->qty){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token Qty Exceed in Token Inventory!","danger");
-			}
-
-			DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
-
-			$postdata['disburse_number']       = $disburse_number;
-			$postdata['from_locations_id']     = $checkTokenInventory->id;
-			$postdata['to_locations_id']       = $to_location;
-			$postdata['released_qty']          = $release_qty;
-			$postdata['statuses_id']           = $this->forPrint;
-			$postdata['created_by']            = CRUDBooster::myId();
+	        //Your code here
 
 	    }
 
@@ -365,32 +309,8 @@
 	    | @id = last insert id
 	    | 
 	    */
-	    public function hook_after_add($id) {    
-			$disburse_token = StoreRrToken::find($id);   
-			$qty = $disburse_token->released_qty;
-			$location_id = $disburse_token->to_locations_id;
-			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
-
-			//Save Inventory
-			TokenInventory::updateOrcreate([
-				'locations_id' => $location_id,
-			],
-			[
-				'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
-				'locations_id' => $location_id,
-				'created_by'   => CRUDBooster::myId(),
-				'created_at'   => date('Y-m-d H:i:s'),
-			]);
-
-			//Save History
-	        TokenHistory::insert([
-				'reference_number' => $disburse_token->disburse_number,
-				'qty'              => $qty,
-				'types_id'         => $tat_add_token->id,
-				'locations_id'     => $location_id,
-				'created_by'       => CRUDBooster::myId(),
-				'created_at'       => date('Y-m-d H:i:s'),
-			]);
+	    public function hook_after_add($id) {        
+	        //Your code here
 
 	    }
 
@@ -443,37 +363,9 @@
 
 	    }
 
-		public function getDisburseToken(){
-			$this->cbLoader();
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-			$data = [];
-			$data['locations'] = Locations::activeDisburseToken();
-			return $this->view("token.disburse-token.add-disburse-token", $data);
-		}
 
-		public function getRequestForPrint($id){
-			$this->cbLoader();
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
-				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-			}  
 
-			$data = array();
-			$data['page_title'] = 'Print';
-			$data['disburseToken'] = StoreRrToken::getDatas($id);
+	    //By the way, you can still create your own method in here... :) 
 
-			return $this->view("token.disburse-token.disburse-token-print", $data);
-		}
-
-		public function forPrintUpdate(){
-			$data = Request::all();
-			$header_id = $data['header_id'];
-
-			StoreRrToken::where('id',$header_id)
-			->update([
-				'statuses_id'=> $this->forReceiving,
-			]);
-		}
 
 	}
