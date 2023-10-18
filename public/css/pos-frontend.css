@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,300&display=swap");
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+.fs-40{
+    font-size: 40px;
+}
+
+.fs-30{
+    font-size: 30px;
+}
+
+.fs-25{
+    font-size: 25px;
+}
+
+.fs-15{
+    font-size: 15px;
+}
+
+.fs-13{
+    font-size: 13px;
+}
+
+.fw-bold{
+    font-weight: bold;
+}
+
+.title-color{
+    color: #4b4848;
+}
+
+.primary-color{
+    color: rgb(44, 140, 231);
+}
+
+.danger-color{
+    color: #fe3e3e;
+}
+
+.cursor-p{
+    cursor: pointer;
+}
+
+body{
+    background-color: aliceblue;
+}
+
+.login{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box{
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    display: flex;
+    width: 1400px;
+    height: 700px;
+}
+
+.store-logo-box{
+    min-width: 700px;
+    min-height: 700px;
+    /* background-color: red; */
+    /* border-right: 3px solid red; */
+    position: relative;
+    background-color: #fff;
+}
+
+.store-logo-box-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    margin-top: -40px;
+}
+
+.store-logo-brand img{
+    max-width: 500px;
+}
+
+.store-logo-official{
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+}
+
+.store-logo-link-to-frontend{
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+}
+
+.store-logo-link-to-frontend a{
+    text-decoration: underline;
+    /* background-color: #2D3A3A; */
+    padding: 10px;
+    color: rgb(0, 0, 0);
+}
+
+.store-logo-official img{
+    min-width: 100px;
+    height: 100px;
+}
+
+.store-logo-description{
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    color: red;
+}
+
+.store-login-box{
+    min-width: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: #E60213; */
+    background: linear-gradient(to top right, #fe3e3e, #8a2121);
+
+}
+
+.store-login-content{
+    width: 500px;
+    height: 450px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.store-login-title{
+    margin-bottom: 20px;
+    color: #4b4848;
+}
+
+.store-login-inputs{
+    position: relative;
+}
+
+.store-login-inputs label{
+    position: absolute;
+    right: 35px;
+    top: 23px;
+}
+
+.store-login-inputs input{
+    min-width: 370px;
+    height: 45px;
+    border-radius: 50px;
+    margin: 12px;
+    padding: 15px;
+    border: 1px solid #4b4848;
+}
+
+.store-login-inputs input::placeholder{
+    font-weight: bold;
+}
+
+#lock:not(:placeholder-shown) ~ label{
+    visibility: hidden;
+}
+
+#lock:not(:focus) ~ label{
+    visibility: visible;
+}
+
+.login-btn{
+    min-width: 370px;
+    height: 45px;
+    border-radius: 50px;
+    margin: 12px;
+    border: 1px solid #4b4848;
+    background-color: #2D3A3A;
+    color: #fff;
+    transition: ease 0.8s;
+}
+
+.login-btn:hover, .store-logo-link-to-frontend a:hover{
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.login-btn:focus, .store-login-inputs input:focus {
+    outline: 2px solid rgb(44, 140, 231);
+    outline-offset: 2px;
+}

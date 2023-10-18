@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Pos\POSLoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
+
 
 
 
@@ -28,3 +30,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
 });
+
+Route::get('login', [POSLoginController::class, 'index']);
+Route::post('login_account', [POSLoginController::class, 'authenticate'])->name('login');
+// Route::get('login/logged', [POSLoginController::class, 'lo'])->name('login');
