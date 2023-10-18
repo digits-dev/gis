@@ -151,6 +151,11 @@
 	        |
 	        */
 	        $this->script_js = NULL;
+	        $this->script_js = '
+			var addButton = $("#btn_add_new_data")
+			addButton.text("Pullout Token")
+			';
+
 
 
             /*
@@ -261,7 +266,16 @@
 	    public function hook_before_add(&$postdata) {
 	        //Your code here
 			$postdata['created_by'] = CRUDBooster::myId();
-			
+			$location_id = $postdata['locations_id'];
+			$token_inventory = TokenInventory::where('locations_id', $location_id);
+			$token_inventory_qty = $token_inventory->first()->qty;
+
+			$qtyToDeduct = $postdata['qty'];
+			if($token_inventory_qty === null){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"The Token Inventory is empty or unavailable!","danger");
+			}else if($qtyToDeduct > $token_inventory_qty){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"The quantity you're trying to pull out exceeds the available quantity in the Token Inventory!","danger");
+			}
 			
 	    }
 
@@ -288,11 +302,6 @@
 			
 			$qtyToDeduct = $tokenInfo->qty;
 			$token_inventory_qty = $token_inventory->first()->qty;
-
-			
-			if($qtyToDeduct > $token_inventory_qty){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"The quantity you're trying to pull out exceeds the available quantity in the Token Inventory!","danger");
-			}
 
 			$total_qty = $token_inventory_qty - $qtyToDeduct;
 
