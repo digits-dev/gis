@@ -101,8 +101,8 @@
                         '_token': '{{ csrf_token() }}',
                     },
                     success: function (data) {
-                        //alert($('#release_qty').val().replace(/,/g, ''));
-                        if($('#release_qty').val().replace(/,/g, '') > data.qty){
+                        const qty = data != null ? data.qty : null;
+                        if($('#release_qty').val().replace(/,/g, '') > qty){
                             Swal.fire({
                                 type: 'info',
                                 title: 'Token Qty Exceed in Token Inventory!',

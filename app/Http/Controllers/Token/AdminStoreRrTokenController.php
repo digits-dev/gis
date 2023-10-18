@@ -322,6 +322,11 @@
 			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
 
 			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
+
+			if(empty($checkTokenInventory)){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"No token inventory!","danger");
+			}
+
 			if(empty($release_qty)){
 				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token required!","danger");
 			}
@@ -463,8 +468,8 @@
 			]);
 
 			$disburse_token = StoreRrToken::find($header_id);   
-			$qty = $disburse_token->released_qty;
-			$location_id = $disburse_token->to_locations_id;
+			$qty = -1 * abs($disburse_token->released_qty);
+			$location_id = $disburse_token->from_locations_id;
 			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
 
 			//less in inventory

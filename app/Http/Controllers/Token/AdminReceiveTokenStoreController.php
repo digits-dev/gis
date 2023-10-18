@@ -272,7 +272,7 @@
 					  ->orderBy('store_rr_token.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
 				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				$query->where('store_rr_token.to_locations_id', $user->store_id)
+				$query->where('store_rr_token.to_locations_id', $user->location_id)
 					  ->where('store_rr_token.statuses_id',$this->forReceiving)
 					  ->whereNull('store_rr_token.deleted_at')
 					  ->orderBy('store_rr_token.statuses_id', 'asc')
@@ -359,7 +359,7 @@
 			$receivedToken = StoreRrToken::find($id);   
 			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
 			$qty = $receivedToken->released_qty;
-			
+
 			//Save Inventory
 			TokenInventory::updateOrcreate([
 				'locations_id' => $receivedToken->to_locations_id,
