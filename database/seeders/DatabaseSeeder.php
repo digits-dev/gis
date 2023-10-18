@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ModeOfPaymentSeeder::class,
             TokenActionTypeSeeder::class,
             StatusesSeeder::class,
+            CmsPrivilegeSeeder::class,
         ]);
 
     }
