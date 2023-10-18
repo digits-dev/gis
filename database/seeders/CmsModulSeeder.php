@@ -150,6 +150,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminStoreRrTokenController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Capsule Inventory',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'inventory_capsules',
+                'table_name'   => 'inventory_capsules',
+                'controller'   => 'Capsule\AdminInventoryCapsulesController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]  
         ];
 
