@@ -283,11 +283,17 @@
 			$typeId = DB::table('token_action_types')->select('id')->where('description', 'Deduct')->first()->id;
 			
 			$tokenInfo = PulloutToken::where('id', $id)->first();
-			$token_inventory = TokenInventory::where('locations_id', $location_id);
 			$location_id = $tokenInfo->locations_id;
-
+			$token_inventory = TokenInventory::where('locations_id', $location_id);
+			
 			$qtyToDeduct = $tokenInfo->qty;
-			$token_inventory_qty = $token_inventory->first()->qty ?? 0;
+			$token_inventory_qty = $token_inventory->first()->qty;
+
+			
+			if($qtyToDeduct > $token_inventory_qty){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"The quantity you're trying to pull out exceeds the available quantity in the Token Inventory!","danger");
+			}
+
 			$total_qty = $token_inventory_qty - $qtyToDeduct;
 
 			TokenInventory::updateOrInsert(['locations_id' => $location_id],
@@ -301,7 +307,7 @@
 			$tokenHistory = new TokenHistory;
 
 			$tokenHistory->reference_number = $tokenInfo->reference_number;
-			$tokenHistory->qty = $tokenInfo->qty * -1;
+			$tokenHistory->qty = $tokenInfo->qty;
 			$tokenHistory->types_id = $typeId;
 			$tokenHistory->locations_id = $tokenInfo->locations_id;
 			$tokenHistory->created_by = $tokenInfo->created_by;
