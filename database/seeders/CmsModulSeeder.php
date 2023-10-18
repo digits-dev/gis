@@ -160,6 +160,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Capsule History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'history_capsules',
+                'table_name'   => 'history_capsules',
+                'controller'   => 'Capsule\AdminHistoryCapsulesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ], 
             [  
                 'name'         => 'Receive Token',
                 'icon'         => 'fa fa-circle-o',

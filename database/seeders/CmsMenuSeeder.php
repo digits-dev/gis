@@ -248,6 +248,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 3
             ]
         );
+        
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule History',
+            ],
+            [
+                'name'              => 'Capsule History',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminHistoryCapsulesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
     }
 
     public function auditMenu() {
