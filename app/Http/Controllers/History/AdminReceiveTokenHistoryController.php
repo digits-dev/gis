@@ -53,17 +53,18 @@
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
-			$this->form = [];
-			$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Variance Qty','name'=>'variance_qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'From Locations','name'=>'from_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'To Locations','name'=>'to_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
-			$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
-
+			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
+				$this->form = [];
+				$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'text','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Variance Qty','name'=>'variance_qty','type'=>'text','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'From Locations','name'=>'from_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+				$this->form[] = ['label'=>'To Locations','name'=>'to_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+				$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
+				$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'number','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
