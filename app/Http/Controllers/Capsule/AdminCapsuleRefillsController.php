@@ -337,6 +337,6 @@
 			$data['page_title'] = 'Add Data';
 			
 			//Please use view method instead view method from laravel
-			return $this->view('Capsule.capsule_refill',$data);
+			return $this->view('capsule.capsule-refill',$data);
 		}
 	}

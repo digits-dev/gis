@@ -326,7 +326,18 @@
 
 	    }
 
-
+		public function getAdd() {
+			//Create an Auth
+			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Add Data';
+			
+			//Please use view method instead view method from laravel
+			return $this->view('capsule.capsule-return',$data);
+		}
 
 	    //By the way, you can still create your own method in here... :) 
 
