@@ -88,7 +88,7 @@
 @section('content')
     <p class="noprint"><a title='Return' href='{{g("return_url")}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
     <div class='panel panel-default'>
-        <div class='panel-heading' style="background-color:#dd4b39; color:#fff">Detail Cash Float</div>
+        <div class='panel-heading'>Detail Cash Float</div>
         <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
         @csrf
         <div class='panel-body'>
