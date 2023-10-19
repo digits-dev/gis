@@ -45,23 +45,15 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','step'=>'0.01','validation'=>'required|min:1','width'=>'col-sm-4'];
-			$this->form[] = ['label'=>'Token Quantity','name'=>'token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-4'];
-			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'date','validation'=>'required|date','width'=>'col-sm-4'];
-			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'date','validation'=>'required|date','width'=>'col-sm-4'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-4','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
+			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','step'=>'0.01','validation'=>'required|min:1','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Token Quantity','name'=>'token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=> true,'value'=>1];
+			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'date','validation'=>'date','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'date','validation'=>'date','width'=>'col-sm-5'];
+			
+			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
+			}
 			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Cash Value","name"=>"cash_value","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"End Date","name"=>"end_date","type"=>"date","required"=>TRUE,"validation"=>"required|date"];
-			//$this->form[] = ["label"=>"Start Date","name"=>"start_date","type"=>"date","required"=>TRUE,"validation"=>"required|date"];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Token Qty","name"=>"token_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -272,6 +264,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
+			$postdata['status']     = 'ACTIVE';
 			$postdata['created_at'] = date('Y-m-d H:i:s');
 			$postdata['created_by'] = CRUDBooster::myId();
 
