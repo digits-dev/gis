@@ -214,7 +214,16 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminSubLocationController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]
+            ],
+            [
+                'name'         => 'Collect Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_rr_tokens',
+                'table_name'   => 'collect_rr_tokenss',
+                'controller'   => 'Audit\AdminCollectRrTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

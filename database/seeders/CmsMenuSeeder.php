@@ -287,7 +287,23 @@ class CmsMenuSeeder extends Seeder
     }
 
     public function auditMenu() {
-        return;
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token',
+            ],
+            [
+                'name'              => 'Collect Token',
+                'type'              => 'Route',
+                'path'              => 'Audit\AdminCollectRrTokensControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 3,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function historyMenu() {
