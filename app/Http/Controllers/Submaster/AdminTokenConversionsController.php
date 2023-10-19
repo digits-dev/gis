@@ -160,7 +160,9 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+			$this->script_js = '
+				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
+			';
 
 
             /*
