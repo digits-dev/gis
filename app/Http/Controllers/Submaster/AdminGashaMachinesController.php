@@ -32,6 +32,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
+			$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
@@ -44,10 +45,11 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
+			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'statuses,status_description'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
@@ -152,6 +154,7 @@
 			$main_path = CRUDBooster::mainPath();
 			$admin_path = CRUDBooster::adminPath();
 	        $this->script_js = "
+				$('.panel-heading').css({'background-color':'#dd4b39','color':'#fff'});
 				$('.user-footer .pull-right a').on('click', function () {
 					const currentMainPath = window.location.origin;
 					Swal.fire({
@@ -281,11 +284,15 @@
 			$count_header       = DB::table('gasha_machines')->count();
 			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);				
 			$serial_number	    = "GM-".$header_ref;
+			$description        = $fields['description'];
 			$location           = $fields['location'];
+			$location_name      = DB::table('locations')->where('id',$location)->first();
 			$no_of_tokens       = $fields['no_of_tokens'];
 
 			$postdata['serial_number']         = $serial_number;
+			$postdata['description']           = $description;
 			$postdata['location_id']           = $location;
+			$postdata['location_name']         = $location_name->location_name;
 			$postdata['no_of_token']           = intval(str_replace(',', '', $no_of_tokens));
 			$postdata['machine_statuses_id']   = 1;
 			$postdata['status']                = 'ACTIVE';
@@ -313,9 +320,11 @@
 	    | @id       = current id 
 	    | 
 	    */
-	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-
+	    public function hook_before_edit(&$postdata,$id) {    
+	        $location                  = $postdata['location_id'];
+			$location_name             = DB::table('locations')->where('id',$location)->first();
+			$postdata['location_name'] = $location_name->location_name;
+			$postdata['updated_by']    = CRUDBooster::myId();
 	    }
 
 	    /* 

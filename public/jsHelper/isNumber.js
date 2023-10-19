@@ -23,7 +23,7 @@ function inputIsNumber(){
         });
     })
 
-    $('input[numberWithoutDecimal]').keyup(function(event) {
+    $('input').keyup(function(event) {
         if(event.which >= 37 && event.which <= 40) return;
         $(this).val(function(index, value) {
             return value

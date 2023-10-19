@@ -1,26 +1,12 @@
-<?php namespace App\Http\Controllers\Token;
+<?php namespace App\Http\Controllers\Submaster;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\Locations;
-	use App\Models\Token\StoreRrToken;
-	use App\Models\Submaster\TokenActionType;
-	use App\Models\Token\TokenHistory;
-	use App\Models\Token\TokenInventory;
 
-	class AdminStoreRrTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forPrint;
-		private $forReceiving;
-		private $closed;
+	class AdminCapsuleActionTypesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
-		public function __construct() {
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forPrint         =  2;    
-			$this->forReceiving     =  3;
-			$this->closed           =  4;      
-		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -29,47 +15,42 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = false;
+			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
-			$this->button_edit = false;
-			$this->button_delete = false;
+			$this->button_add = true;
+			$this->button_edit = true;
+			$this->button_delete = true;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "store_rr_token";
+			$this->table = "capsule_action_types";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Disburse#","name"=>"disburse_number"];
-			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty"];
-			$this->col[] = ["label"=>"From Location","name"=>"from_locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
-			$this->col[] = ["label"=>"Variance Qty","name"=>"variance_qty"];
-			$this->col[] = ["label"=>"To Location","name"=>"to_locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Description","name"=>"description"];
+			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
-			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
-			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
-				$this->form = [];
-				$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'text','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Variance Qty','name'=>'variance_qty','type'=>'text','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'From Locations','name'=>'from_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-				$this->form[] = ['label'=>'To Locations','name'=>'to_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-				$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
-				$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'select2','width'=>'col-sm-10','datatable'=>'cms_users,name'];
-			}
+			# START FORM DO NOT REMOVE THIS LINE
+			$this->form = [];
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -98,9 +79,7 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::isUpdate()) {
-				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestForPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[statuses_id] == 2"];
-			}
+
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -137,9 +116,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"success"];
-			}
+
 
 
 	        /* 
@@ -173,27 +150,7 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-			$this->script_js = "
-			$(function(){
-				$('body').addClass('sidebar-collapse');
-			});
-			// $('.user-footer .pull-right a').on('click', function () {
-			// 	const currentMainPath = window.location.origin;
-			// 	Swal.fire({
-			// 		title: 'Do you want to logout?',
-			// 		icon: 'warning',
-			// 		showCancelButton: true,
-			// 		confirmButtonColor: '#d33',
-			// 		cancelButtonColor: '#b9b9b9',
-			// 		confirmButtonText: 'Logout',
-			// 		reverseButtons: true,
-			// 	}).then((result) => {
-			// 		if (result.isConfirmed) {
-			// 			location.assign(`$admin_path/logout`);
-			// 		}
-			// 	});
-			// });			
-		";
+
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -228,7 +185,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset("jsHelper/isNumber.js");
+	        
 	        
 	        
 	        /*
@@ -252,8 +209,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        $this->load_css[] = asset("css/font-family.css");
-	        $this->load_css[] = asset('css/gasha-style.css');
+	        
 	        
 	    }
 
@@ -291,18 +247,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
-			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
-			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
-			if($column_index == 1){
-				if($column_value == $forPrint){
-					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
-				}else if($column_value == $forReceiving){
-					$column_value = '<span class="label label-info">'.$forReceiving.'</span>';
-				}else if($column_value == $closed){
-					$column_value = '<span class="label label-success">'.$closed.'</span>';
-				}
-			}
+	    	//Your code here
 	    }
 
 	    /*
@@ -313,41 +258,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-
-			$count_header       = DB::table('store_rr_token')->count();
-			$header_ref         = str_pad($count_header + 1, 4, '0', STR_PAD_LEFT);				
-			$disburse_number	= "DB1-".$header_ref;
-			$to_location        = $fields['location'];
-			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
-
-			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
-
-			if(empty($checkTokenInventory)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"No token inventory!","danger");
-			}
-
-			if(empty($release_qty)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token required!","danger");
-			}
-
-			if(empty($to_location)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Location required!","danger");
-			}
-			
-			if($release_qty > $checkTokenInventory->qty){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Token Qty Exceed in Token Inventory!","danger");
-			}
-
-			//DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
-
-			$postdata['disburse_number']       = $disburse_number;
-			$postdata['from_locations_id']     = $checkTokenInventory->id;
-			$postdata['to_locations_id']       = $to_location;
-			$postdata['released_qty']          = $release_qty;
-			$postdata['statuses_id']           = $this->forPrint;
-			$postdata['created_by']            = CRUDBooster::myId();
-
+	        //Your code here
 	    }
 
 	    /* 
@@ -357,32 +268,8 @@
 	    | @id = last insert id
 	    | 
 	    */
-	    public function hook_after_add($id) {    
-			$disburse_token = StoreRrToken::find($id);   
-			$qty = $disburse_token->released_qty;
-			$location_id = $disburse_token->to_locations_id;
-			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
-
-			//Save Inventory
-			// TokenInventory::updateOrcreate([
-			// 	'locations_id' => $location_id,
-			// ],
-			// [
-			// 	'qty'          => DB::raw("IF(qty IS NULL, '".(int)$qty."', qty + '".(int)$qty."')"), 
-			// 	'locations_id' => $location_id,
-			// 	'created_by'   => CRUDBooster::myId(),
-			// 	'created_at'   => date('Y-m-d H:i:s'),
-			// ]);
-
-			//Save History
-	        // TokenHistory::insert([
-			// 	'reference_number' => $disburse_token->disburse_number,
-			// 	'qty'              => $qty,
-			// 	'types_id'         => $tat_add_token->id,
-			// 	'locations_id'     => $location_id,
-			// 	'created_by'       => CRUDBooster::myId(),
-			// 	'created_at'       => date('Y-m-d H:i:s'),
-			// ]);
+	    public function hook_after_add($id) {        
+	        //Your code here
 
 	    }
 
@@ -435,55 +322,9 @@
 
 	    }
 
-		public function getDisburseToken(){
-			$this->cbLoader();
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-			$data = [];
-			$data['locations'] = Locations::activeDisburseToken();
-			return $this->view("token.disburse-token.add-disburse-token", $data);
-		}
 
-		public function getRequestForPrint($id){
-			$this->cbLoader();
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
-				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-			}  
 
-			$data = array();
-			$data['page_title'] = 'Print';
-			$data['disburseToken'] = StoreRrToken::getDatas($id);
+	    //By the way, you can still create your own method in here... :) 
 
-			return $this->view("token.disburse-token.disburse-token-print", $data);
-		}
-
-		public function forPrintUpdate(){
-			$data = Request::all();
-			$header_id = $data['header_id'];
-
-			StoreRrToken::where('id',$header_id)
-			->update([
-				'statuses_id'=> $this->forReceiving,
-			]);
-
-			$disburse_token = StoreRrToken::find($header_id);   
-			$qty = -1 * abs($disburse_token->released_qty);
-			$location_id = $disburse_token->from_locations_id;
-			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
-
-			//less in inventory
-			DB::table('token_inventories')->where('id',1)->decrement('qty', $disburse_token->released_qty);
-
-			//Save History
-	        TokenHistory::insert([
-				'reference_number' => $disburse_token->disburse_number,
-				'qty'              => $qty,
-				'types_id'         => $tat_add_token->id,
-				'locations_id'     => $location_id,
-				'created_by'       => CRUDBooster::myId(),
-				'created_at'       => date('Y-m-d H:i:s'),
-			]);
-		}
 
 	}

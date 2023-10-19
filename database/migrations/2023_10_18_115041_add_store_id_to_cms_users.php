@@ -14,7 +14,7 @@ class AddStoreIdToCmsUsers extends Migration
     public function up()
     {
         Schema::table('cms_users', function (Blueprint $table) {
-            $table->integer('location_id')->length(10)->nullable()->after('id_cms_privileges');;
+            $table->integer('location_id')->length(10)->nullable()->after('id_cms_privileges');
         });
     }
 

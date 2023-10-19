@@ -186,8 +186,44 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'History\AdminReceiveTokenHistoryController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]       
+            ],
+            [
+                'name'         => 'Capsule Action Type',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_action_types',
+                'table_name'   => 'capsule_action_types',
+                'controller'   => 'Submaster\AdminCapsuleActionTypesController',
+                'is_protected' => 0,
+                'is_active'    => 0 
 
+            ],     
+            [
+                'name'         => 'Capsule Refills',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_refills',
+                'table_name'   => 'capsule_refills',
+                'controller'   => 'Capsule\AdminCapsuleRefillsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Sub Location',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'sub_location',
+                'table_name'   => 'sub_locations',
+                'controller'   => 'Submaster\AdminSubLocationController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_rr_tokens',
+                'table_name'   => 'collect_rr_tokenss',
+                'controller'   => 'Audit\AdminCollectRrTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

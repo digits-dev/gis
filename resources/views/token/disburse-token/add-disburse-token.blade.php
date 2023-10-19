@@ -40,7 +40,7 @@
         
             <div class="form-group">
                 <label class="require control-label"><span style="color:red">*</span> Token Qty:</label>
-                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens">
+                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
             </div>
     
             <div class="form-group">
@@ -57,7 +57,7 @@
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
 </div>
@@ -133,5 +133,7 @@
             }
         });
     });
+
+    
 </script>
 @endpush

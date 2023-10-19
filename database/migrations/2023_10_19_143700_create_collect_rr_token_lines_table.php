@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubLocationsTable extends Migration
+class CreateCollectRrTokenLinesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateSubLocationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sub_locations', function (Blueprint $table) {
+        Schema::create('collect_rr_token_lines', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('location_id')->nullable();
-            $table->string('desription')->nullable();
-            $table->string('status')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->integer('collected_token_id')->nullable();
+            $table->integer('gasha_machines_id')->nullable();
+            $table->integer('qty')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -31,6 +30,6 @@ class CreateSubLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sub_locations');
+        Schema::dropIfExists('collect_rr_token_lines');
     }
 }

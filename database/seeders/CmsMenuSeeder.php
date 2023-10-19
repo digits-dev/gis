@@ -266,10 +266,44 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 4
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Refills',
+            ],
+            [
+                'name'              => 'Capsule Refills',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleRefillsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function auditMenu() {
-        return;
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token',
+            ],
+            [
+                'name'              => 'Collect Token',
+                'type'              => 'Route',
+                'path'              => 'Audit\AdminCollectRrTokensControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 3,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function historyMenu() {
@@ -471,6 +505,42 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 11
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Action Type',
+            ],
+            [
+                'name'              => 'Capsule Action Type',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCapsuleActionTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 12
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Sub Location',
+            ],
+            [
+                'name'              => 'Sub Location',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminSubLocationControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 13
             ]
         );
     }

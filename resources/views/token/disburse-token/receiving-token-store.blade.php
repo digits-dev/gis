@@ -37,22 +37,25 @@
     <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
     <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
     <div class='panel-body'>
-        <div class="col-md-6 col-sm-offset-3">
-        
-            <div class="form-group">
-                <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
-                <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off">
+        <div class="col-md-10 col-sm-offset-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
+                    <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+                </div>
             </div>
-            <div class="form-group">
-                <label class="require control-label"><span style="color:red">*</span> Variance:</label>
-                <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="require control-label"><span style="color:red">*</span> Variance:</label>
+                    <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+                </div>
             </div>
           
         </div>
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
+        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
     </div>
 </form>
 </div>
