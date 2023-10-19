@@ -473,7 +473,7 @@
 			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
 
 			//less in inventory
-			DB::table('token_inventories')->where('id',1)->decrement('qty', $qty);
+			DB::table('token_inventories')->where('id',1)->decrement('qty', $disburse_token->released_qty);
 
 			//Save History
 	        TokenHistory::insert([
