@@ -17,7 +17,7 @@ class POSLoginController extends Controller
     public function index()
     {
         
-        return view('Pos Frontend.views.login_page');
+        return view('pos-frontend.views.login-page');
     }
 
     /**

@@ -15,7 +15,7 @@ class POSDashboardController extends Controller
     public function index()
     {
         
-        return view('Pos Frontend.views.dashboard');
+        return view('pos-frontend.views.dashboard');
     }
 
     /**

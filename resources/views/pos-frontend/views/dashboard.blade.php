@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @include('Pos Frontend.plugins.pos_frontend_plugin')
+    @include('pos-frontend.plugins.pos-frontend-plugin')
     <title>Dashboard</title>
 </head>
 <body>
     <section class="dashboard_section">
-        @include('Pos Frontend.assets.sidebar')
-        @include('Pos Frontend.assets.content')
+        @include('pos-frontend.assets.sidebar')
+        @include('pos-frontend.assets.content')
     </section>
 
     <script>
