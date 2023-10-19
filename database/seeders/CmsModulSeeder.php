@@ -186,6 +186,7 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'History\AdminReceiveTokenHistoryController',
                 'is_protected' => 0,
                 'is_active'    => 0
+<<<<<<< HEAD
             ],
             [
                 'name'         => 'Capsule Action Type',
@@ -197,6 +198,18 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ]   
 
+=======
+            ],     
+            [
+                'name'         => 'Capsule Refills	',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_refills',
+                'table_name'   => 'capsule_refills',
+                'controller'   => 'Capsule\AdminCapsuleRefillsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
+>>>>>>> 92d5582add6d5bfdcba5f902dcbb5a6682dbd08d
         ];
 
         foreach ($modules as $module) {

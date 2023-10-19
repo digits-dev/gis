@@ -11,7 +11,7 @@
 }
 
 body{
-    background: #dfe9f5;
+    background-color: #eeeeee;
 }
 
 .title-color{
@@ -227,7 +227,7 @@ body{
 }
 .topbar-box{
     background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    /* box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px; */
     /* border-radius: 50px; */
 }
 
