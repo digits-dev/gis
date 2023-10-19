@@ -14,7 +14,12 @@ class CreateSubLocationsTable extends Migration
     public function up()
     {
         Schema::create('sub_locations', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->integer('location_id')->nullable();
+            $table->string('desription')->nullable();
+            $table->string('status')->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }
