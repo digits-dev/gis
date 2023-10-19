@@ -23,7 +23,7 @@ use App\Models\Submaster\CashFloatHistoryLine;
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
