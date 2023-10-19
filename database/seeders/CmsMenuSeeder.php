@@ -473,5 +473,23 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 11
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Action Type',
+            ],
+            [
+                'name'              => 'Capsule Action Type',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCapsuleActionTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 12
+            ]
+        );
     }
 }

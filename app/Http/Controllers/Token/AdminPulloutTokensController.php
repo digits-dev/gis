@@ -49,7 +49,7 @@
             if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
 			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
             }
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
 			# END FORM DO NOT REMOVE THIS LINE
 
@@ -152,8 +152,11 @@
 	        */
 	        $this->script_js = NULL;
 	        $this->script_js = '
+			$("#qty").attr("onkeypress","inputIsNumber()");
 			var addButton = $("#btn_add_new_data")
 			addButton.text("Pullout Token")
+			$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
+
 			';
 
 
@@ -191,6 +194,8 @@
 	        |
 	        */
 	        $this->load_js = array();
+			$this->load_js[] = asset('jsHelper\isNumber.js');
+	        
 
 
 
@@ -202,7 +207,8 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = '
+			';
 
 
 
@@ -269,6 +275,8 @@
 			$location_id = $postdata['locations_id'];
 			$token_inventory = TokenInventory::where('locations_id', $location_id);
 			$token_inventory_qty = $token_inventory->first()->qty;
+			$postdata['qty'] = intval(str_replace(',', '', $postdata['qty']) * -1);
+			
 
 			$qtyToDeduct = $postdata['qty'];
 			if($token_inventory_qty === null){
@@ -303,7 +311,7 @@
 			$qtyToDeduct = $tokenInfo->qty;
 			$token_inventory_qty = $token_inventory->first()->qty;
 
-			$total_qty = $token_inventory_qty - $qtyToDeduct;
+			$total_qty = $token_inventory_qty + $qtyToDeduct;
 
 			TokenInventory::updateOrInsert(['locations_id' => $location_id],
 				['qty' => $total_qty,

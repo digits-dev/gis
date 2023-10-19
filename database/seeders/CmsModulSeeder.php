@@ -186,7 +186,16 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'History\AdminReceiveTokenHistoryController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ]       
+            ],
+            [
+                'name'         => 'Capsule Action Type',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_action_types',
+                'table_name'   => 'capsule_action_types',
+                'controller'   => 'Submaster\AdminCapsuleActionTypesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]   
 
         ];
 
