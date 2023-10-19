@@ -11,18 +11,18 @@
 -   [x] Pullout Defective Token
 -   [x] Disburse Token
 -   [ ] Receive Token (Acctg)
--   [ ] Receive Token (Store)
+-   [x] Receive Token (Store)
 -   [x] Token Inventory
 -   [x] Token History
 
 ### 💊 Capsule
 
--   [ ] Capsule Refill
--   [ ] Capsule Return
+-   [x] Capsule Refill
+-   [x] Capsule Return
 -   [ ] Capsule Swap
 -   [ ] Capsule Merge
 -   [x] Capsule Inventory
--   [ ] Capsule History
+-   [x] Capsule History
 
 ### 📃 Submaster
 
@@ -35,12 +35,16 @@
 -   [ ] Token Swap History
 -   [x] Float Types
 -   [x] Float Entries
--   [x] Cash Float History
 -   [x] Cash Float Reconcile
 -   [x] Token Action Type
--   [ ] Capsule Action Type
--   [ ] Sublocation
+-   [x] Capsule Action Type
+-   [x] Sub Location
 -   [x] Statuses
+
+### 🕒 History
+
+-   [x] Receive Token History
+-   [x] Cash Float History
 
 ---
 
