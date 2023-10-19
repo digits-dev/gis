@@ -44,29 +44,28 @@
         text-align: center;
     }
     .panel-img img{
-        width: 250px;
+        width: 300px;
     }
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
         <div class='panel panel-default'>
             <div class='panel-header'>
-                <label>CAPSULE REFILL</label>
+                <label>CAPSULE RETURN</label>
             </div>
             <div class='panel-body'>
             <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
                 <div class='form-group'>
-                <label>Capsule Barcode</label>
+                <label>From Gasha Machine</label>
                 <input type='text' name='label1' required class='form-control'/>
-                <label>To Gasha Machine</label>
+                <label>To Stockroom</label>
                 <input type='text' name='label1' required class='form-control'/>
                 <label>Quantity</label>
                 <input type='text' name='label1' required class='form-control'/>
                 </div>
                 <div class='panel-img'>
-                    <img src="{{ asset('img/capsule-refill.png') }}">
+                    <img src="{{ asset('img/cap-return.png') }}">
                 </div>
-                                
             </form>
             </div>
             <div class='panel-footer'>
