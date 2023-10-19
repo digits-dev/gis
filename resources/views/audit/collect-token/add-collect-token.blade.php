@@ -219,7 +219,7 @@
             var newrow =
             '<tr>' +
                 '<td >' +
-                        '<select selected data-placeholder="- Select machine -" class="form-control gasha_machine" name="gasha_machines_id[]" data-id="'+tableRow+'" id="gasha_machines_id'+tableRow+'" required style="width:100%">' +
+                        '<select selected data-placeholder="Select machine" class="form-control gasha_machine" name="gasha_machines_id[]" data-id="'+tableRow+'" id="gasha_machines_id'+tableRow+'" required style="width:100%">' +
                         // '  <option value="">Select machines</option>' +
                         // '        @foreach($gasha_machines as $data)'+
                         // '           <option value="{{$data->id}}">{{$data->description}} - {{$data->serial_number}}</option>'+

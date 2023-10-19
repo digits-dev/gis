@@ -279,6 +279,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	       $fields = Request::all();
+		   
 		   dd($fields);
 	    }
 
@@ -354,7 +355,7 @@
 			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['locations'] = Locations::activeLocationPerUser($user->location_id);
 			$data['gasha_machines'] = GashaMachines::activeMachines();
-			$data['dateTime'] = Carbon::now();
+			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
 
 			return $this->view("audit.collect-token.add-collect-token", $data);
 		}
