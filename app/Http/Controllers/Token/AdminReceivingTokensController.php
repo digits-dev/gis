@@ -19,7 +19,7 @@ use App\Models\Token\ReceivingToken;
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = false;
@@ -36,9 +36,11 @@ use App\Models\Token\ReceivingToken;
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Locations","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -210,6 +212,19 @@ use App\Models\Token\ReceivingToken;
 			.panel-heading{
 				background-color:#dd4b39; 
 				color:#fff;
+			}
+			.select2-selection__choice{
+			font-size:14px !important;
+			color:black !important;
+			}
+			.select2-selection__rendered {
+				line-height: 31px !important;
+			}
+			.select2-container .select2-selection--single {
+				height: 35px !important;
+			}
+			.select2-selection__arrow {
+				height: 34px !important;
 			}
 			";
 	        

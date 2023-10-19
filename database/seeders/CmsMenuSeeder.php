@@ -324,6 +324,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 1
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Cash Float History',
+            ],
+            [
+                'name'              => 'Cash Float History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
     }
 
     public function submasterMenu() {
@@ -451,24 +469,6 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 8
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Cash Float History',
-            ],
-            [
-                'name'              => 'Cash Float History',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 4,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 9
             ]
         );
 

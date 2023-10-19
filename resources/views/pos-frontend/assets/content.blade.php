@@ -1,3 +1,3 @@
 <section class="content-section">
-    @include('Pos Frontend.assets.topbar')
+    @include('pos-frontend.assets.topbar')
 </section>

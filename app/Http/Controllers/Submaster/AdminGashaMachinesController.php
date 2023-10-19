@@ -37,10 +37,10 @@
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE

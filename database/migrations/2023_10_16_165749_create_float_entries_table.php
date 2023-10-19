@@ -16,6 +16,7 @@ class CreateFloatEntriesTable extends Migration
         Schema::create('float_entries', function (Blueprint $table) {
             $table->increments('id');
             $table->string('description')->length(50)->nullable();
+            $table->integer('value')->length(11)->nullable();
             $table->string('status')->length(50)->default('ACTIVE');
             $table->integer('created_by')->unsigned()->length(10)->nullable();
             $table->integer('updated_by')->unsigned()->length(10)->nullable();

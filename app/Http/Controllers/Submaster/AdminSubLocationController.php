@@ -43,7 +43,9 @@
 			$this->form = [];
 			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Sub Location','name'=>'desription','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
+			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -277,6 +279,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
+			$postdata['status']    ='ACTIVE';
 			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
