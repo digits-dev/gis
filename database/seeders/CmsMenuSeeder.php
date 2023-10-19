@@ -543,5 +543,23 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 13
             ]
         );
+        
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Returns',
+            ],
+            [
+                'name'              => 'Capsule Returns',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleRefillsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 }
