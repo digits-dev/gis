@@ -137,39 +137,48 @@ body{
 .sidebar_section nav{
     height: 100vh;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
+    /* background-color: #333940; */
     overflow: hidden;
     -webkit-transition: width 0,5s ease-out;
     -moz-transition: width 0.5s ease-out;
     -o-transition: width 0.5s ease-out;
     transition: width 0.5s ease-out;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    /* box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px; */
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
     width: 90px;
 }
 
 .gashapon_logo{
-    text-align: center;
+    /* text-align: center; */
     display: flex;
+    align-items: center;
+    /* background-color: green; */
 }
 
 .nav-title{
-    width: 300px;
-    padding: 15px 25px;
+    /* width: 300px; */
+    padding: 7.5px 0px 7.5px 15px;
 }
 
 .nav-module{
-    position: relative;
+    /* position: relative; */
     /* color: rgb(85, 83, 83); */
-    font-size: 14px;
-    display: table;
-    width: 300px;
-    padding: 10px;
+    /* font-size: 14px; */
+    /* display: table; */
+    /* width: 300px; */
+    /* padding: 10px; */
     /* filter: grayscale(100%) opacity(0.7); */
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
 }
 
 .gashapon_logo img{
-    height: 45px;
-    width: 45px;
+    height: 60px;
+    min-width: 60px;
     border-radius: 50%;
+    object-fit: fill;
+    transform: scale(0.8);
 }
 
 .gashapon_logo span{
@@ -177,25 +186,46 @@ body{
     padding-left:15px;
     font-size: 18px;
     text-transform: uppercase;
+    color: white;
 }
 
-.sidebar_section nav ul li i{
-    position: relative;
-    width: 70px;
-    height: 40px;
-    top: 14px;
+.sidebar_section nav ul li a i{
+    /* position: relative; */
+    /* width: 70px;
+    height: 40px; */
+    /* top: 14px;
     font-size: 25px;
-    text-align: center;
+    text-align: center; */
+    color: #fff;
+    font-size: 40px;
+    min-width: 56px;
+    /* background-color: blue; */
 }
 
 .nav-item{
-    position: relative;
+    /* position: relative;
     top: 12px;
     margin-left: 10px;
+    color: white; */
+    /* vertical-align: middle; */
+    /* height: 100%; */
+    /* width: 200px; */
+    font-size: 14px;
+    color: white;
+    min-width: 213px;
+    padding: 0 10px;
+    font-weight: bold;
 }
+
 .sidebar_section nav ul li a:hover{
-    background: #eee;
+    background-color: #eeeeee47;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
+
+.sidebar_section nav ul li a:hover i, .sidebar_section nav ul li a:hover .nav-item{
+    color: #313030;
+}
+
 .sidebar_section nav:hover{
     width: 280px;
 
@@ -259,6 +289,7 @@ body{
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    margin-left: 30px;
 }
 
 #user-icon-dropdown{

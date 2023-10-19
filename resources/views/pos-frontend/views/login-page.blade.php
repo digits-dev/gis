@@ -9,9 +9,6 @@
         <link rel="stylesheet" href="{{ asset('vendor/crudbooster/assets/adminlte/font-awesome/css/font-awesome.min.css') }}">
     </head>
     <body>
-        <div class="store-logo-link-to-frontend">
-            <a href="/admin">Link to Backend</a>
-        </div>
         <section class="login">
             <form action="{{ route('login') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -20,6 +17,9 @@
                         <div class="store-logo-box-content">
                             <div class="store-logo-brand">
                                 <img src="{{ asset('img/gashapon_logo.png') }}" alt="">
+                            </div>
+                            <div class="store-logo-link-to-frontend">
+                                <a href="/admin">Link to Backend</a>
                             </div>
                             <div class="store-logo-description">
                                 <p class="fs-40 fw-bold">Inventory System</p>
