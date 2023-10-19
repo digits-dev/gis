@@ -158,6 +158,7 @@ use App\Models\Token\ReceivingToken;
 	        $this->script_js = NULL;
 			$this->script_js = '
 				$("#qty").attr("onkeypress","inputIsNumber()");
+				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
 			';
 
             /*
@@ -205,7 +206,12 @@ use App\Models\Token\ReceivingToken;
 	        |
 	        */
 	        $this->style_css = NULL;
-	        
+	        $this->style_css = "
+			.panel-heading{
+				background-color:#dd4b39; 
+				color:#fff;
+			}
+			";
 	        
 	        
 	        /*

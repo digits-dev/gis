@@ -1,7 +1,7 @@
 <section class="topbar_section">
     <div class="topbar-box">
         <div class="topbar-content">
-            <div class="topbar-title">
+            <div class="topbar-title fs-20">
                 <p>Dashboard</p>
             </div>
             <div>
