@@ -42,6 +42,9 @@
 			$this->form = [];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE','type'=>'hidden'];		
+			if(CRUDBooster::getCurrentMethod() == 'getEdit'){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];		
+			}
 			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
 				$this->form[] = ["label"=>"Status","name"=>"status"];
 				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
