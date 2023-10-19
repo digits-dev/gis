@@ -1,5 +1,11 @@
 <?php namespace App\Http\Controllers\Submaster;
 
+use App\Models\Submaster\CashFloatHistory;
+use App\Models\Submaster\CashFloatHistoryLine;
+	use App\Models\Submaster\FloatEntry;
+	use App\Models\Submaster\FloatType;
+	use App\Models\Submaster\Locations;
+	use App\Models\Submaster\ModeOfPayment;
 	use Session;
 	use Request;
 	use DB;
@@ -17,9 +23,9 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -32,16 +38,15 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Float Type","name"=>"float_types_id","join"=>"float_types,description"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'Float Type','name'=>'float_types_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'float_types,description'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			
+			// $this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
+			// $this->form[] = ['label'=>'Float Type','name'=>'float_types_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'float_types,description'];
+			// $this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -259,7 +264,12 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
+			$return_inputs = Request::all();
 
+			$postdata['locations_id'] = $return_inputs['location_id'];
+			$postdata['float_types_id'] = $return_inputs['float_id'];
+			$postdata['created_at'] = date('Y-m-d H:i:s');
+			$postdata['created_by'] = CRUDBooster::myId(); 
 	    }
 
 	    /* 
@@ -271,6 +281,20 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
+			$return_inputs = Request::all();
+
+			$cfl_count = count($return_inputs['mode_of_payment']);
+			
+			for($i=0; $i<$cfl_count; $i++){
+				CashFloatHistoryLine::insert([
+					'cash_float_histories_id' => $id,
+					'mode_of_payments_id' => $return_inputs['mode_of_payment'][$i], 
+					'float_entries_id' => $return_inputs['float_entry'][$i], 
+					'qty' => $return_inputs['qty'][$i], 
+					'value' => $return_inputs['value'][$i]
+				]);
+			}
+
 			$postdata['created_at'] = date('Y-m-d H:i:s');
 			$postdata['created_by'] = CRUDBooster::myId(); 
 	    }
@@ -328,5 +352,40 @@
 
 
 	    //By the way, you can still create your own method in here... :) 
+
+		public function getAdd() {
+			//Create an Auth
+			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Add Data';
+			$data['locations'] = Locations::where('status', 'ACTIVE')->get();
+			$data['float_types'] = FloatType::where('status', 'ACTIVE')->get();
+			$data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
+			$data['float_entries'] = FloatEntry::where('status', 'ACTIVE')->get();
+
+			//Please use view method instead view method from laravel
+			return $this->view('Submaster.Cash-float-history.add-cash-float',$data);
+		}
+
+		public function getDetail($id) {
+			//Create an Auth
+			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+			
+			$data = [];
+			$data['row'] = CashFloatHistory::find($id);
+			$data['page_title'] = 'Detail Cash Float History';
+			$data['locations'] = Locations::where('status', 'ACTIVE')->get();
+			$data['float_types'] = FloatType::where('status', 'ACTIVE')->get();
+			$data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
+			$data['float_entries'] = FloatEntry::where('status', 'ACTIVE')->get();
+			$data['cash_float_history_lines'] = CashFloatHistoryLine::where('cash_float_histories_id', $data['row']->id)->get();
+			//Please use view method instead view method from laravel
+			return $this->view('Submaster.Cash-float-history.detail-cash-float',$data);
+		}
 
 	}
