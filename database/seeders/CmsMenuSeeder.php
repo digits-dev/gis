@@ -266,6 +266,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 4
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Refills',
+            ],
+            [
+                'name'              => 'Capsule Refills',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleRefillsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function auditMenu() {
