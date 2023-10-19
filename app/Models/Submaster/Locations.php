@@ -18,4 +18,8 @@ class Locations extends Model
     public function scopeActiveDisburseToken($query){
         return $query->where('id','!=',1)->where('status','ACTIVE')->get();
     }
+
+    public function scopeActiveLocationPerUser($query, $id){
+        return $query->where('id','!=',1)->where('status','ACTIVE')->first();
+    }
 }
