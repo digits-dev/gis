@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             StatusesSeeder::class,
             CapsuleActionTypeSeeder::class,
             CmsPrivilegeSeeder::class,
+            ItemSeeder::class,
         ]);
 
     }
