@@ -41,17 +41,11 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Payment Description','name'=>'payment_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
-
+			
+			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
+			}
 			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Payment Description","name"=>"payment_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -328,10 +322,4 @@
 	        //Your code here
 
 	    }
-
-
-
-	    //By the way, you can still create your own method in here... :) 
-
-
 	}

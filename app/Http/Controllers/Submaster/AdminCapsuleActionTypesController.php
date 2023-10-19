@@ -19,7 +19,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -41,7 +41,9 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
+			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -149,8 +151,9 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
-
+	        $this->script_js = '
+				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
+			';
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -258,7 +261,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$postdata['created_by'] = CRUDBooster::myId();
 	    }
 
 	    /* 
@@ -282,7 +285,7 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$postdata['updated_by'] = CRUDBooster::myId();
 
 	    }
 
