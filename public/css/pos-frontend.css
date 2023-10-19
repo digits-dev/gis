@@ -67,7 +67,7 @@ body{
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     display: flex;
     max-width: 1400px;
-    height: 700px;
+    min-height: 670px;
 }
 
 .store-logo-box{
