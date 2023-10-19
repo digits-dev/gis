@@ -63,7 +63,7 @@
 				$this->form[] = ['label'=>'To Locations','name'=>'to_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 				$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
 				$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'number','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+				$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'select2','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			}
 			# END FORM DO NOT REMOVE THIS LINE
 

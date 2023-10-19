@@ -39,7 +39,12 @@
             <div class="col-md-6 col-sm-offset-3">
 
                 <div class="form-group">
-                    <label class="require control-label"> No of tokens:</label>
+                    <label class="require control-label"><span style="color:red">*</span> Description</label>
+                    <input type="text" class="form-control finput" style="" placeholder="Description" name="description" id="description">
+                </div>
+
+                <div class="form-group">
+                    <label class="require control-label"> No of tokens</label>
                     <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" onkeypress="inputIsNumber()" validation-name="No of tokens">
                 </div>
 
