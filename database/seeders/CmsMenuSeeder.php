@@ -384,6 +384,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Items',
+            ],
+            [
+                'name'              => 'Items',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminItemsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Mode of Payment',
             ],
             [
@@ -551,7 +569,7 @@ class CmsMenuSeeder extends Seeder
             [
                 'name'              => 'Capsule Returns',
                 'type'              => 'Route',
-                'path'              => 'Capsule\AdminCapsuleRefillsControllerGetIndex',
+                'path'              => 'Capsule\AdminCapsuleReturnsControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 2,

@@ -21,6 +21,7 @@ class ItemSeeder extends Seeder
             Item::updateOrInsert(['item_description' => $item], [
                 'digits_code' => $digits_code,
                 'item_description' => $item,
+                'no_of_tokens' => $digits_code & 1 ? 3 : 4,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             $digits_code++;

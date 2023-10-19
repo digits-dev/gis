@@ -227,9 +227,18 @@ class CmsModulSeeder extends Seeder
             [
                 'name'         => 'Capsule Return',
                 'icon'         => 'fa fa-circle-o',
-                'path'         => '	capsule_returns',
-                'table_name'   => '	capsule_returns',
+                'path'         => 'capsule_returns',
+                'table_name'   => 'capsule_returns',
                 'controller'   => 'Capsule\AdminCapsuleReturnsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Items',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'items',
+                'table_name'   => 'items',
+                'controller'   => 'Submaster\AdminItemsController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
