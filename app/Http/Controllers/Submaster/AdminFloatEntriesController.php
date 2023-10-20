@@ -42,6 +42,7 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Value','name'=>'value','type'=>'number','validation'=>'required|integer|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE','type'=>'hidden'];		
 			if(CRUDBooster::getCurrentMethod() == 'getEdit'){
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];		

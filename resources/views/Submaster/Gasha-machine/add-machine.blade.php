@@ -38,14 +38,14 @@
         <div class='panel-body'>
             <div class="col-md-6 col-sm-offset-3">
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> Description</label>
                     <input type="text" class="form-control finput" style="" placeholder="Description" name="description" id="description">
-                </div>
+                </div> --}}
 
                 <div class="form-group">
-                    <label class="require control-label"> No of tokens</label>
-                    <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" onkeypress="inputIsNumber()" validation-name="No of tokens">
+                    <label class="require control-label"><span style="color:red">*</span> No of tokens</label>
+                    <input type="number" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" value="9" min="1" max="9999999999" step="any" onKeyPress="if(this.value.length==1) return false;" oninput="validity.valid;" autocomplete="off">
                 </div>
 
                 <div class="form-group">
@@ -82,6 +82,10 @@
         };
         setTimeout("preventBack()", 0);
         $('#location').select2();
+
+        $('#no_of_tokens').on('paste', function(e) {
+            e.preventDefault();
+        });
         $(document).ready(function() {
             $('#btnSubmit').click(function(event) {
                 event.preventDefault();
@@ -92,6 +96,13 @@
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     });
+                }else if($('#no_of_tokens').val() >= 10){
+                    Swal.fire({
+                            type: 'error',
+                            title: 'Token must be equal or less than 9!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
                 }else if($('#location').val() === ''){
                     Swal.fire({
                             type: 'error',

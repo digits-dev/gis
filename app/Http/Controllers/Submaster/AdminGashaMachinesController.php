@@ -32,7 +32,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			$this->col[] = ["label"=>"Description","name"=>"description"];
+			//$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
@@ -45,11 +45,12 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','width'=>'col-sm-5','readonly'=>true];
+			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'statuses,status_description'];
+			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];	
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
