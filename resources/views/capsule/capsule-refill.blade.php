@@ -16,35 +16,37 @@
                     <div class="close-reader">×</div>
                     <div id="reader"></div>
                 </div>
-                <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
+                <form method='post' method="POST">
+                    @csrf
                     <div class='form-group'>
                         <label>Capsule Barcode</label>
                         <div class="flex input-btn">
-                            <input input-for="capsule" type='text' name='label1' required class='form-control'/>
+                            <input input-for="capsule" type='number' name='item_code' required class='form-control'/>
                             <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>To Gasha Machine</label>
                         <div class="flex input-btn">
-                            <input input-for="machine" type='text' name='label1' required class='form-control'/>
+                            <input input-for="machine" type='text' name='machine_code' required class='form-control'/>
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity</label>
-                        <input type='text' name='label1' required class='form-control' id="quantity"/>
+                        <input type='number' name='qty' required class='form-control' id="quantity"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
                     </div>
-                                    
+                     <button class="hide" type="submit" id="real-submit-btn"></button>               
                 </form>
             </div>
             <div class='panel-footer'>
-            <button class="btn btn-primary" id="save-btn">Save Changes</button>
+            <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>
         </div>
     </div>
 @endsection
 @push('bottom')
 <script>
+    $('.content-header').hide();
     let selectedCameraId = null;
     let selectedInput = null;
     let html5QrCode = null;
@@ -98,6 +100,24 @@
         $(`input[input-for="${selectedInput}"]`).val(text);
     }
 
+    function processResult(data) {
+        console.log(data);
+        if (data.is_missing) {
+            Swal.fire({
+                title: `${data.missing} code not found.`,
+                icon: 'error',
+                returnFocus: false,
+            });
+        }
+        if (data.is_tally == false) {
+            Swal.fire({
+                title: `No. of tokens mismatched.`,
+                icon: 'error',
+                returnFocus: false,
+            });
+        }
+    }
+
     $('.open-camera').on('click', function() {
         selectedInput = $(this).attr('btn-for');
         if (selectedCameraId) {
@@ -117,6 +137,47 @@
         if (html5QrCode) html5QrCode.stop();
         $('#reader-wrapper').hide();
     });
+
+    $('#save-btn').on('click', function() {
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Save',
+            returnFocus: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#real-submit-btn').click();
+            }
+        });
+
+    });
+
+    $('form').on('submit', function(event) {
+        event.preventDefault();
+        const formData = $('form').serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('submit_capsule_refill') }}",
+            data: formData,
+            success: function(res) {
+                const data = JSON.parse(res);
+                processResult(data);
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
+    });
+
+    $('input').on('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            $('#save-btn').click();
+        }
+    })
 
 </script>
 @endpush
