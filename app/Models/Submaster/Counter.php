@@ -16,7 +16,7 @@ class Counter extends Model
 
         $ref = $query->where('status','ACTIVE')->where('cms_moduls_id',$module)->first();
         $query->where('status','ACTIVE')->where('cms_moduls_id',$module)->increment('reference_number');
-        $refNumber = str_pad($ref->reference_number,8,"0");
+        $refNumber = str_pad($ref->reference_number,8,"0",STR_PAD_LEFT);
         return "$ref->reference_code-$refNumber";
     }
 }
