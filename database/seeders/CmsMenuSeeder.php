@@ -159,6 +159,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Receive Pullout Token',
+            ],
+            [
+                'name'              => 'Receive Pullout Token',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminReceivedPulloutTokensControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Disburse Token',
             ],
             [
