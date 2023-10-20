@@ -14,29 +14,30 @@ class StatusesSeeder extends Seeder
      */
     public function run()
     {
+        Statuses::truncate();
         $statuses = [
                         [   
                             'status_description' => 'GOOD',
                             'type'               => 'Gasha Machine'
                         ],
                         [   
-                            'status_description' => 'For Print',
-                            'type'               => 'Diburse Token'
+                            'status_description' => 'FOR PRINT',
+                            'type'               => 'Disburse Token'
                         ],
                         [   
-                            'status_description' => 'For Receiving',
-                            'type'               => 'Diburse Token'
+                            'status_description' => 'FOR RECEIVING',
+                            'type'               => 'Disburse Token'
                         ],
                         [   
-                            'status_description' => 'Closed',
-                            'type'               => 'Diburse Token'
+                            'status_description' => 'CLOSED',
+                            'type'               => 'Disburse Token'
                         ],
                         [   
-                            'status_description' => 'Collected',
+                            'status_description' => 'COLLECTED',
                             'type'               => 'Collect Token'
                         ],
                         [   
-                            'status_description' => 'For Checking',
+                            'status_description' => 'FOR CHECKING',
                             'type'               => 'Collect Token'
                         ],
                         [   

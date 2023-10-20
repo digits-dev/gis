@@ -333,6 +333,7 @@
 	    */
 	    public function hook_after_add($id) {        
 			$fields = Request::all();
+
 			$dataLines = array();
 			$header = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
 			$gasha_machines_id = $fields['gasha_machines_id'];
@@ -344,6 +345,17 @@
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
 			}
+
+			//save histories
+			$tat_add_token = TokenActionType::where('description', 'Collect')->first();
+			TokenHistory::insert([
+				'reference_number' => $header->reference_number,
+				'qty'              => $header->collected_qty,
+				'types_id'         => $tat_add_token->id,
+				'locations_id'     => $header->location_id,
+				'created_by'       => CRUDBooster::myId(),
+				'created_at'       => date('Y-m-d H:i:s'),
+			]);
 
 			DB::beginTransaction();
 			try {

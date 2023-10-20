@@ -44,7 +44,7 @@
             </div>
     
             <div class="form-group">
-                <label class="control-label"><span style="color:red">*</span> Location</label>
+                <label class="control-label"><span style="color:red">*</span>To location</label>
                 <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
                 @foreach($locations as $location)
                 <option value=""></option>

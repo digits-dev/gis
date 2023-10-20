@@ -37,7 +37,7 @@
     <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
     <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
     <div class='panel-body'>
-        <div class="col-md-10 col-sm-offset-3">
+        <div class="col-md-12">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -51,6 +51,12 @@
                         <input type="text" class="form-control finput" style="" value="{{ $disburseToken->from_location }}" readonly>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="require control-label"> To:</label>
+                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->to_location }}" readonly>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-4">
@@ -59,12 +65,12 @@
                         <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
                     </div>
                 </div>
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                     <div class="form-group">
                         <label class="require control-label"><span style="color:red">*</span> Variance:</label>
                         <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -112,13 +118,22 @@
                         if($('#received_qty').val().replace(/,/g, '') < data.released_qty){
                             Swal.fire({
                                 type: 'info',
-                                title: 'Token must be equal or higher than release token!',
+                                title: 'Token must be equal to release token!',
                                 icon: 'error',
                                 confirmButtonColor: "#359D9D",
                             }); 
                             event.preventDefault();
                 
-                        } else{
+                        }else if($('#received_qty').val().replace(/,/g, '') > data.released_qty){
+                            Swal.fire({
+                                type: 'info',
+                                title: 'Token must be equal to release token!',
+                                icon: 'error',
+                                confirmButtonColor: "#359D9D",
+                            }); 
+                            event.preventDefault();
+                
+                        }  else{
                             Swal.fire({
                                 title: 'Are you sure ?',
                                 icon: 'warning',
