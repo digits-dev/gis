@@ -107,7 +107,7 @@
 
             <div class="col-md-5">
                 <div class="form-group">
-                    <label class="control-label"> Location</label>
+                    <label class="control-label"><span style="color:red">*</span> Location</label>
                        <select selected data-placeholder="Choose location" id="location_id" name="location_id" class="form-select select2" style="width:100%;">
                             @foreach($locations as $location)
                             <option value=""></option>
@@ -278,7 +278,7 @@
                     showData[0] = "<option value=''></option>";
                     for (x = 0; x < pushData.length; ++x) {               
                         var j = x + 1;
-                        showData[j] = "<option value='"+pushData[x].id+"'>"+pushData[x].description+" | "+ pushData[x].serial_number +"</option>";
+                        showData[j] = "<option value='"+pushData[x].id+"'>"+ pushData[x].serial_number +"</option>";
                     }
                     $('#gasha_machines_id'+tableRow).html(showData);        
                 }
@@ -312,6 +312,16 @@
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
 
+            if($('#location_id').val() === ''){
+                swal({  
+                    type: 'error',
+                    title: 'Location cannot be empty!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                event.preventDefault();
+                return false;
+            }
             var gasha_machines_id = $('.gasha_machine').length;
             var gasha_machines_id_value = $('.gasha_machine').find(':selected');;
             for(i=0;i<gasha_machines_id;i++){
