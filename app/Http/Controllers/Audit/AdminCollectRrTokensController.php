@@ -143,7 +143,9 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
+				if(in_array(CRUDBooster::myPrivilegeId(),[4])){
+					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
+				}
 			}
 
 
@@ -312,7 +314,7 @@
 		   $header_ref                   = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);		
 		   $reference_number             = "CT-".$header_ref;	
 		   $location_id                  = $fields['location_id'];
-		   $collected_qty                = $fields['quantity_total'];
+		   $collected_qty                = intval(str_replace(',', '', $fields['quantity_total']));
 		   
 		   $postdata['reference_number'] = $reference_number;
 		   $postdata['statuses_id']      = $this->collected;
@@ -339,7 +341,7 @@
 			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
-				$dataLines[$x]['qty']                = $qty[$x];
+				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
 			}
 
