@@ -15,7 +15,12 @@ class FloatEntrySeeder extends Seeder
     public function run()
     {
         FloatEntry::truncate();
-        FloatEntry::updateOrInsert(['description' => 'P1'],['description' => '1', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => '1C'],['description' => '1C', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => '5C'],['description' => '5C', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => '10C'],['description' => '10C', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => '25C'],['description' => '25C', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => '50C'],['description' => '50C', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatEntry::updateOrInsert(['description' => 'P1'],['description' => 'P1', 'value'=>'1', 'created_at'=>date('Y-m-d H:i:s')]);
         FloatEntry::updateOrInsert(['description' => 'P5'],['description' => 'P5', 'value'=>'5', 'created_at'=>date('Y-m-d H:i:s')]);
         FloatEntry::updateOrInsert(['description' => 'P10'],['description' => 'P10', 'value'=>'10', 'created_at'=>date('Y-m-d H:i:s')]);
         FloatEntry::updateOrInsert(['description' => 'P20'],['description' => 'P20', 'value'=>'20', 'created_at'=>date('Y-m-d H:i:s')]);
