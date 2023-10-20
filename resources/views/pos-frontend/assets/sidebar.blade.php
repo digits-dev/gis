@@ -8,8 +8,8 @@
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="">
-                    <i class="fa fa-home"></i>
+                <a class="nav-module active" href="">
+                    <i class="fa fa-home" ></i>
                     <span class="nav-item">Home</span>
                 </a>
             </li>
