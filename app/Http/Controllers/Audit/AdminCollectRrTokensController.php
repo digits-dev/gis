@@ -1,13 +1,17 @@
-<?php namespace App\Http\Controllers\Submaster;
+<?php namespace App\Http\Controllers\Audit;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\TokenConversion;
-	use App\Models\Submaster\TokenConversionHistory;
+	use App\Models\Submaster\Locations;
+	use App\Models\Submaster\TokenActionType;
+	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
+	use App\Models\Submaster\GashaMachines;
+	use Carbon\Carbon;
 
-	class AdminTokenConversionsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminCollectRrTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -19,7 +23,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = true;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -27,33 +31,43 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "token_conversions";
+			$this->table = "collect_rr_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
-			$this->col[] = ["label"=>"Token Quantity","name"=>"token_qty"];
-			$this->col[] = ["label"=>"Start Date","name"=>"start_date"];
-			$this->col[] = ["label"=>"End Date","name"=>"end_date"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Received By","name"=>"received_by"];
+			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','step'=>'0.01','validation'=>'required|min:1','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Token Quantity','name'=>'token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=> true,'value'=>1];
-			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'text','validation'=>'date','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'text','validation'=>'date','width'=>'col-sm-5','readonly'=>true];
-			
-			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
-			}
+			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'location,id'];
+			$this->form[] = ['label'=>'Collected Qty','name'=>'collected_qty','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'text','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Location Id","name"=>"location_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"location,id"];
+			//$this->form[] = ["label"=>"Collected Qty","name"=>"collected_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Received Qty","name"=>"received_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -119,7 +133,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
+			}
 
 
 	        /* 
@@ -152,9 +168,7 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-			$this->script_js = '
-				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
-			';
+	        $this->script_js = NULL;
 
 
             /*
@@ -190,7 +204,6 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset('js/token-conversion.js');
 	        
 	        
 	        
@@ -215,7 +228,8 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/font-family.css");
+			$this->load_css[] = asset('css/gasha-style.css');
 	        
 	    }
 
@@ -264,11 +278,9 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
-			$postdata['status']     = 'ACTIVE';
-			$postdata['created_at'] = date('Y-m-d H:i:s');
-			$postdata['created_by'] = CRUDBooster::myId();
-
+	       $fields = Request::all();
+		   
+		   dd($fields);
 	    }
 
 	    /* 
@@ -280,16 +292,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			$inserted_item = TokenConversion::where('id', $id)->first()->toArray();
-			$data = [
-				'token_conversions_id' => $id,
-				'new_token_qty' => $inserted_item['token_qty'],
-				'new_cash_value' => $inserted_item['cash_value'],
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => date('Y-m-d H:i:s'),
-			];
 
-			TokenConversionHistory::insert($data);
 	    }
 
 	    /* 
@@ -302,21 +305,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$postdata['updated_at'] = date('Y-m-d H:i:s');
-			$postdata['updated_by'] = CRUDBooster::myId();
-			$old_values = TokenConversion::where('id', $id)->first()->toArray();
-			$new_values = $postdata;
-
-			$data = [
-				'token_conversions_id' => $id,
-				'old_token_qty' => $old_values['token_qty'],
-				'old_cash_value' => $old_values['cash_value'],
-				'new_token_qty' => $postdata['token_qty'],
-				'new_cash_value' => $postdata['cash_value'],
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => date('Y-m-d H:i:s'),
-			];
-			TokenConversionHistory::insert($data);
 
 	    }
 
@@ -356,9 +344,33 @@
 
 	    }
 
+		public function getAddCollectToken(){
+			$this->cbLoader();
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Collect Token';
+			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['locations'] = Locations::activeLocationPerUser($user->location_id);
+			$data['gasha_machines'] = GashaMachines::activeMachines();
+			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
 
+			return $this->view("audit.collect-token.add-collect-token", $data);
+		}
 
-	    //By the way, you can still create your own method in here... :) 
+		public function getOptionMachines(Request $request){
+			$data = Request::all();	
+		
+			$gasha_machines = DB::table('gasha_machines')
+							->select('gasha_machines.*',
+							         'gasha_machines.id as served_id',)
+							->where('status','ACTIVE')
+							->get();
+	
+			return($gasha_machines);
+		}
 
 
 	}

@@ -38,19 +38,34 @@
     <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
     <div class='panel-body'>
         <div class="col-md-10 col-sm-offset-3">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
-                    <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="require control-label"> Disburse Number:</label>
+                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->disburse_number }}" readonly>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="require control-label"> From:</label>
+                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->from_location }}" readonly>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="require control-label"><span style="color:red">*</span> Variance:</label>
-                    <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
+                        <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="require control-label"><span style="color:red">*</span> Variance:</label>
+                        <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+                    </div>
                 </div>
             </div>
-          
         </div>
     </div>
     <div class='panel-footer'>
