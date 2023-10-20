@@ -1,11 +1,20 @@
+{{-- Please always check the current plugins, css, script in content.blade.php--}}
+
 {{-- Extend the dashboard layout --}}
 @extends('pos-frontend.components.content')
 
+{{-- Title of the page --}}
+@section('title')
+    <title>Token Swap</title>
+@endsection
+
+{{-- Your Plugins --}}
+@section('plugins')
+@endsection
+
 {{-- Your CSS --}}
-{{-- Please always check the current css if there's any conflict with classes and id's --}}
 @section('css')
 <style>
-    
 </style>
 @endsection
 

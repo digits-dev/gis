@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     @include('pos-frontend.plugins.pos-frontend-plugin')
-    <title>Dashboard</title>
+    @yield('plugins')
+    @yield('title')
     @yield('css')
 </head>
 <body>
