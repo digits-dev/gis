@@ -24,11 +24,15 @@
 -   [x] Capsule Inventory
 -   [x] Capsule History
 
+### 💳 Audit
+
+-   [x] Collect Token
+
 ### 📃 Submaster
 
 -   [x] Gasha Machine List
 -   [x] Location
--   [ ] Items
+-   [x] Items
 -   [x] Mode of Payment
 -   [x] Token Conversion
 -   [x] Token Conversion History

@@ -12,7 +12,8 @@
                 <label>CAPSULE REFILL</label>
             </div>
             <div class='panel-body'>
-                <div id="reader-wrapper" style="z-index: -3">
+                <div id="reader-wrapper" style="display: none;">
+                    <div class="close-reader">×</div>
                     <div id="reader"></div>
                 </div>
                 <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
@@ -56,6 +57,7 @@
             inputOptions: cameraOptions,
             inputPlaceholder: 'Select a camera',
             showCancelButton: true,
+            returnFocus: false,
             inputValidator: (value) => {
                 selectedCameraId = value;
                 openVideo(selectedCameraId);
@@ -65,7 +67,10 @@
     }
 
     function openVideo(cameraId) {
-        if (html5QrCode) html5QrCode.stop();
+        if (html5QrCode && html5QrCode.getState() == 2) {
+            html5QrCode.stop();
+        }
+        $('#reader-wrapper').show();
         html5QrCode = new Html5Qrcode("reader");
         html5QrCode.start(
         cameraId, 
@@ -75,19 +80,18 @@
         },
         (decodedText, decodedResult) => {
             html5QrCode.stop();
-            html5QrCode = null;
+            // html5QrCode = null;
             populateInput(decodedText);
-            $('#reader-wrapper').css('z-index', '-3')
+            $('#reader-wrapper').hide();
             
         },
         (errorMessage) => {
-            // parse error, ignore it.
+            console.log(errorMessage);
         })
         .catch((err) => {
-        // Start failed, handle it.
+            console.log(err);
         });
 
-        $('#reader-wrapper').css('z-index', '1')
     }
 
     function populateInput(text) {
@@ -96,21 +100,22 @@
 
     $('.open-camera').on('click', function() {
         selectedInput = $(this).attr('btn-for');
-        console.log(selectedInput);
         if (selectedCameraId) {
             openVideo(selectedCameraId);
             return;
         } 
         Html5Qrcode.getCameras().then(devices => {
             if (devices && devices.length) {
-                console.log(devices);
-                if (!selectedCameraId) {
-                    showCameraOptions(devices);
-                }
+                showCameraOptions(devices);
             }
         }).catch(err => {
             alert('no cameras detected');
         });
+    });
+
+    $('.close-reader').on('click', function() {
+        if (html5QrCode) html5QrCode.stop();
+        $('#reader-wrapper').hide();
     });
 
 </script>

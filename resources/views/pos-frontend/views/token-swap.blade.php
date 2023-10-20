@@ -25,7 +25,7 @@
     
   }
   .container {
-    width: 370px;
+    width: 460px;
     height: 550px;
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
@@ -65,19 +65,20 @@
     text-align: right;
     padding: 12px;
     outline: none;
-    height: 40px;
+    height: 45px;
     width: 100%;
     border-radius: 10px;
     border-style: solid;
     background-color: #ffbfbf;
     border-color: red;
     margin-bottom: 10px;
+    font-size: 19px;
   }
   .mode-of-payment {
     display: flex;
     width: 100%;
     border: 2px solid #ffbfbf;
-    height: 40px;
+    height: 45px;
     align-items: center;
     border-radius: 10px;
     padding: 0 20px;
@@ -110,6 +111,7 @@
     border-radius: 10px;
     border: 2px solid #e60213;
     background-color: #ffbfbf;
+    /* font-size: 19px; */
   }
   button {
     cursor: pointer;
@@ -122,6 +124,10 @@
     color: white;
     border-radius: 10px;
   }
+
+  .summary-value span{
+    font-size: 19px;
+  }
 </style>
 @endsection
 
@@ -130,7 +136,7 @@
 <div class="main-container">
     <div class="container">
         <div class="header">
-            <h1>Swap</h1>
+            <h1 style="font-size: 19px;">Swap</h1>
             <p>P65.00 per token</p>
         </div>
         <form id="myForm" action="">
