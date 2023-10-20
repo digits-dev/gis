@@ -367,7 +367,7 @@
             if($(this).val() === ''){
                 var qty = 0;
             }else{
-                var qty = parseInt($(this).val());
+                var qty = parseInt($(this).val().replace(/,/g, ''));
             }
   
             totalQuantity += qty;

@@ -39,6 +39,10 @@ class StatusesSeeder extends Seeder
                             'status_description' => 'For Checking',
                             'type'               => 'Collect Token'
                         ],
+                        [   
+                            'status_description' => 'DEFECTIVE',
+                            'type'               => 'Gasha Machine'
+                        ],
                     ];
     
         foreach ($statuses as $status) {
