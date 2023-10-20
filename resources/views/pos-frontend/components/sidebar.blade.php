@@ -8,15 +8,15 @@
                 </a>
             </li>
             <li>
-                <a class="nav-module active" href="/pos_dashboard">
-                    <i class="fa fa-home"></i>
-                    <span class="nav-item">Home</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_dashboard' ? 'active' : '' }}" href="/pos_dashboard">
+                    <i class="fa fa-home {{ Request::Segment(1) == 'pos_dashboard' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_dashboard' ? 'active_span' : '' }}">Home</span>
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="/pos_token_swap">
-                    <i class="fa-solid fa-coins"></i>
-                    <span class="nav-item">Token Swap</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_token_swap' ? 'active' : '' }}" href="/pos_token_swap">
+                    <i class="fa-solid fa-coins {{ Request::Segment(1) == 'pos_token_swap' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_token_swap' ? 'active_span' : '' }}">Token Swap</span>
                 </a>
             </li>
             <li>

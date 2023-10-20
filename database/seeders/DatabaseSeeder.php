@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             CapsuleActionTypeSeeder::class,
             CmsPrivilegeSeeder::class,
             ItemSeeder::class,
+            TokenConversionSeeder::class,
         ]);
 
     }

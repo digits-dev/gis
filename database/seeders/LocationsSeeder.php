@@ -15,18 +15,18 @@ class LocationsSeeder extends Seeder
     public function run()
     {
         DB::table('locations')->updateOrInsert([
-            'location_name' => 'Digits Head Office',
+            'location_name' => 'DIGITSHEADOFFICE',
             ],
             [
-                'location_name' => 'Digits Head Office',
+                'location_name' => 'DIGITSHEADOFFICE',
                 'status' => 'ACTIVE'
             ]);
 
         DB::table('locations')->updateOrInsert([
-            'location_name' => 'Mitsukoshi',
+            'location_name' => 'GASHAPON.MITSUKOSHIBGC.RTL',
             ],
             [
-                'location_name' => 'Mitsukoshi',
+                'location_name' => 'GASHAPON.MITSUKOSHIBGC.RTL',
                 'status' => 'ACTIVE'
             ]);
     }

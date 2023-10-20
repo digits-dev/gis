@@ -49,12 +49,12 @@
 			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty"];
 			$this->col[] = ["label"=>"From Location","name"=>"from_locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
-			$this->col[] = ["label"=>"Variance Qty","name"=>"variance_qty"];
+			//$this->col[] = ["label"=>"Variance Qty","name"=>"variance_qty"];
 			$this->col[] = ["label"=>"To Location","name"=>"to_locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
+			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
@@ -62,11 +62,11 @@
 				$this->form[] = ['label'=>'Disburse Number','name'=>'disburse_number','type'=>'text','width'=>'col-sm-10'];
 				$this->form[] = ['label'=>'Released Qty','name'=>'released_qty','type'=>'number','width'=>'col-sm-10'];
 				$this->form[] = ['label'=>'Received Qty','name'=>'received_qty','type'=>'text','width'=>'col-sm-10'];
-				$this->form[] = ['label'=>'Variance Qty','name'=>'variance_qty','type'=>'text','width'=>'col-sm-10'];
+				//$this->form[] = ['label'=>'Variance Qty','name'=>'variance_qty','type'=>'text','width'=>'col-sm-10'];
 				$this->form[] = ['label'=>'From Locations','name'=>'from_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 				$this->form[] = ['label'=>'To Locations','name'=>'to_locations_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 				$this->form[] = ['label'=>'Statuses','name'=>'statuses_id','type'=>'select2','width'=>'col-sm-10','datatable'=>'statuses,status_description'];
-				$this->form[] = ['label'=>'Received At','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Received Date','name'=>'received_at','type'=>'datetime','width'=>'col-sm-10'];
 				$this->form[] = ['label'=>'Received By','name'=>'received_by','type'=>'select2','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			}
 			# END FORM DO NOT REMOVE THIS LINE
@@ -316,8 +316,11 @@
 			$fields = Request::all();
 
 			$count_header       = DB::table('store_rr_token')->count();
-			$header_ref         = str_pad($count_header + 1, 4, '0', STR_PAD_LEFT);				
-			$disburse_number	= "DB1-".$header_ref;
+			$finalCount         = $count_header + 100000;
+			$header_ref         = str_pad($finalCount + 1, STR_PAD_LEFT);		
+
+			$disburse_number	= "DB-".$header_ref;
+
 			$to_location        = $fields['location'];
 			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
 
@@ -383,6 +386,7 @@
 			// 	'created_by'       => CRUDBooster::myId(),
 			// 	'created_at'       => date('Y-m-d H:i:s'),
 			// ]);
+			return CRUDBooster::redirect(CRUDBooster::mainpath('getRequestForPrint/'.$id),"Token disburse!","success");
 
 	    }
 
