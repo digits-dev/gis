@@ -16,13 +16,13 @@
 @section('css')
 <style>
   .main-container {
-    background-color: #f1f1f1;
-    height: 100%;
+    /* background-color: #f1f1f1; */
+    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: "Open Sans", sans-serif;
-
+    
   }
   .container {
     width: 370px;
@@ -46,7 +46,7 @@
   .btn-reverse-icon {
     cursor: pointer;
   }
-  i {
+  label i {
     font-size: 20px;
   }
   .container select {
@@ -130,62 +130,62 @@
 <div class="main-container">
     <div class="container">
         <div class="header">
-          <h1>Swap</h1>
-          <p>P65.00 per token</p>
+            <h1>Swap</h1>
+            <p>P65.00 per token</p>
         </div>
         <form id="myForm" action="">
-          <div>
-            <label>
-              <i class="fa-solid fa-peso-sign sign1"></i>
-              <i class="fa-solid fa-coins coin1"></i
-            ></label>
-            <select name="currency" id="float-select">
-              <option value="peso">Peso</option>
-              <option value="token">Token</option>
-            </select>
-          </div>
-          <div class="amount" id="div1">
-            <input type="text" name="float1" id="float1" oninput="onInput1()" />
-          </div>
-          <div class="btn-reverse" id="btn-reverse">
-            <i
-              class="fa-solid fa-right-left btn-reverse-icon"
-              onclick="swap()"
-            ></i>
-          </div>
-          <div id="float-wrapper2">
-            <label>
-              <i class="fa-solid fa-peso-sign sign2"></i>
-              <i class="fa-solid fa-coins coin2"></i
-            ></label>
-            <select name="currency" id="float-select2">
-              <option value="token">Token</option>
-              <option value="peso">Peso</option>
-            </select>
-          </div>
-          <div class="from" id="div2">
-            <input type="text" name="float2" id="float2" oninput="onInput2()" />
-          </div>
-          <div class="mode-of-payment">
-            <select name="mode of payment" id="mode-of-payment">
-              <option value="" disabled selected>Mode of Payment</option>
-              <option value="token">Gcash</option>
-              <option value="peso">Card</option>
-            </select>
-          </div>
-          <div class="summary">
-            <div class="summary-value">
-              <span>Total</span>
-              <div class="total"></div>
+            <div>
+                <label>
+                    <i class="fa-solid fa-peso-sign sign1"></i>
+                    <i class="fa-solid fa-coins coin1"></i>
+                </label>
+                <select name="currency" id="float-select">
+                    <option value="peso">Peso</option>
+                    <option value="token">Token</option>
+                </select>
             </div>
-            <div class="summary-value">
-              <span>Change</span>
-              <div class="change"></div>
+            <div class="amount" id="div1">
+                <input type="text" name="float1" id="float1" oninput="onInput1()" />
             </div>
-          </div>
-          <button type="submit">Swap</button>
+            <div class="btn-reverse" id="btn-reverse">
+                <i
+                class="fa-solid fa-right-left btn-reverse-icon"
+                onclick="swap()">
+                </i>
+            </div>
+            <div div id="float-wrapper2">
+                <label>
+                    <i class="fa-solid fa-peso-sign sign2"></i>
+                    <i class="fa-solid fa-coins coin2"></i>
+                </label>
+                <select name="currency" id="float-select2">
+                    <option value="token">Token</option>
+                    <option value="peso">Peso</option>
+                </select>
+            </div>
+            <div class="from" id="div2">
+                <input type="text" name="float2" id="float2" oninput="onInput2()" />
+            </div>
+            <div div class="mode-of-payment">
+                <select name="mode of payment" id="mode-of-payment">
+                    <option value="" disabled selected>Mode of Payment</option>
+                    <option value="token">Gcash</option>
+                    <option value="peso">Card</option>
+                </select>
+            </div>
+            <div class="summary">
+                <div class="summary-value">
+                    <span>Total</span>
+                    <div class="total"></div>
+                </div>
+                <div class="summary-value">
+                    <span>Change</span>
+                    <div class="change"></div>
+                </div>
+            </div>
+            <button type="submit">Swap</button>
         </form>
-      </div>  
+    </div> 
 </div>
 @endsection
 

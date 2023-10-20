@@ -16,8 +16,13 @@
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
 }
+html {
+    height: 100vh;
+    overflow-y: auto;
+}
 
 body{
+    height: 100vh;
     background-color: #eeeeee;
 }
 
@@ -141,7 +146,9 @@ body{
 }
 
 .sidebar_section nav{
-    height: 100vh;
+    position: fixed;    
+    /* min-height: 100vh; */
+    height: 100%;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
     overflow: hidden;
     -webkit-transition: width 0,5s ease-out;
@@ -216,8 +223,16 @@ body{
 
 .sidebar_section nav:hover{
     width: 280px;
-
 }
+
+/* .content-section{
+    background-color: red;
+} */
+
+.sidebar_section nav:hover ~ .content-section{
+    background-color: red;
+}
+
 .log-out{
     position: absolute;
     bottom: 0;
@@ -226,6 +241,7 @@ body{
 .main_section{
     display: flex;
     width: 100%;
+    height: 100%;
 }
 
 /* Sidebar Section */
@@ -242,7 +258,9 @@ body{
 .topbar_section{
     height: 100%;
     width: 100%;
+    /* position: fixed; */
 }
+
 .topbar-box{
     background-color: white;
 }
@@ -252,6 +270,16 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* margin-left: 90px; */
+}
+
+.content-section{
+    /* background-color: red; */
+    -webkit-transition: width 0,5s ease-out;
+    -moz-transition: width 0.5s ease-out;
+    -o-transition: width 0.5s ease-out;
+    transition: width 0.5s ease-out;
+    margin-left: 90px;
 }
 
 .user_profile{

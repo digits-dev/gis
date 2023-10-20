@@ -21,6 +21,41 @@
 {{-- Define the content to be included in the 'content' section --}}
 @section('content')
 <p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+<p>Dashboard</p>
+
 @endsection
 
 {{-- Your Script --}}

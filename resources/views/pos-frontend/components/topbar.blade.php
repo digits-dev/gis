@@ -38,6 +38,8 @@
                 </div>
             </div>
         </div>
-        @yield('content') {{-- Display content from child views here --}}
+        <div class="content_wrapper">
+            @yield('content') {{-- Display content from child views here --}}
+        </div>
     </section>
 </section>

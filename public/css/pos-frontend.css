@@ -52,6 +52,11 @@
     cursor: pointer;
 }
 
+.content_wrapper{
+    /* height: 500px;
+    overflow-y: auto; */
+}
+
 body{
     background-color: aliceblue;
 }
