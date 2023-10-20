@@ -48,12 +48,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-edit/{id}', [AdminCollectRrTokensController::class, 'getEdit']); 
 
-<<<<<<< HEAD
     //Pullout
     Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/getPulloutForPrint/{id}',[AdminPulloutTokensController::class, 'getPulloutForPrint'])->name('pullout-for-print');
     Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/forPrintPulloutUpdate',[AdminPulloutTokensController::class, 'forPrintPulloutUpdate']);
-=======
     // Capsules
     Route::post('capsule_refills/submit-capsule-refill', [AdminCapsuleRefillsController::class, 'submitCapsuleRefill'])->name('submit_capsule_refill');
->>>>>>> 80f23ff66ccbe04160a6f5b9a2b8d15d4826c472
 });
