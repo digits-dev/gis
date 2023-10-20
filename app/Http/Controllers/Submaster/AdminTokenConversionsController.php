@@ -47,8 +47,8 @@
 			$this->form = [];
 			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','step'=>'0.01','validation'=>'required|min:1','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Token Quantity','name'=>'token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=> true,'value'=>1];
-			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'date','validation'=>'date','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'date','validation'=>'date','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'text','validation'=>'date','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'text','validation'=>'date','width'=>'col-sm-5','readonly'=>true];
 			
 			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
@@ -190,6 +190,7 @@
 	        |
 	        */
 	        $this->load_js = array();
+			$this->load_js[] = asset('js/token-conversion.js');
 	        
 	        
 	        

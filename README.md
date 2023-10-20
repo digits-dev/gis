@@ -28,7 +28,7 @@
 
 -   [x] Gasha Machine List
 -   [x] Location
--   [ ] GIMFS
+-   [ ] Items
 -   [x] Mode of Payment
 -   [x] Token Conversion
 -   [x] Token Conversion History
