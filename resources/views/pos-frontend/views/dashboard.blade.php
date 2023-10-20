@@ -1,33 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    @include('pos-frontend.plugins.pos-frontend-plugin')
+{{-- Please always check the current plugins, css, script in content.blade.php--}}
+
+{{-- Extend the dashboard layout --}}
+@extends('pos-frontend.components.content')
+
+{{-- Title of the page --}}
+@section('title')
     <title>Dashboard</title>
-</head>
-<body>
-    <section class="dashboard_section">
-        @include('pos-frontend.assets.sidebar')
-        @include('pos-frontend.assets.content')
-    </section>
+@endsection
 
-    <script>
+{{-- Your Plugins --}}
+@section('plugins')
+@endsection
 
-        const userIcon = document.getElementById('user-icon');
-        const userIconDropdown = document.getElementById('user-icon-dropdown');
+{{-- Your CSS --}}
+@section('css')
+<style>
+</style>
+@endsection
 
+{{-- Define the content to be included in the 'content' section --}}
+@section('content')
+<p>Dashboard</p>
+@endsection
 
-        userIcon.addEventListener('click', function(event){
-            userIconDropdown.classList.toggle('show');  
-            event.stopPropagation();
-        });
-
-        document.addEventListener('click', function(event) {
-            // Check if the click target is not inside the userIconDropdown
-            if (!userIconDropdown.contains(event.target) && !userIcon.contains(event.target)) {
-                userIconDropdown.classList.remove('show');
-            }
-        });
-
-    </script>
-</body>
-</html>
+{{-- Your Script --}}
+@section('script-js')
+@endsection

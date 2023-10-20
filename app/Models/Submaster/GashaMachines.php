@@ -14,4 +14,5 @@ class GashaMachines extends Model
     public function scopeActiveMachines($query){
         return $query->where('status','ACTIVE')->get();
     }
+
 }

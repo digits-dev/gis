@@ -94,7 +94,7 @@
 
 <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="collectToken" enctype="multipart/form-data">
     <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-   
+
     <div class='panel-body'>
         <div class="col-md-12 col-sm-offset-1">
         
@@ -108,7 +108,12 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="control-label"> Location</label>
-                    <input type="text" class="form-control finput" name="location_id" id="location_id" value="{{ $locations->location_name }}" readonly>
+                       <select selected data-placeholder="Choose location" id="location_id" name="location_id" class="form-select select2" style="width:100%;">
+                            @foreach($locations as $location)
+                            <option value=""></option>
+                                <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                            @endforeach
+                        </select>
                 </div>
             </div>
         </div>
@@ -124,10 +129,15 @@
                  
                     </tbody>
                     <tfoot>
-                        <tr id="tr-tableOption1" class="bottom">
-                            <td style="text-align:left" colspan="5">
+                        <tr id="tr-table1" class="bottom">
+                            <td style="text-align:left" >
                                 <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
                                 <div id="display_error" style="text-align:left"></div>
+                            </td>
+                            <td colspan="1">
+                                <input type="text" name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                            </td>
+                            <td>
                             </td>
                         </tr>
                     </tfoot>
@@ -154,20 +164,21 @@
         null;
     };
     setTimeout("preventBack()", 0);
-   
+    $('#location_id').select2();
+
     var tableRow = 1;
     var optionDataArray = [];
     //Add Row
     $("#add-Row").click(function() {
         event.preventDefault();
-        var vendor_name = "";
-        var price = "";
+        var gasha_machine = "";
+        var qty = "";
         var count_fail = 0;
         tableRow++;
 
         $('.gasha_machine').each(function() {
-            vendor_name = $(this).val();
-            if (vendor_name == null) {
+            gasha_machine = $(this).val();
+            if (gasha_machine == null) {
                 swal({  
                     type: 'error',
                     title: 'Please fill all Fields!',
@@ -176,7 +187,7 @@
                 });
                 count_fail++;
 
-            } else if (vendor_name == "") {
+            } else if (gasha_machine == "") {
                 swal({  
                     type: 'error',
                     title: 'Please fill all Fields!',
@@ -189,9 +200,10 @@
                 count_fail = 0;
             }
         });
+
         $('.qty').each(function() {
-            price = $(this).val();
-            if (price == null) {
+            qty = $(this).val();
+            if (qty == null) {
                 swal({  
                     type: 'error',
                     title: 'Please fill all Fields!',
@@ -200,7 +212,7 @@
                 });
                 count_fail++;
 
-            } else if (price == "") {
+            } else if (qty == "") {
                 swal({  
                     type: 'error',
                     title: 'Please fill all Fields!',
@@ -213,9 +225,11 @@
                 count_fail = 0;
             }
         });
+
+        tableRow++;
         if(count_fail == 0){
-            $('#add-Row').prop("disabled", false);
-            $('#display_error').html("");
+            // $('#add-Row').prop("disabled", false);
+            // $('#display_error').html("");
             var newrow =
             '<tr>' +
                 '<td >' +
@@ -228,7 +242,7 @@
                 '</td>' +  
 
                 '<td>' +
-                    '<input class="form-control text-center finput qty" type="text" onkeyup="this.value = this.value.toUpperCase();" placeholder="Qty..." name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%">' + 
+                    '<input class="form-control text-center finput qty" type="text" onkeypress="inputIsNumber()" placeholder="Qty..." name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%" autocomplete="off">' + 
                 '</td>' +
 
                 '<td class="text-center">' +
@@ -236,7 +250,9 @@
                 '</td>' +
 
             '</tr>';
+
             $('#collect-token tbody').append(newrow);
+            //$(newrow).insertBefore($('table tr#tr-table1:last'));
             $('#gasha_machines_id'+tableRow).select2();
 
             
@@ -248,7 +264,7 @@
                 type: 'POST',
                 url: "{{ route('get-options-machines') }}",
                 data: {
-                    '_token': '{{ csrf_token() }}',
+                    '_token': '{{ csrf_token() }}'
                 },
                 success: function(result) {
                     var pushData = [];
@@ -267,12 +283,12 @@
                     $('#gasha_machines_id'+tableRow).html(showData);        
                 }
             });
-
-            $('#gasha_machines_id'+tableRow).select2();
+          
         }
+        $("#quantity_total").val(calculateTotalQuantity());
 
         $(document).on('click', '.removeRow', function() {
-            if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
+            if ($('#collect-token tbody tr').length != 1) { //check if not the first row then delete the other rows
                 tableRow--;
                 var removeItem =  $(this).parents('tr').find('select').val();
                 console.log(removeItem);
@@ -280,17 +296,18 @@
                     return value != removeItem;
                 });
                 $(this).closest('tr').remove();
-            
+                $("#quantity_total").val(calculateTotalQuantity());
                 return false;
             }
             
         });
     });
 
-   
+    $(document).on('keyup', '.qty', function(ev) {
+        $("#quantity_total").val(calculateTotalQuantity());
+    });
 
      
-
     $(document).ready(function() {
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
@@ -343,6 +360,20 @@
            
         });
     });
+
+    function calculateTotalQuantity() {
+        var totalQuantity = 0;
+        $('.qty').each(function() {
+            if($(this).val() === ''){
+                var qty = 0;
+            }else{
+                var qty = parseInt($(this).val().replace(/,/g, ''));
+            }
+  
+            totalQuantity += qty;
+        });
+        return totalQuantity;
+    }
 
     
 </script>

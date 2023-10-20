@@ -34,6 +34,12 @@ class CmsPrivilegeSeeder extends Seeder
                 'theme_color'   => 'skin-red',
                  'created_at' => date('Y-m-d H:i:s')
             ],
+            [   
+                'name'          => 'Audit',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-red',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
            
         ];
 

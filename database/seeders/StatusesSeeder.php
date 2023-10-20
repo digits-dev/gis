@@ -30,7 +30,15 @@ class StatusesSeeder extends Seeder
                         [   
                             'status_description' => 'Closed',
                             'type'               => 'Diburse Token'
-                        ]
+                        ],
+                        [   
+                            'status_description' => 'Collected',
+                            'type'               => 'Collect Token'
+                        ],
+                        [   
+                            'status_description' => 'For Checking',
+                            'type'               => 'Collect Token'
+                        ],
                     ];
     
         foreach ($statuses as $status) {

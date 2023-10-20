@@ -9,10 +9,21 @@
 	use App\Models\Token\TokenHistory;
 	use App\Models\Token\TokenInventory;
 	use App\Models\Submaster\GashaMachines;
+	use App\Models\Audit\CollectRrTokens;
+	use App\Models\Audit\CollectRrTokenLines;
 	use Carbon\Carbon;
 
 	class AdminCollectRrTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $collected;
+		private $forChecking;
+		private $closed;
 
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->collected       =  5;    
+			$this->forChecking     =  6;
+			$this->closed          =  4;      
+		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -21,10 +32,10 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -37,12 +48,16 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
-			$this->col[] = ["label"=>"Received By","name"=>"received_by"];
-			$this->col[] = ["label"=>"Received At","name"=>"received_at"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -57,17 +72,7 @@
 			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'text','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Location Id","name"=>"location_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"location,id"];
-			//$this->form[] = ["label"=>"Collected Qty","name"=>"collected_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received Qty","name"=>"received_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
+
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -96,7 +101,11 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				if(in_array(CRUDBooster::myPrivilegeId(),[2])){
+					$this->addaction[] = ['title'=>'Check Collected Tokens','url'=>CRUDBooster::mainpath('get-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == 5','color'=>'success'];
+				}
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -134,7 +143,9 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
+				if(in_array(CRUDBooster::myPrivilegeId(),[4])){
+					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
+				}
 			}
 
 
@@ -168,7 +179,15 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = '
+				$(function(){
+					$("body").addClass("sidebar-collapse");
+					$("#table_dashboard").on("cut copy paste", function (e) {
+						e.preventDefault();
+						return false;
+					});
+				});
+			';
 
 
             /*
@@ -204,7 +223,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+			$this->load_js[] = asset("jsHelper/isNumber.js");
 	        
 	        
 	        /*
@@ -267,7 +286,18 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	$collected       = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
+			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
+			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			if($column_index == 1){
+				if($column_value == $collected){
+					$column_value = '<span class="label label-info">'.$collected.'</span>';
+				}else if($column_value == $forChecking){
+					$column_value = '<span class="label label-info">'.$forChecking.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -279,8 +309,19 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	       $fields = Request::all();
+
+		   $count_header                 = DB::table('collect_rr_tokens')->count();
+		   $header_ref                   = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);		
+		   $reference_number             = "CT-".$header_ref;	
+		   $location_id                  = $fields['location_id'];
+		   $collected_qty                = intval(str_replace(',', '', $fields['quantity_total']));
 		   
-		   dd($fields);
+		   $postdata['reference_number'] = $reference_number;
+		   $postdata['statuses_id']      = $this->collected;
+		   $postdata['location_id']      = $location_id;
+		   $postdata['collected_qty']    = $collected_qty;
+		   $postdata['created_by']       = CRUDBooster::myId();
+	
 	    }
 
 	    /* 
@@ -291,7 +332,30 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
+			$fields = Request::all();
+			$dataLines = array();
+			$header = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+			$gasha_machines_id = $fields['gasha_machines_id'];
+			$qty 	           = $fields['qty'];
+			
+			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
+				$dataLines[$x]['collected_token_id'] = $id;
+				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
+				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
+				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
+			}
+
+			DB::beginTransaction();
+			try {
+				CollectRrTokenLines::insert($dataLines);
+				DB::commit();
+				
+			} catch (\Exception $e) {
+				DB::rollback();
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
+			}
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$header->reference_number]), 'success');
 
 	    }
 
@@ -303,9 +367,11 @@
 	    | @id       = current id 
 	    | 
 	    */
-	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-
+	    public function hook_before_edit(&$postdata,$id) {      
+			$postdata['statuses_id']   = $this->closed;
+			$postdata['received_qty']  = $postdata['received_qty'];
+			$postdata['received_by']   = CRUDBooster::myId();
+			$postdata['received_at']   = date('Y-m-d H:i:s');
 	    }
 
 	    /* 
@@ -353,7 +419,7 @@
 			$data = [];
 			$data['page_title'] = 'Collect Token';
 			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['locations'] = Locations::activeLocationPerUser($user->location_id);
+			$data['locations'] = Locations::active();
 			$data['gasha_machines'] = GashaMachines::activeMachines();
 			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
 
@@ -370,6 +436,38 @@
 							->get();
 	
 			return($gasha_machines);
+		}
+
+		public function getDetail($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Collected Token Details';
+
+			$data['detail_header'] = CollectRrTokens::detail($id);
+			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
+		
+			return $this->view("audit.collect-token.detail-collect-token", $data);
+		}
+
+		public function getEdit($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Check Collected Token';
+
+			$data['detail_header'] = CollectRrTokens::detail($id);
+			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
+		
+			return $this->view("audit.collect-token.edit-collect-token", $data);
 		}
 
 
