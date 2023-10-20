@@ -10,7 +10,7 @@ class Counter extends Model
     use HasFactory;
 
     protected $guarded = [];
-    protected $table = 'gasha_machines';
+    protected $table = 'counters';
 
     public function scopeGetNextReference($query,$module){
 
