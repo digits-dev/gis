@@ -14,7 +14,6 @@ class CmsModulSeeder extends Seeder
      */
     public function run()
     {
-
         $modules = [
             [
                 'name'         => 'Gasha Machine Lists',
@@ -168,8 +167,8 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Capsule\AdminHistoryCapsulesController',
                 'is_protected' => 0,
                 'is_active'    => 0
-            ], 
-            [  
+            ],
+            [
                 'name'         => 'Receive Token',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'receive_token',
@@ -194,9 +193,9 @@ class CmsModulSeeder extends Seeder
                 'table_name'   => 'capsule_action_types',
                 'controller'   => 'Submaster\AdminCapsuleActionTypesController',
                 'is_protected' => 0,
-                'is_active'    => 0 
+                'is_active'    => 0
 
-            ],     
+            ],
             [
                 'name'         => 'Capsule Refills',
                 'icon'         => 'fa fa-circle-o',
@@ -239,6 +238,15 @@ class CmsModulSeeder extends Seeder
                 'path'         => 'items',
                 'table_name'   => 'items',
                 'controller'   => 'Submaster\AdminItemsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Counter',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'counters',
+                'table_name'   => 'counters',
+                'controller'   => 'Submaster\AdminCountersController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ],

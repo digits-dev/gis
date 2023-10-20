@@ -248,7 +248,7 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 3
             ]
         );
-        
+
         DB::table('cms_menus')->updateOrInsert(
             [
                 'name'              => 'Capsule History',
@@ -345,6 +345,24 @@ class CmsMenuSeeder extends Seeder
     }
 
     public function submasterMenu() {
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Counter',
+            ],
+            [
+                'name'              => 'Counter',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCountersControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
 
         DB::table('cms_menus')->updateOrInsert(
             [
@@ -561,7 +579,7 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 13
             ]
         );
-        
+
         DB::table('cms_menus')->updateOrInsert(
             [
                 'name'              => 'Capsule Returns',
