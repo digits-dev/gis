@@ -151,10 +151,10 @@ body{
     height: 100%;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
     overflow: hidden;
-    -webkit-transition: width 0,5s ease-out;
-    -moz-transition: width 0.5s ease-out;
-    -o-transition: width 0.5s ease-out;
-    transition: width 0.5s ease-out;
+    -webkit-transition: width 0.1s ease-out;
+    -moz-transition: width 0.1s ease-out;
+    -o-transition: width 0.1s ease-out;
+    transition: width 0.1s ease-out;
     /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
     width: 90px;
 }
@@ -187,7 +187,7 @@ body{
     padding-left:15px;
     font-size: 18px;
     text-transform: uppercase;
-    color: white;
+    /* color: white; */
 }
 
 .sidebar_section nav ul li a i{
@@ -205,7 +205,7 @@ body{
 }
 
 .sidebar_section nav ul li a:hover{
-    background-color: #fffefe;
+    background-color: #eee;
     /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
 }
 
@@ -213,9 +213,17 @@ body{
     color: rgb(249, 50, 50);
 }
 
-/* .active{
-    background-color: white;
-} */
+.active{
+    background-color: #eee;
+}
+
+.active_i{
+    color: red !important;
+}
+
+.active_span{
+    color: red !important;
+}
 
 /* .sidebar_section nav ul li .active i, .sidebar_section nav ul li .active i span{
     color: red;
