@@ -40,5 +40,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
 
+    //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-edit/{id}', [AdminCollectRrTokensController::class, 'getEdit']); 
 });
