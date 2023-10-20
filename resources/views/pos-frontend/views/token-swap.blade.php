@@ -5,6 +5,7 @@
 {{-- Please always check the current css if there's any conflict with classes and id's --}}
 @section('css')
 <style>
+    
 </style>
 @endsection
 

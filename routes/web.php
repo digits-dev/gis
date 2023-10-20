@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Pos\POSDashboardController;
 use App\Http\Controllers\Pos\POSLoginController;
+use App\Http\Controllers\Pos\PosTokenSwapController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
@@ -38,6 +39,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
     Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
+    Route::get('pos_token_swap', [POSTokenSwapController::class, 'index']);
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
 
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');

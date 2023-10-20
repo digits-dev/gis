@@ -223,7 +223,7 @@ body{
     bottom: 0;
 }
 
-.dashboard_section{
+.main_section{
     display: flex;
     width: 100%;
 }
