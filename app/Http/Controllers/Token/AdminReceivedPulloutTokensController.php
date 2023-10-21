@@ -1,13 +1,21 @@
-<?php namespace App\Http\Controllers\Submaster;
+<?php namespace App\Http\Controllers\Token;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\Locations;
-	use App\Models\Submaster\Counter;
-	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
+	class AdminReceivedPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forPrint;
+		private $forReceiving;
+		private $closed;
+
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forPrint         =  2;    
+			$this->forReceiving     =  3;
+			$this->closed           =  4;      
+		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -19,38 +27,37 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "gasha_machines";
+			$this->table = "pullout_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Serial Number","name"=>"serial_number"];
-			//$this->col[] = ["label"=>"Description","name"=>"description"];
-			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+
+
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','width'=>'col-sm-5','readonly'=>true];
-			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];	
+            if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
+			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
+            }
+			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
@@ -80,7 +87,9 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Receive Token','url'=>CRUDBooster::mainpath('getReceivingToken/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == 3','color'=>'success'];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -117,9 +126,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
-			}
+
 
 
 	        /* 
@@ -152,27 +159,7 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-			$main_path = CRUDBooster::mainPath();
-			$admin_path = CRUDBooster::adminPath();
-	        $this->script_js = "
-				$('.panel-heading').css({'background-color':'#dd4b39','color':'#fff'});
-				$('.user-footer .pull-right a').on('click', function () {
-					const currentMainPath = window.location.origin;
-					Swal.fire({
-						title: 'Do you want to logout?',
-						icon: 'warning',
-						showCancelButton: true,
-						confirmButtonColor: '#d33',
-						cancelButtonColor: '#b9b9b9',
-						confirmButtonText: 'Logout',
-						reverseButtons: true,
-					}).then((result) => {
-						if (result.isConfirmed) {
-							location.assign(`$admin_path/logout`);
-						}
-					});
-				});			
-			";
+	        $this->script_js = NULL;
 
 
             /*
@@ -208,9 +195,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = '//cdn.jsdelivr.net/npm/sweetalert2@11';
-	        $this->load_js[] = asset("jsHelper/isNumber.js");
-	        
+	       
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -222,7 +207,8 @@
 	        */
 	        $this->style_css = NULL;
 	        
-	    
+	        
+	        
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 
@@ -232,8 +218,9 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        $this->load_css[] = asset("css/font-family.css");
+			$this->load_css[] = asset("css/font-family.css");
 	        $this->load_css[] = asset('css/gasha-style.css');
+	        
 	    }
 
 
@@ -270,7 +257,18 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
+			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
+			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			if($column_index == 1){
+				if($column_value == $forPrint){
+					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
+				}else if($column_value == $forReceiving){
+					$column_value = '<span class="label label-info">'.$forReceiving.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -281,23 +279,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-			// $count_header       = DB::table('gasha_machines')->count();
-			// $header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);				
-			// $serial_number	    = "GM-".$header_ref;
-			$description        = $fields['description'];
-			$location           = $fields['location'];
-			$location_name      = DB::table('locations')->where('id',$location)->first();
-			$no_of_tokens       = $fields['no_of_tokens'];
-
-			$postdata['serial_number']         = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			$postdata['description']           = $description;
-			$postdata['location_id']           = $location;
-			$postdata['location_name']         = $location_name->location_name;
-			$postdata['no_of_token']           = intval(str_replace(',', '', $no_of_tokens));
-			$postdata['machine_statuses_id']   = 1;
-			$postdata['status']                = 'ACTIVE';
-			$postdata['created_by']            = CRUDBooster::myId();
+	        //Your code here
 
 	    }
 
@@ -321,11 +303,9 @@
 	    | @id       = current id 
 	    | 
 	    */
-	    public function hook_before_edit(&$postdata,$id) {    
-	        $location                  = $postdata['location_id'];
-			$location_name             = DB::table('locations')->where('id',$location)->first();
-			$postdata['location_name'] = $location_name->location_name;
-			$postdata['updated_by']    = CRUDBooster::myId();
+	    public function hook_before_edit(&$postdata,$id) {        
+	        //Your code here
+
 	    }
 
 	    /* 
@@ -364,15 +344,17 @@
 
 	    }
 
-		public function getAddMachine(){
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-			$data = [];
+		public function getReceivingToken($id){
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
 
-			$data['locations'] = Locations::active();
-			
-			return $this->view("submaster.gasha-machine.add-machine", $data);
+			$data = array();
+			$data['page_title'] = 'Receiving Token';
+			$data['disburseToken'] = StoreRrToken::getDatas($id);
+	
+			return $this->view("token.pullout-token.receiving-pullout-token-acct", $data);
 		}
 
 

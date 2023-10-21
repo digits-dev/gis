@@ -7,9 +7,20 @@
 	use App\Models\Token\PulloutToken;
 	use App\Models\Token\TokenHistory;
 	use App\Models\Token\TokenInventory;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\TokenActionType;
 
 	class AdminPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forPrint;
+		private $forReceiving;
+		private $closed;
 
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forPrint         =  2;    
+			$this->forReceiving     =  3;
+			$this->closed           =  4;      
+		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -34,6 +45,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
@@ -80,7 +92,9 @@
 	        |
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getPulloutForPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[statuses_id] == 2"];
+			}
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -234,7 +248,8 @@
 	        |
 	        */
 	        $this->load_css = array();
-
+			$this->load_css[] = asset("css/font-family.css");
+	        $this->load_css[] = asset('css/gasha-style.css');
 
 	    }
 
@@ -272,7 +287,18 @@
 	    |
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
-	    	//Your code here
+	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
+			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
+			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			if($column_index == 1){
+				if($column_value == $forPrint){
+					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
+				}else if($column_value == $forReceiving){
+					$column_value = '<span class="label label-info">'.$forReceiving.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -284,11 +310,15 @@
 	    */
 	    public function hook_before_add(&$postdata) {
 	        //Your code here
-			$postdata['created_by'] = CRUDBooster::myId();
-			$location_id = $postdata['locations_id'];
-			$token_inventory = TokenInventory::where('locations_id', $location_id);
-			$token_inventory_qty = $token_inventory->first()->qty;
-			$postdata['qty'] = intval(str_replace(',', '', $postdata['qty']) * -1);
+			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
+			$postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			$postdata['statuses_id']      = $this->forPrint;
+			$postdata['created_by']       = CRUDBooster::myId();
+			$location_id                  = $postdata['locations_id'];
+			$token_inventory              = TokenInventory::where('locations_id', $location_id);
+			$token_inventory_qty          = $token_inventory->first()->qty;
+			$postdata['qty']              = intval(str_replace(',', '', $postdata['qty']));
+			$postdata['to_locations_id']  = $checkTokenInventory->id;
 			
 
 			$qtyToDeduct = $postdata['qty'];
@@ -308,42 +338,38 @@
 	    |
 	    */
 		public function hook_after_add($id) {
+			return CRUDBooster::redirect(CRUDBooster::mainpath('getPulloutForPrint/'.$id),"Pullout Token!","success");
+			// $refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
+
+			// DB::table('pullout_tokens')->where('id', $id)->update([
+			// 	'reference_number' => 'PT-' . $refNumber
+			// ]);
+
+			// $typeId = DB::table('token_action_types')->select('id')->where('description', 'Deduct')->first()->id;
 			
-			$refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
+			// $tokenInfo = PulloutToken::where('id', $id)->first();
+			// $location_id = $tokenInfo->locations_id;
+			// $token_inventory = TokenInventory::where('locations_id', $location_id);
+			// $qtyToDeduct = $tokenInfo->qty;
+			// $token_inventory_qty = $token_inventory->first()->qty;
+			// $total_qty = $token_inventory_qty + $qtyToDeduct;
+			// TokenInventory::updateOrInsert(['locations_id' => $location_id],
+			// 	['qty' => $total_qty,
+			// 	'locations_id' => $location_id,
+			// 	'updated_by' => CRUDBooster::myId(),
+			// 	'updated_at' => date('Y-m-d H:i:s'),
+			// 	]
+			// );
 
-			DB::table('pullout_tokens')->where('id', $id)->update([
-				'reference_number' => 'PT-' . $refNumber
-			]);
+			// $tokenHistory = new TokenHistory;
+			// $tokenHistory->reference_number = $tokenInfo->reference_number;
+			// $tokenHistory->qty = $tokenInfo->qty;
+			// $tokenHistory->types_id = $typeId;
+			// $tokenHistory->locations_id = $tokenInfo->locations_id;
+			// $tokenHistory->created_by = $tokenInfo->created_by;
+			// $tokenHistory->created_at = $tokenInfo->created_at;
+			// $tokenHistory->save();
 
-			$typeId = DB::table('token_action_types')->select('id')->where('description', 'Deduct')->first()->id;
-			
-			$tokenInfo = PulloutToken::where('id', $id)->first();
-			$location_id = $tokenInfo->locations_id;
-			$token_inventory = TokenInventory::where('locations_id', $location_id);
-			
-			$qtyToDeduct = $tokenInfo->qty;
-			$token_inventory_qty = $token_inventory->first()->qty;
-
-			$total_qty = $token_inventory_qty + $qtyToDeduct;
-
-			TokenInventory::updateOrInsert(['locations_id' => $location_id],
-				['qty' => $total_qty,
-				'locations_id' => $location_id,
-				'updated_by' => CRUDBooster::myId(),
-				'updated_at' => date('Y-m-d H:i:s'),
-				]
-			);
-
-			$tokenHistory = new TokenHistory;
-
-			$tokenHistory->reference_number = $tokenInfo->reference_number;
-			$tokenHistory->qty = $tokenInfo->qty;
-			$tokenHistory->types_id = $typeId;
-			$tokenHistory->locations_id = $tokenInfo->locations_id;
-			$tokenHistory->created_by = $tokenInfo->created_by;
-			$tokenHistory->created_at = $tokenInfo->created_at;
-			
-			$tokenHistory->save();
 		}
 
 
@@ -396,5 +422,45 @@
 
 	    }
 
+		public function getPulloutForPrint($id){
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+			$data = array();
+			$data['page_title'] = 'Pullout Print';
+			$data['pulloutToken'] = PulloutToken::getDatas($id);
+
+			return $this->view("token.pullout-token.pullout-token-print", $data);
+		}
+
+		public function forPrintPulloutUpdate(){
+			$data = Request::all();
+			$header_id = $data['header_id'];
+
+			PulloutToken::where('id',$header_id)
+			->update([
+				'statuses_id'=> $this->forReceiving,
+			]);
+
+			$pullout_token = PulloutToken::find($header_id);   
+			$qty = -1 * abs($pullout_token->qty);
+			$location_id = $pullout_token->locations_id;
+			$tat_add_token = TokenActionType::where('description', 'Deduct')->first();
+
+			//less in inventory
+			//DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
+
+			//Save History
+	        TokenHistory::insert([
+				'reference_number' => $pullout_token->reference_number,
+				'qty'              => $qty,
+				'types_id'         => $tat_add_token->id,
+				'locations_id'     => $location_id,
+				'created_by'       => CRUDBooster::myId(),
+				'created_at'       => date('Y-m-d H:i:s'),
+			]);
+		}
 
 	}

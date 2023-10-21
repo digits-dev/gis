@@ -250,6 +250,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Receive Pullout Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'received_pullout_tokens',
+                'table_name'   => 'pullout_tokens',
+                'controller'   => 'Token\AdminReceivedPulloutTokensController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

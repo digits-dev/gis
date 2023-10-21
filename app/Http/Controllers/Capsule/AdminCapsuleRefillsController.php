@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers\Capsule;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\Item;
 
 	class AdminCapsuleRefillsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -338,5 +340,18 @@
 			
 			//Please use view method instead view method from laravel
 			return $this->view('capsule.capsule-refill',$data);
+		}
+
+		public function submitCapsuleRefill(Request $request) {
+			$data = $request->all();
+			$machine = GashaMachines::where('serial_number', $data['machine_code'])->first();
+			$item = Item::where('digits_code', $data['item_code'])->first();
+			$is_tally = $item->no_of_tokens == $machine->no_of_token;
+			if (!$item) {
+				return json_encode(['is_missing'=>true, 'missing'=>'Item']);
+			}else if (!$machine) {
+				return json_encode(['is_missing'=>true, 'missing'=>'Machine']);
+			} else 
+			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally]);
 		}
 	}

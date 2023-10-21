@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
 use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
+use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
+use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,4 +54,10 @@ Route::group(['middleware' => ['web']], function() {
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-edit/{id}', [AdminCollectRrTokensController::class, 'getEdit']); 
+
+    //Pullout
+    Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/getPulloutForPrint/{id}',[AdminPulloutTokensController::class, 'getPulloutForPrint'])->name('pullout-for-print');
+    Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/forPrintPulloutUpdate',[AdminPulloutTokensController::class, 'forPrintPulloutUpdate']);
+    // Capsules
+    Route::post('capsule_refills/submit-capsule-refill', [AdminCapsuleRefillsController::class, 'submitCapsuleRefill'])->name('submit_capsule_refill');
 });

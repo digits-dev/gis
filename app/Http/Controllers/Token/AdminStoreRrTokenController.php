@@ -9,6 +9,7 @@
 	use App\Models\Submaster\TokenActionType;
 	use App\Models\Token\TokenHistory;
 	use App\Models\Token\TokenInventory;
+	use App\Models\Submaster\Counter;
 
 	class AdminStoreRrTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forPrint;
@@ -315,11 +316,10 @@
 	    public function hook_before_add(&$postdata) {        
 			$fields = Request::all();
 
-			$count_header       = DB::table('store_rr_token')->count();
-			$finalCount         = $count_header + 100000;
-			$header_ref         = str_pad($finalCount + 1, STR_PAD_LEFT);		
-
-			$disburse_number	= "DB-".$header_ref;
+			// $count_header       = DB::table('store_rr_token')->count();
+			// $finalCount         = $count_header + 100000;
+			// $header_ref         = str_pad($finalCount + 1, STR_PAD_LEFT);		
+			// $disburse_number	= "DB-".$header_ref;
 
 			$to_location        = $fields['location'];
 			$release_qty        = intval(str_replace(',', '', $fields['release_qty']));
@@ -344,7 +344,7 @@
 
 			//DB::table('token_inventories')->where('id',1)->decrement('qty', $release_qty);
 
-			$postdata['disburse_number']       = $disburse_number;
+			$postdata['disburse_number']       = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			$postdata['from_locations_id']     = $checkTokenInventory->id;
 			$postdata['to_locations_id']       = $to_location;
 			$postdata['released_qty']          = $release_qty;
