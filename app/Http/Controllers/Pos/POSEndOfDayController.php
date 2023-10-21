@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class POSTokenSwapController extends Controller
+class POSEndOfDayController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,9 +14,10 @@ class POSTokenSwapController extends Controller
      */
     public function index()
     {
+        
         $data = [];
         
-        return view('pos-frontend.views.token-swap');
+        return view('pos-frontend.views.end-of-day', $data);
     }
 
     /**

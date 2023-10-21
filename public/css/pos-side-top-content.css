@@ -26,6 +26,10 @@ body{
     background-color: #eeeeee;
 }
 
+.bg-primary-c{
+    background-color: var(--primary-color);
+}
+
 .title-color{
     color: var(--title-color);
 }
@@ -78,6 +82,14 @@ body{
     margin-top: 50px;
 }
 
+.m-right-5{
+    margin-right: 5px;
+}
+
+.m-right-10{
+    margin-right: 10px;
+}
+
 .p-top-5{
     padding-top: 5px;
 }
@@ -114,6 +126,10 @@ body{
     font-size: 25px;
 }
 
+.fs-20{
+    font-size: 20px;
+}
+
 .fs-15{
     font-size: 15px;
 }
@@ -124,6 +140,10 @@ body{
 
 .fw-bold{
     font-weight: bold;
+}
+
+.max-w-75{
+    min-width: 100px;
 }
 
 .d-flex-jcc-col{
@@ -142,6 +162,11 @@ body{
 .d-flex-jcev{
     display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+.d-flex-al-c{
+    display: flex;
     align-items: center;
 }
 
@@ -317,6 +342,7 @@ body{
 #user-icon-dropdown{
     display: grid;
     place-content: center;
+    z-index: 999;
 }
 
 #user-icon, #search-box, .top-navbar .f-col i{
@@ -365,4 +391,45 @@ body{
 
 #user-icon-my-profile:hover, #user-icon-logout:hover, #notif:hover{
     opacity: 0.7;
+}
+
+/* DataTable Design */
+
+table.dataTable {
+    border-collapse: collapse !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    clear: both;
+    border: 1px solid #ddd;
+    color: #333;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+table.dataTable thead th {
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table.dataTable tbody td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table.dataTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table.dataTable tfoot th {
+    font-weight: bold;
+    background-color: #f2f2f2;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }

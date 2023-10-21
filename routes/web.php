@@ -3,14 +3,16 @@
 use App\Http\Controllers\Pos\POSDashboardController;
 use App\Http\Controllers\Pos\POSLoginController;
 use App\Http\Controllers\Pos\PosTokenSwapController;
+use App\Http\Controllers\Pos\POSFloatHistoryController;
+use App\Http\Controllers\Pos\POSSwapHistoryController;
+use App\Http\Controllers\Pos\SettingsController;
+use App\Http\Controllers\Pos\POSEndOfDayController;
+use App\Http\Controllers\Pos\POSSettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
 use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,7 @@ use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 
 Route::get('/', function () {
     return redirect('admin/login');
@@ -40,6 +43,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
     Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
     Route::get('pos_token_swap', [POSTokenSwapController::class, 'index']);
+    Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index']);
+    Route::get('pos_float_history', [POSFloatHistoryController::class, 'index']);
+    Route::get('pos_settings', [POSSettingsController::class, 'index']);
+    Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index']);
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
 
     //Collected Tokens
