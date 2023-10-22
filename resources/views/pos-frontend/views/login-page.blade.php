@@ -47,11 +47,6 @@
                                     <i class="fa fa-lock"></i>
                                 </label>
                             </div>
-                            <div class="fw-bold title-color fs-15 danger-color">
-                                @if($errors->has('email'))
-                                    <p>Incorrect Email or Password</p>
-                                @endif
-                            </div>
                             <div>
                                 <button type="submit" class="login-btn fw-bold">Login</button>
                             </div>
@@ -62,6 +57,12 @@
                                 @if(Session::has('logged_out_success'))
                                     <br>
                                     <p>Successfully logged out</p>
+                                @endif
+                            </div>
+                            <div class="fw-bold title-color fs-15 danger-color">
+                                @if($errors->has('email'))
+                                    <br>
+                                    <p>Incorrect Email or Password</p>
                                 @endif
                             </div>
                         </div>

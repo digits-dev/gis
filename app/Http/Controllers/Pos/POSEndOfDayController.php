@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Pos;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Submaster\FloatEntry;
+use App\Models\Submaster\ModeOfPayment;
 
 class POSEndOfDayController extends Controller
 {
@@ -16,6 +18,8 @@ class POSEndOfDayController extends Controller
     {
         
         $data = [];
+        $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
+        $data['mode_of_payments'] = ModeOfPayment::get();
         
         return view('pos-frontend.views.end-of-day', $data);
     }

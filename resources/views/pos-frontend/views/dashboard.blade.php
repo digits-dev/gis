@@ -3,11 +3,6 @@
 {{-- Extend the dashboard layout --}}
 @extends('pos-frontend.components.content')
 
-{{-- Title of the page --}}
-@section('title')
-    <title>Dashboard</title>
-@endsection
-
 {{-- Your Plugins --}}
 @section('plugins')
 @endsection
@@ -15,73 +10,6 @@
 {{-- Your CSS --}}
 @section('css')
 <style>
-
-    .cash-float-section{
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.679); 
-        z-index: 1;
-        transition: 5s ease-in;
-        visibility: hidden;
-    }
-
-    .cash-float{
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%,-50%);
-        height: 600px;
-        width: 1200px;
-        background-color: #ffffff;
-        box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset; 
-        border-radius: 10px;
-        padding: 20px;
-        transition: 5s ease-in;
-    }
-
-    .eod-table table input{
-        /* border: 1px solid black; */
-        width: 100%;
-        text-align: center;
-        padding: 0 5px;
-    }
-
-    .eod-table table th{
-        border: 1px solid #bcb8b8;
-    }
-
-    .eod-table table td{
-        text-align: center;
-        border: 1px solid #bcb8b8;
-        height: 35px;
-    }
-
-    input:disabled{
-        background-color: #dddcdc;
-        height: 100%;
-        width: 100%;
-    }
-
-    .input-design{
-        border: 1px solid #bcb8b8;
-        text-align: center;
-        height: 35px;
-    }
-    
-    .cash-float-content{
-        position: relative;
-    }
-
-    #start_of_day{
-        padding: 10px 70px;
-        cursor: pointer;
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    }
-
-    #start_of_day:hover{
-        opacity: 0.7;
-    }
 </style>
 @endsection
 
@@ -134,7 +62,7 @@
                 <div class="d-flex-jcc-col m-top-30">
                     <p class="fw-bold m-top-10">Current Date:</p>
                     <p class="m-top-10" id="currentDateTime">Loading Time...</p>
-                    <button class="bg-primary-c text-color-w fw-bold m-top-10" type="button" id="start_of_day">START OF DAY</button>
+                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
                 </div>
             </div>
         </div>
