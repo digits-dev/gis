@@ -27,58 +27,66 @@
 <p class="noprint"><a title='Main Module' href='{{CRUDBooster::mainpath()}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @endif
 
-<div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
-    Receiving Token Form
-</div>
+<div class='panel panel-default' style="width:40%; margin:auto">
+    <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+        Receiving Token Form
+    </div>
 
-<form action="{{ CRUDBooster::mainpath('edit-save/'.$disburseToken->dt_id) }}" method="POST" id="receiveToken" enctype="multipart/form-data">
-    <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-    <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
-    <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
-    <div class='panel-body'>
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="require control-label"> Disburse Number:</label>
-                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->disburse_number }}" readonly>
+    <form action="{{ CRUDBooster::mainpath('edit-save/'.$disburseToken->dt_id) }}" method="POST" id="receiveToken" enctype="multipart/form-data">
+        <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
+        <input type="hidden" value="{{ $disburseToken->dt_id }}" name="disburse_id" id="disburse_id">
+        <input type="hidden" value="{{ $disburseToken->released_qty }}" name="released_qty" id="released_qty">
+        <div class='panel-body'>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> Disburse Number:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $disburseToken->disburse_number }}" readonly>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="require control-label"> From:</label>
-                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->from_location }}" readonly>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> From:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $disburseToken->from_location }}" readonly>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="require control-label"> To:</label>
-                        <input type="text" class="form-control finput" style="" value="{{ $disburseToken->to_location }}" readonly>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> To:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $disburseToken->to_location }}" readonly>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
-                        <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
+                            <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+                        </div>
                     </div>
                 </div>
-                {{-- <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="require control-label"><span style="color:red">*</span> Variance:</label>
-                        <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
-                    </div>
-                </div> --}}
+                    
+                    {{-- <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="require control-label"><span style="color:red">*</span> Variance:</label>
+                            <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+                        </div>
+                    </div> --}}
             </div>
         </div>
-    </div>
-    <div class='panel-footer'>
-        <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
-    </div>
-</form>
+        <div class='panel-footer'>
+            <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+            <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
+        </div>
+    </form>
 </div>
 
 @endsection

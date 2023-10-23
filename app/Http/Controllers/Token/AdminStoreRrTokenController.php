@@ -39,7 +39,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "store_rr_token";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -175,9 +175,9 @@
 	        */
 	        $this->script_js = NULL;
 			$this->script_js = "
-			$(function(){
-				$('body').addClass('sidebar-collapse');
-			});
+			// $(function(){
+			// 	$('body').addClass('sidebar-collapse');
+			// });
 			// $('.user-footer .pull-right a').on('click', function () {
 			// 	const currentMainPath = window.location.origin;
 			// 	Swal.fire({

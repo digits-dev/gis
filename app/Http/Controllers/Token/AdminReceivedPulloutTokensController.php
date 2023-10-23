@@ -4,6 +4,11 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Token\PulloutToken;
+	use App\Models\Token\TokenHistory;
+	use App\Models\Token\TokenInventory;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\TokenActionType;
 
 	class AdminReceivedPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forPrint;
@@ -33,7 +38,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "pullout_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -43,6 +48,9 @@
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
@@ -88,7 +96,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				$this->addaction[] = ['title'=>'Receive Token','url'=>CRUDBooster::mainpath('getReceivingToken/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == 3','color'=>'success'];
+				$this->addaction[] = ['title'=>'Receive Token','url'=>CRUDBooster::mainpath('getReceivingPulloutToken/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == 3','color'=>'success'];
 			}
 
 	        /* 
@@ -304,7 +312,13 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$fields = Request::all();
+			$received_qty = intval(str_replace(',', '', $fields['received_qty']));
+
+			$postdata['statuses_id']  = $this->closed;
+			$postdata['received_qty'] = $received_qty;
+			$postdata['received_by']  = CRUDBooster::myId();
+			$postdata['received_at']  = date('Y-m-d H:i:s');
 
 	    }
 
@@ -316,7 +330,21 @@
 	    | 
 	    */
 	    public function hook_after_edit($id) {
-	        //Your code here 
+			$receivedToken = PulloutToken::find($id);   
+			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
+			$qty = $receivedToken->received_qty;
+
+			//less in inventory
+			DB::table('token_inventories')->where('id',$receivedToken->locations_id)->decrement('qty', $receivedToken->received_qty);
+
+	        TokenHistory::insert([
+				'reference_number' => $receivedToken->reference_number,
+				'qty'              => $receivedToken->qty,
+				'types_id'         => $tat_add_token->id,
+				'locations_id'     => $receivedToken->to_locations_id,
+				'created_by'       => CRUDBooster::myId(),
+				'created_at'       => date('Y-m-d H:i:s'),
+			]);
 
 	    }
 
@@ -344,7 +372,7 @@
 
 	    }
 
-		public function getReceivingToken($id){
+		public function getReceivingPulloutToken($id){
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
@@ -352,7 +380,7 @@
 
 			$data = array();
 			$data['page_title'] = 'Receiving Token';
-			$data['disburseToken'] = StoreRrToken::getDatas($id);
+			$data['pulloutToken'] = PulloutToken::getDatas($id);
 	
 			return $this->view("token.pullout-token.receiving-pullout-token-acct", $data);
 		}
