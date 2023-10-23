@@ -197,7 +197,7 @@ class CmsModulSeeder extends Seeder
 
             ],
             [
-                'name'         => 'Capsule Refills',
+                'name'         => 'Capsule Refill',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'capsule_refills',
                 'table_name'   => 'capsule_refills',

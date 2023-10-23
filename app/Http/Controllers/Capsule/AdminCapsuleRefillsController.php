@@ -417,22 +417,11 @@
 				'created_by' => $action_by
 			]);
 
-			if (!$current_inventory->first()) {
-				$inventory_capsules_id = InventoryCapsule::insertGetId([
-					'item_code' => $item_code,
-					'onhand_qty' => $qty,
-					'locations_id' => $locations_id,
-					'created_by' => $action_by,
-					'created_at' => $time_stamp,
-				]);
-			} else {
-				$inventory_capsules_id = $current_inventory->first()->id;
-				$current_inventory->update([
-					'onhand_qty' => DB::raw("onhand_qty + $qty"),
-					'updated_by' => $action_by,
-					'updated_at' => $time_stamp,
-				]);
-			}
+			$inventory_capsules_id = $current_inventory->inventory_capsules_id;
+
+			$stock_room_inventory = DB::table('inventory_capsule_lines')
+				->where('inventory_capsules_id', $inventory_capsules_id)
+				->whereNotNull('sublocations_id');
 
 			$current_inventory_line = InventoryCapsuleLine::where([
 				'inventory_capsules_id' => $inventory_capsules_id,
@@ -454,6 +443,11 @@
 					'updated_by' => $action_by,
 				]);
 			}
+
+			InventoryCapsuleLine::whereNotNull('sub_locations_id')->update([
+				'updated_by' => $action_by,
+				'qty' => DB::raw("qty - $qty")
+			]);
 
 			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally, 'reference_number' => $reference_number]);
 		}

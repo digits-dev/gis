@@ -35,6 +35,7 @@
 			$this->col[] = ["label"=>"Capsule Action Type","name"=>"capsule_action_types_id","join"=>"capsule_action_types,description"];
 			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Gasha Machines","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE

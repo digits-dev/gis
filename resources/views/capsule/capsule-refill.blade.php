@@ -121,12 +121,21 @@
                 icon: 'error',
                 returnFocus: false,
             });
-        } else if (!data.is_sufficient) {
+        } else if (data.is_sufficient == false) {
             Swal.fire({
-                title: `Capsule qty in stock not sufficient.`,
+                title: `Insufficient capsule qty in stock.`,
                 icon: 'error',
                 returnFocus: false,
             });
+        } else {
+            Swal.fire({
+                title: 'Capsule successfully refilled.',
+                icon: 'success',
+                returnFocus: false,
+            }).then(() => {
+                $('input').val('');
+            });
+
         }
     }
 

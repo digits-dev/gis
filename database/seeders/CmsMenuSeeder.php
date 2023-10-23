@@ -287,10 +287,10 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Capsule Refills',
+                'name'              => 'Capsule Refill',
             ],
             [
-                'name'              => 'Capsule Refills',
+                'name'              => 'Capsule Refill',
                 'type'              => 'Route',
                 'path'              => 'Capsule\AdminCapsuleRefillsControllerGetIndex',
                 'color'             => NULL,
