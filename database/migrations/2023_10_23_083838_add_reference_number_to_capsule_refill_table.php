@@ -35,7 +35,7 @@ class AddReferenceNumberToCapsuleRefillTable extends Migration
             $table->dropColumn('locations_id');
         });
 
-        Schema::table('capsule_refills', function (Blueprint $table) {
+        Schema::table('capsule_returns', function (Blueprint $table) {
             $table->dropColumn('reference_number');
         });
     }
