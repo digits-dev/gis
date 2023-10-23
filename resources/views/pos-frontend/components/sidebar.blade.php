@@ -20,27 +20,27 @@
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="">
-                    <i class="fa fa-window-restore"></i>
-                    <span class="nav-item">Swap History</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_swap_history' ? 'active' : '' }}" href="/pos_swap_history">
+                    <i class="fa fa-window-restore {{ Request::Segment(1) == 'pos_swap_history' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_swap_history' ? 'active_span' : '' }}">Swap History</span>
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="">
-                    <i class="fa fa-money"></i>
-                    <span class="nav-item">Float History</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_float_history' ? 'active' : '' }}" href="/pos_float_history">
+                    <i class="fa fa-money {{ Request::Segment(1) == 'pos_float_history' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_float_history' ? 'active_span' : '' }}">Float History</span>
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="">
-                    <i class="fa fa-gear"></i>
-                    <span class="nav-item">Settings</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_settings' ? 'active' : '' }}" href="/pos_settings">
+                    <i class="fa fa-gear {{ Request::Segment(1) == 'pos_settings' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_settings' ? 'active_span' : '' }}">Settings</span>
                 </a>
             </li>
             <li>
-                <a class="nav-module" href="">
-                    <i class="fa-solid fa-calendar"></i>
-                    <span class="nav-item">End of Day</span>
+                <a class="nav-module {{ Request::Segment(1) == 'pos_end_of_day' ? 'active' : '' }}" href="/pos_end_of_day">
+                    <i class="fa-solid fa-calendar {{ Request::Segment(1) == 'pos_end_of_day' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_end_of_day' ? 'active_span' : '' }}">End of Day</span>
                 </a>
             </li>
         </ul>

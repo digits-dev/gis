@@ -3,11 +3,6 @@
 {{-- Extend the dashboard layout --}}
 @extends('pos-frontend.components.content')
 
-{{-- Title of the page --}}
-@section('title')
-    <title>Token Swap</title>
-@endsection
-
 {{-- Your Plugins --}}
 @section('plugins')
 @endsection

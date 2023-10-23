@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             CmsPrivilegeSeeder::class,
             ItemSeeder::class,
             TokenConversionSeeder::class,
+            CountersSeeder::class,
         ]);
 
     }

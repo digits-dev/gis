@@ -16,6 +16,9 @@ class POSLoginController extends Controller
      */
     public function index()
     {
+        if(auth()->check()){
+            return redirect()->intended('pos_dashboard');
+        }
         
         return view('pos-frontend.views.login-page');
     }

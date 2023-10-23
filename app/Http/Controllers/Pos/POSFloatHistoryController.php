@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class POSTokenSwapController extends Controller
+class POSFloatHistoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class POSTokenSwapController extends Controller
     {
         $data = [];
         
-        return view('pos-frontend.views.token-swap');
+        return view('pos-frontend.views.float-history', $data);
     }
 
     /**

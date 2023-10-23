@@ -3,6 +3,11 @@
 use App\Http\Controllers\Pos\POSDashboardController;
 use App\Http\Controllers\Pos\POSLoginController;
 use App\Http\Controllers\Pos\PosTokenSwapController;
+use App\Http\Controllers\Pos\POSFloatHistoryController;
+use App\Http\Controllers\Pos\POSSwapHistoryController;
+use App\Http\Controllers\Pos\SettingsController;
+use App\Http\Controllers\Pos\POSEndOfDayController;
+use App\Http\Controllers\Pos\POSSettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
@@ -11,9 +16,6 @@ use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,7 @@ use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 
 Route::get('/', function () {
     return redirect('admin/login');
@@ -38,11 +41,15 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
 
-    Route::get('pos_login', [POSLoginController::class, 'index']);
+    Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
     Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
-    Route::get('pos_dashboard', [POSDashboardController::class, 'index']);
-    Route::get('pos_token_swap', [POSTokenSwapController::class, 'index']);
+    Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
+    Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
+    Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index'])->middleware('auth');
+    Route::get('pos_float_history', [POSFloatHistoryController::class, 'index'])->middleware('auth');
+    Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
+    Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
 
     //Collected Tokens

@@ -8,3 +8,4 @@
 <link rel="stylesheet" href="https://cdn.example.com/fontawesome/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('css/pos-side-top-content.css') }}">
 <link rel="stylesheet" href="{{ asset('vendor/crudbooster/assets/adminlte/font-awesome/css/font-awesome.min.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
