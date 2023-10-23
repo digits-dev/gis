@@ -20,7 +20,7 @@ class POSDashboardController extends Controller
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
-        
+        // dd($data['float_entries'] , $data['mode_of_payments']);
         return view('pos-frontend.views.dashboard', $data);
     }
 
