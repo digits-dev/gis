@@ -259,6 +259,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Pullout Token History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'pullout_tokens_history',
+                'table_name'   => 'pullout_tokens',
+                'controller'   => 'History\AdminPulloutTokensHistoryController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

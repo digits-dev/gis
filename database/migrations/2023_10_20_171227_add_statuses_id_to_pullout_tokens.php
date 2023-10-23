@@ -17,7 +17,7 @@ class AddStatusesIdToPulloutTokens extends Migration
             $table->integer('statuses_id')->nullable()->after('reference_number');
             $table->integer('received_qty')->nullable()->after('qty');
             $table->integer('to_locations_id')->nullable()->after('received_qty');
-            $table->integer('received_at')->nullable()->after('to_locations_id');
+            $table->datetime('received_at')->nullable()->after('to_locations_id');
             $table->integer('received_by')->nullable()->after('received_at');
         });
     }

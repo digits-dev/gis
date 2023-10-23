@@ -360,6 +360,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 2
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Pullout Token History',
+            ],
+            [
+                'name'              => 'Pullout Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminPulloutTokensHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
     }
 
     public function submasterMenu() {

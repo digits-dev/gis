@@ -38,7 +38,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "store_rr_token";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -275,8 +275,7 @@
 					  ->orderBy('store_rr_token.statuses_id', 'asc')
 					  ->orderBy('store_rr_token.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				$query->where('store_rr_token.to_locations_id', $user->location_id)
+				$query->where('store_rr_token.to_locations_id', CRUDBooster::myLocationId())
 					  ->where('store_rr_token.statuses_id',$this->forReceiving)
 					  ->whereNull('store_rr_token.deleted_at')
 					  ->orderBy('store_rr_token.statuses_id', 'asc')

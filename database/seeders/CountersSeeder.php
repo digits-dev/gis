@@ -42,13 +42,15 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '33',
-                'reference_code'   => 'CR',
+                'reference_code'   => 'CRF',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
                 'created_at'       => date('Y-m-d H:i:s')
             ],
         ];
+
+        Counter::truncate();
 
         foreach ($counters as $counter) {
             Counter::updateOrInsert(['reference_code' => $counter['reference_code']], $counter);
