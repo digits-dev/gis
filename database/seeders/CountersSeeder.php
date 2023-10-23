@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Submaster\Counter;
+use CRUDBooster;
 
 class CountersSeeder extends Seeder
 {
@@ -39,10 +40,18 @@ class CountersSeeder extends Seeder
                 'created_by'       => CRUDBooster::myId(),
                 'created_at'       => date('Y-m-d H:i:s')
             ],
+            [   
+                'cms_moduls_id'    => '33',
+                'reference_code'   => 'CR',
+                'reference_number' => '1',
+                'status'           => 'ACTIVE',
+                'created_by'       => CRUDBooster::myId(),
+                'created_at'       => date('Y-m-d H:i:s')
+            ],
         ];
 
         foreach ($counters as $counter) {
-            Statuses::updateOrInsert(['reference_code' => $counter['reference_code']], $counter);
+            Counter::updateOrInsert(['reference_code' => $counter['reference_code']], $counter);
         }
     }
 }

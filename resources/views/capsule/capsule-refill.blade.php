@@ -112,6 +112,7 @@
         if (data.is_tally == false) {
             Swal.fire({
                 title: `No. of tokens mismatched.`,
+                html: `${data.item.digits_code} is worth ${data.item.no_of_tokens} tokens and ${data.machine.serial_number} accepts ${data.machine.no_of_token} tokens.`,
                 icon: 'error',
                 returnFocus: false,
             });
