@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Submaster\Counter;
+use CRUDBooster;
 
 class CountersSeeder extends Seeder
 {
@@ -42,7 +43,7 @@ class CountersSeeder extends Seeder
         ];
 
         foreach ($counters as $counter) {
-            Statuses::updateOrInsert(['reference_code' => $counter['reference_code']], $counter);
+            Counter::updateOrInsert(['reference_code' => $counter['reference_code']], $counter);
         }
     }
 }
