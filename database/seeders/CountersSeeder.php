@@ -40,6 +40,14 @@ class CountersSeeder extends Seeder
                 'created_by'       => CRUDBooster::myId(),
                 'created_at'       => date('Y-m-d H:i:s')
             ],
+            [   
+                'cms_moduls_id'    => '33',
+                'reference_code'   => 'CR',
+                'reference_number' => '1',
+                'status'           => 'ACTIVE',
+                'created_by'       => CRUDBooster::myId(),
+                'created_at'       => date('Y-m-d H:i:s')
+            ],
         ];
 
         foreach ($counters as $counter) {
