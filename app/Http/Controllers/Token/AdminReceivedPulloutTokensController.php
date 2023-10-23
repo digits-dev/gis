@@ -334,8 +334,13 @@
 			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
 			$qty = $receivedToken->received_qty;
 
-			//less in inventory
-			DB::table('token_inventories')->where('id',$receivedToken->locations_id)->decrement('qty', $receivedToken->received_qty);
+			//add in inventory
+			TokenInventory::updateOrcreate([
+				'locations_id' => $receivedToken->to_locations_id,
+			],
+			[
+				'qty'          => DB::raw("qty + '".(int)$qty."'"),
+			]);
 
 	        TokenHistory::insert([
 				'reference_number' => $receivedToken->reference_number,

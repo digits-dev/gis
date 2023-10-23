@@ -64,8 +64,15 @@
             if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
 			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
             }
+	
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
+			if(CRUDBooster::isSuperAdmin()){
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"'];
+			}else{
+				//$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE" && id ="'.CRUDBooster::myLocationId().'"'];
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'hidden','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"', 'value'=>CRUDBooster::myLocationId()];
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"', 'value'=>CRUDBooster::myLocationId(),'disabled'=>true];
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/*
@@ -279,7 +286,16 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('pullout_tokens.deleted_at')
+					  ->orderBy('pullout_tokens.statuses_id', 'asc')
+					  ->orderBy('pullout_tokens.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('pullout_tokens.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('pullout_tokens.deleted_at')
+					  ->orderBy('pullout_tokens.statuses_id', 'asc')
+					  ->orderBy('pullout_tokens.id', 'desc');
+			}
 
 	    }
 
@@ -453,7 +469,7 @@
 			$tat_add_token = TokenActionType::where('description', 'Deduct')->first();
 
 			//less in inventory
-			//DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
+			DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
 
 			//Save History
 	        TokenHistory::insert([
