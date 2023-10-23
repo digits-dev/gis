@@ -38,7 +38,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "pullout_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -48,6 +48,9 @@
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
@@ -61,8 +64,15 @@
             if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
 			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
             }
+	
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
+			if(CRUDBooster::isSuperAdmin()){
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"'];
+			}else{
+				//$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE" && id ="'.CRUDBooster::myLocationId().'"'];
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'hidden','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"', 'value'=>CRUDBooster::myLocationId()];
+				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"', 'value'=>CRUDBooster::myLocationId(),'disabled'=>true];
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/*
@@ -276,7 +286,16 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('pullout_tokens.deleted_at')
+					  ->orderBy('pullout_tokens.statuses_id', 'asc')
+					  ->orderBy('pullout_tokens.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('pullout_tokens.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('pullout_tokens.deleted_at')
+					  ->orderBy('pullout_tokens.statuses_id', 'asc')
+					  ->orderBy('pullout_tokens.id', 'desc');
+			}
 
 	    }
 
@@ -450,7 +469,7 @@
 			$tat_add_token = TokenActionType::where('description', 'Deduct')->first();
 
 			//less in inventory
-			//DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
+			DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
 
 			//Save History
 	        TokenHistory::insert([
