@@ -37,7 +37,7 @@
 }
 
 .primary-color{
-    color: rgb(44, 140, 231);
+    color: #3e7bfe;
 }
 
 .success-color{
@@ -81,8 +81,15 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.store-login-box-bgc-f{
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
 
+}
+
+.store-login-box-bgc-b{
+    background: linear-gradient(to top right, #3e7bfe, #21508a)
 }
 
 .store-logo-box-content{
@@ -130,7 +137,6 @@ body{
 .store-logo-description{
     text-align: center;
     font-family: 'Open Sans', sans-serif;
-    color: red;
 }
 
 .store-login-content{
@@ -206,6 +212,10 @@ body{
 @media only screen and (max-width: 1400px) {
     .store-logo-box {
         display: none;
+    }
+
+    .store-login-box-bgc-f, .store-login-box-bgc-b{
+        background-color: none;
     }
 
     .store-login-box{

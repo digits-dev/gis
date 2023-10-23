@@ -19,9 +19,9 @@
                                 <img src="{{ asset('img/gashapon_logo.png') }}" alt="">
                             </div>
                             <div class="store-logo-link-to-frontend">
-                                <a href="/admin">Link to Backend</a>
+                                <a href="/admin/login">Link to Backend</a>
                             </div>
-                            <div class="store-logo-description">
+                            <div class="store-logo-description danger-color">
                                 <p class="fs-40 fw-bold">Inventory System</p>
                                 <p class="fs-30 fw-bold">Frontend</p>
                             </div>
@@ -30,7 +30,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class=store-login-box>
+                    <div class="store-login-box store-login-box-bgc-f">
                         <div class="store-login-content">
                             <div class="store-login-title">
                                 <p class="fs-30 fw-bold">Login</p>

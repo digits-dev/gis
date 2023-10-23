@@ -173,7 +173,7 @@ html, body {
 }
 
 .sidebar_section{
-    /* min-height: 100vh; */
+    min-height: 100vh;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
     overflow: hidden;
     -webkit-transition: width 0.3s ease-out;
@@ -275,7 +275,6 @@ html, body {
 
 .main_section{
     display: flex;
-    height: 100%;
 }
 
 /* Content Section */
