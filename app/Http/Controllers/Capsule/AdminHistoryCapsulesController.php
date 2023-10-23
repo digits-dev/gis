@@ -32,11 +32,11 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Item Code","name"=>"item_code"];
-			// $this->col[] = ["label"=>"Capsule Action Types Id","name"=>"capsule_action_types_id","join"=>"capsule_action_types,id"];
+			$this->col[] = ["label"=>"Capsule Action Type","name"=>"capsule_action_types_id","join"=>"capsule_action_types,description"];
 			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Gasha Machines Id","name"=>"gasha_machines_id","join"=>"gasha_machines,id"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
+			$this->col[] = ["label"=>"Gasha Machines","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE

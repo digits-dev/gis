@@ -6,6 +6,13 @@
 	use CRUDBooster;
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\Item;
+	use App\Models\Capsule\CapsuleRefill;
+	use App\Models\Capsule\HistoryCapsule;
+	use App\Models\Capsule\InventoryCapsule;
+	use App\Models\Capsule\InventoryCapsuleLine;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\CapsuleActionType;
+
 
 	class AdminCapsuleRefillsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -33,9 +40,12 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Item Code","name"=>"item_code"];
-			$this->col[] = ["label"=>"Gasha Machines Id","name"=>"gasha_machines_id","join"=>"gasha_machines,id"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Locations","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -344,14 +354,111 @@
 
 		public function submitCapsuleRefill(Request $request) {
 			$data = $request->all();
-			$machine = GashaMachines::where('serial_number', $data['machine_code'])->first();
-			$item = Item::where('digits_code', $data['item_code'])->first();
-			$is_tally = $item->no_of_tokens == $machine->no_of_token;
+			$item_code = $data['item_code'];
+			$machine_serial_number = $data['machine_code'];
+			$machine = GashaMachines::where('serial_number',$machine_serial_number)->first();
+			$item = Item::where('digits_code', $item_code)->first();
+			$qty = $data['qty'];
+			$time_stamp = date('Y-m-d H:i:s');
+			$action_by = CRUDBooster::myId();
 			if (!$item) {
 				return json_encode(['is_missing'=>true, 'missing'=>'Item']);
-			}else if (!$machine) {
+			} else if (!$machine) {
 				return json_encode(['is_missing'=>true, 'missing'=>'Machine']);
-			} else 
-			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally]);
+			}
+			
+			$is_tally = $item->no_of_tokens == $machine->no_of_token;
+			$locations_id = $machine->location_id;
+			$current_inventory = InventoryCapsule::where([
+				'item_code' => $item_code,
+				'locations_id' => $locations_id
+			])->leftJoin(
+				'inventory_capsule_view', 
+				'inventory_capsule_view.inventory_capsules_id', 
+				'inventory_capsules.id'
+			)->first();
+
+			if (!$is_tally) {
+				return json_encode([
+					'item' => $item,
+					'machine' => $machine,
+					'is_tally' => $is_tally
+				]);
+			} else if (!$current_inventory) {
+				return json_encode([
+					'is_empty' => true,
+				]);
+			} else if ($current_inventory->stockroom_capsule_qty < $qty) {
+				return json_encode([
+					'is_sufficient' => false,
+				]);
+			}
+			
+			$action_type = CapsuleActionType::where('description', 'LIKE', '%REFILL%')->first();
+			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			$item = CapsuleRefill::insert([
+				'reference_number' => $reference_number,
+				'item_code' => $item_code,
+				'gasha_machines_id' => $machine->id,
+				'created_at' => $time_stamp,
+				'created_by' => $action_by,
+				'qty' => $qty,
+				'locations_id' => $locations_id,
+			]);
+
+			HistoryCapsule::insert([
+				'reference_number' => $reference_number,
+				'item_code' => $item_code,
+				'capsule_action_types_id' => $action_type->id,
+				'locations_id' => $locations_id,
+				'gasha_machines_id' => $machine->id,
+				'qty' => $qty,
+				'created_at' => $time_stamp,
+				'created_by' => $action_by
+			]);
+
+			if (!$current_inventory->first()) {
+				$inventory_capsules_id = InventoryCapsule::insertGetId([
+					'item_code' => $item_code,
+					'onhand_qty' => $qty,
+					'locations_id' => $locations_id,
+					'created_by' => $action_by,
+					'created_at' => $time_stamp,
+				]);
+			} else {
+				$inventory_capsules_id = $current_inventory->first()->id;
+				$current_inventory->update([
+					'onhand_qty' => DB::raw("onhand_qty + $qty"),
+					'updated_by' => $action_by,
+					'updated_at' => $time_stamp,
+				]);
+			}
+
+			$current_inventory_line = InventoryCapsuleLine::where([
+				'inventory_capsules_id' => $inventory_capsules_id,
+				'gasha_machines_id' => $machine->id,
+			]);
+
+			if (!$current_inventory_line->first()) {
+				$inventory_line_id = $current_inventory_line->insertGetId([
+					'inventory_capsules_id' => $inventory_capsules_id,
+					'gasha_machines_id' => $machine->id,
+					'qty' => $qty,
+					'created_by' => $action_by,
+					'created_at' => $time_stamp,
+				]);
+			} else {
+				$current_inventory_line->update([
+					'qty' => DB::raw("qty + $qty"),
+					'updated_at' => $time_stamp,
+					'updated_by' => $action_by,
+				]);
+			}
+
+			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally, 'reference_number' => $reference_number]);
+		}
+
+		public function getCurrentModule() {
+			return CRUDBooster::getCurrentModule();
 		}
 	}
