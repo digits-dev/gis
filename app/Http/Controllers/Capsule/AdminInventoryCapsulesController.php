@@ -19,7 +19,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -30,10 +30,12 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"GIMFS Code","name"=>"item_code"];
-			$this->col[] = ["label"=>"GIMFS Description","name"=>"item_code"];
+			$this->col[] = ["label"=>"Item Code","name"=>"item_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_code"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Onhand Qty","name"=>"onhand_qty"];
+			$this->col[] = ["label"=>"Onhand","name"=>"id","join"=>"inventory_capsule_view,onhand_qty","join_id"=>"inventory_capsules_id"];
+			$this->col[] = ["label"=>"Stock Room","name"=>"id","join"=>"inventory_capsule_view,stockroom_capsule_qty","join_id"=>"inventory_capsules_id"];
+			$this->col[] = ["label"=>"Machine","name"=>"id","join"=>"inventory_capsule_view,machine_capsule_qty","join_id"=>"inventory_capsules_id"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
