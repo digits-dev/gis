@@ -5,6 +5,7 @@
     --secondary-color: #f5a623;
     --text-color: #333333;
     --title-color: #222222;
+    --text-color1: #4b4848;
     --danger-color: red;
 }
 
@@ -20,6 +21,7 @@
 
 html, body {
     height: 100%;
+    background-color: rgb(240, 242, 245);
 }
 
 
@@ -38,6 +40,10 @@ html, body {
 
 .text-color{
     color: var(--text-color);
+}
+
+.text-color1{
+    color: var(--text-color1)
 }
 
 .text-color-w{
@@ -90,6 +96,10 @@ html, body {
 
 .m-right-10{
     margin-right: 10px;
+}
+
+.m-right-25{
+    margin-right: 25px;
 }
 
 .p-top-5{
@@ -182,7 +192,6 @@ html, body {
     transition: width 0.3s ease-out;
     width: 90px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    z-index: 1;
 }
 
 .gashapon_logo{
