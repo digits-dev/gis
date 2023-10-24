@@ -375,14 +375,22 @@
 			$qty = $data['qty'];
 			$time_stamp = date('Y-m-d H:i:s');
 			$action_by = CRUDBooster::myId();
+
+			// checking if item is found
 			if (!$item) {
 				return json_encode(['is_missing'=>true, 'missing'=>'Item']);
+			// checking if machine is found
 			} else if (!$machine) {
 				return json_encode(['is_missing'=>true, 'missing'=>'Machine']);
 			}
-			
+
+			// checking if item and machine has the same no. of tokens
 			$is_tally = $item->no_of_tokens == $machine->no_of_token;
+
+			//getting the locations_id from where the scanned machine was deployed
 			$locations_id = $machine->location_id;
+
+			// getting the current inventory for this item_code and this location
 			$current_inventory = InventoryCapsule::where([
 				'item_code' => $item_code,
 				'locations_id' => $locations_id
@@ -392,24 +400,30 @@
 				'inventory_capsules.id'
 			)->first();
 
+			// returning if no. of tokens does not match
 			if (!$is_tally) {
 				return json_encode([
 					'item' => $item,
 					'machine' => $machine,
 					'is_tally' => $is_tally
 				]);
+			// returning if there is no current inventory
 			} else if (!$current_inventory) {
 				return json_encode([
 					'is_empty' => true,
 				]);
+			// returning if the inputted qty is greater than the stockroom qty
 			} else if ($current_inventory->stockroom_capsule_qty < $qty) {
 				return json_encode([
 					'is_sufficient' => false,
 				]);
 			}
 			
-			$action_type = CapsuleActionType::where('description', 'LIKE', '%REFILL%')->first();
+			// getting the 'refill' action type
+			$action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', 'REFILL')->first();
+			// generating a new reference number
 			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			// inserting capsule refill entry
 			$item = CapsuleRefill::insert([
 				'reference_number' => $reference_number,
 				'item_code' => $item_code,
@@ -420,6 +434,7 @@
 				'locations_id' => $locations_id,
 			]);
 
+			// creating history for the transaction
 			HistoryCapsule::insert([
 				'reference_number' => $reference_number,
 				'item_code' => $item_code,
@@ -433,16 +448,15 @@
 
 			$inventory_capsules_id = $current_inventory->inventory_capsules_id;
 
-			$stock_room_inventory = DB::table('inventory_capsule_lines')
-				->where('inventory_capsules_id', $inventory_capsules_id)
-				->whereNotNull('sublocations_id');
-
+			// getting the machines inventory
 			$current_inventory_line = InventoryCapsuleLine::where([
 				'inventory_capsules_id' => $inventory_capsules_id,
 				'gasha_machines_id' => $machine->id,
 			]);
 
+			// checking if there is current inventory
 			if (!$current_inventory_line->first()) {
+				// inserting a new one if not existing
 				$inventory_line_id = $current_inventory_line->insertGetId([
 					'inventory_capsules_id' => $inventory_capsules_id,
 					'gasha_machines_id' => $machine->id,
@@ -451,6 +465,7 @@
 					'created_at' => $time_stamp,
 				]);
 			} else {
+				// updating if already exists
 				$current_inventory_line->update([
 					'qty' => DB::raw("qty + $qty"),
 					'updated_at' => $time_stamp,
@@ -458,6 +473,7 @@
 				]);
 			}
 
+			// updating the quantity of stock room inventory
 			DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
 				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
@@ -484,6 +500,7 @@
 				->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', 'gasha_machines.id')
 				->whereNotNull('gasha_machines.id')
 				->where('inventory_capsules.item_code', $item_code)
+				->where('inventory_capsule_lines.qty', '>', 0)
 				->get()
 				->toArray();
 
