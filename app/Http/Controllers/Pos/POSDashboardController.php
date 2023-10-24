@@ -8,6 +8,7 @@ use App\Models\Submaster\FloatEntry;
 use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
+use App\Models\Submaster\CashFloatHistoryLine;
 
 class POSDashboardController extends Controller
 {
@@ -25,9 +26,9 @@ class POSDashboardController extends Controller
         // dd($data['float_entries'] , $data['mode_of_payments']);
         return view('pos-frontend.views.dashboard', $data);
     }
+
     public function submitSOD(Request $request){
         $data = $request->all();
-    
         $locations_id = auth()->user()->location_id;
         $float_types = $request->input('start_day');
         $float_type = FloatType::where('description', $float_types)->first();
@@ -39,14 +40,68 @@ class POSDashboardController extends Controller
         $created_by = auth()->user()->id;
         $time_stamp = date('Y-m-d H:i:s');
         
-        CashFloatHistory::create([
+        $cash_float_history_id = CashFloatHistory::insertGetId([
             'locations_id' => $locations_id,
             'float_types_id' => $float_types_id,
             'created_by' => $created_by,
-            'updated_at' => $time_stamp,
+            'created_at' => $time_stamp,
         ]);
-        // return response()->json($data);
-        return response()->json(['message' => 'Form submitted and data inserted successfully']);
+        
+        $lines = [];
+
+        $mode_of_payments = ModeOfPayment::where('status', 'ACTIVE')
+            ->get()
+            ->toArray();
+
+        foreach ($mode_of_payments as $mop) {
+            $valueWithComma = $data['cash_value_' . $mop['payment_description']];
+            $valueWithoutComma = (float)str_replace(',','',$valueWithComma);
+            $lines[] = [
+                'cash_float_histories_id' => $cash_float_history_id,
+                'mode_of_payments_id' => $mop['id'],
+                'float_entries_id' => null,
+                'qty' => 1,
+                'value' => $valueWithoutComma,
+                'created_by' => $created_by,
+                'created_at' => $time_stamp,
+            ];
+        }
+        
+        $float_entries = FloatEntry::where('status', 'ACTIVE')
+            ->get()
+            ->toArray();
+
+
+        foreach ($float_entries as $fe) {
+            $floatEntriesId = $fe['id'];
+            
+            if ($floatEntriesId == 14) {
+                $modeOfPaymentsId = null;
+                $qty = $data['total_token'];
+                $value = 1 * $data['total_token'];
+            } else {
+                $modeOfPaymentsId = null;
+                $qty = $data['cash_value_' . $fe['description']];
+                $value = $data['cash_value_' . $fe['description']] * $fe['value'];
+            }
+        
+            $lines[] = [
+                'cash_float_histories_id' => $cash_float_history_id,
+                'mode_of_payments_id' => $modeOfPaymentsId,
+                'float_entries_id' => $floatEntriesId,
+                'qty' => $qty,
+                'value' => $value,
+                'created_by' => $created_by,
+                'created_at' => $time_stamp,
+            ];
+        }
+        
+        CashFloatHistoryLine::insert($lines);
+        // DB::table('cash_float_history_lines')->insert($lines);
+
+        
+        return response()->json([$lines]);
+        // return response()->json(['message' => 'Form submitted and data inserted successfully']);
     }
 
     /**
