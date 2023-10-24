@@ -67,6 +67,6 @@ Route::group(['middleware' => ['web']], function() {
 
     // Capsules
     Route::post('admin/capsule_refills/submit-capsule-refill', [AdminCapsuleRefillsController::class, 'submitCapsuleRefill'])->name('submit_capsule_refill');
-
+    Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
 
 });

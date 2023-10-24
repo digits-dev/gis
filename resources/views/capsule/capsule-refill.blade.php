@@ -4,6 +4,7 @@
    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
    <script src="{{ asset('js/code-scanner.js') }}"></script>
    <script src="{{ asset('plugins/sweetalert.js') }}"></script>
+   <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
 @endpush
 @section('content')
     <div class="panel-content">
@@ -16,20 +17,20 @@
                     <div class="close-reader">×</div>
                     <div id="reader"></div>
                 </div>
-                <form method='post' method="POST">
+                <form method="POST">
                     @csrf
                     <div class='form-group'>
-                        <label>Capsule Barcode</label>
+                        <label>Capsule Barcode <span style="color: red">*</span></label>
                         <div class="flex input-btn">
-                            <input input-for="capsule" type='number' name='item_code' required class='form-control'/>
+                            <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control'/>
                             <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
-                        <label>To Gasha Machine</label>
+                        <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
-                            <input input-for="machine" type='text' name='machine_code' required class='form-control'/>
+                            <input input-for="machine" type='text' id="tiem_code" name='machine_code' required class='form-control'/>
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
-                        <label>Quantity</label>
+                        <label>Quantity <span style="color: red">*</span></label>
                         <input type='number' name='qty' required class='form-control' id="quantity"/>
                     </div>
                     <div class='panel-img'>
@@ -50,10 +51,11 @@
     let selectedCameraId = null;
     let selectedInput = null;
     let html5QrCode = null;
+    let timeout;
     async function showCameraOptions(cameras) {
         let cameraOptions = {}
         cameras.forEach(camera => cameraOptions[camera.id] = camera.label);
-        const { value: fruit } = await Swal.fire({
+        const { value: camera } = await Swal.fire({
             title: 'Select a camera',
             input: 'select',
             inputOptions: cameraOptions,
@@ -82,7 +84,6 @@
         },
         (decodedText, decodedResult) => {
             html5QrCode.stop();
-            // html5QrCode = null;
             populateInput(decodedText);
             $('#reader-wrapper').hide();
             
@@ -98,6 +99,32 @@
 
     function populateInput(text) {
         $(`input[input-for="${selectedInput}"]`).val(text);
+        console.log(selectedInput, text)
+        if (selectedInput == 'capsule') checkMachinePartner(text);
+    }
+
+    async function showMachines(data) {
+        const item = data.item;
+        const machines = data.machines;
+        let machineOptions = {};
+        machines.forEach(machine => {
+            machineOptions[machine.serial_number] = machine.serial_number; 
+        });
+
+        if (!machines.length) {
+            $('input[name="machine_code"]').val('');
+        }
+        else if (machines.length) {
+            const serialNumbers = machines.map(machine => `<strong>${machine.serial_number}</strong>`);
+            Swal.fire({
+                title: "Machine Found.",
+                html:  `This item: <strong>(${item.digits_code} - ${item.item_description})</strong> is found in machine ${serialNumbers.join(', ')}!`,
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+            });
+        }
     }
 
     function processResult(data) {
@@ -137,6 +164,32 @@
             });
 
         }
+    }
+
+    function checkMachinePartner(item_code) {
+        console.log('heeellloooo');
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('get_partner_machine') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                item_code: item_code,
+            },
+            success: function(res) {
+                const data = JSON.parse(res);
+                showMachines(data);
+            },
+            error: function(err) {
+                Swal.fire({
+                    title: "Oops.",
+                    html:  'Something went wrong!',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok',
+                    returnFocus: false,
+                });
+            }
+        });
     }
 
     $('.open-camera').on('click', function() {
@@ -188,7 +241,14 @@
                 processResult(data);
             },
             error: function(err) {
-                console.log(err);
+                Swal.fire({
+                    title: "Oops.",
+                    html:  'Something went wrong!',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok',
+                    returnFocus: false,
+                });
             }
         });
     });
@@ -198,6 +258,14 @@
             event.preventDefault();
             $('#save-btn').click();
         }
+    });
+
+    $('#item_code').on('input', function() {
+        clearTimeout(timeout); 
+
+        timeout = setTimeout(() => {
+            checkMachinePartner($('#item_code').val());
+        }, 500);
     })
 
 </script>

@@ -27,8 +27,8 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_edit = false;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -51,9 +51,11 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Item Code','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Gasha Machines Id','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines,id'];
+			$this->form[] = ['label'=>'Gasha Machine','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines,serial_number'];
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			$this->form[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -347,7 +349,19 @@
 			
 			$data = [];
 			$data['page_title'] = 'Add Data';
-			
+			$data['items'] = DB::table('items')
+				->leftJoin('inventory_capsules', 'inventory_capsules.item_code', 'items.digits_code')
+				->leftJoin('inventory_capsule_lines', 'inventory_capsule_lines.inventory_capsules_id', 'inventory_capsules.id')
+				->whereNotNull('inventory_capsule_lines.sub_locations_id')
+				->get()
+				->toArray();
+
+			$data['machines'] = DB::table('gasha_machines')
+				->where('status', 'ACTIVE')
+				//TODO: get the locations id from the logged session
+				->get()
+				->toArray();
+
 			//Please use view method instead view method from laravel
 			return $this->view('capsule.capsule-refill',$data);
 		}
@@ -444,15 +458,39 @@
 				]);
 			}
 
-			InventoryCapsuleLine::whereNotNull('sub_locations_id')->update([
-				'updated_by' => $action_by,
-				'qty' => DB::raw("qty - $qty")
-			]);
+			DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
+				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				->where('sub_locations.location_id', $locations_id)
+				->where('inventory_capsules.item_code', $item_code)
+				->update([
+					'inventory_capsule_lines.updated_by' => $action_by,
+					'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $qty")
+				]);
 
 			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally, 'reference_number' => $reference_number]);
 		}
 
-		public function getCurrentModule() {
-			return CRUDBooster::getCurrentModule();
+		public function getPartnerMachine(Request $request) {
+			$data = $request->all();
+			$item_code = $data['item_code'];
+
+			$item = DB::table('items')
+				->where('digits_code', $item_code)
+				->first();
+
+			$machines = DB::table('inventory_capsules')
+				->leftJoin('inventory_capsule_lines', 'inventory_capsule_lines.inventory_capsules_id', 'inventory_capsules.id')
+				->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', 'gasha_machines.id')
+				->whereNotNull('gasha_machines.id')
+				->where('inventory_capsules.item_code', $item_code)
+				->get()
+				->toArray();
+
+			return json_encode([
+				'item' => $item,
+				'machines' => $machines,
+				$data,
+			]);
 		}
 	}
