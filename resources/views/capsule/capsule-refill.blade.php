@@ -27,16 +27,16 @@
                         </div>
                         <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
-                            <input input-for="machine" type='text' id="tiem_code" name='machine_code' required class='form-control'/>
+                            <input input-for="machine" type='text' id="tiem_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control'/>
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
-                        <input type='number' name='qty' required class='form-control' id="quantity"/>
+                        <input type='text' name='qty' required class='form-control' oninput="numberOnly(this)" id="quantity"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
                     </div>
-                     <button class="hide" type="submit" id="real-submit-btn"></button>               
+                     <button class="hide" type="submit" id="real-submit-btn"></button> 
                 </form>
             </div>
             <div class='panel-footer'>
@@ -156,7 +156,7 @@
             });
         } else {
             Swal.fire({
-                title: 'Capsule successfully refilled.',
+                title: 'Machine successfully refilled.',
                 icon: 'success',
                 returnFocus: false,
             }).then(() => {
@@ -167,7 +167,6 @@
     }
 
     function checkMachinePartner(item_code) {
-        console.log('heeellloooo');
         $.ajax({
             type: 'POST',
             url: "{{ route('get_partner_machine') }}",
@@ -190,6 +189,10 @@
                 });
             }
         });
+    }
+
+    function numberOnly(numberElement){
+        numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
     }
 
     $('.open-camera').on('click', function() {
