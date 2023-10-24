@@ -29,7 +29,7 @@
 
 <div class='panel panel-default' style="width:40%; margin:auto">
 <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
-    Disburse Token Form
+    Add Token Form
 </div>
 
 <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="disburseToken" enctype="multipart/form-data">
@@ -40,17 +40,13 @@
         
             <div class="form-group">
                 <label class="require control-label"><span style="color:red">*</span> Token Qty:</label>
-                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="release_qty" id="release_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+                <input type="text" class="form-control finput" style="" placeholder="Token Qty" name="qty" id="qty" onkeypress="inputIsNumber()" validation-name="No of tokens" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
             </div>
     
             <div class="form-group">
-                <label class="control-label"><span style="color:red">*</span>To location</label>
-                <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
-                @foreach($locations as $location)
-                <option value=""></option>
-                    <option value="{{ $location->id }}">{{ $location->location_name }}</option>
-                @endforeach
-                </select>
+                <label class="control-label"> To location</label>
+                <input type="text" class="form-control" value="{{ $locations->location_name }}" disabled>
+                <input type="hidden" class="form-control" value="{{ $locations->id }}" name="locations_id" id="locations_id" readonly>
             </div>
           
         </div>
@@ -78,7 +74,7 @@
     $(document).ready(function() {
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
-            if($('#release_qty').val() === ''){
+            if($('#qty').val() === ''){
                 Swal.fire({
                     type: 'error',
                     title:'Token required!',
@@ -93,43 +89,22 @@
                         confirmButtonColor: '#dd4b39',
                     });
             }else{
-                 $.ajax({
-                    url: '{{ route("disburse.get.token.inventory") }}',
-                    dataType: 'json',
-                    type: 'POST',
-                    data: {
-                        '_token': '{{ csrf_token() }}',
-                    },
-                    success: function (data) {
-                        const qty = data != null ? data.qty : null;
-                        if($('#release_qty').val().replace(/,/g, '') > qty){
-                            Swal.fire({
-                                type: 'info',
-                                title: 'Token Qty Exceed in Token Inventory!',
-                                icon: 'error',
-                                confirmButtonColor: '#359D9D',
-                            }); 
-                            event.preventDefault();
-                
-                        } else{
-                            Swal.fire({
-                                title: 'Are you sure ?',
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Save',
-                                returnFocus: false,
-                                reverseButtons: true,
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $('#disburseToken').submit();
-                                }
-                            });
-
-                        }
+               
+                Swal.fire({
+                    title: 'Are you sure ?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Save',
+                    returnFocus: false,
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#disburseToken').submit();
                     }
-                });  
+                });
+    
             }
         });
     });

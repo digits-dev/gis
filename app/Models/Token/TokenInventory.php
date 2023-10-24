@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TokenInventory extends Model
 {
     use HasFactory;
-
+    protected $guarded = [];
     protected $table = 'token_inventories';
     protected $fillable = [
         'qty', 
@@ -19,4 +19,8 @@ class TokenInventory extends Model
         'updated_at	',
    
     ];
+
+    public function scopeGetQty($query, $id){
+        return $query->where('locations_id','=',$id)->first();
+    }
 }

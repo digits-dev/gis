@@ -16,6 +16,7 @@ use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
+use App\Http\Controllers\AdminTruncateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,4 +70,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_refills/submit-capsule-refill', [AdminCapsuleRefillsController::class, 'submitCapsuleRefill'])->name('submit_capsule_refill');
     Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
 
+    //Restricted Route
+    Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
 });
