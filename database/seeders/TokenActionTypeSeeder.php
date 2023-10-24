@@ -15,7 +15,7 @@ class TokenActionTypeSeeder extends Seeder
     public function run()
     {
 
-        $token_descriptions = ['Add Token', 'Disburse', 'Receive', 'Deduct'];
+        $token_descriptions = ['Add Token', 'Disburse', 'Receive', 'Deduct','Swap','Collect'];
 
         foreach ($token_descriptions as $token_description) {
             TokenActionType::updateOrInsert(['description' => $token_description], [
