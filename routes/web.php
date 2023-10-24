@@ -60,6 +60,7 @@ Route::group(['middleware' => ['web']], function() {
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-edit/{id}', [AdminCollectRrTokensController::class, 'getEdit']); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine');
 
     //Pullout
     Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/getPulloutForPrint/{id}',[AdminPulloutTokensController::class, 'getPulloutForPrint'])->name('pullout-for-print');
