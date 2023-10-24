@@ -41,8 +41,16 @@ class CountersSeeder extends Seeder
                 'created_at'       => date('Y-m-d H:i:s')
             ],
             [   
-                'cms_moduls_id'    => '33',
+                'cms_moduls_id'    => '32',
                 'reference_code'   => 'CRF',
+                'reference_number' => '1',
+                'status'           => 'ACTIVE',
+                'created_by'       => CRUDBooster::myId(),
+                'created_at'       => date('Y-m-d H:i:s')
+            ],
+            [   
+                'cms_moduls_id'    => '19',
+                'reference_code'   => 'AT',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),

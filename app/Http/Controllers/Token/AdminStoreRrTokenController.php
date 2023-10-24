@@ -139,7 +139,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"danger"];
 			}
 
 
@@ -474,7 +474,7 @@
 			$disburse_token = StoreRrToken::find($header_id);   
 			$qty = -1 * abs($disburse_token->released_qty);
 			$location_id = $disburse_token->from_locations_id;
-			$tat_add_token = TokenActionType::where('description', 'Disburse')->first();
+			$tat_add_token = TokenActionType::where('id', 2)->first();
 
 			//less in inventory
 			DB::table('token_inventories')->where('id',1)->decrement('qty', $disburse_token->released_qty);

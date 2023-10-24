@@ -208,7 +208,8 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
+	        $this->load_css[] = asset('css/gasha-style.css');
 	        
 	    }
 
@@ -235,7 +236,14 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('token_inventories.deleted_at')
+					  ->orderBy('token_inventories.id', 'desc');
+			}else {
+				$query->where('token_inventories.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('token_inventories.deleted_at')
+					  ->orderBy('token_inventories.id', 'desc');
+			}
 	            
 	    }
 

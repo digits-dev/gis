@@ -5,6 +5,8 @@
 
 {{-- Your Plugins --}}
 @section('plugins')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
+
 @endsection
 
 {{-- Your CSS --}}
@@ -63,6 +65,8 @@
         /* width: 100%; */
         height: 350px;
     }
+
+
 </style>
 @endsection
 
@@ -70,61 +74,66 @@
 <div class="cash-float-section">
     <div class="cash-float">
         <div class="cash-float-content">
-            <div class="d-flex-al-c">
-                <i class="fa fa-circle-o m-right-10"></i><p class="fs-20">Cash Float (SOD)</p>
-            </div>
-            <div class="eod-table m-top-20">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mode of Payment</th>
-                            <th>Value</th>
-                            @foreach ($float_entries as $float_entry)
-                            <th>
-                                {{ $float_entry->description }}
-                            </th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($mode_of_payments as $mode_of_payment)
-                        <tr>
-                            <td>{{ $mode_of_payment->payment_description }}</td>
-                            @for ($i=0; $i<count($float_entries)+1; $i++)
-                                @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
-                                    @if ($i == 0)
-                                        <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);"></td>
-                                        {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
-                                    @else
-                                        <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);"></td>
-                                        {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
-                                    @endif
-                                @else
-                                <td><input type="text" disabled></td>
-                                @endif
-                            @endfor
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="m-top-20">
+            <form method="POST">
+                @csrf
                 <div class="d-flex-al-c">
-                    <p class="max-w-75">Total Value</p>
-                    <input type="text" class="input-design total_value" placeholder="Total value">
-                    {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20">Cash Float (SOD)</p>
                 </div>
-                <div class="d-flex-al-c m-top-10">
-                    <p class="max-w-75">Token qty</p>
-                    <input type="text" class="input-design" placeholder="Token qty" oninput="validateInput(this);">
-                    {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                <div class="eod-table m-top-20">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mode of Payment</th>
+                                <th>Value</th>
+                                @foreach ($float_entries as $float_entry)
+                                <th>
+                                    {{ $float_entry->description }}
+                                </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($mode_of_payments as $mode_of_payment)
+                            <tr>
+                                <td>{{ $mode_of_payment->payment_description }}</td>
+                                @for ($i=0; $i<count($float_entries)+1; $i++)
+                                    @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
+                                        @if ($i == 0)
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
+                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
+                                        @else
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);" required ></td>
+                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
+                                        @endif
+                                    @else
+                                    <td><input type="text" disabled></td>
+                                    @endif
+                                @endfor
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <div class="d-flex-jcc-col m-top-30">
-                <p class="fw-bold m-top-10">Current Date:</p>
-                <p class="m-top-10" id="currentDateTime">Loading Time...</p>
-                <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
-            </div>
+                <div class="m-top-20">
+                    <div class="d-flex-al-c">
+                        <p class="max-w-75">Total Value</p>
+                        <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
+                        {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                    </div>
+                    <div class="d-flex-al-c m-top-10">
+                        <p class="max-w-75">Token qty</p>
+                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" required>
+                        {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                    </div>
+                </div>
+                <div class="d-flex-jcc-col m-top-30">
+                    <p class="fw-bold m-top-10">Current Date:</p>
+                    <p class="m-top-10" id="currentDateTime">Loading Time...</p>
+                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
+                    <button class="hide" type="submit" id="real-submit-btn"></button>
+                    <input type="text" class="start_day" name="start_day" value="START" readonly hidden>               
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -190,32 +199,29 @@
 <script>
 
     $(document).ready(function(){
-        $(".cash_value_CASH").attr("disabled", true);
+        $(".cash_value_CASH").attr("readonly", true);
+        $(".total_value").attr("readonly", true);
         $('.cash-float-section').css('visibility', 'visible');
-
-        $('#start_of_day').on('click', function(){
-            $('.cash-float-section').hide();
-        })
     });
 
     function updateCashValue (){
-        const BDOValue = parseFloat($(".cash_value_BDO").val()) || 0;
-        const BPIValue = parseFloat($(".cash_value_BPI").val()) || 0;
-        const GCASHValue = parseFloat($(".cash_value_GCASH").val()) || 0;
-        const PAYMAYAValue = parseFloat($(".cash_value_PAYMAYA").val()) || 0;
-        const P1000Value = parseFloat($(".cash_value_P1000").val()) || 0;
-        const P500Value = parseFloat($(".cash_value_P500").val()) || 0;
-        const P200Value = parseFloat($(".cash_value_P200").val()) || 0;
-        const P100Value = parseFloat($(".cash_value_P100").val()) || 0;
-        const P50Value = parseFloat($(".cash_value_P50").val()) || 0;
-        const P20Value = parseFloat($(".cash_value_P20").val()) || 0;
-        const P10Value = parseFloat($(".cash_value_P10").val()) || 0;
-        const P5Value = parseFloat($(".cash_value_P5").val()) || 0;
-        const P1Value = parseFloat($(".cash_value_P1").val()) || 0;
-        const C25Value = parseFloat($(".cash_value_25C").val()) || 0;
-        const C10Value = parseFloat($(".cash_value_10C").val()) || 0;
-        const C5Value = parseFloat($(".cash_value_5C").val()) || 0;
-        const C1Value = parseFloat($(".cash_value_1C").val()) || 0;
+        const BDOValue = ($(".cash_value_BDO").val()) || 0;
+        const BPIValue = ($(".cash_value_BPI").val()) || 0;
+        const GCASHValue = ($(".cash_value_GCASH").val()) || 0;
+        const PAYMAYAValue = ($(".cash_value_PAYMAYA").val()) || 0;
+        const P1000Value = ($(".cash_value_P1000").val()) || 0;
+        const P500Value = ($(".cash_value_P500").val()) || 0;
+        const P200Value = ($(".cash_value_P200").val()) || 0;
+        const P100Value = ($(".cash_value_P100").val()) || 0;
+        const P50Value = ($(".cash_value_P50").val()) || 0;
+        const P20Value = ($(".cash_value_P20").val()) || 0;
+        const P10Value = ($(".cash_value_P10").val()) || 0;
+        const P5Value = ($(".cash_value_P5").val()) || 0;
+        const P1Value = ($(".cash_value_P1").val()) || 0;
+        const C25Value = ($(".cash_value_25C").val()) || 0;
+        const C10Value = ($(".cash_value_10C").val()) || 0;
+        const C5Value = ($(".cash_value_5C").val()) || 0;
+        const C1Value = ($(".cash_value_1C").val()) || 0;
         const cashValue = (P1000Value * 1000) + (P500Value * 500) + (P200Value * 200) 
         + (P100Value * 100) + (P50Value * 50) + (P20Value * 20) + (P10Value * 10)
         + (P5Value * 5) + (P1Value * 1) + (C25Value * 0.25)+ (C10Value * 0.10)
@@ -223,11 +229,11 @@
         const formattedCashValue = cashValue.toFixed(2);
         $(".cash_value_CASH").val(formattedCashValue);
 
-        const totalValue = (cashValue + BDOValue + BPIValue + GCASHValue + PAYMAYAValue);
+        const totalValue = (removeComma(cashValue) + removeComma(BDOValue) + removeComma(BPIValue) + removeComma(GCASHValue) + removeComma(PAYMAYAValue));
+        // console.log(BDOValue, removeComma(BDOValue));
         const formattedTotalValue = totalValue.toFixed(2);
         $(".total_value").val(formattedTotalValue);
     }
-
     $(".cash_value_BDO, .cash_value_BPI, .cash_value_GCASH, .cash_value_PAYMAYA, .cash_value_P1000, .cash_value_P500, .cash_value_P200, .cash_value_P100,.cash_value_P50, .cash_value_P20, .cash_value_P10, .cash_value_P5, .cash_value_P1, .cash_value_25C, .cash_value_10C, .cash_value_5C, .cash_value_1C ").on("input", updateCashValue);
     updateCashValue();
 
@@ -235,21 +241,58 @@
     function numberOnly(numberElement){
         numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
     }
-
-    function validateInput(inputElement){
-        inputElement.value = inputElement.value.replace(/[^0-9.]/g, '');
-
+    function removeComma(number) {
+        return Number(`${number}`.replaceAll(',', ''));
+    }
+    function validateInput(inputElement) {
         let value = inputElement.value;
+        // Remove any non-numeric and non-decimal characters
+        value = value.replace(/[^0-9.]/g, '');
+        // Ensure there is only one decimal point
         let decimalCount = value.split('.').length - 1;
         if (decimalCount > 1) {
             // If there is more than one decimal point, remove the extra ones
-            inputElement.value = value.substring(0, value.lastIndexOf('.'));
+            value = value.substring(0, value.lastIndexOf('.'));
         }
-
+        // Format the value with commas for every 3 digits
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        inputElement.value = value;
     }
+
+    $('#start_of_day').on('click', function() {
+        Swal.fire({
+            title: "Are Sure You Want To Submit?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Submit',
+            returnFocus: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#real-submit-btn').click();
+            }
+        });
+    });
+
+    $('form').on('submit', function(event) {
+        event.preventDefault();
+        const formData = $('form').serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('submitSOD') }}",
+            data: formData,
+            success: function(res) {
+                console.log(res);
+                $('.cash-float-section').hide();
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
+    });
     
     function sales() {
-        
         var ctx = document.getElementById('myLineChart').getContext('2d');
 
         // Dynamically set the canvas width to 100%

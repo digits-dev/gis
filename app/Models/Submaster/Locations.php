@@ -22,4 +22,12 @@ class Locations extends Model
     public function scopeActiveLocationPerUser($query, $id){
         return $query->where('id','!=',1)->where('status','ACTIVE')->first();
     }
+
+    public function scopeActiveDigitsLocation($query){
+        return $query->where('id',1)->where('status','ACTIVE')->first();
+    }
+
+    public function scopeActiveLocationPerUserPullout($query, $id){
+        return $query->where('id',$id)->where('status','ACTIVE')->first();
+    }
 }

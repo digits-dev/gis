@@ -53,8 +53,8 @@
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			// $this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			// $this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -331,7 +331,7 @@
 	    */
 	    public function hook_after_edit($id) {
 			$receivedToken = PulloutToken::find($id);   
-			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
+			$tat_add_token = TokenActionType::where('id', 3)->first();
 			$qty = $receivedToken->received_qty;
 
 			//add in inventory

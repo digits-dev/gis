@@ -360,7 +360,7 @@
 	    */
 	    public function hook_after_edit($id) {
 			$receivedToken = StoreRrToken::find($id);   
-			$tat_add_token = TokenActionType::where('description', 'Receive')->first();
+			$tat_add_token = TokenActionType::where('id', 3)->first();
 			$qty = $receivedToken->released_qty;
 
 			//Save Inventory

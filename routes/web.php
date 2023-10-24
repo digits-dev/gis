@@ -17,6 +17,7 @@ use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\capsule\AdminCapsuleReturnsController;
+use App\Http\Controllers\AdminTruncateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
+    
+    //POS Dashboard
+    Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
+
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
@@ -67,4 +72,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_refills/submit-capsule-return', [AdminCapsuleReturnsController::class, 'submitCapsuleReturn'])->name('submit_capsule_return');
     Route::post('admin/capsule_refills/validate-gasha-machine', [AdminCapsuleReturnsController::class, 'validateGashaMachine'])->name('validate_gasha_machine');
 
+    Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
+
+    //Restricted Route
+    Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
 });

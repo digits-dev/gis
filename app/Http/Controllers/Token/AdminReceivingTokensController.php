@@ -1,14 +1,15 @@
 <?php namespace App\Http\Controllers\Token;
 
-use App\Models\Submaster\Counter;
-use App\Models\Submaster\TokenActionType;
-use App\Models\Token\ReceivingToken;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\TokenActionType;
+	use App\Models\Token\ReceivingToken;
 	use App\Models\Token\TokenHistory;
 	use App\Models\Token\TokenInventory;
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Submaster\Locations;
 
 	class AdminReceivingTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -22,7 +23,7 @@ use App\Models\Token\ReceivingToken;
 			$this->button_table_action = true;
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -125,7 +126,9 @@ use App\Models\Token\ReceivingToken;
 	        |
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"Add Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-token'),"color"=>"danger"];
+			}
 
 
 	        /*
@@ -239,7 +242,8 @@ use App\Models\Token\ReceivingToken;
 	        |
 	        */
 	        $this->load_css = array();
-
+			$this->load_css[] = asset("css/font-family.css");
+	        $this->load_css[] = asset('css/gasha-style.css');
 
 	    }
 
@@ -310,7 +314,7 @@ use App\Models\Token\ReceivingToken;
 			$receiving_token = ReceivingToken::find($id);
 			$location_id = $receiving_token->locations_id;
 			$token_inventory = TokenInventory::where('locations_id', $location_id);
-			$tat_add_token = TokenActionType::where('description', 'Add Token')->first();
+			$tat_add_token = TokenActionType::where('id', 1)->first();
 
 			$qty = $receiving_token->qty;
 			$token_inventory_qty = $token_inventory->first()->qty ?? 0;
@@ -386,9 +390,15 @@ use App\Models\Token\ReceivingToken;
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :)
+		public function getAddToken(){
+			$this->cbLoader();
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$data = [];
+			$data['locations'] = Locations::activeDigitsLocation();
+			return $this->view("token.add-token.add-token", $data);
+		}
 
 
 	}

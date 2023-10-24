@@ -9,6 +9,7 @@
 	use App\Models\Token\TokenInventory;
 	use App\Models\Submaster\Counter;
 	use App\Models\Submaster\TokenActionType;
+	use App\Models\Submaster\Locations;
 
 	class AdminPulloutTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forPrint;
@@ -31,7 +32,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -53,8 +54,8 @@
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			// $this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			// $this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -141,7 +142,9 @@
 	        |
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"Pullout Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('pullout-token'),"color"=>"danger"];
+			}
 
 
 	        /*
@@ -331,6 +334,7 @@
 	        //Your code here
 			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
 			$postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			
 			$postdata['statuses_id']      = $this->forPrint;
 			$postdata['created_by']       = CRUDBooster::myId();
 			$location_id                  = $postdata['locations_id'];
@@ -441,6 +445,22 @@
 
 	    }
 
+		public function getPulloutToken(){
+			$this->cbLoader();
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$data = [];
+			$data['locations'] = Locations::activeLocationPerUserPullout(CRUDBooster::myLocationId());
+			if(CRUDBooster::isSuperAdmin()){
+				$data['locations'] = Locations::active();
+			}else{
+				$data['inventory_qty'] = TokenInventory::getQty(CRUDBooster::myLocationId());
+			}
+
+			return $this->view("token.pullout-token.pullout-token", $data);
+		}
+
 		public function getPulloutForPrint($id){
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
@@ -466,7 +486,7 @@
 			$pullout_token = PulloutToken::find($header_id);   
 			$qty = -1 * abs($pullout_token->qty);
 			$location_id = $pullout_token->locations_id;
-			$tat_add_token = TokenActionType::where('description', 'Deduct')->first();
+			$tat_add_token = TokenActionType::where('id', 4)->first();
 
 			//less in inventory
 			DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);

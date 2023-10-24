@@ -334,6 +334,33 @@
 
 
 	    //By the way, you can still create your own method in here... :) 
+		public function getDetail($id) {
+			$item = DB::table('inventory_capsules')
+				->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
+				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
+				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+				->first();
 
+			$lines = DB::table('inventory_capsule_lines')
+				->select(
+					'inventory_capsule_lines.qty',
+					'gasha_machines.serial_number',
+					'sub_locations.description as sub_location'
+				)
+				->where('inventory_capsules_id', $id)
+				->leftJoin('gasha_machines', 'gasha_machines.id', 'inventory_capsule_lines.gasha_machines_id')
+				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				->get()
+				->toArray();
+
+				// dd($item);
+
+			$data = [];
+			$data['item'] = $item;
+			$data['lines'] = $lines;
+			$data['page_title'] = 'Detail Inventory Breakdown';
+
+			return $this->view('capsule.capsule-inventory-detail', $data);
+		}
 
 	}

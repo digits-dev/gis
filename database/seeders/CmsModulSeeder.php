@@ -14,6 +14,8 @@ class CmsModulSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('cms_moduls')->where('id', '>=', 12)->delete();
+        DB::statement('ALTER TABLE cms_moduls AUTO_INCREMENT = 12');
         $modules = [
             [
                 'name'         => 'Gasha Machine Lists',
