@@ -99,10 +99,10 @@
                                 @for ($i=0; $i<count($float_entries)+1; $i++)
                                     @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
                                         @if ($i == 0)
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);"></td>
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
                                         @else
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);"></td>
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);" required ></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
                                         @endif
                                     @else
@@ -122,7 +122,7 @@
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);">
+                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
@@ -271,7 +271,6 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $('#real-submit-btn').click();
-                $('.cash-float-section').hide();
             }
         });
     });
@@ -285,6 +284,7 @@
             data: formData,
             success: function(res) {
                 console.log(res);
+                $('.cash-float-section').hide();
             },
             error: function(err) {
                 console.log(err);
