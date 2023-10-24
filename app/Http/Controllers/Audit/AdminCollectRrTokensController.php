@@ -11,6 +11,7 @@
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Audit\CollectRrTokens;
 	use App\Models\Audit\CollectRrTokenLines;
+	use App\Models\Submaster\Counter;
 	use Carbon\Carbon;
 
 	class AdminCollectRrTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -102,7 +103,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				if(in_array(CRUDBooster::myPrivilegeId(),[2])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[3])){
 					$this->addaction[] = ['title'=>'Check Collected Tokens','url'=>CRUDBooster::mainpath('get-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == 5','color'=>'success'];
 				}
 			}
@@ -188,6 +189,7 @@
 					});
 				});
 			';
+			
 
 
             /*
@@ -275,7 +277,17 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+			if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('collect_rr_tokens.deleted_at')
+					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
+					  ->orderBy('collect_rr_tokens.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+					  ->where('collect_rr_tokens.statuses_id',$this->collected)
+					  ->whereNull('collect_rr_tokens.deleted_at')
+					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
+					  ->orderBy('collect_rr_tokens.id', 'desc');
+			}
 	            
 	    }
 
@@ -309,14 +321,14 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	       $fields = Request::all();
-
-		   $count_header                 = DB::table('collect_rr_tokens')->count();
-		   $header_ref                   = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);		
-		   $reference_number             = "CT-".$header_ref;	
+		
+		//    $count_header                 = DB::table('collect_rr_tokens')->count();
+		//    $header_ref                   = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);		
+		//    $reference_number             = "CT-".$header_ref;	
 		   $location_id                  = $fields['location_id'];
 		   $collected_qty                = intval(str_replace(',', '', $fields['quantity_total']));
 		   
-		   $postdata['reference_number'] = $reference_number;
+		   $postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 		   $postdata['statuses_id']      = $this->collected;
 		   $postdata['location_id']      = $location_id;
 		   $postdata['collected_qty']    = $collected_qty;
@@ -336,7 +348,14 @@
 
 			$dataLines = array();
 			$header = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-			$gasha_machines_id = $fields['gasha_machines_id'];
+			
+			$gm_id = $fields['gasha_machines_id'];
+			$gasha_machines_array = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
+			$gasha_machines_id = [];
+			foreach($gasha_machines_array as $gm){
+				array_push($gasha_machines_id, $gm->id);
+			}
+
 			$qty 	           = $fields['qty'];
 			
 			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
@@ -347,7 +366,7 @@
 			}
 
 			//save histories
-			$tat_add_token = TokenActionType::where('description', 'Collect')->first();
+			$tat_add_token = TokenActionType::where('id', 5)->first();
 			TokenHistory::insert([
 				'reference_number' => $header->reference_number,
 				'qty'              => $header->collected_qty,
@@ -431,7 +450,7 @@
 			$data = [];
 			$data['page_title'] = 'Collect Token';
 			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['locations'] = Locations::active();
+			$data['locations'] = Locations::activeDisburseToken();
 			$data['gasha_machines'] = GashaMachines::activeMachines();
 			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
 
@@ -480,6 +499,20 @@
 			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
 		
 			return $this->view("audit.collect-token.edit-collect-token", $data);
+		}
+
+		public function getMachine(Request $request) {
+			$data = Request::all();
+			$location_id = $data['location_id'];
+		
+			$serial_number = $data['item_code'];
+			$machines = DB::table('gasha_machines')
+				->where('serial_number', $serial_number)
+				->where('location_id', $location_id)
+				->first();
+			return json_encode([
+				'machines' => $machines,
+			]);
 		}
 
 

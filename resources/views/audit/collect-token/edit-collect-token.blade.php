@@ -17,66 +17,6 @@
             height: 34px !important;
         }
 
-        #other-detail th, td {
-            border: 1px solid rgba(000, 0, 0, .5);
-            padding: 8px;
-        }
-        #collected-token th, td {
-            border: 1px solid rgba(000, 0, 0, .5);
-            padding: 8px;
-        }
-
-        .plus{
-                font-size:20px;
-        }
-        #add-Row{
-            border:none;
-            background-color: #fff;
-        }
-        
-        .iconPlus{
-            background-color: #3c8dbc: 
-        }
-        
-        .iconPlus:before {
-            content: '';
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            /* border: 1px solid rgb(194, 193, 193); */
-            font-size: 35px;
-            color: white;
-            background-color: #dd4b39;
-    
-        }
-        #bigplus{
-            transition: transform 0.5s ease 0s;
-        }
-        #bigplus:before {
-            content: '\FF0B';
-            background-color: #dd4b39: 
-            font-size: 50px;
-        }
-        #bigplus:hover{
-            /* cursor: default;
-            transform: rotate(180deg); */
-            -webkit-animation: infinite-spinning 1s ease-out 0s infinite normal;
-                animation: infinite-spinning 1s ease-out 0s infinite normal;
-            
-        }
-
-        @keyframes infinite-spinning {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
     </style>
 @endpush
 @extends('crudbooster::admin_template')
@@ -87,73 +27,66 @@
 <p class="noprint"><a title='Main Module' href='{{CRUDBooster::mainpath()}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @endif
 
-<div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
-    Check Collected Token
-</div>
-<form action="{{ CRUDBooster::mainpath('edit-save/'.$detail_header->id) }}" method="POST" id="closeCollectToken" enctype="multipart/form-data">
-    <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
+<div class='panel panel-default' style="width:40%; margin:auto">
+    <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+        Received collected token form
+    </div>
 
-    <div class='panel-body'>
-        <div class="col-md-12 col-sm-offset-1">
-        
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label class="control-label"> Reference Number</label>
-                    <input type="text" class="form-control finput" value="{{ $detail_header->reference_number }}" readonly>
+    <form action="{{ CRUDBooster::mainpath('edit-save/'.$detail_header->ct_id) }}" method="POST" id="receiveToken" enctype="multipart/form-data">
+        <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
+        <input type="hidden" value="{{ $detail_header->ct_id }}" name="disburse_id" id="disburse_id">
+        <input type="hidden" value="{{ $detail_header->collected_qty }}" name="collected_qty" id="collected_qty">
+        <div class='panel-body'>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> Disburse Number:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $detail_header->reference_number }}" readonly>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label class="control-label"> Location</label>
-                    <input type="text" class="form-control finput" value="{{ $detail_header->location_name }}" readonly>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> From:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $detail_header->location_name }}" readonly>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                
+                {{-- <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"> To:</label>
+                            <input type="text" class="form-control finput" style="" value="{{ $detail_header->to_location }}" readonly>
+                        </div>
+                    </div>
+                </div> --}}
 
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label class="require control-label"> Date created</label>
-                    <input type="text" class="form-control finput" value="{{ $detail_header->collect_rr_tokens_created }}" readonly>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="require control-label"><span style="color:red">*</span> Receive Token Qty:</label>
+                            <input type="text" class="form-control finput" style="" placeholder="Receive token qty" name="received_qty" id="received_qty" onkeypress="inputIsNumber()" validation-name="No of tokens" autocomplete="off" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');">
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="form-group">
-                    <label class="require control-label"> Total Qty</label>
-                    <input type="text" class="form-control finput" value="{{ $detail_header->collected_qty }}" name="received_qty" readonly>
-                </div>
+                    
+                    {{-- <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="require control-label"><span style="color:red">*</span> Variance:</label>
+                            <input type="text" class="form-control finput" name="variance_qty" id="variance_qty" readonly>
+                        </div>
+                    </div> --}}
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <table class="table" id="collected-token">
-                    <tbody id="bodyTable">    
-                            <tr>
-                                <th width="10%" class="text-center">Machine</th> 
-                                <th width="10%" class="text-center">Quanity</th>
-                            </tr>      
-                        @foreach($detail_body as $row)
-                            <tr>
-                                <td style="text-align:center" height="10">
-                                    {{$row->description ."-".  $row->serial_number}}                               
-                                </td>
-                                <td style="text-align:center" height="10" class="qty">
-                                    {{$row->qty}}                               
-                                </td>
-                            </tr>
-                        @endforeach   
-                 
-                    </tbody>
-                </table>
-            </div>   
+        <div class='panel-footer'>
+            <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+            <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
         </div>
-    </div>
-    <div class='panel-footer'>
-        <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.closing') }}</button>
-    </div>
-</form>
+    </form>
 </div>
 
 @endsection
@@ -168,46 +101,61 @@
         null;
     };
     setTimeout("preventBack()", 0);
-    $('#location_id').select2();
+    $('#location').select2();
+    $(document).ready(function() {
+        $('#btnSubmit').click(function(event) {
+            event.preventDefault();
+            if($('#received_qty').val() === ''){
+                Swal.fire({
+                    type: 'error',
+                    title:'Receive token required!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+            }else if($('#received_qty').val().replace(/,/g, '') < $('#collected_qty').val().replace(/,/g, '')){
+                Swal.fire({
+                    type: 'info',
+                    title: 'Token must be equal to collected token!',
+                    icon: 'error',
+                    confirmButtonColor: "#359D9D",
+                }); 
+                event.preventDefault();
+    
+            }else if($('#received_qty').val().replace(/,/g, '') > $('#collected_qty').val().replace(/,/g, '')){
+                Swal.fire({
+                    type: 'info',
+                    title: 'Token must be equal to collected token!',
+                    icon: 'error',
+                    confirmButtonColor: "#359D9D",
+                }); 
+                event.preventDefault();
+    
+            }else{
+                Swal.fire({
+                    title: 'Are you sure ?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Receive',
+                    returnFocus: false,
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#receiveToken').submit();
+                    }
+                });
 
-    $('#btnSubmit').click(function(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Are you sure ?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Save',
-            returnFocus: false,
-            reverseButtons: true,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $('#closeCollectToken').submit();
             }
         });
+
+        //Variance
+        $('#received_qty').on('keyup', function() {
+            const received_qty = this.value.replace(/,/g, '');
+            const released_qty = $('#released_qty').val();
+            const total = Math.abs(received_qty - released_qty);
+            $('#variance_qty').val(total);
+        });
     });
-
-    var tds = document.getElementById('collected-token').getElementsByTagName('td');
-    var qty        = 0;
-
-    for (var i = 0; i < tds.length; i++) {
-        if(tds[i].className == 'qty') {
-            qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }
-    }
-    document.getElementById('collected-token').innerHTML +=
-    '<tr>'+
-            '<td style="text-align:center">'+
-                '<strong>TOTAL</strong>'+
-            '</td>'+
-            
-            '<td style="text-align:center">'+
-                '<strong>' +
-                    qty +
-                '</strong>'+
-            '</td>'+
-              
-    '</tr>';
 </script>
 @endpush
