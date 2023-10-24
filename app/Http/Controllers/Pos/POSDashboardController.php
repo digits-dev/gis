@@ -60,7 +60,7 @@ class POSDashboardController extends Controller
                 'cash_float_histories_id' => $cash_float_history_id,
                 'mode_of_payments_id' => $mop['id'],
                 'float_entries_id' => null,
-                'qty' => 1,
+                'qty' => $valueWithoutComma ? 1 : null,
                 'value' => $valueWithoutComma,
                 'created_by' => $created_by,
                 'created_at' => $time_stamp,
