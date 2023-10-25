@@ -15,6 +15,7 @@
 
     .statistic-content{
         display: flex;
+        justify-content: center;
         flex-wrap: wrap;
         width: 100%;
     }
@@ -22,7 +23,7 @@
     .statistic-box{
         height: 150px;
         width: 100%;
-        max-width: 320px;
+        max-width: 340px;
         background-color: rgb(255, 255, 255);
         padding: 15px;
         border-radius: 5px;
@@ -396,7 +397,7 @@
                 label: 'Monthly Sales',
                 data: [10, 15, 7, 20, 14],
                 borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderWidth: 2,
                 fill: true,
                 tension: 0.1,
