@@ -52,7 +52,7 @@
     margin: 8px;
  
   }
-  .peso-span, .token-span {
+  .peso-span, .token-span, .mod-span {
     margin: 18px;
   }
   .container option {
@@ -170,8 +170,9 @@
             <div class="from" id="div2">
                 <input class="input-field token-value" type="text" name="token_value" id="token_value" oninput="onInput2(this)" readonly />
             </div>
-            <div>
-              <Span>Mode of Payment</Span>
+            <div class="float-wrapper">
+              <i class="fas fa-money-check"></i>
+              <Span class="mod-span">Mode of Payment</Span>
             </div>
             <div class="mode-of-payment">
                 <select name="mode_of_payment" id="mode_of_payment">
@@ -195,7 +196,10 @@
                     <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
-            <button class="btn-swap" type="submit" >Swap</button>
+            <button class="btn-swap" type="submit" > <i
+                class="fa-solid fa-right-left"
+               >
+                </i>Swap</button>
         </form>
     </div> 
 </div>
@@ -211,20 +215,55 @@
 
       $(document).ready(function() {
           $(".container").fadeIn(1000);
+          $('#mode_of_payment').attr('disabled', true);
       });
+      
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
     const changeElement = document.getElementById("change_value");
     const totalElement = document.getElementById("total_value");
     const mod = document.getElementById('mode_of_payment');
 
+    $(document).on('keyup','#cash_value,#token_value', function (e) {
+        if(event.which >= 37 && event.which <= 40) return;
+
+        if(this.value.charAt(0) == '.'){
+            this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2){
+                return '.' + g1;
+            })
+        }
+
+        // if(event.key == '.' && this.value.split('.').length > 2){
+        if(this.value.split('.').length > 2){
+            this.value = this.value.replace(/([\d,]+)([\.]+.+)/, '$1') 
+                + '.' + this.value.replace(/([\d,]+)([\.]+.+)/, '$2').replace(/\./g,'')
+            return;
+        }
+
+        $(this).val( function(index, value) {
+            value = value.replace(/[^0-9.]+/g,'')
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        });
+
+        if(event.which >= 37 && event.which <= 40) return;
+        $(this).val(function(index, value) {
+            return value
+            .replace(/\D/g, "")
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            ;
+     });
+});
+
+
     function onInput1(float1Input) {
       float1Input.value = float1Input.value.replace(/[^0-9]/g,'');
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
-      const remainder = float1Value % {{ $cash_value }};
+      const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
       const total = converted * {{ $cash_value }};
-
+      $('#mode_of_payment').attr('disabled', false);
       if (float1Value) {
         float2Input.value = converted;
         totalElement.value = total;
@@ -242,6 +281,7 @@
       float2Input.value = float2Input.value.replace(/[^0-9]/g,'');
       const float2Value = float2Input.value;
       const converted = float2Value * {{ $cash_value }} ;
+      $('#mode_of_payment').attr('disabled', false);
       if (float2Value) {
         float1Input.value = converted;
         totalElement.value = converted;
@@ -256,7 +296,7 @@
     $("#mode_of_payment").on("change", function() {
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
-      const remainder = float1Value % {{ $cash_value }};
+      const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
         const selectedValue = $(this).val();
         if(selectedValue != "CASH"){
           $('#change_value').val('0');
@@ -385,6 +425,7 @@
                 $('#change_value').val('');
                 $('#payment_reference').val("");
                 $('#payment_reference_div').hide();
+                $('#mode_of_payment').attr('disabled', true);
             },
             error: function(err) {
                 console.log(err);

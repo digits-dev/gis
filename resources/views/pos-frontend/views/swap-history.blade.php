@@ -46,7 +46,7 @@
                 <tr>
                     <th><a class="btn btn-details" href="/pos_swap_history/{{ $swap_history->id }}""><i class="fa-solid fa-eye"></i></a>
                         <a class="btn btn-void ajax-request-icon" data-id="{{ $swap_history}}" href="">
-                            @if ($swap_history->status != "VOID")
+                            @if ($swap_history->status != "VOID" && date('Y-m-d', strtotime($swap_history->created_at)) == date('Y-m-d'))
                             <i class="fa-solid fa-x"></i>
                         @endif
                         </a>
@@ -132,9 +132,11 @@
                     }
                     else{
                         Swal.fire(
-                            'Already void!',
-                            '',
-                            'warning'
+                            {
+                        icon: 'error',
+                        title: data.message,
+                        confirmButtonText: 'Ok',
+                        }
                         )
                     }
                     },
