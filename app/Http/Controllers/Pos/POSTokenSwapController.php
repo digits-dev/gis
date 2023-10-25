@@ -25,7 +25,8 @@ class POSTokenSwapController extends Controller
         $data = [];
         $data['mode_of_payments'] = ModeOfPayment::get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;
-        
+        $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
+
         return view('pos-frontend.views.token-swap',$data);
         
     }
@@ -55,7 +56,7 @@ class POSTokenSwapController extends Controller
         $token_inventory = TokenInventory::where('locations_id', Auth::user()->location_id);
         $token_inventory_qty = $token_inventory->first()->qty;
         $total_qty = $token_inventory_qty - $request->token_value;
-        
+
         if ($token_inventory_qty > $request->token_value) {
             
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
@@ -87,12 +88,9 @@ class POSTokenSwapController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         }
-   
 
-            return json_encode(['message'=>'success', 'reference_number' => $refNumber, 'token_inventory_qty' => $token_inventory_qty]);
+            return json_encode(['message'=>'success']);
         
-        // $tokenSwap  POSTokenSwap::create($inputFields);
-        // return redirect('pos_token_swap')->with('message', 'Swap Successfully!');
     }
 
     /**

@@ -78,9 +78,15 @@ class POSSwapHistoryController extends Controller
      */
     public function show($id)
     {
-        return view('pos-frontend.views.show-swap-history', [
-            'swap_history' => SwapHistory::find($id)
-        ]);
+
+        $data = [];
+        $data['swap_histories'] = SwapHistory::find($id);
+        $swapData = $data['swap_histories'];
+        
+        $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
+        $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
+
+        return view('pos-frontend.views.show-swap-history', $data);
     }
 
     /**
@@ -103,7 +109,6 @@ class POSSwapHistoryController extends Controller
         $token_inventory_qty = $token_inventory->qty;
         $total_qty = $token_inventory_qty + $histories_id;
         DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID"]);
-        
         
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
             return json_encode(['message'=>'success', 'swap_history' => SwapHistory::find($id), 'histories_id' => $histories_status ]);
