@@ -372,7 +372,7 @@
 			$machine_serial_number = $data['machine_code'];
 			$machine = GashaMachines::where('serial_number',$machine_serial_number)->first();
 			$item = Item::where('digits_code', $item_code)->first();
-			$qty = $data['qty'];
+			$qty = preg_replace('/,/', '', $data['qty']);
 			$time_stamp = date('Y-m-d H:i:s');
 			$action_by = CRUDBooster::myId();
 

@@ -36,15 +36,15 @@
                         <label>Capsule Barcode <span style="color: red">*</span></label>
                         <div class="flex input-btn">
                             <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control'/>
-                            <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="capsule" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
                             <input input-for="machine" type='text' id="tiem_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control'/>
-                            <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
-                        <input type='number' name='qty' required class='form-control' oninput="numberOnly(this)" id="quantity" min="1"/>
+                        <input type='text' name='qty' required class='form-control' oninput="validateInput(this)" id="quantity" min="1"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
@@ -53,7 +53,7 @@
                 </form>
             </div>
             <div class='panel-footer'>
-            <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
+            <button class="btn btn-danger" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>
         </div>
     </div>
@@ -206,6 +206,21 @@
 
     function numberOnly(numberElement){
         numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
+    }
+
+    function validateInput(inputElement) {
+        let value = inputElement.value;
+        // Remove any non-numeric and non-decimal characters
+        value = value.replace(/[^0-9]/g, '');
+        // Ensure there is only one decimal point
+        let decimalCount = value.split('.').length - 1;
+        if (decimalCount > 1) {
+            // If there is more than one decimal point, remove the extra ones
+            value = value.substring(0, value.lastIndexOf('.'));
+        }
+        // Format the value with commas for every 3 digits
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        inputElement.value = value;
     }
 
     $('.open-camera').on('click', function() {
