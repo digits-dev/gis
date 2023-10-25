@@ -361,7 +361,8 @@
 	    |
 	    */
 		public function hook_after_add($id) {
-			return CRUDBooster::redirect(CRUDBooster::mainpath('getPulloutForPrint/'.$id),"Pullout Token!","success");
+			$pullout_token = PulloutToken::find($id);
+			return CRUDBooster::redirect(CRUDBooster::mainpath('getPulloutForPrint/'.$id),trans("crudbooster.alert_add_employee",['reference_number'=>$pullout_token->reference_number]),"success");
 			// $refNumber = str_pad($id, 8, "0", STR_PAD_LEFT);
 
 			// DB::table('pullout_tokens')->where('id', $id)->update([
