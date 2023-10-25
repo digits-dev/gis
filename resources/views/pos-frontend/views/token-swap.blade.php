@@ -11,8 +11,6 @@
 @section('css')
 <style>
   .main-container {
-    /* background-color: #f1f1f1; */
-    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,7 +19,6 @@
   }
   .container {
     width: 460px;
-    height: 550px;
     background-color: white;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
       rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
@@ -40,23 +37,28 @@
   }
   .btn-reverse-icon {
     cursor: pointer;
+    border-radius: 10px;
+    background-color: rgb(210, 206, 206);
+    padding: 10px;
+    transition: background-color 0.3s;
   }
-  label i {
+  .btn-reverse-icon:hover {
+    background-color: #e60213;
+  }
+  .float-wrapper label i {
     font-size: 20px;
   }
-  .container select {
-    font-weight: bold;
-    background-color: rgb(255, 255, 255);
-    border: none;
-    padding: 18px;
-    color: black;
-    outline: none;
-    cursor: pointer;
+  .float-wrapper {
+    margin: 8px;
+ 
+  }
+  .peso-span, .token-span {
+    margin: 18px;
   }
   .container option {
     font-size: 14px;
   }
-  .container form input {
+  .input-field {
     text-align: right;
     padding: 12px;
     outline: none;
@@ -77,17 +79,20 @@
     align-items: center;
     border-radius: 10px;
     padding: 0 20px;
-    margin-top: 20px;
+    margin: 16px 0;
   }
   .mode-of-payment select {
     width: 100%;
     background: none;
     cursor: pointer;
   }
+  .acc-number {
+    margin-top: 10px;
+  }
   .summary {
     display: flex;
     justify-content: space-evenly;
-    margin: 20px 0;
+    margin-bottom: 16px;
   }
   .summary-value {
     gap: 10px;
@@ -96,17 +101,16 @@
     align-items: center;
     justify-content: center;
   }
-  .total,
-  .change {
+  .change-value, .total-value {
     display: flex;
     justify-content: center;
+    text-align: center;
     padding: 6px 12px;
     width: 100px;
     height: 40px;
     border-radius: 10px;
     border: 2px solid #e60213;
     background-color: #ffbfbf;
-    /* font-size: 19px; */
   }
   button {
     cursor: pointer;
@@ -130,23 +134,25 @@
 @section('content')
 <div class="main-container">
     <div class="container">
+      
         <div class="header">
             <h1 style="font-size: 19px;">Swap</h1>
-            <p>P65.00 per token</p>
+            <p>{{ $cash_value }} per token</p>
         </div>
-        <form id="myForm" action="">
-            <div>
-                <label>
-                    <i class="fa-solid fa-peso-sign sign1"></i>
-                    <i class="fa-solid fa-coins coin1"></i>
-                </label>
-                <select name="currency" id="float-select">
-                    <option value="peso">Peso</option>
-                    <option value="token">Token</option>
-                </select>
+        @if (session('message'))
+        <div x-data="{show: true}" x-init="setTimeout(()=> show = false, 3000)" x-show='show' class="fixed top-0 left-1/2 trasnform -translate-x-1/2 bg-laravel text-white px-24 py-3">
+          <p>
+              {{ session('message') }}
+          </p></div>
+    @endif
+        <form method="POST">
+          @csrf
+            <div class="float-wrapper">
+                  <i class="fa-solid fa-peso-sign peso-sign"></i>
+                  <span class="peso-span">Peso</span>
             </div>
             <div class="amount" id="div1">
-                <input type="text" name="float1" id="float1" oninput="onInput1()" />
+                <input class="input-field" type="text" name="cash_value" id="cash_value" oninput="onInput1(this)" />
             </div>
             <div class="btn-reverse" id="btn-reverse">
                 <i
@@ -154,37 +160,39 @@
                 onclick="swap()">
                 </i>
             </div>
-            <div div id="float-wrapper2">
-                <label>
-                    <i class="fa-solid fa-peso-sign sign2"></i>
-                    <i class="fa-solid fa-coins coin2"></i>
-                </label>
-                <select name="currency" id="float-select2">
-                    <option value="token">Token</option>
-                    <option value="peso">Peso</option>
-                </select>
+            <div class="float-wrapper" id="float-wrapper2">
+                    <i class="fa-solid fa-coins token"></i>
+                    <span class="token-span">Token</span>
             </div>
             <div class="from" id="div2">
-                <input type="text" name="float2" id="float2" oninput="onInput2()" />
+                <input class="input-field token-value" type="text" name="token_value" id="token_value" oninput="onInput2(this)" readonly />
             </div>
-            <div div class="mode-of-payment">
-                <select name="mode of payment" id="mode-of-payment">
+            <div>
+              <Span>Mode of Payment</Span>
+            </div>
+            <div class="mode-of-payment">
+                <select name="mode_of_payment" id="mode_of_payment">
                     <option value="" disabled selected>Mode of Payment</option>
-                    <option value="token">Gcash</option>
-                    <option value="peso">Card</option>
+                    @foreach ($mode_of_payments as $mode_of_payment )
+                    <option value="{{ $mode_of_payment->payment_description  }}">{{ $mode_of_payment->payment_description  }}</option>                      
+                    @endforeach
                 </select>
+            </div>
+            <div id="payment_reference_div">
+              <span>Reference Number</span>
+              <input class="input-field acc-number" type="text" name="payment_reference" id="payment_reference">
             </div>
             <div class="summary">
                 <div class="summary-value">
                     <span>Total</span>
-                    <div class="total"></div>
+                    <input class="total-value" type="text" name="total_value" id="total_value" readonly placeholder="0">
                 </div>
-                <div class="summary-value">
+                  <div class="summary-value">
                     <span>Change</span>
-                    <div class="change"></div>
+                    <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
-            <button type="submit">Swap</button>
+            <button type="submit" >Swap</button>
         </form>
     </div> 
 </div>
@@ -193,81 +201,112 @@
 {{-- Your Script --}}
 
 @section('script-js')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    const selectElement = document.getElementById("float-select");
-    const selectElement2 = document.getElementById("float-select2");
 
-    // icons
-    const signIcon = document.querySelector(".sign1");
-    const signIcon2 = document.querySelector(".sign2");
-    const coinIcon = document.querySelector(".coin1");
-    const coinIcon2 = document.querySelector(".coin2");
+    const float1Input = document.getElementById("cash_value");
+    const float2Input = document.getElementById("token_value");
+    const changeElement = document.getElementById("change_value");
+    const totalElement = document.getElementById("total_value");
+    const mod = document.getElementById('mode_of_payment');
 
-    const float1Input = document.getElementById("float1");
-    const float2Input = document.getElementById("float2");
-    const changeElement = document.querySelector(".change");
-    const totalElement = document.querySelector(".total");
-
-    function updateIcons() {
-      toggleIcon(signIcon, selectElement.value === "peso");
-      toggleIcon(coinIcon, selectElement.value !== "peso");
-      toggleIcon(signIcon2, selectElement2.value === "peso");
-      toggleIcon(coinIcon2, selectElement2.value !== "peso");
-
-      function toggleIcon(icon, condition) {
-        icon.style.display = condition ? "inline" : "none";
-      }
-    }
-
-    updateIcons();
-
-    selectElement.addEventListener("change", updateIcons);
-    selectElement2.addEventListener("change", updateIcons);
-
-    function onInput1() {
-      const float1Value = parseFloat(float1Input.value);
-      const converted = Math.floor(float1Value / 65);
-      const remainder = float1Value % 65;
-      const total = converted * 65;
+    function onInput1(float1Input) {
+      float1Input.value = float1Input.value.replace(/[^0-9]/g,'');
+      const float1Value = float1Input.value;
+      const converted = Math.floor(float1Value / {{ $cash_value }});
+      const remainder = float1Value % {{ $cash_value }};
+      const total = converted * {{ $cash_value }};
 
       if (float1Value) {
         float2Input.value = converted;
-        changeElement.textContent = remainder;
-        totalElement.textContent = total;
+        totalElement.value = total;
+        if(mod.value == 'CASH'){
+          changeElement.value = remainder;
+        }
       } else {
         float2Input.value = "";
-        changeElement.textContent = "";
-        totalElement.textContent = "";
+        changeElement.value = "0";
+        totalElement.value = "0";
       }
     }
 
-    function onInput2() {
+    function onInput2(float2Input) {
+      float2Input.value = float2Input.value.replace(/[^0-9]/g,'');
       const float2Value = float2Input.value;
-      const converted = float2Value * 65;
+      const converted = float2Value * {{ $cash_value }} ;
       if (float2Value) {
         float1Input.value = converted;
-        totalElement.textContent = converted;
+        totalElement.value = converted;
       } else {
         float1Input.value = "";
-        changeElement.textContent = "";
+        totalElement.value = "0";
+        changeElement.value = "0";
       }
     }
+    $('#payment_reference_div').hide();
+    $(document).ready(function() {
+    $("#mode_of_payment").on("change", function() {
+      const float1Value = float1Input.value;
+      const converted = Math.floor(float1Value / {{ $cash_value }});
+      const remainder = float1Value % {{ $cash_value }};
+        const selectedValue = $(this).val();
+        if(selectedValue != "CASH"){
+          $('#change_value').val('0');
+          $('#payment_reference_div').show();
+          $('#payment_reference').val("");
+        }else {
+          $('#change_value').val(remainder);
+          $('#payment_reference_div').hide();
+        }
+        // $('#cash_value').val('');
+        // $('#token_value').val('');
+        // $('#total_value').val('');
+        // $('#change_value').val('');
+    });
+});
+
+
 
     let isSwapped = false;
 
     function swap() {
-      const op1 = selectElement.value;
-      const op2 = selectElement2.value;
-
-      selectElement2.value = op1;
-      selectElement.value = op2;
-
+   
+      const pesoSignIcon = document.querySelector(".peso-sign");
+      const tokenIcon = document.querySelector(".token");
+      const tokenSpan = document.querySelector(".token-span");
+      const pesoSpan = document.querySelector(".peso-span");
+      
+      const change = document.getElementById('change_value')
       const div1 = document.getElementById("div1");
       const div2 = document.getElementById("div2");
-      const btnReverse = document.getElementById("btn-reverse");
       const floatWrapper2 = document.getElementById("float-wrapper2");
+      const btnReverse = document.getElementById("btn-reverse");
       const parent = div1.parentNode;
 
+
+      change.value = ""
+      // swap icons
+      const tempIconClass = pesoSignIcon.className;
+      pesoSignIcon.className = tokenIcon.className;
+      tokenIcon.className = tempIconClass;
+
+      // swap text
+      const tempText = pesoSpan.textContent;
+      pesoSpan.textContent = tokenSpan.textContent;
+      tokenSpan.textContent = tempText;
+
+      // Swap readonly
+      if (float1Input.readOnly) {
+            float1Input.readOnly = false;
+            float2Input.readOnly = true;
+        } else {
+            float1Input.readOnly = true;
+            float2Input.readOnly = false;
+        }
+
+      // swap div position
       if (isSwapped) {
         parent.insertBefore(div1, div2);
         parent.insertBefore(floatWrapper2, div2);
@@ -279,17 +318,80 @@
         parent.insertBefore(btnReverse, floatWrapper2);
         isSwapped = true;
       }
-
-      updateIcons();
     }
+    
+    $(document).ready(function() {
+    $('form').submit(function(e) {
+        e.preventDefault(); // Prevent the form from submitting the traditional way.
+        const formData = $('form').serialize();
+        if($('#cash_value').val() === '' && $('#token_value').val() === ''){
+                Swal.fire({
+                    type: 'error',
+                    title:'Cash or Token Required!',
+                    icon: 'error',
+                    confirmButtonColor: '#367fa9',
+                });
+            }
+          else if($('#cash_value').val() < {{ $cash_value }}  ){
+                Swal.fire({
+                        type: 'error',
+                        title: 'Value is not enough for 1 Token!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+            }
+          else if(!$('#mode_of_payment').val()){
+                Swal.fire({
+                        type: 'error',
+                        title: 'Please choose mode of payment!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+            }
+          else if( $('#payment_reference').val() === '' && $('#mode_of_payment').val() != 'CASH') {
+            Swal.fire({
+                        type: 'error',
+                        title: 'Reference Number is Required!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+          }
+        else {
+          $.ajax({
+            type: 'POST',
+            url: "{{ route('swap') }}",
+            data: formData,
+            success: function(res) {
+                const data = JSON.parse(res);
+                console.log(data)
+                if (data.token_inventory_qty <  $('#token_value').val()) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Token Quantity exceeds the available quantity in the Token Inventory!'
+                  })
+                }else if (data.message === 'success') {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Swap Successfully!',
+                    html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
+                  })
+                 
+                } 
 
-    document.getElementById("myForm").addEventListener("submit", function () {
-      event.preventDefault();
-
-      const float1 = document.getElementById("float1").value;
-      const float2 = document.getElementById("float2").value;
-
-      console.log(float1 + float2);
+                $('#cash_value').val('');
+                $('#token_value').val('');
+                $('#mode_of_payment').val('');
+                $('#total_value').val('');
+                $('#change_value').val('');
+                $('#payment_reference').val("");
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
+        }
     });
+});
   </script>
 @endsection

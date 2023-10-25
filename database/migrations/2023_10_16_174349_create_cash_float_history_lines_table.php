@@ -19,7 +19,7 @@ class CreateCashFloatHistoryLinesTable extends Migration
             $table->integer('mode_of_payments_id')->length(10)->nullable();
             $table->integer('float_entries_id')->length(10)->nullable();
             $table->integer('qty')->length(10)->nullable();
-            $table->integer('value')->length(10)->nullable();
+            $table->decimal('value', 18, 2)->nullable();
             $table->integer('created_by')->unsigned()->length(10)->nullable();
             $table->integer('updated_by')->unsigned()->length(10)->nullable();
             $table->timestamps();

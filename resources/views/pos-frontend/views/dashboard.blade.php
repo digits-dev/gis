@@ -71,7 +71,7 @@
 @endsection
 
 @section('cash-float')
-<div class="cash-float-section">
+<div class="cash-float-section ">
     <div class="cash-float">
         <div class="cash-float-content">
             <form method="POST">
@@ -256,9 +256,23 @@
         }
         // Format the value with commas for every 3 digits
         value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        // restricting to 2 decimal values
+        const [whole, decimal] = value.split('.');
+        if (decimal) {
+            inputElement.value = `${whole}.${decimal.slice(0, 2)}`;
+        } else {
+            inputElement.value = value;
+        }
+    }
+    function validateInputToken(inputElement) {
+        let value = inputElement.value;
+        // Remove any non-numeric and non-decimal characters
+        value = value.replace(/[^0-9]/g, '');
+        // Format the value with commas for every 3 digits
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         inputElement.value = value;
     }
-
     $('#start_of_day').on('click', function() {
         Swal.fire({
             title: "Are Sure You Want To Submit?",
