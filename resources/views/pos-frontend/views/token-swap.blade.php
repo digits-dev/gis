@@ -196,10 +196,7 @@
                     <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
-            <button class="btn-swap" type="submit" > <i
-                class="fa-solid fa-right-left"
-               >
-                </i>Swap</button>
+            <button class="btn-swap" type="submit" >Swap</button>
         </form>
     </div> 
 </div>
