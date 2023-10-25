@@ -364,5 +364,9 @@
 
 	    //By the way, you can still create your own method in here... :) 
 
+		public function updateCurrentCashValue() {
+			DB::table('token_conversions')->where('start_date', date('Y-m-d'))
+				->update(['current_cash_value' => DB::raw('cash_value')]);
+		}
 
 	}
