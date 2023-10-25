@@ -9,6 +9,7 @@ use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\CashFloatHistoryLine;
+use DB;
 
 class POSEndOfDayController extends Controller
 {
@@ -70,14 +71,19 @@ class POSEndOfDayController extends Controller
             ->get()
             ->toArray();
 
+        $token_price = DB::table('token_conversions')->where('status', 'ACTIVE')
+            ->pluck('current_cash_value')
+            ->first();
+
 
         foreach ($float_entries as $fe) {
             $floatEntriesId = $fe['id'];
+            $floatEntriesDescription = $fe['description'];
             
-            if ($floatEntriesId == 14) {
+            if ($floatEntriesDescription == 'TOKEN') {
                 $modeOfPaymentsId = null;
                 $qty = $data['total_token'];
-                $value = 1 * $data['total_token'];
+                $value = $token_price * $data['total_token'];
             } else {
                 $modeOfPaymentsId = null;
                 $qty = $data['cash_value_' . $fe['description']];

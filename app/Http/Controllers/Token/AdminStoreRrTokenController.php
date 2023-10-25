@@ -386,7 +386,7 @@
 			// 	'created_by'       => CRUDBooster::myId(),
 			// 	'created_at'       => date('Y-m-d H:i:s'),
 			// ]);
-			return CRUDBooster::redirect(CRUDBooster::mainpath('getRequestForPrint/'.$id),"Token disburse!","success");
+			return CRUDBooster::redirect(CRUDBooster::mainpath('getRequestForPrint/'.$id),trans("crudbooster.alert_add_employee",['reference_number'=>$disburse_token->disburse_number]),"success");
 
 	    }
 

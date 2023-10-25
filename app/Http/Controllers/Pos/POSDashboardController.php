@@ -81,8 +81,9 @@ class POSDashboardController extends Controller
 
         foreach ($float_entries as $fe) {
             $floatEntriesId = $fe['id'];
+            $floatEntriesDescription = $fe['description'];
             
-            if ($floatEntriesId == 14) {
+            if ($floatEntriesDescription == 'TOKEN') {
                 $modeOfPaymentsId = null;
                 $qty = $data['total_token'];
                 $value = $token_price * $data['total_token'];
@@ -107,7 +108,7 @@ class POSDashboardController extends Controller
         // DB::table('cash_float_history_lines')->insert($lines);
 
         
-        return response()->json( $token_price);
+        return response()->json( $float_entries);
         // return response()->json(['message' => 'Form submitted and data inserted successfully']);
     }
 

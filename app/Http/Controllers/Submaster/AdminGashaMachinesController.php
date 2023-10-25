@@ -5,6 +5,7 @@
 	use DB;
 	use CRUDBooster;
 	use App\Models\Submaster\Locations;
+	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\Counter;
 	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -308,8 +309,9 @@
 	    | @id = last insert id
 	    | 
 	    */
-	    public function hook_after_add($id) {        
-	        //Your code here
+	    public function hook_after_add($id) {       
+			$gasha_machines = GashaMachines::find($id); 
+	        CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$gasha_machines->serial_number]), 'success');
 
 	    }
 
