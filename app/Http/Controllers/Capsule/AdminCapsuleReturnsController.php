@@ -416,7 +416,7 @@
 					'reference_number' => $sales_rn,
 					'item_code' => $capsule->item_code,
 					'gasha_machines_id' => $capsule->gasha_machines_id,
-					'sales_type_id' => SalesType::where('description', 'PULLOUT')->first()->id,
+					'sales_type_id' => SalesType::where('description', 'RETURN')->first()->id,
 					'locations_id' => $gasha_machines->location_id,
 					'qty' =>  abs($capsule->qty - $current_capsule_value),
 					'created_by' => CRUDBooster::myId(),
