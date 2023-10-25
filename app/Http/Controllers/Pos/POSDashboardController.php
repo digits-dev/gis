@@ -9,6 +9,9 @@ use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\CashFloatHistoryLine;
+use App\Models\Submaster\TokenConversion;
+use DB;
+
 
 class POSDashboardController extends Controller
 {
@@ -71,6 +74,10 @@ class POSDashboardController extends Controller
             ->get()
             ->toArray();
 
+        $token_price = DB::table('token_conversions')->where('status', 'ACTIVE')
+            ->pluck('current_cash_value')
+            ->first();
+
 
         foreach ($float_entries as $fe) {
             $floatEntriesId = $fe['id'];
@@ -78,7 +85,7 @@ class POSDashboardController extends Controller
             if ($floatEntriesId == 14) {
                 $modeOfPaymentsId = null;
                 $qty = $data['total_token'];
-                $value = 1 * $data['total_token'];
+                $value = $token_price * $data['total_token'];
             } else {
                 $modeOfPaymentsId = null;
                 $qty = $data['cash_value_' . $fe['description']];
@@ -100,7 +107,7 @@ class POSDashboardController extends Controller
         // DB::table('cash_float_history_lines')->insert($lines);
 
         
-        return response()->json([$lines]);
+        return response()->json( $token_price);
         // return response()->json(['message' => 'Form submitted and data inserted successfully']);
     }
 
