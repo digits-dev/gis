@@ -5,6 +5,19 @@
    <script src="{{ asset('js/code-scanner.js') }}"></script>
    <script src="{{ asset('plugins/sweetalert.js') }}"></script>
    <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
+   <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        /* display: none; <- Crashes Chrome on hover */
+        -webkit-appearance: none;
+        margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    }
+
+    input[type=number] {
+        appearance: textfield;
+        -moz-appearance: textfield; /* Firefox */
+    }
+   </style>
 @endpush
 @section('content')
     <div class="panel-content">
@@ -31,7 +44,7 @@
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
-                        <input type='text' name='qty' required class='form-control' oninput="numberOnly(this)" id="quantity"/>
+                        <input type='number' name='qty' required class='form-control' oninput="numberOnly(this)" id="quantity" min="1"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">

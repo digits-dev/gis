@@ -36,7 +36,7 @@
 -   [x] Mode of Payment
 -   [x] Token Conversion
 -   [x] Token Conversion History
--   [ ] Token Swap History
+-   [x] Token Swap History
 -   [x] Float Types
 -   [x] Float Entries
 -   [x] Cash Float Reconcile
