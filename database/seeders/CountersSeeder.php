@@ -73,7 +73,7 @@ class CountersSeeder extends Seeder
                 'created_at'       => date('Y-m-d H:i:s')
             ],
             [   
-                'cms_moduls_id'    => '40',
+                'cms_moduls_id'    => '42',
                 'reference_code'   => 'CS',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
