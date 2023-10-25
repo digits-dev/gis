@@ -330,6 +330,7 @@
 
     function populateInput(text) {
         $(`input[input-for="${selectedInput}"]`).val(text);
+        $(`input[input-for="${selectedInput}"]`).trigger('input');
     }
 
     $('.open-camera').on('click', function() {
