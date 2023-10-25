@@ -182,7 +182,6 @@
             
             Swal.fire({
                 title: `No. of tokens mismatched.`,
-                // html: `${data.item.digits_code} is worth ${data.item.no_of_tokens} tokens and ${data.machine.serial_number} accepts ${data.machine.no_of_token} tokens.`,
                 html: outerHTML,
                 icon: 'error',
                 returnFocus: false,
@@ -202,6 +201,7 @@
         } else {
             Swal.fire({
                 title: 'Machine successfully refilled.',
+                html: `<strong>Ref #: ${data.reference_number} </strong>`,
                 icon: 'success',
                 returnFocus: false,
             }).then(() => {
@@ -294,6 +294,17 @@
 
     $('form').on('submit', function(event) {
         event.preventDefault();
+        if (!Number($('#quantity').val())) {
+            Swal.fire({
+                title: 'Oops...',
+                html: 'Quantity cannot be 0!',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+            });
+            return;
+        }
         const formData = $('form').serialize();
         $.ajax({
             type: 'POST',
