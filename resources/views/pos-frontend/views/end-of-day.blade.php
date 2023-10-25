@@ -17,6 +17,9 @@
 {{-- Your CSS --}}
 @section('css')
 <style>
+    .cash-float-content {
+        display: none;
+    }
 </style>
 @endsection
 
@@ -97,19 +100,18 @@
 @section('script-js')
 <script src="{{ asset('jsHelper/isNumber.js') }}"></script>
 <script>
-@if(session('is_missing'))
-Swal.fire({
+      @if(session('is_missing'))
+    Swal.fire({
     icon:'warning',
     title: 'Missing END OF DAY!',
     html:'Make EOD for: <strong>{{ $entry_date }}</strong>'
 })
 
 @endif
-
     $(document).ready(function(){
+        $(".cash-float-content").fadeIn(1000);
         $(".cash_value_CASH").attr("readonly", true);
         $(".total_value").attr("readonly", true);
-        $('.cash-float-section').css('visibility', 'visible');
     });
 
     function updateCashValue (){
