@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             TokenConversionSeeder::class,
             CountersSeeder::class,
+            SalesTypeSeeder::class,
         ]);
 
     }

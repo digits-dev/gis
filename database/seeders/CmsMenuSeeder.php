@@ -302,6 +302,44 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 1
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Returns',
+            ],
+            [
+                'name'              => 'Capsule Returns',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleReturnsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Sales',
+            ],
+            [
+                'name'              => 'Capsule Sales',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleSalesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 5
+            ]
+        );
+
+
     }
 
     public function auditMenu() {
@@ -618,19 +656,19 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Capsule Returns',
+                'name'              => 'Sales Types',
             ],
             [
-                'name'              => 'Capsule Returns',
+                'name'              => 'Sales Types	',
                 'type'              => 'Route',
-                'path'              => 'Capsule\AdminCapsuleReturnsControllerGetIndex',
+                'path'              => 'Submaster\AdminSalesTypesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 2,
+                'parent_id'         => 4,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 1
+                'sorting'           => 14
             ]
         );
     }

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\Capsule;
+namespace App\Models\Submaster;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sales extends Model
+class SalesType extends Model
 {
     use HasFactory;
     protected $guarded = [];

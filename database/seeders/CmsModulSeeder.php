@@ -270,6 +270,24 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Capsule Sales',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_sales',
+                'table_name'   => 'capsule_sales',
+                'controller'   => 'Capsule\AdminCapsuleSalesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Sales Type',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'sales_types',
+                'table_name'   => 'sales_types',
+                'controller'   => 'Submaster\AdminSalesTypesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

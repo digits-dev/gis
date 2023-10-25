@@ -9,6 +9,14 @@
 @section('content')
 <style>
 
+    .btn-blue{
+        background-color: rgb(48, 133, 214);
+    }
+
+    .btn-red{
+        background-color: rgb(221, 51, 51);
+    }
+
     .panel-content{
         height: 500px;
         display: flex;
@@ -121,9 +129,106 @@
     .save_gm:disabled{
         background-color: #9c9c9c;
     }
+
+    .swal-clone {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        70% {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+
+    .swal2-container1 {
+        position: relative;
+        width: 37em;
+        padding: 30px 0 !important;
+        background: #fff;
+        border-radius: 5px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+
+    .warning{
+        color: #f8bb86;
+        border: 1px solid #facea8;
+        width: 5em;
+        height: 5em;
+        border-radius: 50%;
+        display: grid;
+        place-content: center;
+    }
+
+    .warning span{
+        font-size: 50px;
+    }
+
+    .warning-content #warning-title{
+        padding: .8em 1em 0;
+        font-size: 1.875em;
+        font-weight: 600;
+        text-align: center;
+        max-width: 100%;
+    }
+
+    .warning-content #warning-message{
+        margin: 1em 1.6em .3em;
+        font-size: 1.125em;
+        text-align: center;
+    }
+
+    .swal-buttons{
+        margin: 1.25em auto 0;
+    }
+
+    .swal-btn{
+        border: none;
+        color: #fff;
+        padding: 7px 15px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
+
+        <div class="swal-clone hide">
+            <div class="swal2-container1">
+                <div class="warning">
+                    <span>!</span>
+                </div>
+                <div class="warning-content">
+                    <p id="warning-title">Are you sure?</p>
+                    <p id="warning-message">You Won't be able to revert this!</p>
+                </div>
+                <div class="swal-buttons">
+                    <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
+                    <button type="button" class="swal-btn btn-red swal-btn-cancel">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+
         <div class='panel panel-default'>
             <div class='panel-header'>
                 <label>CAPSULE RETURN</label>
@@ -139,7 +244,7 @@
                 <label>From Gasha Machine</label>
                 <div class="flex input-btn">
                     <input input-for="machine" type='text' name='gasha_machine' id="gasha_machine" required class='form-control'/>
-                    <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                    <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
                 </div>
                 <label>To Stockroom</label>
                 <div class="flex input-btn">
@@ -175,6 +280,7 @@
     let selectedCameraId = null;
     let selectedInput = null;
     let html5QrCode = null;
+
     async function showCameraOptions(cameras) {
         let cameraOptions = {}
         cameras.forEach(camera => cameraOptions[camera.id] = camera.label);
@@ -246,23 +352,6 @@
         $('#reader-wrapper').hide();
     });
 
-    // $('#save-btn').on('click', function() {
-    //     Swal.fire({
-    //         title: "Do you want to save the changes?",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Save',
-    //         returnFocus: false,
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //         }
-    //     });
-    //     $('#real-submit-btn').click();
-
-    // });
-
     $('input').on('keydown', function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
@@ -283,15 +372,14 @@
             
             const isCorrect = maxAmount >= currentValue;
             if (!isCorrect) {
-                $(e).css('border', '1px solid red');
+                $(e).css('border', '2px solid red');
             } else {
                 $(e).css('border', '');
             }
             return a && isCorrect;
         }, true)
 
-        if (!isValid) {
-            // alert('Insufficient qty in gasha machine.');
+        if (!isValid || inputs.some(e => $(e).val().trim() === '')) {
             $('#save-btn').prop('disabled', true);
         }else{
             $('#save-btn').prop('disabled', false);
@@ -300,18 +388,26 @@
         $('#total_quantity').val(total.toLocaleString());
     });
 
-    // Swal Open
-
     $(document).on('click', '#save-btn', function(){
-        if (window.confirm("Do you want to save the changes?")) {
-            $('#save_gm').click();
-        }
+        $('.swal-clone').removeClass('hide');
+    });
 
-    })
+    $(document).on('click', '.swal-btn-save', function(){
+        $('.swal-clone').addClass('hide');
+        $('#save_gm').click();
+    });
+
+    $(document).on('click', '.swal-btn-cancel', function(){
+        $('.swal-clone').addClass('hide');
+    });
+
+    $(document).on('click', '.swal2-close', function(){
+        $('.swal-clone').addClass('hide');
+    });
 
     $(document).on('click', '#cancel_gm', function(){
         $('.swal2-close').trigger('click');
-    })
+    });
 
     $(document).on('submit', '#swal_form', function(){
         event.preventDefault();
@@ -326,6 +422,7 @@
                 Swal.fire({
                     title: 'Capsule successfully returned.',
                     icon: 'success',
+                    html: `<strong>Ref #: ${res.reference_number} </strong>`,
                     returnFocus: false,
                 }).then(() => {
                     $('#gasha_machine, #quantity').val('');
@@ -341,34 +438,7 @@
 
     $(document).ready(function () {
 
-        // $('#save_gm').prop('disabled', false);
-
-        // let swal_content = $('.return_quantity_content').prop('outerHTML');
-
         $('#save-btn').attr('disabled', true)
-
-        // $('form').on('submit', function(event) {
-        //     event.preventDefault();
-        //     const formData = $('form').serialize();
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: "{{ route('submit_capsule_return') }}",
-        //         data: formData,
-        //         success: function(res) {
-        //             console.log(res);
-        //             Swal.fire({
-        //                 title: 'Capsule successfully returned.',
-        //                 icon: 'success',
-        //                 returnFocus: false,
-        //             }).then(() => {
-        //                 $('#gasha_machine, #quantity').val('');
-        //             });
-        //         },
-        //         error: function(err) {
-        //             console.log(err);
-        //         }
-        //     });
-        // });
         
         const inputElement = $('#gasha_machine, #quantity'); 
 
@@ -376,7 +446,7 @@
 
         inputElement.on('input', function () {
 
-            $('#gm_serial_number').text('Gasha: ' + $('#gasha_machine').val());
+            $('#gm_serial_number').text('Machine: ' + $('#gasha_machine').val());
 
             clearTimeout(timeout); 
 
@@ -415,7 +485,7 @@
                                 </div>
                                 <div>
                                     <br>
-                                    <button type='button' class='save_gm' id="save-btn" value='Save'>Submit</button>
+                                    <button type='button' class='save_gm' id="save-btn" value='Save' disabled>Submit</button>
                                     <button type='submit' class="hide" id="save_gm" type="button">Submit</button>
                                     <button id="cancel_gm" type="button">Cancel</button>
                                 </div>
