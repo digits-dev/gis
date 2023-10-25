@@ -23,74 +23,75 @@
 {{-- Define the content to be included in the 'content' section --}}
 
 @section('cash-float-end')
-<div class="cash-float-section">
-    <div class="cash-float">
-        <div class="cash-float-content">
-            <form method="POST">
-                @csrf
-                <div class="d-flex-al-c">
-                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20">Cash Float (EOD)</p>
-                </div>
-                <div class="eod-table m-top-20">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Mode of Payment</th>
-                                <th>Value</th>
-                                @foreach ($float_entries as $float_entry)
-                                <th>
-                                    {{ $float_entry->description }}
-                                </th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($mode_of_payments as $mode_of_payment)
-                            <tr>
-                                <td>{{ $mode_of_payment->payment_description }}</td>
-                                @for ($i=0; $i<count($float_entries)+1; $i++)
-                                    @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
-                                        @if ($i == 0)
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
-                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
-                                        @else
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);" required ></td>
-                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
-                                        @endif
-                                    @else
-                                    <td><input type="text" disabled></td>
-                                    @endif
-                                @endfor
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="m-top-20">
+@if (!$have_eod_today)
+    <div class="cash-float-section">
+        <div class="cash-float">
+            <div class="cash-float-content">
+                <form method="POST">
+                    @csrf
                     <div class="d-flex-al-c">
-                        <p class="max-w-75">Total Value</p>
-                        <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
-                        {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                        <i class="fa fa-circle-o m-right-10"></i><p class="fs-20">Cash Float (EOD)</p>
                     </div>
-                    <div class="d-flex-al-c m-top-10">
-                        <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" required>
-                        {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                    <div class="eod-table m-top-20">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mode of Payment</th>
+                                    <th>Value</th>
+                                    @foreach ($float_entries as $float_entry)
+                                    <th>
+                                        {{ $float_entry->description }}
+                                    </th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($mode_of_payments as $mode_of_payment)
+                                <tr>
+                                    <td>{{ $mode_of_payment->payment_description }}</td>
+                                    @for ($i=0; $i<count($float_entries)+1; $i++)
+                                        @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
+                                            @if ($i == 0)
+                                                <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
+                                                {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
+                                            @else
+                                                <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);" required ></td>
+                                                {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
+                                            @endif
+                                        @else
+                                        <td><input type="text" disabled></td>
+                                        @endif
+                                    @endfor
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div class="d-flex-jcc-col m-top-30">
-                    <p class="fw-bold m-top-10">Date: {{ $entry_date }}</p>
-                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
-                    <button class="hide" type="submit" id="real-submit-btn"></button>
-                    <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
-                    <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
-                    <p class="m-top-5 c-danger">*You can only "View" the system after end of day</p>
-                </div>
-            </form>
+                    <div class="m-top-20">
+                        <div class="d-flex-al-c">
+                            <p class="max-w-75">Total Value</p>
+                            <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
+                            {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                        </div>
+                        <div class="d-flex-al-c m-top-10">
+                            <p class="max-w-75">Token qty</p>
+                            <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" required>
+                            {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                        </div>
+                    </div>
+                    <div class="d-flex-jcc-col m-top-30">
+                        <p class="fw-bold m-top-10">Date: {{ $entry_date }}</p>
+                        <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
+                        <button class="hide" type="submit" id="real-submit-btn"></button>
+                        <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
+                        <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
+                        <p class="m-top-5 c-danger">*You can only "View" the system after end of day</p>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
+@endif
 @endsection
 
 {{-- Your Script --}}

@@ -32,7 +32,23 @@ class POSEndOfDayController extends Controller
 
         $data['entry_date'] = $missing_eod->entry_date;
 
+
+        $entry_today = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->where('entry_date', date('Y-m-d'))
+            ->where('eod','!=',null)
+            ->first();
+
+
+        $data['have_eod_today'] = !!$entry_today->eod;
+        dd($data['have_eod_today']);
         return view('pos-frontend.views.end-of-day', $data);
+
+
+
+
+
+
     }
     public function submitEOD(Request $request){
         $data = $request->all();
