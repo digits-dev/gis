@@ -14,7 +14,8 @@ class FloatTypeSeeder extends Seeder
      */
     public function run()
     {
-        FloatType::updateOrInsert(['description' => 'START'],['description' => 'START', 'created_at'=>date('Y-m-d H:i:s')]);
-        FloatType::updateOrInsert(['description' => 'END'],['description' => 'END', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatType::truncate();
+        FloatType::updateOrInsert(['description' => 'START'],['id' => 1, 'description' => 'START', 'created_at'=>date('Y-m-d H:i:s')]);
+        FloatType::updateOrInsert(['description' => 'END'],['id' => 2, 'description' => 'END', 'created_at'=>date('Y-m-d H:i:s')]);
     }
 }
