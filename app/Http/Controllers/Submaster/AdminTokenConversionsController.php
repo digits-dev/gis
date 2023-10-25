@@ -307,6 +307,10 @@
 			$old_values = TokenConversion::where('id', $id)->first()->toArray();
 			$new_values = $postdata;
 
+			if ($postdata['start_date'] == date('Y-m-d')) {
+				$postdata['current_cash_value'] = $postdata['cash_value'];
+			}
+
 			$data = [
 				'token_conversions_id' => $id,
 				'old_token_qty' => $old_values['token_qty'],
