@@ -294,6 +294,17 @@
 
     $('form').on('submit', function(event) {
         event.preventDefault();
+        if (!Number($('#quantity').val())) {
+            Swal.fire({
+                title: 'Oops...',
+                html: 'Quantity cannot be 0!',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+            });
+            return;
+        }
         const formData = $('form').serialize();
         $.ajax({
             type: 'POST',
