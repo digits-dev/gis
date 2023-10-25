@@ -336,6 +336,7 @@
 	    //By the way, you can still create your own method in here... :) 
 		public function getDetail($id) {
 			$item = DB::table('inventory_capsules')
+				->where('inventory_capsules.id', $id)
 				->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
 				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
 				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
