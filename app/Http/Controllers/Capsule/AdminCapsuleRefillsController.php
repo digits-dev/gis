@@ -501,6 +501,7 @@
 				->whereNotNull('gasha_machines.id')
 				->where('inventory_capsules.item_code', $item_code)
 				->where('inventory_capsule_lines.qty', '>', 0)
+				->where('inventory_capsules.locations_id', CRUDBooster::myLocationId())
 				->get()
 				->toArray();
 
