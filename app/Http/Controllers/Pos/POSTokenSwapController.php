@@ -89,7 +89,7 @@ class POSTokenSwapController extends Controller
             ]);
         }
 
-            return json_encode(['message'=>'success']);
+            return json_encode(['message'=>'success', 'reference_number'=> $refNumber]);
         
     }
 
