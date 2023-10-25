@@ -15,7 +15,7 @@ class CollectRrTokens extends Model
                      ->leftjoin('locations', 'collect_rr_tokens.location_id', '=', 'locations.id')
                      ->leftjoin('cms_users as requestor', 'collect_rr_tokens.created_by', '=', 'requestor.id')
                      ->leftjoin('cms_users as receiver', 'collect_rr_tokens.received_by', '=', 'receiver.id')
-                     ->select('collect_rr_tokens.id as id',
+                     ->select('collect_rr_tokens.id as ct_id',
                               'collect_rr_tokens.*',
                               'statuses.*',
                               'locations.*',

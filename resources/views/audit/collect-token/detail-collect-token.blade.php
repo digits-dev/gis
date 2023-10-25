@@ -112,7 +112,7 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="require control-label"> Date created</label>
-                    <input type="text" class="form-control finput" value="{{ $detail_header->created_at }}" readonly>
+                    <input type="text" class="form-control finput" value="{{ $detail_header->collect_rr_tokens_created }}" readonly>
                 </div>
             </div>
 
@@ -134,7 +134,7 @@
                         @foreach($detail_body as $row)
                             <tr>
                                 <td style="text-align:center" height="10">
-                                    {{$row->description ."-".  $row->serial_number}}                               
+                                    {{$row->serial_number}}                               
                                 </td>
                                 <td style="text-align:center" height="10" class="qty">
                                     {{$row->qty}}                               
