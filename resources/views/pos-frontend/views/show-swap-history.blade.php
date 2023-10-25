@@ -10,7 +10,7 @@
  }
  .styled-table {
     background-color: #e1e3e6;
-     border-collapse: collapse;
+    border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;

@@ -146,11 +146,11 @@
                                         {{$row->qty}}                               
                                     </td>
                                     <td style="text-align:center" height="10">
-                                        {{fmod($row->qty,$row->no_of_token)}}                               
+                                        {{($row->variance ? $row->variance : 0)}}                               
                                     </td>
                                 </tr>
                             @else
-                                <tr style="background-color: #dd4b39; color:#fff">
+                                <tr style="background-color: #f8d7da; color:#721c24">
                                     <td style="text-align:center" height="10">
                                         {{$row->serial_number}}                               
                                     </td>
@@ -161,7 +161,7 @@
                                         {{$row->qty}}                               
                                     </td>
                                     <td style="text-align:center" height="10">
-                                        {{fmod($row->qty,$row->no_of_token)}}                                  
+                                        {{($row->variance ? $row->variance : 0)}}                                  
                                     </td>
                                 </tr>
                             @endif

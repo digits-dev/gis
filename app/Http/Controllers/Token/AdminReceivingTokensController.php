@@ -213,23 +213,29 @@
 	        */
 	        $this->style_css = NULL;
 	        $this->style_css = "
-			.panel-heading{
-				background-color:#dd4b39;
-				color:#fff;
-			}
-			.select2-selection__choice{
-			font-size:14px !important;
-			color:black !important;
-			}
-			.select2-selection__rendered {
-				line-height: 31px !important;
-			}
-			.select2-container .select2-selection--single {
-				height: 35px !important;
-			}
-			.select2-selection__arrow {
-				height: 34px !important;
-			}
+				.panel-heading{
+					background-color:#dd4b39;
+					color:#fff;
+				}
+				.select2-selection__choice{
+				font-size:14px !important;
+				color:black !important;
+				}
+				.select2-selection__rendered {
+					line-height: 31px !important;
+				}
+				.select2-container .select2-selection--single {
+					height: 35px !important;
+				}
+				.select2-selection__arrow {
+					height: 34px !important;
+				}
+				@media (min-width:729px){
+					.panel-default{
+							width:40% !important; 
+							margin:auto !important;
+					}
+				}
 			";
 
 

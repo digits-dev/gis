@@ -200,7 +200,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = '
+				.panel-heading{
+					background-color:#dd4b39 !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';
 	        
 	        
 	        

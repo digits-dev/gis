@@ -15,11 +15,11 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -42,11 +42,11 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Module Name','name'=>'cms_moduls_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'cms_moduls,name'];
-			$this->form[] = ['label'=>'Reference Code','name'=>'reference_code','type'=>'text','validation'=>'required|min:1|max:10','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Module Name','name'=>'cms_moduls_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_moduls,name'];
+			$this->form[] = ['label'=>'Reference Code','name'=>'reference_code','type'=>'text','validation'=>'required|min:1|max:10','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
 			if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE'];
 			}
 			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
 				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
@@ -199,7 +199,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = '
+				.panel-heading{
+					background-color:#dd4b39 !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';
 
 
 

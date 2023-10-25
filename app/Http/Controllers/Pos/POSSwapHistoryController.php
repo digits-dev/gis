@@ -98,6 +98,11 @@ class POSSwapHistoryController extends Controller
     public function edit($id)
     {
         
+        $check_date = DB::table('swap_histories')->where('id', $id)->value('created_at');
+        if (date('Y-m-d', strtotime($check_date)) != date('Y-m-d'))
+        {
+            return json_encode(['message'=>'not allowed to void' ]);
+        }
         $histories_id = DB::table('swap_histories')->where('id', $id)->value('token_value');
         $histories_status = DB::table('swap_histories')->where('id', $id)->value('status');
 

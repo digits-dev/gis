@@ -61,9 +61,9 @@ class POSTokenSwapController extends Controller
             
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
             $postokenSwap = new POSTokenSwap;
-            $postokenSwap->cash_value = $request->cash_value;
+            $postokenSwap->cash_value = intval(str_replace(',', '',$request->cash_value));
             $postokenSwap->reference_number = $refNumber;
-            $postokenSwap->token_value = $request->token_value;
+            $postokenSwap->token_value = intval(str_replace(',', '',$request->token_value));
             $postokenSwap->total_value = $request->total_value;
             $postokenSwap->locations_id = Auth::user()->location_id;
             $postokenSwap->mode_of_payments = $request->mode_of_payment;
@@ -77,8 +77,8 @@ class POSTokenSwapController extends Controller
             
             DB::table('swap_histories')->insert([
                 'reference_number' =>  $refNumber,
-                'cash_value' => $request->cash_value,
-                'token_value' => $request->token_value,
+                'cash_value' => intval(str_replace(',', '',$request->cash_value)),
+                'token_value' => intval(str_replace(',', '',$request->token_value)),
                 'total_value' => $request->total_value,
                 'type_id' => $typeId,
                 'locations_id' => Auth::user()->location_id,
@@ -89,7 +89,7 @@ class POSTokenSwapController extends Controller
             ]);
         }
 
-            return json_encode(['message'=>'success']);
+            return json_encode(['message'=>'success', 'reference_number'=> $refNumber]);
         
     }
 
