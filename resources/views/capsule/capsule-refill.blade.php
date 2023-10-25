@@ -20,6 +20,21 @@
    </style>
 @endpush
 @section('content')
+    <div class="swal-machine-list" style="display: none;">
+        <p class="swal-item-description text-bold"></p>
+    </div>
+    <div class="swal-token-mismatch" style="display: none;">
+        <table class="table table-striped table-bordered" style="width: 100%">
+            <thead>
+                <tr>
+                    <th class="text-center">Item Code / Serial No.</th>
+                    <th class="text-center">No. of Tokens</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="panel-content">
         <div class='panel panel-default'>
             <div class='panel-header'>
@@ -30,7 +45,7 @@
                     <div class="close-reader">×</div>
                     <div id="reader"></div>
                 </div>
-                <form method="POST">
+                <form method="POST" autocomplete="off">
                     @csrf
                     <div class='form-group'>
                         <label>Capsule Barcode <span style="color: red">*</span></label>
@@ -119,19 +134,21 @@
     async function showMachines(data) {
         const item = data.item;
         const machines = data.machines;
-        let machineOptions = {};
-        machines.forEach(machine => {
-            machineOptions[machine.serial_number] = machine.serial_number; 
-        });
 
         if (!machines.length) {
             $('input[name="machine_code"]').val('');
         }
         else if (machines.length) {
-            const serialNumbers = machines.map(machine => `<strong>${machine.serial_number}</strong>`);
+            const clonedDiv = $('.swal-machine-list').clone().show();
+            clonedDiv.find('.swal-item-description').text(`🥚 ${item.digits_code} - ${item.item_description}`)
+            machines.forEach(machine => {
+                const pTag = $('<p>').text(`📥 ${machine.serial_number}`);
+                clonedDiv.append(pTag);
+            })
+            const outerHTML = clonedDiv.prop('outerHTML');
             Swal.fire({
-                title: "Machine Found.",
-                html:  `This item: <strong>(${item.digits_code} - ${item.item_description})</strong> is found in machine ${serialNumbers.join(', ')}!`,
+                title: `Machine${machines.length > 1 ? 's' : ''} Found.`,
+                html: outerHTML,
                 icon: 'info',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
@@ -149,9 +166,24 @@
                 returnFocus: false,
             });
         } else if (data.is_tally == false) {
+            const item = data.item;
+            const machine = data.machine;
+            const clonedDiv = $('.swal-token-mismatch').clone().show();
+            const itemTR = $('<tr>');
+            const machineTR = $('<tr>');
+            const itemTD = $('<td>').text(item.digits_code);
+            const itemQtyTD = $('<td>').text(item.no_of_tokens);
+            const machineTD = $('<td>').text(machine.serial_number);
+            const machineQtyTD = $('<td>').text(machine.no_of_token);
+            itemTR.append(itemTD, itemQtyTD);
+            machineTR.append(machineTD, machineQtyTD);
+            clonedDiv.find('tbody').append(itemTR, machineTR);
+            const outerHTML = clonedDiv.prop('outerHTML');
+            
             Swal.fire({
                 title: `No. of tokens mismatched.`,
-                html: `${data.item.digits_code} is worth ${data.item.no_of_tokens} tokens and ${data.machine.serial_number} accepts ${data.machine.no_of_token} tokens.`,
+                // html: `${data.item.digits_code} is worth ${data.item.no_of_tokens} tokens and ${data.machine.serial_number} accepts ${data.machine.no_of_token} tokens.`,
+                html: outerHTML,
                 icon: 'error',
                 returnFocus: false,
             });
