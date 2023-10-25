@@ -32,7 +32,7 @@
             <form method="POST">
                 @csrf
                 <div class="d-flex-al-c">
-                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20">Cash Float (EOD)</p>
+                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 fw-bold text-color">Cash Float (EOD)</p>
                 </div>
                 <div class="eod-table m-top-20">
                     <table>
@@ -83,7 +83,7 @@
                 </div>
                 <div class="d-flex-jcc-col m-top-30">
                     <p class="fw-bold m-top-10">Date: {{ $entry_date }}</p>
-                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
+                    <button class="bg-text-color text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
                     <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
