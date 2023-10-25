@@ -122,11 +122,13 @@
                     const data = JSON.parse(res);
                     console.log(data)
                     if(data.message == 'success'){
-                        Swal.fire(
-                            'Void Successfuly',
-                            '',
-                            'success'
-                        )
+                     Swal.fire({
+                        icon: 'success',
+                        title: 'Void Successfully',
+                        confirmButtonText: 'Ok',
+                        }).then((result) => {
+                            location.reload();
+                        })
                     }
                     else{
                         Swal.fire(
