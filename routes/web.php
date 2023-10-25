@@ -19,6 +19,7 @@ use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
 use App\Http\Controllers\capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
+use App\Http\Controllers\Audit\AdminCycleCountsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +57,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
-    
+
     //POS Dashboard
     Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
 
@@ -65,7 +66,7 @@ Route::group(['middleware' => ['web']], function() {
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/check-inventory-qty',[AdminCollectRrTokensController::class, 'checkInventoryQty'])->name('check-inventory-qty');
     //Pullout
@@ -82,4 +83,9 @@ Route::group(['middleware' => ['web']], function() {
 
     //Restricted Route
     Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
+
+    //Cycle Count
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-machine', [AdminCycleCountsController::class, 'getMachine'])->name('get_machine');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
+
 });
