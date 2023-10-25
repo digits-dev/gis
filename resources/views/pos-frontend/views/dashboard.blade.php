@@ -15,7 +15,6 @@
 
     .statistic-content{
         display: flex;
-        justify-content: space-between;
         flex-wrap: wrap;
         width: 100%;
     }
@@ -23,7 +22,7 @@
     .statistic-box{
         height: 150px;
         width: 100%;
-        max-width: 340px;
+        max-width: 320px;
         background-color: rgb(255, 255, 255);
         padding: 15px;
         border-radius: 5px;

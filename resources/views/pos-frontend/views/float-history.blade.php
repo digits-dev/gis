@@ -5,10 +5,6 @@
 
 {{-- Your Plugins --}}
 @section('plugins')
-<!--DATATABLE-->
-<link rel="stylesheet" href="{{ asset('datatable/dataTables.responsive.min.css') }}">
-<link rel="stylesheet" href="{{ asset('datatable/jquery.dataTables.min.css') }}">
-<script src="{{ asset('datatable/jquery.dataTables.min.js') }}"></script>
 @endsection
 
 {{-- Your CSS --}}
