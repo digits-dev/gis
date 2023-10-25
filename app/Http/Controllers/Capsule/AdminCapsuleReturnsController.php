@@ -11,7 +11,7 @@
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
 	use Session;
-	use Illuminate\Http\Request;
+	use Request;
 	use DB;
 	use CRUDBooster;
 
@@ -342,7 +342,7 @@
 
 		public function submitCapsuleReturn(Request $request){
 
-			$return_inputs = $requestall();
+			$return_inputs = Request::all();
 
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();

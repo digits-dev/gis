@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <div class="d-flex-jcc-col m-top-30">
-                    <p class="fw-bold m-top-10">Current Date:</p>
+                    <p class="fw-bold m-top-10 currentDateTime">Current Date:</p>
                     <p class="m-top-10" id="currentDateTime">Loading Time...</p>
                     <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
