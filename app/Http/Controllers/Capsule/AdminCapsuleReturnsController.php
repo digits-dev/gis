@@ -11,7 +11,7 @@
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
 	use Session;
-	use Illuminate\Http\Request;
+	use Request;
 	use DB;
 	use CRUDBooster;
 
@@ -34,7 +34,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "capsule_returns";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -342,7 +342,7 @@
 
 		public function submitCapsuleReturn(Request $request){
 
-			$return_inputs = $requestall();
+			$return_inputs = Request::all();
 
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
@@ -416,7 +416,7 @@
 					'reference_number' => $sales_rn,
 					'item_code' => $capsule->item_code,
 					'gasha_machines_id' => $capsule->gasha_machines_id,
-					'sales_type_id' => SalesType::where('description', 'PULLOUT')->first()->id,
+					'sales_type_id' => SalesType::where('description', 'RETURN')->first()->id,
 					'locations_id' => $gasha_machines->location_id,
 					'qty' =>  abs($capsule->qty - $current_capsule_value),
 					'created_by' => CRUDBooster::myId(),

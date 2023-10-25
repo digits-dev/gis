@@ -131,6 +131,7 @@
                                 <th width="10%" class="text-center">Machine</th> 
                                 <th width="10%" class="text-center">Machine no of tokens</th> 
                                 <th width="10%" class="text-center">Collected Tokens</th>
+                                <th width="10%" class="text-center">Variance</th>
                             </tr>      
                         @foreach($detail_body as $row)
                             @if($row->qty % $row->no_of_token === 0)
@@ -144,6 +145,9 @@
                                     <td style="text-align:center" height="10" class="qty">
                                         {{$row->qty}}                               
                                     </td>
+                                    <td style="text-align:center" height="10">
+                                        {{fmod($row->qty,$row->no_of_token)}}                               
+                                    </td>
                                 </tr>
                             @else
                                 <tr style="background-color: #dd4b39; color:#fff">
@@ -155,6 +159,9 @@
                                     </td>
                                     <td style="text-align:center" height="10" class="qty">
                                         {{$row->qty}}                               
+                                    </td>
+                                    <td style="text-align:center" height="10">
+                                        {{fmod($row->qty,$row->no_of_token)}}                                  
                                     </td>
                                 </tr>
                             @endif
@@ -219,6 +226,8 @@
                 '<strong>' +
                     qty +
                 '</strong>'+
+            '</td>'+
+            '<td style="text-align:center">'+
             '</td>'+
     '</tr>';
 </script>

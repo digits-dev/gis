@@ -511,5 +511,11 @@
 			]);
 		}
 
+		public function checkInventoryQty(Request $request){
+				$data = Request::all();	
+				$id = $data['id'];
+				$tokenInventory = DB::table('token_inventories')->where('locations_id',$id)->first();
+				return json_encode(['tokenInventory' => $tokenInventory]);
+		}
 
 	}

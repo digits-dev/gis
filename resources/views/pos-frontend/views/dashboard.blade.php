@@ -58,12 +58,16 @@
     }
 
     .statistic-chart-content{
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+    
+    #myLineChart{
+        position: absolute;
         background-color: rgb(255, 255, 255);
-        padding: 15px;
-        border-radius: 5px;
         box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem, rgba(0, 0, 0, 0.06) 0rem 0.125rem 0.25rem -0.0625rem;
-        /* width: 100%; */
-        height: 350px;
+        border-radius: 5px;
     }
 
 
@@ -127,7 +131,7 @@
                     </div>
                 </div>
                 <div class="d-flex-jcc-col m-top-30">
-                    <p class="fw-bold m-top-10">Current Date:</p>
+                    <p class="fw-bold m-top-10 currentDateTime">Current Date:</p>
                     <p class="m-top-10" id="currentDateTime">Loading Time...</p>
                     <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
@@ -328,8 +332,8 @@
 
         // Dynamically set the canvas width to 100%
         var canvas = document.getElementById('myLineChart');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
+        // canvas.style.maxWidth = '1000px';
+        // canvas.style.height = '300px';   
 
         var data = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],

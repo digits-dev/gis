@@ -120,9 +120,11 @@
                                 <option value="{{ $location->id }}">{{ $location->location_name }}</option>
                             @endforeach
                         </select>
+                        <div id="location_error"></div>
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="col-md-12">
                 <table class="table" id="collect-token">
@@ -225,6 +227,26 @@
 
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
+        var id =  this.value;
+       
+        $.ajax({ 
+            type: 'POST',
+            url: "{{ route('check-inventory-qty') }}",
+            data: {
+                "id": id
+            },
+            success: function(res) {
+                const data = JSON.parse(res);
+                if(data.tokenInventory == null){
+                    $('#add-Row').attr('disabled',true);
+                    $('#location_error').html('<span class="label label-danger">No available inventory</span>');
+                }else{
+                    $('#location_error').html('');
+                    $('#add-Row').attr('disabled',false);
+                }
+                console.log(res);
+            }
+        });
     });
 
     async function showCameraOptions(cameras) {

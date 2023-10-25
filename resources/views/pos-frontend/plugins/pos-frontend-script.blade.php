@@ -18,25 +18,25 @@
 
     // Time
     function getCurrentDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
 
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    }
+function updateDateTime() {
+    const elements = document.querySelectorAll('.currentDateTime');
+    elements.forEach(function(element) {
+        element.textContent = getCurrentDateTime();
+    });
+}
 
-    function updateDateTime() {
-        const dateTimeElement = document.getElementById('currentDateTime');
-        if (dateTimeElement) {
-            dateTimeElement.textContent = getCurrentDateTime();
-        }
-    }
+setInterval(updateDateTime, 1000);
 
-    setInterval(updateDateTime, 1000);
 
 </script>
