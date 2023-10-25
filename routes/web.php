@@ -16,6 +16,7 @@ use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
+use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
 use App\Http\Controllers\capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 
@@ -64,7 +65,7 @@ Route::group(['middleware' => ['web']], function() {
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-edit/{id}', [AdminCollectRrTokensController::class, 'getEdit']); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']); 
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine');
 
     //Pullout

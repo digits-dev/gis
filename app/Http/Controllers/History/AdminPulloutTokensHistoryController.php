@@ -33,7 +33,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "pullout_tokens";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -48,8 +48,8 @@
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			// $this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			// $this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -256,12 +256,14 @@
 	    public function hook_query_index(&$query) {
 			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('pullout_tokens.deleted_at')
+					  ->whereNotNull('pullout_tokens.received_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
 					  ->orderBy('pullout_tokens.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[2])){
 				$query->where('pullout_tokens.received_by', CRUDBooster::myId())
 					  ->where('pullout_tokens.statuses_id',$this->closed)
 					  ->whereNull('pullout_tokens.deleted_at')
+					  ->whereNotNull('pullout_tokens.received_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
 					  ->orderBy('pullout_tokens.id', 'desc');
 			}

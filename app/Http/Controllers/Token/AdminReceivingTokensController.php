@@ -337,7 +337,7 @@
 				'created_at' => date('Y-m-d H:i:s'),
 			]);
 
-
+			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
 	    }
 
 	    /*

@@ -176,7 +176,7 @@
 	        $this->script_js = NULL;
 			$this->script_js = '
 				$(function(){
-					$("body").addClass("sidebar-collapse");
+					//$("body").addClass("sidebar-collapse");
 					$("#table_dashboard").on("cut copy paste", function (e) {
 						e.preventDefault();
 						return false;

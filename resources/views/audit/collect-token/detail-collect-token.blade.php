@@ -77,6 +77,13 @@
             }
         }
 
+        @media (min-width:729px){
+           .panel-default{
+                width:40% !important; 
+                margin:auto !important;
+           }
+        }
+
     </style>
 @endpush
 @extends('crudbooster::admin_template')
@@ -93,55 +100,65 @@
 </div>
 
     <div class='panel-body'>
-        <div class="col-md-12 col-sm-offset-1">
+        <div class="col-md-12">
         
-            <div class="col-md-5">
                 <div class="form-group">
                     <label class="control-label"> Reference Number</label>
                     <input type="text" class="form-control finput" value="{{ $detail_header->reference_number }}" readonly>
                 </div>
-            </div>
-
-            <div class="col-md-5">
+            
                 <div class="form-group">
                     <label class="control-label"> Location</label>
                     <input type="text" class="form-control finput" value="{{ $detail_header->location_name }}" readonly>
                 </div>
-            </div>
-
-            <div class="col-md-5">
+       
                 <div class="form-group">
                     <label class="require control-label"> Date created</label>
                     <input type="text" class="form-control finput" value="{{ $detail_header->collect_rr_tokens_created }}" readonly>
                 </div>
-            </div>
-
-            <div class="col-md-5">
+         
                 <div class="form-group">
                     <label class="require control-label"> Total Qty</label>
                     <input type="text" class="form-control finput" value="{{ $detail_header->collected_qty }}" readonly>
                 </div>
-            </div>
+            
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-12">
                 <table class="table" id="collected-token">
                     <tbody id="bodyTable">    
                             <tr>
                                 <th width="10%" class="text-center">Machine</th> 
-                                <th width="10%" class="text-center">Quanity</th>
+                                <th width="10%" class="text-center">Machine no of tokens</th> 
+                                <th width="10%" class="text-center">Collected Tokens</th>
                             </tr>      
                         @foreach($detail_body as $row)
-                            <tr>
-                                <td style="text-align:center" height="10">
-                                    {{$row->serial_number}}                               
-                                </td>
-                                <td style="text-align:center" height="10" class="qty">
-                                    {{$row->qty}}                               
-                                </td>
-                            </tr>
-                        @endforeach   
-                 
+                            @if($row->qty % $row->no_of_token === 0)
+                                <tr>
+                                    <td style="text-align:center" height="10">
+                                        {{$row->serial_number}}                               
+                                    </td>
+                                    <td style="text-align:center" height="10">
+                                        {{$row->no_of_token}}                               
+                                    </td>
+                                    <td style="text-align:center" height="10" class="qty">
+                                        {{$row->qty}}                               
+                                    </td>
+                                </tr>
+                            @else
+                                <tr style="background-color: #dd4b39; color:#fff">
+                                    <td style="text-align:center" height="10">
+                                        {{$row->serial_number}}                               
+                                    </td>
+                                    <td style="text-align:center" height="10">
+                                        {{$row->no_of_token}}                               
+                                    </td>
+                                    <td style="text-align:center" height="10" class="qty">
+                                        {{$row->qty}}                               
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach                                            
                     </tbody>
                 </table>
             </div>   
@@ -149,7 +166,7 @@
 
         @if( $detail_header->received_by != null )
             <div class="row">
-                <div class="col-md-6 col-sm-offset-1">
+                <div class="col-md-12">
                     <table style="width:100%">
                         <tbody id="footer">
                             <tr>
@@ -185,7 +202,7 @@
 
 
     var tds = document.getElementById('collected-token').getElementsByTagName('td');
-    var qty        = 0;
+    var qty = 0;
 
     for (var i = 0; i < tds.length; i++) {
         if(tds[i].className == 'qty') {
@@ -194,7 +211,7 @@
     }
     document.getElementById('collected-token').innerHTML +=
     '<tr>'+
-            '<td style="text-align:center">'+
+            '<td colspan="2" style="text-align:center">'+
                 '<strong>TOTAL</strong>'+
             '</td>'+
             
@@ -203,7 +220,6 @@
                     qty +
                 '</strong>'+
             '</td>'+
-              
     '</tr>';
 </script>
 @endpush

@@ -129,7 +129,7 @@
                     <tbody id="bodyTable">    
                         <tr>
                             <th width="10%" class="text-center">Machine</th> 
-                            <th width="10%" class="text-center">Quanity</th>
+                            <th width="10%" class="text-center">Quantity</th>
                             <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
                         </tr>       
                  
@@ -138,7 +138,6 @@
                         <tr id="tr-table1" class="bottom">
                             <td style="text-align:left" >
                                 <button class="red-tooltip" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
-                                <div id="display_error" style="text-align:left"></div>
                             </td>
                             <td colspan="1">
                                 <input type="text" name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
@@ -155,18 +154,20 @@
     {{-- Collect Token Modal --}}
     <div id="addRowModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
-            <div id="reader-wrapper" style="display: none;">
-                <div class="close-reader">×</div>
-                <div id="reader"></div>
-            </div>
+            
             <div class="modal-content">
                 <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title text-center"><strong>Collect Token</strong></h4>
-                   
                 </div>
                 <div class="row">
                     <div class="modal-body">
+                        <div class="col-md-12" style="margin-bottom: 10px">
+                            <div id="reader-wrapper" style="display: none;">
+                                <div class="close-reader">X</div>
+                                <div id="reader"></div>
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group" style="display: flex">
                                 <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">  
@@ -176,7 +177,9 @@
     
                         <div class="col-md-12">
                             <div class="form-group">
+                                <input class="form-control" type="hidden" name="machine_token_qty" id="machine_token_qty">  
                                 <input class="form-control text-center finput" type="text" placeholder="Collected Token" name="qty_inputed" id="qty_inputed" style="width:100%" autocomplete="off">  
+                                <div id="display_error"></div>
                             </div>
                         </div>
                     </div>
@@ -289,7 +292,7 @@
             },
             success: function(res) {
                 const data = JSON.parse(res);
-                console.log(data.machines);
+                console.log(data);
                 if(data.machines == null){
                     Swal.fire({
                         title: "Oops.",
@@ -302,6 +305,7 @@
                     $('#copy-row').attr('disabled',true);
                     return false;
                 }else{
+                    $('#machine_token_qty').val(data.machines.no_of_token);
                     $('#copy-row').attr('disabled',false);
                 }
             },
@@ -318,7 +322,7 @@
         });
     }
 
-     $('.open-camera').on('click', function() {
+    $('.open-camera').on('click', function() {
         selectedInput = $(this).attr('btn-for');
         if (selectedCameraId) {
             openVideo(selectedCameraId);
@@ -331,6 +335,11 @@
         }).catch(err => {
             alert('no cameras detected');
         });
+    });
+
+    $('.close-reader').on('click', function() {
+        if (html5QrCode) html5QrCode.stop();
+        $('#reader-wrapper').hide();
     });
 
     $('#gasha_machines_id_inputed').on('input', function() {
@@ -398,23 +407,24 @@
                 machineArray.push($('#gasha_machines_id_inputed').val());
                 // $('#add-Row').prop("disabled", false);
                 // $('#display_error').html("");
-                var newrow =
-                '<tr>' +
-                    '<td >' +
-                        '<input class="form-control text-center finput gasha_machines_id" type="text" placeholder="Machine" name="gasha_machines_id[]" id="gasha_machines_id'+tableRow+'" data-id="'+tableRow+'" value="'+$('#gasha_machines_id_inputed').val()+'" autocomplete="off" readonly>' + 
+                
+                    var newrow =
+                    '<tr id="tr-style'+tableRow+'" style="background-color: #d4edda; color:#155724">' +
+                        '<td>' +
+                            '<input class="form-control text-center finput gasha_machines_id" type="text" placeholder="Machine" name="gasha_machines_id[]" id="gasha_machines_id'+tableRow+'" data-id="'+tableRow+'" value="'+$('#gasha_machines_id_inputed').val()+'" autocomplete="off" readonly>' + 
 
-                    '</td>' +  
+                        '</td>' +  
 
-                    '<td>' +
-                        '<input class="form-control text-center finput qty" type="text" onkeypress="inputIsNumber()" placeholder="Qty..." name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%" value="'+$('#qty_inputed').val()+'" autocomplete="off" readonly>' + 
-                    '</td>' +
+                        '<td>' +
+                            '<input class="form-control text-center finput qty" type="text" onkeypress="inputIsNumber()" placeholder="Qty..." name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%" value="'+$('#qty_inputed').val()+'" autocomplete="off" readonly>' + 
+                        '</td>' +
 
-                    '<td class="text-center">' +
-                        '<button id="deleteRow" name="removeRow" data-id="'+tableRow+'" value="'+$('#gasha_machines_id_inputed').val()+'" class="btn btn-danger btn-sm removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
-                    '</td>' +
+                        '<td class="text-center">' +
+                            '<button id="deleteRow" name="removeRow" data-id="'+tableRow+'" value="'+$('#gasha_machines_id_inputed').val()+'" class="btn btn-danger btn-sm removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
+                        '</td>' +
 
-                '</tr>';
-
+                    '</tr>';
+        
                 $('#collect-token tbody').append(newrow);
                 //$(newrow).insertBefore($('table tr#tr-table1:last'));
                 //$('#gasha_machines_id'+tableRow).select2();
@@ -470,6 +480,14 @@
             }
             
         });
+
+        if($('#qty'+tableRow).val()  % $('#machine_token_qty').val() === 0){
+            $("#tr-style"+tableRow).removeAttr("style", false);
+        }else{
+            $("#tr-style"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
+            $("#qty"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
+            $("#gasha_machines_id"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
+        }
         
     });
 
@@ -481,7 +499,16 @@
         $(this)
         .find("input,textarea")
         .val('')
-        .end()
+        .end();
+        $('#display_error').html('');
+    });
+
+    $(document).on('keyup', '#qty_inputed', function(ev) {
+        if(this.value  % $('#machine_token_qty').val() === 0){
+            $('#display_error').html('');
+        }else{
+            $('#display_error').html(`<span id="notif" class="label label-danger">Collect token not divisible by machine token capacity ${$('#machine_token_qty').val()}</span>`);
+        }
     });
 
     $(document).on('keyup', '.qty', function(ev) {

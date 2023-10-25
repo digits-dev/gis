@@ -271,6 +271,24 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ],
             [
+                'name'         => 'Receive Collect Token',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_rr_tokens_receiving',
+                'table_name'   => 'collect_rr_tokens',
+                'controller'   => 'Token\AdminCollectRrTokensReceivingController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_rr_tokens_history',
+                'table_name'   => 'collect_rr_tokens',
+                'controller'   => 'History\AdminCollectRrTokensHistoryController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
                 'name'         => 'Capsule Sales',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'capsule_sales',

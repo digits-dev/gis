@@ -18,6 +18,8 @@ class AdmintruncateController extends \crocodicstudio\crudbooster\controllers\CB
         DB::table('store_rr_token')->truncate();
         DB::table('token_histories')->truncate();
         DB::table('token_inventories')->truncate();
+        DB::table('collect_rr_tokens')->truncate();
+        DB::table('collect_rr_token_lines')->truncate();
 
         return "Truncated Successfully";
     }
