@@ -29,18 +29,29 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($entry_token as $entry_data)
+            @foreach ($entries as $entry)
                 <tr>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
-                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ $entry->token_value }}</td>
+                    <td>{{ $entry->cash_value }}</td>
+                    <td>{{ $entry->description }}</td>
+                    <td>{{ $entry->created_by }}</td>
+                    <td>{{ $entry->created_date }}</td>
                 </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <th>Action</th>
+                <th>Ref#</th>
+                <th>Token Value</th>
+                <th>Peso</th>
+                <th>Float Type</th>
+                <th>Created by</th>
+                <th>Created Date</th>
+            </tr>
+        </tfoot>
     </table>
 </div>
 @endsection
