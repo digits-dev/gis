@@ -79,7 +79,8 @@
 @endsection
 
 @section('cash-float')
-<div class="cash-float-section hide">
+
+<div class="cash-float-section" {{ $missing_sod ? 'hidden' : '' }}>
     <div class="cash-float">
         <div class="cash-float-content">
             <form method="POST">

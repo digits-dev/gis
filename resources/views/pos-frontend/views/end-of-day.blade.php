@@ -21,6 +21,7 @@
 @endsection
 
 {{-- Define the content to be included in the 'content' section --}}
+
 @section('cash-float-end')
 <div class="cash-float-section">
     <div class="cash-float">
@@ -78,11 +79,11 @@
                     </div>
                 </div>
                 <div class="d-flex-jcc-col m-top-30">
-                    <p class="fw-bold m-top-10">Current Date:</p>
-                    <p class="m-top-10" id="currentDateTime">Loading Time...</p>
+                    <p class="fw-bold m-top-10">Date: {{ $entry_date }}</p>
                     <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
+                    <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
                     <p class="m-top-5 c-danger">*You can only "View" the system after end of day</p>
                 </div>
             </form>
@@ -96,6 +97,14 @@
 @section('script-js')
 <script src="{{ asset('jsHelper/isNumber.js') }}"></script>
 <script>
+@if(session('is_missing'))
+Swal.fire({
+    icon:'warning',
+    title: 'Missing END OF DAY!',
+    html:'Make EOD for: <strong>{{ $entry_date }}</strong>'
+})
+
+@endif
 
     $(document).ready(function(){
         $(".cash_value_CASH").attr("readonly", true);
@@ -190,6 +199,9 @@
             data: formData,
             success: function(res) {
                 console.log(res);
+                if (res.has_sod === false) {
+                    location.href = "{{ url('pos_dashboard') }}";
+                }
                 $('.cash-float-section').hide();
                 const Toast = Swal.mixin({
                     toast: true,

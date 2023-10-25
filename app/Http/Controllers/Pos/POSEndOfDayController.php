@@ -22,14 +22,22 @@ class POSEndOfDayController extends Controller
     {
         
         $data = [];
+        $location_id = auth()->user()->location_id;
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
-        
+        $missing_eod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->where('eod',null)
+            ->first();
+
+        $data['entry_date'] = $missing_eod->entry_date;
+
         return view('pos-frontend.views.end-of-day', $data);
     }
     public function submitEOD(Request $request){
         $data = $request->all();
         $locations_id = auth()->user()->location_id;
+        $entry_date = $request->input('entry_date');
         $float_types = $request->input('end_day');
         $float_type = FloatType::where('description', $float_types)->first();
         if ($float_type) {
@@ -43,6 +51,7 @@ class POSEndOfDayController extends Controller
         $cash_float_history_id = CashFloatHistory::insertGetId([
             'locations_id' => $locations_id,
             'float_types_id' => $float_types_id,
+            'entry_date' => $entry_date,
             'created_by' => $created_by,
             'created_at' => $time_stamp,
         ]);
@@ -104,8 +113,9 @@ class POSEndOfDayController extends Controller
         CashFloatHistoryLine::insert($lines);
         // DB::table('cash_float_history_lines')->insert($lines);
 
+
         
-        return response()->json([$data]);
+        return response()->json(['has_sod' => $entry_date == date('Y-m-d')]);
         // return response()->json(['message' => 'Form submitted and data inserted successfully']);
     }
     /**

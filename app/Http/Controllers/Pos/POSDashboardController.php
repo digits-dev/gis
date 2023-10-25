@@ -22,17 +22,33 @@ class POSDashboardController extends Controller
      */
     public function index()
     {
-
+        $location_id = auth()->user()->location_id;
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
-        // dd($data['float_entries'] , $data['mode_of_payments']);
+        $missing_eod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->where('eod',null)
+            ->where('entry_date', '!=', date('Y-m-d'))
+            ->first();
+
+        if ($missing_eod) {
+            return redirect(url('pos_end_of_day'))->with('is_missing', true);
+        }
+        $missing_sod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->where('entry_date', date('Y-m-d'))
+            ->exists();
+
+        $data['missing_sod'] = $missing_sod;
         return view('pos-frontend.views.dashboard', $data);
+
     }
 
     public function submitSOD(Request $request){
         $data = $request->all();
         $locations_id = auth()->user()->location_id;
+        $entry_date = $request->input('entry_date');
         $float_types = $request->input('start_day');
         $float_type = FloatType::where('description', $float_types)->first();
         if ($float_type) {
@@ -46,6 +62,7 @@ class POSDashboardController extends Controller
         $cash_float_history_id = CashFloatHistory::insertGetId([
             'locations_id' => $locations_id,
             'float_types_id' => $float_types_id,
+            'entry_date' => date('Y-m-d'),
             'created_by' => $created_by,
             'created_at' => $time_stamp,
         ]);
