@@ -4,10 +4,8 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\TokenConversion;
-	use App\Models\Submaster\TokenConversionHistory;
 
-	class AdminTokenConversionsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminSalesTypesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -19,7 +17,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -27,33 +25,29 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "token_conversions";
+			$this->table = "sales_types";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Current Cash Value","name"=>"current_cash_value"];
-			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
-			$this->col[] = ["label"=>"Token Quantity","name"=>"token_qty"];
-			$this->col[] = ["label"=>"Start Date","name"=>"start_date"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Description","name"=>"description"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','step'=>'0.01','validation'=>'required|min:1','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Token Quantity','name'=>'token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=> true,'value'=>1];
-			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'text','validation'=>'date','width'=>'col-sm-5'];
-			// $this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'text','validation'=>'date','width'=>'col-sm-5','readonly'=>true];
-			
-			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
-			}
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -152,9 +146,7 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-			$this->script_js = '
-				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
-			';
+	        $this->script_js = NULL;
 
 
             /*
@@ -190,7 +182,6 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset('js/token-conversion.js');
 	        
 	        
 	        
@@ -265,9 +256,6 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$postdata['status']     = 'ACTIVE';
-			$postdata['created_at'] = date('Y-m-d H:i:s');
-			$postdata['created_by'] = CRUDBooster::myId();
 
 	    }
 
@@ -280,16 +268,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			$inserted_item = TokenConversion::where('id', $id)->first()->toArray();
-			$data = [
-				'token_conversions_id' => $id,
-				'new_token_qty' => $inserted_item['token_qty'],
-				'new_cash_value' => $inserted_item['cash_value'],
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => date('Y-m-d H:i:s'),
-			];
 
-			TokenConversionHistory::insert($data);
 	    }
 
 	    /* 
@@ -302,25 +281,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$postdata['updated_at'] = date('Y-m-d H:i:s');
-			$postdata['updated_by'] = CRUDBooster::myId();
-			$old_values = TokenConversion::where('id', $id)->first()->toArray();
-			$new_values = $postdata;
-
-			if ($postdata['start_date'] == date('Y-m-d')) {
-				$postdata['current_cash_value'] = $postdata['cash_value'];
-			}
-
-			$data = [
-				'token_conversions_id' => $id,
-				'old_token_qty' => $old_values['token_qty'],
-				'old_cash_value' => $old_values['cash_value'],
-				'new_token_qty' => $postdata['token_qty'],
-				'new_cash_value' => $postdata['cash_value'],
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => date('Y-m-d H:i:s'),
-			];
-			TokenConversionHistory::insert($data);
 
 	    }
 

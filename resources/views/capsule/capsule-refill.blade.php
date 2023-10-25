@@ -20,6 +20,21 @@
    </style>
 @endpush
 @section('content')
+    <div class="swal-machine-list" style="display: none;">
+        <p class="swal-item-description text-bold"></p>
+    </div>
+    <div class="swal-token-mismatch" style="display: none;">
+        <table class="table table-striped table-bordered" style="width: 100%">
+            <thead>
+                <tr>
+                    <th class="text-center">Item Code / Serial No.</th>
+                    <th class="text-center">No. of Tokens</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="panel-content">
         <div class='panel panel-default'>
             <div class='panel-header'>
@@ -30,21 +45,21 @@
                     <div class="close-reader">×</div>
                     <div id="reader"></div>
                 </div>
-                <form method="POST">
+                <form method="POST" autocomplete="off">
                     @csrf
                     <div class='form-group'>
                         <label>Capsule Barcode <span style="color: red">*</span></label>
                         <div class="flex input-btn">
                             <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control'/>
-                            <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="capsule" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
                             <input input-for="machine" type='text' id="tiem_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control'/>
-                            <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
-                        <input type='number' name='qty' required class='form-control' oninput="numberOnly(this)" id="quantity" min="1"/>
+                        <input type='text' name='qty' required class='form-control' oninput="validateInput(this)" id="quantity" min="1"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
@@ -53,7 +68,7 @@
                 </form>
             </div>
             <div class='panel-footer'>
-            <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
+            <button class="btn btn-danger" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>
         </div>
     </div>
@@ -119,19 +134,21 @@
     async function showMachines(data) {
         const item = data.item;
         const machines = data.machines;
-        let machineOptions = {};
-        machines.forEach(machine => {
-            machineOptions[machine.serial_number] = machine.serial_number; 
-        });
 
         if (!machines.length) {
             $('input[name="machine_code"]').val('');
         }
         else if (machines.length) {
-            const serialNumbers = machines.map(machine => `<strong>${machine.serial_number}</strong>`);
+            const clonedDiv = $('.swal-machine-list').clone().show();
+            clonedDiv.find('.swal-item-description').text(`🥚 ${item.digits_code} - ${item.item_description}`)
+            machines.forEach(machine => {
+                const pTag = $('<p>').text(`📥 ${machine.serial_number}`);
+                clonedDiv.append(pTag);
+            })
+            const outerHTML = clonedDiv.prop('outerHTML');
             Swal.fire({
-                title: "Machine Found.",
-                html:  `This item: <strong>(${item.digits_code} - ${item.item_description})</strong> is found in machine ${serialNumbers.join(', ')}!`,
+                title: `Machine${machines.length > 1 ? 's' : ''} Found.`,
+                html: outerHTML,
                 icon: 'info',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
@@ -149,9 +166,23 @@
                 returnFocus: false,
             });
         } else if (data.is_tally == false) {
+            const item = data.item;
+            const machine = data.machine;
+            const clonedDiv = $('.swal-token-mismatch').clone().show();
+            const itemTR = $('<tr>');
+            const machineTR = $('<tr>');
+            const itemTD = $('<td>').text(item.digits_code);
+            const itemQtyTD = $('<td>').text(item.no_of_tokens);
+            const machineTD = $('<td>').text(machine.serial_number);
+            const machineQtyTD = $('<td>').text(machine.no_of_token);
+            itemTR.append(itemTD, itemQtyTD);
+            machineTR.append(machineTD, machineQtyTD);
+            clonedDiv.find('tbody').append(itemTR, machineTR);
+            const outerHTML = clonedDiv.prop('outerHTML');
+            
             Swal.fire({
                 title: `No. of tokens mismatched.`,
-                html: `${data.item.digits_code} is worth ${data.item.no_of_tokens} tokens and ${data.machine.serial_number} accepts ${data.machine.no_of_token} tokens.`,
+                html: outerHTML,
                 icon: 'error',
                 returnFocus: false,
             });
@@ -170,6 +201,7 @@
         } else {
             Swal.fire({
                 title: 'Machine successfully refilled.',
+                html: `<strong>Ref #: ${data.reference_number} </strong>`,
                 icon: 'success',
                 returnFocus: false,
             }).then(() => {
@@ -206,6 +238,21 @@
 
     function numberOnly(numberElement){
         numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
+    }
+
+    function validateInput(inputElement) {
+        let value = inputElement.value;
+        // Remove any non-numeric and non-decimal characters
+        value = value.replace(/[^0-9]/g, '');
+        // Ensure there is only one decimal point
+        let decimalCount = value.split('.').length - 1;
+        if (decimalCount > 1) {
+            // If there is more than one decimal point, remove the extra ones
+            value = value.substring(0, value.lastIndexOf('.'));
+        }
+        // Format the value with commas for every 3 digits
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        inputElement.value = value;
     }
 
     $('.open-camera').on('click', function() {
@@ -247,6 +294,17 @@
 
     $('form').on('submit', function(event) {
         event.preventDefault();
+        if (!Number($('#quantity').val())) {
+            Swal.fire({
+                title: 'Oops...',
+                html: 'Quantity cannot be 0!',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+            });
+            return;
+        }
         const formData = $('form').serialize();
         $.ajax({
             type: 'POST',

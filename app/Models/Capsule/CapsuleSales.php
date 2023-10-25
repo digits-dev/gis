@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models\Submaster;
+namespace App\Models\Capsule;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CashFloatHistory extends Model
+class CapsuleSales extends Model
 {
     use HasFactory;
-
     protected $guarded = [];
-    protected $table = 'cash_float_histories';
-
 }
