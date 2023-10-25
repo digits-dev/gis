@@ -25,7 +25,7 @@
             <tr>
                 <th>Action</th>
                 <th>Ref#</th>
-                <th>Token</th>
+                <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
                 <th>Created by</th>
@@ -33,36 +33,18 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th>Test</th>
-                <th>Test</th>
-                <th>Test</th>
-                <th>Test</th>
-                <th>Test</th>
-                <th>Test</th>
-                <th>Test</th>
-            </tr>
-            <tr>
-                <th>Test1</th>
-                <th>Test1</th>
-                <th>Test1</th>
-                <th>Test1</th>
-                <th>Test1</th>
-                <th>Test1</th>
-                <th>Test1</th>
-            </tr>
+            @foreach ($entry_token as $entry_data)
+                <tr>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                    <td>FH-{{ str_pad($entry_data->id, 8, '0', STR_PAD_LEFT) }}</td>
+                </tr>
+            @endforeach
         </tbody>
-        <tfoot>
-            <tr>
-                <th>Action</th>
-                <th>Ref#</th>
-                <th>Token</th>
-                <th>Peso</th>
-                <th>Float Type</th>
-                <th>Created by</th>
-                <th>Created Date</th> 
-            </tr>
-        </tfoot>
     </table>
 </div>
 @endsection
