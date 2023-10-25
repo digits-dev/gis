@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call('\App\Http\Controllers\Submaster\AdminItemsController@getItemsUpdatedAPI')->hourly()->between('9:00', '23:00');
+        $schedule->call('\App\Http\Controllers\Submaster\AdminItemsController@getItemsCreatedAPI')->hourly()->between('9:00', '23:00');
     }
 
     /**

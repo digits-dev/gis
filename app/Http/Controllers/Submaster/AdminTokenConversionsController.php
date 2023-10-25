@@ -32,10 +32,10 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
+			$this->col[] = ["label"=>"Current Cash Value","name"=>"current_cash_value"];
 			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
 			$this->col[] = ["label"=>"Token Quantity","name"=>"token_qty"];
 			$this->col[] = ["label"=>"Start Date","name"=>"start_date"];
-			$this->col[] = ["label"=>"End Date","name"=>"end_date"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
@@ -306,6 +306,10 @@
 			$postdata['updated_by'] = CRUDBooster::myId();
 			$old_values = TokenConversion::where('id', $id)->first()->toArray();
 			$new_values = $postdata;
+
+			if ($postdata['start_date'] == date('Y-m-d')) {
+				$postdata['current_cash_value'] = $postdata['cash_value'];
+			}
 
 			$data = [
 				'token_conversions_id' => $id,

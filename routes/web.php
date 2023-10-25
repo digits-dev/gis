@@ -33,7 +33,6 @@ use App\Http\Controllers\AdminTruncateController;
 
 Route::get('/', function () {
     return redirect('admin/login');
-    // return view('welcome');
 });
 
 Route::group(['middleware' => ['web']], function() {
@@ -48,7 +47,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
     Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
     Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
+    Route::post('pos_token_swap/swap', [POSTokenSwapController::class, 'store'])->middleware('auth')->name('swap');
     Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index'])->middleware('auth');
+    Route::get('pos_swap_history/{id}', [POSSwapHistoryController::class, 'show'])->middleware('auth');
+    Route::get('pos_swap_history/edit/{id}', [POSSwapHistoryController::class, 'edit'])->middleware('auth');
     Route::get('pos_float_history', [POSFloatHistoryController::class, 'index'])->middleware('auth');
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
@@ -57,6 +59,8 @@ Route::group(['middleware' => ['web']], function() {
     //POS Dashboard
     Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
 
+    //POS EOD
+    Route::post('admin/pos_end_of_day/eod', [POSEndOfDayController::class, 'submitEOD'])->name('submitEOD');
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
