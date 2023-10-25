@@ -31,7 +31,7 @@ class POSFloatHistoryController extends Controller
             ->leftJoin('float_types as ft', 'ft.id', 'cash_float_histories.float_types_id')
             ->leftJoin('float_entries as fe', 'fe.id', 'cfhl.float_entries_id')
             // ->select('cash_float_histories.*','cfhl.*','ft.*','fe.*')
-            // ->where('fe.description','TOKEN')
+            ->where('fe.description','TOKEN')
             ->select('cash_float_histories.id',
                 'fe.description as fe_description',
                 'cash_float_histories.created_at',
