@@ -17,6 +17,13 @@
             height: 34px !important;
         }
 
+        @media (min-width:729px){
+           .panel-default{
+                width:40% !important; 
+                margin:auto !important;
+           }
+        }
+
     </style>
 @endpush
 @extends('crudbooster::admin_template')
@@ -27,7 +34,7 @@
 <p class="noprint"><a title='Main Module' href='{{CRUDBooster::mainpath()}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @endif
 
-<div class='panel panel-default' style="width:40%; margin:auto">
+<div class='panel panel-default'>
 <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
     Disburse Token Form
 </div>

@@ -17,6 +17,13 @@
                 height: 34px !important;
             }
 
+            @media (min-width:729px){
+                .panel-default{
+                        width:40% !important; 
+                        margin:auto !important;
+                }
+            }
+
         </style>
     @endpush
     @extends('crudbooster::admin_template')
@@ -36,7 +43,7 @@
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
        
         <div class='panel-body'>
-            <div class="col-md-6 col-sm-offset-3">
+            <div class="col-md-12">
 
                 {{-- <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> Description</label>
