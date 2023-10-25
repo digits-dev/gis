@@ -41,7 +41,7 @@ class POSEndOfDayController extends Controller
 
 
         $data['have_eod_today'] = !!$entry_today->eod;
-        dd($data['have_eod_today']);
+        // dd($data['have_eod_today']);
         return view('pos-frontend.views.end-of-day', $data);
 
 
