@@ -375,6 +375,7 @@
 			try {
 				CollectRrTokenLines::insert($dataLines);
 				DB::commit();
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$header->reference_number]), 'success');
 				
 			} catch (\Exception $e) {
 				DB::rollback();
