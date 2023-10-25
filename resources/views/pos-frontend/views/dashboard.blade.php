@@ -15,6 +15,7 @@
 
     .statistic-content{
         display: flex;
+        justify-content: space-between;
         flex-wrap: wrap;
         width: 100%;
     }
@@ -22,7 +23,7 @@
     .statistic-box{
         height: 150px;
         width: 100%;
-        max-width: 350px;
+        max-width: 340px;
         background-color: rgb(255, 255, 255);
         padding: 15px;
         border-radius: 5px;
@@ -57,18 +58,21 @@
         opacity: 0.7;
     }
 
-    .statistic-chart-content{
+    .statistic-chart-content {
         position: relative;
-        height: 300px;
         width: 100%;
+        background: red;
     }
-    
-    #myLineChart{
+
+    #myLineChart {
         position: absolute;
+        max-height: 300px; 
+        width: 100%;
         background-color: rgb(255, 255, 255);
         box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem, rgba(0, 0, 0, 0.06) 0rem 0.125rem 0.25rem -0.0625rem;
         border-radius: 5px;
     }
+
 
 
 </style>
@@ -182,6 +186,21 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No of machines.</p>
+                <p class="fs-30 fw-bold text-color">200</p>
+            </div>
+            <div class="statistic-more-info d-flex-jcev">
+                <a href="" class="d-flex-al-c text-color1" style="width: 100%;">
+                    <p class="fs-13 m-right-10">More info</p>
+                    <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="statistic-box m-top-30 m-right-25" style="border-left: 5px solid rgb(198, 55, 60);">
+            <div class="statistic-icon" style="background-color: rgb(198, 55, 60);">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div class="statistic-title">
+                <p class="fs-13 title-color text-color1">No of items.</p>
                 <p class="fs-30 fw-bold text-color">200</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
@@ -327,14 +346,50 @@
         });
     });
     
+    // function sales() {
+    //     var ctx = document.getElementById('myLineChart').getContext('2d');
+
+    //     // Dynamically set the canvas width to 100%
+    //     var canvas = document.getElementById('myLineChart');
+    //     canvas.style.width = '100%';
+    //     canvas.style.height = '350px';
+
+    //     var data = {
+    //         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    //         datasets: [{
+    //             label: 'Monthly Sales',
+    //             data: [10, 15, 7, 20, 14],
+    //             borderColor: 'rgb(75, 192, 192)',
+    //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
+    //             borderWidth: 2,
+    //             fill: true,
+    //             tension: 0.1,
+    //         }]
+    //     };
+
+    //     var options = {
+    //         responsive: true, // Make the chart responsive
+    //         maintainAspectRatio: true, // Maintain the aspect ratio
+    //         scales: {
+    //             y: {
+    //                 beginAtZero: true
+    //             }
+    //         }
+    //     };
+
+    //     var myLineChart = new Chart(ctx, {
+    //         type: 'line',
+    //         data: data,
+    //         options: options
+    //     });
+    // }
+
+    // // Call the function to create the chart
+    // sales();
+
     function sales() {
         var ctx = document.getElementById('myLineChart').getContext('2d');
-
-        // Dynamically set the canvas width to 100%
-        var canvas = document.getElementById('myLineChart');
-        // canvas.style.maxWidth = '1000px';
-        // canvas.style.height = '300px';   
-
+        
         var data = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
             datasets: [{
@@ -367,6 +422,7 @@
 
     // Call the function to create the chart
     sales();
+
 
 
 
