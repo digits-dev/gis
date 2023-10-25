@@ -46,12 +46,12 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','width'=>'col-sm-5','readonly'=>true];
-			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];	
+			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','width'=>'col-sm-10','readonly'=>true];
+			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];	
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
@@ -221,7 +221,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = '
+				.panel-heading{
+					background-color:#dd4b39 !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';
 	        
 	    
 	        /*

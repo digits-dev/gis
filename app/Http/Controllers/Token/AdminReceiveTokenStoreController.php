@@ -34,7 +34,7 @@
 			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = false;
+			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
@@ -228,7 +228,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = '
+				.panel-heading{
+					background-color:#dd4b39 !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';
 	        
 	        
 	        

@@ -347,8 +347,10 @@
 			$gm_id = $fields['gasha_machines_id'];
 			$gasha_machines_array = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
 			$gasha_machines_id = [];
+			$gasha_machines_no_token = [];
 			foreach($gasha_machines_array as $gm){
 				array_push($gasha_machines_id, $gm->id);
+				array_push($gasha_machines_no_token, $gm->no_of_token);
 			}
 
 			$qty 	           = $fields['qty'];
@@ -357,6 +359,7 @@
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
+				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gasha_machines_no_token[$x]);
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
 			}
 

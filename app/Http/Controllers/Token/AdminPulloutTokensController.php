@@ -248,6 +248,12 @@
 				.select2-selection__arrow {
 					height: 34px !important;
 				}
+				@media (min-width:729px){
+					.panel-default{
+							width:40% !important; 
+							margin:auto !important;
+					}
+				}
 			';
 
 
