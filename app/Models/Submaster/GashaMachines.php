@@ -15,4 +15,10 @@ class GashaMachines extends Model
         return $query->where('status','ACTIVE')->get();
     }
 
+    public function scopeGetMachineByLocation($query,$serial_number,$location_id) {
+        return $query->where('status','ACTIVE')
+        ->where('serial_number', $serial_number)
+        ->where('location_id', $location_id)->first();
+    }
+
 }
