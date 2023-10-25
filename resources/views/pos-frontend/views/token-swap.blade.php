@@ -15,7 +15,6 @@
     justify-content: center;
     align-items: center;
     font-family: "Open Sans", sans-serif;
-    
   }
   .container {
     width: 460px;
@@ -24,6 +23,7 @@
       rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
     border-radius: 30px;
     padding: 20px 30px;
+    display: none;
   }
   .header {
     display: flex;
@@ -112,7 +112,7 @@
     border: 2px solid #e60213;
     background-color: #ffbfbf;
   }
-  button {
+  .btn-swap {
     cursor: pointer;
     width: 100%;
     height: 40px;
@@ -122,6 +122,10 @@
     border: none;
     color: white;
     border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+  .btn-swap:hover {
+    background-color: #a43f3f;
   }
 
   .summary-value span{
@@ -134,7 +138,6 @@
 @section('content')
 <div class="main-container">
     <div class="container">
-      
         <div class="header">
             <h1 style="font-size: 19px;">Swap</h1>
             <p>{{ $cash_value }} per token</p>
@@ -192,7 +195,7 @@
                     <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
-            <button type="submit" >Swap</button>
+            <button class="btn-swap" type="submit" >Swap</button>
         </form>
     </div> 
 </div>
@@ -206,6 +209,9 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
+      $(document).ready(function() {
+          $(".container").fadeIn(1000);
+      });
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
     const changeElement = document.getElementById("change_value");
@@ -254,20 +260,15 @@
         const selectedValue = $(this).val();
         if(selectedValue != "CASH"){
           $('#change_value').val('0');
-          $('#payment_reference_div').show();
+          $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').val("");
         }else {
           $('#change_value').val(remainder);
-          $('#payment_reference_div').hide();
+          $('#payment_reference_div').fadeOut(500); 
         }
-        // $('#cash_value').val('');
-        // $('#token_value').val('');
-        // $('#total_value').val('');
-        // $('#change_value').val('');
+       
     });
 });
-
-
 
     let isSwapped = false;
 
@@ -284,7 +285,6 @@
       const floatWrapper2 = document.getElementById("float-wrapper2");
       const btnReverse = document.getElementById("btn-reverse");
       const parent = div1.parentNode;
-
 
       change.value = ""
       // swap icons
@@ -355,7 +355,13 @@
                         icon: 'error',
                         confirmButtonColor: '#367fa9',
                     });
-          }
+          }else if ({{ $inventory_qty }} <  $('#token_value').val()) {
+            Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Token Quantity exceeds the available quantity in the Token Inventory!'
+                  })
+                }
         else {
           $.ajax({
             type: 'POST',
@@ -364,19 +370,12 @@
             success: function(res) {
                 const data = JSON.parse(res);
                 console.log(data)
-                if (data.token_inventory_qty <  $('#token_value').val()) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Token Quantity exceeds the available quantity in the Token Inventory!'
-                  })
-                }else if (data.message === 'success') {
+            if (data.message === 'success') {
                   Swal.fire({
                     icon: 'success',
                     title: 'Swap Successfully!',
                     html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
                   })
-                 
                 } 
 
                 $('#cash_value').val('');
@@ -385,6 +384,7 @@
                 $('#total_value').val('');
                 $('#change_value').val('');
                 $('#payment_reference').val("");
+                $('#payment_reference_div').hide();
             },
             error: function(err) {
                 console.log(err);

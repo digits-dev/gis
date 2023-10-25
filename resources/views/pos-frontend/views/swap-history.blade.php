@@ -14,6 +14,9 @@
 {{-- Your CSS --}}
 @section('css')
 <style>
+    .display {
+        display: none;
+    }
     .btn {
         margin: 5px
     }
@@ -89,8 +92,15 @@
         });
     })
 
+    $(document).ready(function() {
+        $(".display").fadeIn(1000);
+    });
+
     $(document).ready(function () {
-    $('.ajax-request-icon').on('click', function (e) {
+
+    $('.ajax-request-icon').off('click');
+
+     $(document).on('click','.ajax-request-icon', function (e) {
         e.preventDefault(); // Prevent the default behavior of the link
         let current_id = $(this).attr('data-id');
         let swap_history_object = $.parseJSON(current_id);
