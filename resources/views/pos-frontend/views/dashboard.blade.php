@@ -61,7 +61,8 @@
     .statistic-chart-content {
         position: relative;
         width: 100%;
-        background: red;
+        /* background: red; */
+        height: 300px;
     }
 
     #myLineChart {
@@ -71,9 +72,8 @@
         background-color: rgb(255, 255, 255);
         box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem, rgba(0, 0, 0, 0.06) 0rem 0.125rem 0.25rem -0.0625rem;
         border-radius: 5px;
+        padding: 10px;
     }
-
-
 
 </style>
 @endsection
