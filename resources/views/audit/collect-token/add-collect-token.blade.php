@@ -506,9 +506,9 @@
         if($('#qty'+tableRow).val()  % $('#machine_token_qty').val() === 0){
             $("#tr-style"+tableRow).removeAttr("style", false);
         }else{
-            $("#tr-style"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
-            $("#qty"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
-            $("#gasha_machines_id"+tableRow).attr("style", "background-color: #dd4b39; color:#fff");
+            $("#tr-style"+tableRow).attr("style", "background-color: #f8d7da; color:#721c24");
+            $("#qty"+tableRow).attr("style", "background-color: #f8d7da; color:#721c24");
+            $("#gasha_machines_id"+tableRow).attr("style", "background-color: #f8d7da; color:#721c24");
         }
         
     });
