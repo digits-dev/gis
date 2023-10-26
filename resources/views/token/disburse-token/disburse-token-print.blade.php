@@ -50,7 +50,7 @@
 
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" >
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -170,7 +170,7 @@
     
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%">
+                                <table border="1" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" width="100%">
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -296,8 +296,12 @@
                         url: '{{ url('admin/store_rr_token/forPrintUpdate') }}',
                         data: data,
                         success: function( response ){
-                            console.log( response );              
-                        
+                            const data = JSON.parse(response);
+                            if(data.status === 'success'){
+                                //window.location.replace(document.referrer);
+                                window.location.replace(data.redirect_url);
+                            }      
+                            console.log(data.status)     
                         },
                         error: function( e ) {
                             console.log(e);

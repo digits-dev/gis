@@ -13,7 +13,7 @@
 
     .statistic-content{
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         flex-wrap: wrap;
         width: 100%;
     }
