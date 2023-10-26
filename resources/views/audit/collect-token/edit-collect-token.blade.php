@@ -109,6 +109,12 @@
     setTimeout("preventBack()", 0);
     $('#location').select2();
     $(document).ready(function() {
+        
+        $("#received_qty").keyup(function(){
+            var value = $(this).val();
+            value = value.replace(/^(0*)/,"");
+            $(this).val(value);
+        });
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
             if($('#received_qty').val() === ''){

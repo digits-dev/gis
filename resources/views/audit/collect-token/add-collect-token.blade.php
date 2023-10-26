@@ -225,6 +225,12 @@
     let html5QrCode = null;
     let timeout;
 
+    $("#qty_inputed").keyup(function(){
+        var value = $(this).val();
+        value = value.replace(/^(0*)/,"");
+        $(this).val(value);
+    });
+
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
         var id =  this.value;
