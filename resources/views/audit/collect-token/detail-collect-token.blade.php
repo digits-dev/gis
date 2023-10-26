@@ -95,7 +95,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
     Collected Token Detail
 </div>
 

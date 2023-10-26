@@ -34,7 +34,7 @@
 @endif
 
 <div class='panel panel-default'>
-    <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+    <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
         Received collected token form
     </div>
 
@@ -90,7 +90,7 @@
         </div>
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.receive') }}</button>
         </div>
     </form>
 </div>
@@ -116,7 +116,7 @@
                     type: 'error',
                     title:'Receive token required!',
                     icon: 'error',
-                    confirmButtonColor: "#367fa9",
+                    confirmButtonColor: "#3c8dbc",
                 });
             }else if($('#received_qty').val().replace(/,/g, '') < $('#collected_qty').val().replace(/,/g, '')){
                 Swal.fire({
@@ -132,7 +132,7 @@
                     type: 'info',
                     title: 'Token must be equal to collected token!',
                     icon: 'error',
-                    confirmButtonColor: "#359D9D",
+                    confirmButtonColor: "#3c8dbc",
                 }); 
                 event.preventDefault();
     
@@ -141,7 +141,7 @@
                     title: 'Are you sure ?',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#3c8dbc',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Receive',
                     returnFocus: false,

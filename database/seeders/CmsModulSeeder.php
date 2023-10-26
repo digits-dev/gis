@@ -324,6 +324,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Token Swap History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'swap_histories',
+                'table_name'   => 'swap_histories',
+                'controller'   => 'History\AdminSwapHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

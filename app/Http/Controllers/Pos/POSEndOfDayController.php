@@ -9,6 +9,7 @@ use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\CashFloatHistoryLine;
+use App\Http\Controllers\Pos\POSDashboardController;
 use DB;
 
 class POSEndOfDayController extends Controller
@@ -20,7 +21,13 @@ class POSEndOfDayController extends Controller
      */
     public function index()
     {
-        
+        // check if no sod for this day
+        $is_sod_existing  = (new POSDashboardController)->check_sod();
+
+        if (!$is_sod_existing) {
+            return redirect(url('pos_dashboard'));
+        }
+
         $data = [];
         $location_id = auth()->user()->location_id;
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();

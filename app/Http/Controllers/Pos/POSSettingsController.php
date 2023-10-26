@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Pos;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Pos\POSDashboardController;
+
 
 class POSSettingsController extends Controller
 {
@@ -14,7 +16,13 @@ class POSSettingsController extends Controller
      */
     public function index()
     {
-        
+        // check if no sod for this day
+        $is_sod_existing  = (new POSDashboardController)->check_sod();
+
+        if (!$is_sod_existing) {
+            return redirect(url('pos_dashboard'));
+        }
+
         $data = [];
         
         return view('pos-frontend.views.settings', $data);

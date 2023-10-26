@@ -11,6 +11,8 @@ use App\Models\PosFrontend\POSTokenSwap;
 use App\Models\PosFrontend\SwapHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Pos\POSDashboardController;
+
 
 
 class POSTokenSwapController extends Controller
@@ -22,6 +24,13 @@ class POSTokenSwapController extends Controller
      */
     public function index()
     {
+        // check if no sod for this day
+        $is_sod_existing  = (new POSDashboardController)->check_sod();
+
+        if (!$is_sod_existing) {
+            return redirect(url('pos_dashboard'));
+        }
+
         $data = [];
         $data['mode_of_payments'] = ModeOfPayment::get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;

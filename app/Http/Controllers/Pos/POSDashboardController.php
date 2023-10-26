@@ -22,6 +22,7 @@ class POSDashboardController extends Controller
      */
     public function index()
     {
+
         $location_id = auth()->user()->location_id;
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
@@ -125,8 +126,27 @@ class POSDashboardController extends Controller
         // DB::table('cash_float_history_lines')->insert($lines);
 
         
-        return response()->json( $float_entries);
+        return response()->json($data);
         // return response()->json(['message' => 'Form submitted and data inserted successfully']);
+    }
+
+
+    public function check_sod() {
+        $email = auth()->user()->email;
+        $is_sod_existing = DB::table('cms_users')
+            ->leftJoin('float_entry_view as fev', 'fev.locations_id', 'cms_users.location_id')
+            ->select('cms_users.*',
+                'fev.entry_date',
+                'fev.sod',
+                'fev.eod'
+            )
+            ->where('email', $email)
+            ->where('status', 'ACTIVE')
+            ->where('entry_date', date('Y-m-d'))
+            ->get()
+            ->first();
+
+        return $is_sod_existing;
     }
 
     /**

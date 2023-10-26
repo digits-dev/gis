@@ -1,11 +1,16 @@
-<?php namespace App\Http\Controllers\Token;
+<?php namespace App\Http\Controllers\History;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
 
-	class AdminCollectRrTokenSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminSwapHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
+
+        public function __construct() {
+			// Register ENUM type
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+		}
 
 	    public function cbInit() {
 
@@ -15,7 +20,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = false;
+			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -25,29 +30,54 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = true;
-			$this->table = "collect_rr_token_lines";
+			$this->table = "swap_histories";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"collected_token_id","join"=>"collect_rr_tokens,reference_number"];
-			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Variance","name"=>"variance"];
-			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
+			$this->col[] = ["label"=>"Token Value","name"=>"token_value"];
+			$this->col[] = ["label"=>"Total Value","name"=>"total_value"];
+			$this->col[] = ["label"=>"Change Value","name"=>"change_value"];
+			$this->col[] = ["label"=>"Type Id","name"=>"type_id","join"=>"token_action_types,description"];
+			$this->col[] = ["label"=>"Mode of payment","name"=>"type_id","join"=>"token_action_types,description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Status","name"=>"status"];
+			// $this->col[] = ["label"=>"Mode Of Payments","name"=>"mode_of_payments"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-
+			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Token Value','name'=>'token_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Total Value','name'=>'total_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Change Value','name'=>'change_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Type Id','name'=>'type_id','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'type,id','datatable'=>'token_action_types,description'];
+			$this->form[] = ['label'=>'Mode Of Payments','name'=>'mode_of_payments','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'token_action_types,description'];
+			$this->form[] = ['label'=>'Location Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
-			$this->form = [];
-			$this->form[] = ["label"=>"Reference Number","name"=>"collected_token_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"collect_rr_tokens,reference_number",'width'=>'col-sm-10'];
-			$this->form[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"gasha_machines,serial_number",'width'=>'col-sm-10'];
-			$this->form[] = ["label"=>"Qty","name"=>"qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0",'width'=>'col-sm-10'];
-			$this->form[] = ["label"=>"Variance","name"=>"variance","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255",'width'=>'col-sm-10'];
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Cash Value","name"=>"cash_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Token Value","name"=>"token_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Total Value","name"=>"total_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Change Value","name"=>"change_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Type Id","name"=>"type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|min:1|max:255","datatable"=>"type,id"];
+			//$this->form[] = ["label"=>"Mode Of Payments","name"=>"mode_of_payments","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Locations Id","name"=>"locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"locations,location_name"];
+			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Payment Reference","name"=>"payment_reference","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
@@ -194,21 +224,9 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-			$this->style_css = '
-				.panel-heading{
-					background-color:#3c8dbc !important;
-					color:#fff !important;
-				}
-				input[name="submit"]{
-					background-color:#3c8dbc !important;
-					color:#fff !important;
-				}
-				@media (min-width:729px){
-				.panel-default{
-						width:40% !important; 
-						margin:auto !important;
-				}
-			';
+	        $this->style_css = NULL;
+	        
+	        
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -219,8 +237,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-			$this->load_css[] = asset("css/font-family.css");
-			$this->load_css[] = asset('css/gasha-style.css');
+	        
 	        
 	    }
 
