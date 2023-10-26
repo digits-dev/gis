@@ -134,7 +134,7 @@
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="numberOnly(this);" required>
+                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="validateInput(this);" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
@@ -275,11 +275,8 @@
     updateCashValue();
 
 
-    function numberOnly(numberElement) {
-        numberElement.value = numberElement.value.replace(/[^0-9]/g, '');
-        if (numberElement.value.length > 0 && numberElement.value[0] === '0') {
-            numberElement.value = numberElement.value.substring(1); // Remove leading zero
-        }
+    function numberOnly(numberElement){
+        numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
     }
 
     
