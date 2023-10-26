@@ -110,8 +110,8 @@
                     </td>
                     <td>FH-{{ str_pad($entry->cash_float_histories_id, 8, "0", STR_PAD_LEFT) }}</td>
                     <td>{{ $entry->token_qty }}</td>
-                    <td>Php{{ $entry->token_value }}</td>
-                    <td>Php{{ $entry->cash_value }}</td>
+                    <td>PHP {{ $entry->token_value }}</td>
+                    <td>PHP {{ $entry->cash_value }}</td>
                     <td>{{ $entry->description }}</td>
                     <td>{{ $entry->name }}</td>
                     <td>{{ $entry->entry_date }}</td>
