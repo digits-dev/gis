@@ -36,9 +36,13 @@ class POSFloatHistoryController extends Controller
             ->leftJoin('float_types', 'float_types.id', 'float_history_view.float_types_id')
             ->leftJoin('cash_float_histories','cash_float_histories.id','float_history_view.cash_float_histories_id')
             ->leftJoin('cms_users','cms_users.id','cash_float_histories.created_by')
-            ->select('*','cash_float_histories.created_at')
+            ->leftJoin('cash_float_history_lines', 'cash_float_history_lines.cash_float_histories_id', 'float_history_view.cash_float_histories_id')
+            ->select('*','cash_float_histories.created_at', 'cash_float_history_lines.qty as token_qty', 'float_history_view.entry_date')
+            ->where('cash_float_history_lines.float_entries_id', 14)
             ->get()
             ->toArray();
+
+            // dd($data['entries']);
         
         return view('pos-frontend.views.float-history', $data);
     }

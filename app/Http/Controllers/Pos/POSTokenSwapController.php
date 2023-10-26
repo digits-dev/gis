@@ -24,9 +24,11 @@ class POSTokenSwapController extends Controller
      */
     public function index()
     {
-        $is_missing_eod_or_sod = (new POSDashboardController)->check_sod_or_eod();
-        if ($is_missing_eod_or_sod) {
-            return $is_missing_eod_or_sod;
+        // check if no sod for this day
+        $is_sod_existing  = (new POSDashboardController)->check_sod();
+
+        if (!$is_sod_existing) {
+            return redirect(url('pos_dashboard'));
         }
 
         $data = [];
@@ -62,16 +64,17 @@ class POSTokenSwapController extends Controller
         
         $token_inventory = TokenInventory::where('locations_id', Auth::user()->location_id);
         $token_inventory_qty = $token_inventory->first()->qty;
-        $total_qty = $token_inventory_qty - $request->token_value;
+        $total_qty = $token_inventory_qty - intval(str_replace(',', '',$request->token_value));
 
-        if ($token_inventory_qty > $request->token_value) {
+        if ($token_inventory_qty > intval(str_replace(',', '',$request->token_value))) {
             
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
             $postokenSwap = new POSTokenSwap;
-            $postokenSwap->cash_value = intval(str_replace(',', '',$request->cash_value));
             $postokenSwap->reference_number = $refNumber;
+            $postokenSwap->cash_value = intval(str_replace(',', '',$request->cash_value));
             $postokenSwap->token_value = intval(str_replace(',', '',$request->token_value));
-            $postokenSwap->total_value = $request->total_value;
+            $postokenSwap->total_value = intval(str_replace(',', '',$request->total_value));
+            $postokenSwap->change_value = intval(str_replace(',', '',$request->change_value));
             $postokenSwap->locations_id = Auth::user()->location_id;
             $postokenSwap->mode_of_payments = $request->mode_of_payment;
             $postokenSwap->payment_reference = $request->payment_reference;
@@ -86,7 +89,8 @@ class POSTokenSwapController extends Controller
                 'reference_number' =>  $refNumber,
                 'cash_value' => intval(str_replace(',', '',$request->cash_value)),
                 'token_value' => intval(str_replace(',', '',$request->token_value)),
-                'total_value' => $request->total_value,
+                'total_value' => intval(str_replace(',', '',$request->total_value)),
+                'change_value' => intval(str_replace(',', '',$request->change_value)),
                 'type_id' => $typeId,
                 'locations_id' => Auth::user()->location_id,
                 'mode_of_payments' => $request->mode_of_payment,
