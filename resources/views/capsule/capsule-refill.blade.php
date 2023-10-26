@@ -146,6 +146,7 @@
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
                 returnFocus: false,
+                reverseButtons: true,
             });
         }
         else if (machines.length) {
@@ -163,6 +164,7 @@
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
                 returnFocus: false,
+                reverseButtons: true,
             });
         }
     }
@@ -174,6 +176,7 @@
                 title: `${data.missing} code not found.`,
                 icon: 'error',
                 returnFocus: false,
+                reverseButtons: true,
             });
         } else if (data.is_tally == false) {
             const item = data.item;
@@ -242,6 +245,7 @@
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Ok',
                     returnFocus: false,
+                    reverseButtons: true,
                 });
             }
         });
@@ -286,6 +290,7 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Save',
             returnFocus: false,
+            reverseButtons: true,
         }).then((result) => {
             if (result.isConfirmed) {
                 $('#real-submit-btn').click();
@@ -308,6 +313,7 @@
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
                 returnFocus: false,
+                reverseButtons: true,
             });
             return;
         }
@@ -328,6 +334,7 @@
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Ok',
                     returnFocus: false,
+                    reverseButtons: true,
                 });
             }
         });
