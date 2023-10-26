@@ -412,7 +412,7 @@
                         icon: 'error',
                         confirmButtonColor: '#367fa9',
                     });
-          }else if (Number("{{ $inventory_qty }}") <  Number($('#token_value').val())) {
+          }else if (Number("{{ $inventory_qty }}") <  Number($('#token_value').val().split(",").join(""))) {
             Swal.fire({
                     icon: 'error',
                     title: 'Error!',
@@ -434,8 +434,8 @@
                     // html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
                     html: '<table class="styled-table-swap">' +
                           '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
-                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val()+'</td></tr>' +
-                          '<tr><td>Total</td><td>'+ $('#total_value').val()+'</td></tr>' +
+                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   })
                 } 
