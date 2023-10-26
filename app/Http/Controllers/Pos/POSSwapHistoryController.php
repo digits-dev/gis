@@ -8,6 +8,8 @@ use App\Models\PosFrontend\SwapHistory;
 use App\Models\Token\TokenInventory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Pos\POSDashboardController;
+
 
 class POSSwapHistoryController extends Controller
 {
@@ -18,6 +20,13 @@ class POSSwapHistoryController extends Controller
      */
     public function index()
     {
+        // check if no sod for this day
+        $is_sod_existing  = (new POSDashboardController)->check_sod();
+
+        if (!$is_sod_existing) {
+            return redirect(url('pos_dashboard'));
+        }
+
         $data = [];
         if (Auth::user()->id == 1){
             $data['swap_histories'] = SwapHistory::get();

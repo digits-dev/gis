@@ -232,9 +232,21 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
-	        
-	        
+			$this->style_css = '
+				.panel-heading{
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name="submit"]{
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';   
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 

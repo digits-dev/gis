@@ -29,7 +29,7 @@
 <div class="cash-float-section">
     <div class="cash-float">
         <div class="cash-float-content">
-            <form method="POST">
+            <form method="POST" autocomplete="off">
                 @csrf
                 <div class="cash-float-header bg-text-color d-flex-al-c text-color-w bg-primary-c">
                     <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 fw-bold">Cash Float (EOD)</p>
@@ -77,7 +77,7 @@
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" style="width:165px;" oninput="numberOnly(this);" required>                        
+                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="numberOnly(this);" required>                        
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
@@ -144,8 +144,17 @@
         // console.log(BDOValue, removeComma(BDOValue));
         const formattedTotalValue = totalValue.toFixed(2);
         $(".total_value").val(formattedTotalValue);
+
+        if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
+            $("#end_of_day").prop('disabled', true);
+            $("#end_of_day").css('background-color', 'rgb(114, 114, 114)');
+        } else{
+            $("#end_of_day").prop('disabled', false);
+            $("#end_of_day").css('background-color', 'rgb(51,51,51)');
+
+        }
     }
-    $(".cash_value_BDO, .cash_value_BPI, .cash_value_GCASH, .cash_value_PAYMAYA, .cash_value_P1000, .cash_value_P500, .cash_value_P200, .cash_value_P100,.cash_value_P50, .cash_value_P20, .cash_value_P10, .cash_value_P5, .cash_value_P1, .cash_value_25C, .cash_value_10C, .cash_value_5C, .cash_value_1C ").on("input", updateCashValue);
+    $(".cash_value_BDO, .cash_value_BPI, .cash_value_GCASH, .cash_value_PAYMAYA, .cash_value_P1000, .cash_value_P500, .cash_value_P200, .cash_value_P100,.cash_value_P50, .cash_value_P20, .cash_value_P10, .cash_value_P5, .cash_value_P1, .cash_value_25C, .cash_value_10C, .cash_value_5C, .cash_value_1C, .total_token ").on("input", updateCashValue);
     updateCashValue();
 
 
