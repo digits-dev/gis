@@ -307,25 +307,6 @@ input:disabled{
 
                 <br>
 
-                {{-- <div class="table-responsive">
-                    <table class="table">
-                        <thead class="header">
-                            <tr>
-                                <th style="border: 1px solid #979797;">Payment\Coins</th>
-                                <th style="border: 1px solid #979797;">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody class="value">
-                            @foreach ($cash_float_history_lines as $cfhl)
-                            <tr>
-                                <td>{{ $cfhl->mode_of_payments_id }}</td>
-                                <td>{{ $cfhl->value }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div> --}}
-                
                 <div class="cash-float-section" id="view_history_tab">
                     <form method="POST">
                         @csrf
@@ -435,7 +416,6 @@ input:disabled{
                 });
                 const float_type_description = response.cash_float_history.description;
                 $('#float_type_description').text(float_type_description + ' OF THE DAY');
-                // $('#float_type_description').css('color', (float_type_description == 'END' ? 'black' : ''));
                 $('.total_value').val(response.cash_float_history.cash_value);
                 $('#view_history_tab').attr('hidden', false);
 
