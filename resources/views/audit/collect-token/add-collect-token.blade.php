@@ -56,7 +56,7 @@
             /* border: 1px solid rgb(194, 193, 193); */
             font-size: 35px;
             color: white;
-            background-color: #dd4b39;
+            background-color: #3c8dbc;
     
         }
         #bigplus{
@@ -64,7 +64,7 @@
         }
         #bigplus:before {
             content: '\FF0B';
-            background-color: #dd4b39: 
+            background-color: #3c8dbc: 
             font-size: 50px;
         }
         #bigplus:hover{
@@ -102,7 +102,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
     Add Collect Token Form
 </div>
 
@@ -173,7 +173,7 @@
                         <div class="col-md-12">
                             <div class="form-group" style="display: flex">
                                 <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">  
-                                <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
+                                <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                             </div>
                         </div>
     
@@ -189,7 +189,7 @@
                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type='button' id="copy-row" class="btn btn-danger btn-sm"><i class="fa fa-save"></i> Save</button>
+                    <button type='button' id="copy-row" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Save</button>
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
 
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
 </div>
@@ -258,7 +258,7 @@
             inputOptions: cameraOptions,
             inputPlaceholder: 'Select a camera',
             showCancelButton: true,
-            confirmButtonColor: '#dd4b39',
+            confirmButtonColor: '#3c8dbc',
             returnFocus: false,
             reverseButtons: true,
             inputValidator: (value) => {
@@ -320,7 +320,7 @@
                         title: "Oops.",
                         html:  'Machine not found!',
                         icon: 'error',
-                        confirmButtonColor: '#dd4b39',
+                        confirmButtonColor: '#3c8dbc',
                         confirmButtonText: 'Ok',
                         returnFocus: false,
                     });
@@ -381,7 +381,7 @@
                 type: 'error',
                 title: 'Please select location first!',
                 icon: 'error',
-                confirmButtonColor: '#dd4b39',
+                confirmButtonColor: '#3c8dbc',
             });
         }else{
             $('#addRowModal').modal('show');
@@ -401,7 +401,7 @@
                     type: 'error',
                     title: 'Please fill all Fields!',
                     icon: 'error',
-                    confirmButtonColor: "#dd4b39",
+                    confirmButtonColor: "#3c8dbc",
                 });
                 count_fail++;
                 return false;
@@ -481,7 +481,7 @@
                 type: 'error',
                 title: 'Machine already added!',
                 icon: 'error',
-                confirmButtonColor: '#dd4b39',
+                confirmButtonColor: '#3c8dbc',
             });
       
         }
@@ -581,7 +581,7 @@
                         type: 'error',
                         title: 'Please add an item!',
                         icon: 'error',
-                        confirmButtonColor: "#dd4b39",
+                        confirmButtonColor: "#3c8dbc",
                     }); 
                     event.preventDefault(); 
                     return false;
@@ -590,7 +590,7 @@
                     type: 'error',
                     title: 'Location cannot be empty!',
                     icon: 'error',
-                    confirmButtonColor: '#dd4b39',
+                    confirmButtonColor: '#3c8dbc',
                 });
                 event.preventDefault();
                 return false;
@@ -603,7 +603,7 @@
                             type: 'error',
                             title: 'Machines cannot be empty!',
                             icon: 'error',
-                            confirmButtonColor: '#dd4b39',
+                            confirmButtonColor: '#3c8dbc',
                         });
                         event.preventDefault();
                         return false;
@@ -618,7 +618,7 @@
                             type: 'error',
                             title: 'Qty cannot be empty!',
                             icon: 'error',
-                            confirmButtonColor: '#dd4b39',
+                            confirmButtonColor: '#3c8dbc',
                         });
                         event.preventDefault();
                         return false;
