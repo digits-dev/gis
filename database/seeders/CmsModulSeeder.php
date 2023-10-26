@@ -162,7 +162,7 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ],
             [
-                'name'         => 'Capsule History',
+                'name'         => 'Capsule Movement History',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'history_capsules',
                 'table_name'   => 'history_capsules',
