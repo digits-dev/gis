@@ -340,14 +340,14 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-			$fields = Request::all();
+			$fields                  = Request::all();
 
-			$dataLines = array();
-			$header = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-			
-			$gm_id = $fields['gasha_machines_id'];
-			$gasha_machines_array = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
-			$gasha_machines_id = [];
+			$dataLines               = array();
+			$header                  = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+			$location_id             = $fields['location_id'];
+			$gm_id                   = $fields['gasha_machines_id'];
+			$gasha_machines_array    = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
+			$gasha_machines_id       = [];
 			$gasha_machines_no_token = [];
 			foreach($gasha_machines_array as $gm){
 				array_push($gasha_machines_id, $gm->id);
@@ -376,6 +376,7 @@
 				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gasha_machines_no_token[$x]);
+				$dataLines[$x]['location_id']        = $location_id;
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
 			}
 

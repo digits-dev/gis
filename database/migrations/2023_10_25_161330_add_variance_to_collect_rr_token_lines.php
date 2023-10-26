@@ -15,6 +15,7 @@ class AddVarianceToCollectRrTokenLines extends Migration
     {
         Schema::table('collect_rr_token_lines', function (Blueprint $table) {
             $table->string('variance')->nullable()->after('qty');
+            $table->integer('location_id')->nullable()->after('variance');
         });
     }
 
