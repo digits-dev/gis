@@ -124,16 +124,16 @@
                 <div class="eod-v-q">
                     <div class="d-flex-al-c">
                         <p class="max-w-75">Total Value</p>
-                        <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
+                        <input type="text" class="input-design total_value" name="total_value" style="width:165px;" placeholder="Total value">
                         {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" required>
+                        <input type="text" class="input-design" name="total_token" placeholder="Token qty" style="width:165px;" oninput="numberOnly(this);" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
-                <div class="d-flex-jcc-col">
+                <div class="d-flex-jcc-col m-bottom-15">
                     <p class="fw-bold m-top-10">Current Date:</p>
                     <p class="m-top-10 currentDateTime" id="currentDateTime">Loading Time...</p>
                     <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>

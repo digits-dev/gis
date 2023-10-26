@@ -110,6 +110,10 @@ html, body {
     margin-right: 35px;
 }
 
+.m-bottom-15{
+    margin-bottom: 15px;
+}
+
 .p-top-5{
     padding-top: 5px;
 }
@@ -490,18 +494,25 @@ table.dataTable tfoot tr th{
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    height: 600px;
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px;
     background-color: #ffffff;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    border-radius: 10px;
     border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    /* padding: 20px; */
-    /* transition: 5s ease-in; */
+    border-bottom-left-radius: 10px;
 }
 
 .cash-float-header{
     padding: 20px;
+}
+
+.eod-table{
+    overflow-x: auto;
+}
+
+.eod-table table{
+    min-width: 900px;
 }
 
 .eod-table, .eod-v-q{
@@ -548,5 +559,16 @@ input:disabled{
 }
 
 .start-of-day:hover{
+    opacity: 0.7;
+}
+
+.back-to-dashboard{
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    color: #fff;
+}
+
+.back-to-dashboard:hover{
     opacity: 0.7;
 }
