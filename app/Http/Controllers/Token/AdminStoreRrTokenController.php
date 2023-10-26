@@ -498,6 +498,9 @@
 				'created_by'       => CRUDBooster::myId(),
 				'created_at'       => date('Y-m-d H:i:s'),
 			]);
+
+			$message = ['status'=>'success','redirect_url'=>CRUDBooster::adminpath('store_rr_token')];
+			return json_encode($message);
 		}
 
 	}

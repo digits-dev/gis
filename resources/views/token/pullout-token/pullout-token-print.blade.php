@@ -47,7 +47,7 @@
 
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center; border-collapse: collapse; font-size: 15px; height:20px">
+                                <table border="1" width="100%">
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -167,7 +167,7 @@
     
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center; border-collapse: collapse; font-size: 15px; height:20px">
+                                <table border="1" width="100%" >
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -293,8 +293,11 @@
                         url: '{{ url('admin/pullout_tokens/forPrintPulloutUpdate') }}',
                         data: data,
                         success: function( response ){
-                            console.log( response );              
-                        
+                            const data = JSON.parse(response);
+                            if(data.status === 'success'){
+                                //window.location.replace(document.referrer);
+                                window.location.replace(data.redirect_url);
+                            }            
                         },
                         error: function( e ) {
                             console.log(e);
