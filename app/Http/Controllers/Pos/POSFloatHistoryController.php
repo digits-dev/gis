@@ -101,4 +101,29 @@ class POSFloatHistoryController extends Controller
     {
         //
     }
+
+    public function cronFloatHistory() {
+        $yesterday = date('Y-m-d', strtotime('yesterday'));
+
+        $locations_ids = DB::table('locations')
+            ->where('status', 'ACTIVE')
+            ->where('id', '!=', 1)
+            ->pluck('id')
+            ->toArray();
+        
+        foreach ($locations_ids as $location_id) {
+            $is_yesterday_existing = DB::table('float_entry_view')
+                ->where('entry_date', $yesterday)
+                ->where('locations_id', $location_id)
+                ->exists();
+
+            if (!$is_yesterday_existing) {
+                DB::table('cash_float_histories')->insert([
+                    'locations_id' => $location_id,
+                    'entry_date' => $yesterday,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+    }
 }
