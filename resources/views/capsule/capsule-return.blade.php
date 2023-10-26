@@ -525,6 +525,7 @@
                                 // confirmButtonText: 'Save',
                                 showConfirmButton: false,
                                 showCloseButton: true,
+                                allowOutsideClick: false,
                                 returnFocus: false,
                                 html: swal_content,
                             })
