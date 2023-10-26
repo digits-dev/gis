@@ -93,10 +93,12 @@
             <tr>
                 <th>Action</th>
                 <th>Ref#</th>
+                <th>Token Qty</th>
                 <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
                 <th>Created by</th>
+                <th>Entry Date</th>
                 <th>Created Date</th>
             </tr>
         </thead>
@@ -107,10 +109,12 @@
                         <a class="btn btn-details history_btn_view" href="{{ route('view_float_history', $entry->cash_float_histories_id) }}" data-entry-id="{{ $entry->cash_float_histories_id }}" ><i class="fa-solid fa-eye"></i></a>
                     </td>
                     <td>FH-{{ str_pad($entry->cash_float_histories_id, 8, "0", STR_PAD_LEFT) }}</td>
+                    <td>{{ $entry->token_qty }}</td>
                     <td>Php{{ $entry->token_value }}</td>
                     <td>Php{{ $entry->cash_value }}</td>
                     <td>{{ $entry->description }}</td>
                     <td>{{ $entry->name }}</td>
+                    <td>{{ $entry->entry_date }}</td>
                     <td>{{ $entry->created_at }}</td>
                 </tr>
             @endforeach
@@ -119,10 +123,12 @@
             <tr>
                 <th>Action</th>
                 <th>Ref#</th>
+                <th>Token Qty</th>
                 <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
                 <th>Created by</th>
+                <th>Entry Date</th>
                 <th>Created Date</th>
             </tr>
         </tfoot>
