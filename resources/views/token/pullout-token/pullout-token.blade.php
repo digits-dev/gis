@@ -35,7 +35,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
    Pullout Token Form
 </div>
 
@@ -73,7 +73,7 @@
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
 </div>

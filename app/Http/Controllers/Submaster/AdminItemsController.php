@@ -189,7 +189,11 @@
 	        */
 	        $this->style_css = '
 				.panel-heading{
-					background-color:#dd4b39 !important;
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name="submit"]{
+					background-color:#3c8dbc !important;
 					color:#fff !important;
 				}
 				@media (min-width:729px){

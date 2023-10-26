@@ -127,7 +127,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-token'),"color"=>"danger"];
+				$this->index_button[] = ["label"=>"Add Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-token'),"color"=>"success"];
 			}
 
 
@@ -214,8 +214,12 @@
 	        $this->style_css = NULL;
 	        $this->style_css = "
 				.panel-heading{
-					background-color:#dd4b39;
-					color:#fff;
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name='submit']{
+					background-color:#3c8dbc !important;
+					color:#fff !important;
 				}
 				.select2-selection__choice{
 				font-size:14px !important;
