@@ -53,6 +53,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Variance","name"=>"variance"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
@@ -262,9 +263,8 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
 				$query->whereNull('collect_rr_tokens.deleted_at')
-					  ->whereNotNull('collect_rr_tokens.received_at')
 					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){

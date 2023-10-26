@@ -53,6 +53,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Variance","name"=>"variance"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
@@ -316,7 +317,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	       $fields = Request::all();
-		
+
 		//    $count_header                 = DB::table('collect_rr_tokens')->count();
 		//    $header_ref                   = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);		
 		//    $reference_number             = "CT-".$header_ref;	
@@ -354,7 +355,22 @@
 			}
 
 			$qty 	           = $fields['qty'];
-			
+
+			foreach($gasha_machines_no_token as $key => $variances){
+				$variance = fmod(intval(str_replace(',', '', $qty[$key])),$variances);
+				if(intval($variance) > 0){
+					CollectRrTokens::where(['id'=>$id])
+					->update([
+								'variance'      => 'Yes'
+							]);
+				}else{
+					CollectRrTokens::where(['id'=>$id])
+					->update([
+								'variance'      => 'No'
+							]);
+				}
+			}
+
 			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
