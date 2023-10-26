@@ -615,3 +615,10 @@ input:disabled {
 .start-of-day:hover {
     opacity: 0.7;
 }
+
+.back-to-dashboard {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: #fff;
+}

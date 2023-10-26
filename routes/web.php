@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Pos\POSDashboardController;
 use App\Http\Controllers\Pos\POSLoginController;
-use App\Http\Controllers\Pos\PosTokenSwapController;
+use App\Http\Controllers\Pos\POSTokenSwapController;
 use App\Http\Controllers\Pos\POSFloatHistoryController;
 use App\Http\Controllers\Pos\POSSwapHistoryController;
 use App\Http\Controllers\Pos\SettingsController;
@@ -88,7 +88,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
 
     //Cycle Count
-    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-machine', [AdminCycleCountsController::class, 'getMachine'])->name('get_machine');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-machine', [AdminCycleCountsController::class, 'getMachine'])->name('get-machine-cycle-count');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
 
 });
