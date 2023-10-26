@@ -431,6 +431,7 @@
                   Swal.fire({
                     icon: 'success',
                     title: 'Swap Successfully!',
+                    allowOutsideClick: false,
                     // html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
                     html: '<table class="styled-table-swap">' +
                           '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
