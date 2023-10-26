@@ -100,14 +100,14 @@
                     type: 'error',
                     title:'Token required!',
                     icon: 'error',
-                    confirmButtonColor: '#dd4b39',
+                    confirmButtonColor: '#3c8dbc',
                 });
             }else if($('#location').val() === ''){
                 Swal.fire({
                         type: 'error',
                         title: 'Please choose location!',
                         icon: 'error',
-                        confirmButtonColor: '#dd4b39',
+                        confirmButtonColor: '#3c8dbc',
                     });
             }else if(parseInt($('#qty').val().replace(/,/g, '')) > parseInt($('#inventory_qty').val().replace(/,/g, ''))){
                 Swal.fire({

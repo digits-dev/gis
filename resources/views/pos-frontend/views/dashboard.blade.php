@@ -13,10 +13,15 @@
 
     .statistic-content{
         display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        width: 100%;
+         justify-content: center;
+         align-items: center;
     }
+    @media only screen and (max-width: 1000px) {
+        .statistic-content {
+            flex-wrap: wrap;
+         }
+        }
+
 
     .statistic-box{
         height: 150px;

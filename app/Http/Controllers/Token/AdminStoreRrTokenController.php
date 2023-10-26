@@ -242,7 +242,11 @@
 	        */
 	        $this->style_css = '
 				.panel-heading{
-					background-color:#dd4b39 !important;
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name="submit"]{
+					background-color:#3c8dbc !important;
 					color:#fff !important;
 				}
 				@media (min-width:729px){
@@ -305,7 +309,7 @@
 	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
 			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
 			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
-			if($column_index == 1){
+			if($column_index == 2){
 				if($column_value == $forPrint){
 					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
 				}else if($column_value == $forReceiving){

@@ -5,6 +5,183 @@
 {{-- Sweet Alert --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
+
+    :root{
+        --primary-color: #fe3e3e;
+        --secondary-color: #f5a623;
+        --text-color: #333333;
+        --title-color: #222222;
+        --text-color1: #4b4848;
+        --danger-color: red;
+    }
+
+    .bg-primary-c{
+        background-color: var(--primary-color);
+    }
+
+    .bg-text-color{
+        background-color: var(--text-color);
+    }
+
+    .c-danger{
+        color: var(--danger-color);
+    }
+
+    .title-color{
+        color: var(--title-color);
+    }
+
+    .text-color{
+        color: var(--text-color);
+    }
+
+    .text-color1{
+        color: var(--text-color1)
+    }
+
+    .text-color-w{
+        color: white;
+    }
+
+    .hide{
+        display: none;
+    }
+
+    .show{
+        display: block;
+    }
+
+    .t-center{
+        text-align: center;
+    }
+
+    .m-top-3{
+        margin-top: 3px;
+    }
+
+    .m-top-5{
+        margin-top: 5px;
+    }
+
+    .m-top-10{
+        margin-top: 10px;
+    }
+
+    .m-top-15{
+        margin-top: 15px;
+    }
+
+    .m-top-20{
+        margin-top: 20px;
+    }
+
+    .m-top-30{
+        margin-top: 30px;
+    }
+
+    .m-top-50{
+        margin-top: 50px;
+    }
+
+    .m-right-5{
+        margin-right: 5px;
+    }
+
+    .m-right-10{
+        margin-right: 10px;
+    }
+
+    .m-right-25{
+        margin-right: 25px;
+    }
+
+    .m-right-35{
+        margin-right: 35px;
+    }
+
+    .m-bottom-15{
+        margin-bottom: 15px;
+    }
+
+    .p-top-5{
+        padding-top: 5px;
+    }
+
+    .p-top-10{
+        padding-top: 10px;
+    }
+
+    .p-top-15{
+        padding-top: 15px;
+    }
+
+    .p-top-20{
+        padding-top: 20px;
+    }
+
+    .p-top-50{
+        padding-top: 50px;
+    }
+
+    .p-top-bot-10{
+        padding: 10px 0;
+    }
+
+    .fs-40{
+        font-size: 40px;
+    }
+
+    .fs-30{
+        font-size: 30px;
+    }
+
+    .fs-25{
+        font-size: 25px;
+    }
+
+    .fs-20{
+        font-size: 20px;
+    }
+
+    .fs-15{
+        font-size: 15px;
+    }
+
+    .fs-13{
+        font-size: 13px;
+    }
+
+    .fw-bold{
+        font-weight: bold;
+    }
+
+    .max-w-75{
+        min-width: 100px;
+    }
+
+    .d-flex-jcc-col{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .d-flex-jcsb{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .d-flex-jcev{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .d-flex-al-c{
+        display: flex;
+        align-items: center;
+    }
     .select2-selection__choice{
             font-size:14px !important;
             color:black !important;
@@ -40,48 +217,64 @@
         transform: translateY(-50%) !important;
     }
 
-    .control-label{
-        margin-right: 10px;
-    }
+.cash-float{
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    border-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
 
-    #cash_float_lines_add_btn, #cash_float_lines_remove_btn{
-        /* border: none; */
-        padding: 7px 20px;
-    }
+.cash-float-header{
+    padding: 20px;
+}
 
-    .cfl_original{
-        background-color: #eeeeee;
-        padding-bottom: 5px;
-        margin: 0;
-        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
-    }
+.eod-table{
+    overflow-x: auto;
+}
 
-    .cfl_clone{
-        background-color: #eeeeee;
-        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
-        margin: 26px 0 0 0;
-        padding-bottom: 5px;
-        position: relative;
-    }
+.eod-table table{
+    min-width: 900px;
+}
 
-    #remove_btn{
-        position: absolute;
-        right: -10px;
-        top: -13px;
-        font-size: 25px;
-        color: #DD4B39;
-        background-color: #ececec;
-        /* padding: 0 7px; */
-        height: 30px;
-        width: 30px;
-        border-radius: 50%;
-        box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
-        cursor: pointer;
-        display: grid;
-        place-content: center;
-        z-index: 1;
-    }
+.eod-table, .eod-v-q{
+    padding: 15px 20px;
+}
 
+.eod-table table input{
+    /* border: 1px solid black; */
+    width: 100%;
+    text-align: center;
+    padding: 0 5px;
+}
+
+.eod-table table th{
+    border: 1px solid #bcb8b8;
+    text-align: center;
+}
+
+.eod-table table td{
+    text-align: center;
+    border: 1px solid #bcb8b8;
+    height: 35px;
+}
+
+input:disabled{
+    background-color: #dddcdc;
+    height: 100%;
+    width: 100%;
+}
+
+.input-design{
+    border: 1px solid #bcb8b8;
+    text-align: center;
+    height: 35px;
+}
+
+.cash-float-content{
+    position: relative;
+}
 
 </style>
 @endpush
@@ -114,35 +307,68 @@
 
                 <br>
 
-                @foreach($cash_float_history_lines as $cfhl)
-                    <div class="row cfl_original">
-                        <div class="col-md-3 cfl-row">
-                            <label class="control-label" for="">Mode Of Payment</label>
-                            <select class="form-control select2-s" name="mode_of_payment[]">
-                                @foreach ($mode_of_payments as $mode_of_payment)
-                                    <option value="{{ $mode_of_payment->id }}" {{ $cfhl->mode_of_payments_id == $mode_of_payment->id ? 'selected':'' }}>{{ $mode_of_payment->payment_description }}</option>
-                                @endforeach
-                            </select>
+                <div class="cash-float-section" id="view_history_tab">
+                    <form method="POST">
+                        @csrf
+                        <div class="cash-float">
+                            <div class="cash-float-content">
+                                <form method="POST">
+                                    @csrf
+                                    <div class="cash-float-header bg-text-color d-flex-al-c text-color-w">
+                                        <p class="fs-20 c-danger fw-bold text-color-w" id="float_type_description"></p>
+                                    </div>
+                                    <div class="eod-table m-top-20">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Mode of Payment</th>
+                                                    <th>Value</th>
+                                                    @foreach ($float_entries as $float_entry)
+                                                    <th>
+                                                        {{ $float_entry->description }}
+                                                    </th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($mode_of_payments as $mode_of_payment)
+                                                <tr>
+                                                    <td>{{ $mode_of_payment->payment_description }}</td>
+                                                    @for ($i=0; $i<count($float_entries)+1; $i++)
+                                                        @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
+                                                            @if ($i == 0)
+                                                                <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" readonly></td>
+                                                                {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" readonly onkeypress="inputIsNumber()" ></td> --}}
+                                                            @else
+                                                                <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" readonly></td>
+                                                                {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
+                                                            @endif
+                                                        @else
+                                                        <td><input type="text" disabled></td>
+                                                        @endif
+                                                    @endfor
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="eod-v-q">
+                                        <div class="d-flex-al-c">
+                                            <p class="max-w-75">Total Value</p>
+                                            <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value" readonly>
+                                            {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                                        </div>
+                                        <div class="d-flex-al-c m-top-10">
+                                            <p class="max-w-75">Token qty</p>
+                                            <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="height: 35px; width:165px;" oninput="numberOnly(this);" readonly>
+                                            {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <label class="control-label" for="">Float Entry</label>
-                            <select class="form-control select2-s" name="float_entry[]">
-                                @foreach ($float_entries as $float_entry)
-                                    <option value="{{ $float_entry->id }}" {{ $cfhl->float_entries_id == $float_entry->id ? 'selected':'' }}>{{ $float_entry->description }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="control-label" for="">Qty</label>
-                            <input class="form-control" type="text" name="qty[]" value="{{ $cfhl->qty }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="control-label" for="">Value</label>
-                            <input class="form-control" type="text" name=value[] value="{{ $cfhl->value }}">
-                        </div>
-                    </div>
-                    <br>
-                @endforeach
+                    </form>
+                </div>
 
             </div>
             <div class='panel-footer'>
@@ -161,6 +387,42 @@
         });
 
         $('input, select').prop('disabled', true);
+
+        const rowId = "{{ $row->id }}";
+        const url_link = "{{ route('view_float_history', 'rowID') }}"; 
+
+        const url = url_link.replace('rowID', rowId);
+
+
+        $.ajax({
+            url:url,
+            dataType: 'json',
+            type: 'GET',
+            success: function(response){
+                console.log(response);
+                // Iterate through the response.cash_float_history_lines array
+                $.each(response.cash_float_history_lines, function(index, line) {
+                    $('.cash_value_' + line.entry_description).val(line.line_qty);
+
+                    if (line.entry_description === "TOKEN") {
+                        $('.total_token').val(line.line_qty);
+                    }
+                });
+
+                $.each(response.cash_float_history_lines, function(index, line) {
+                    $('.cash_value_' + line.payment_description).val(line.line_value);
+
+                });
+                const float_type_description = response.cash_float_history.description;
+                $('#float_type_description').text(float_type_description + ' OF THE DAY');
+                $('.total_value').val(response.cash_float_history.cash_value);
+                $('#view_history_tab').attr('hidden', false);
+
+            },
+            error: function(error){
+                console.log(error);
+            }
+        })
 
     </script>
 @endpush

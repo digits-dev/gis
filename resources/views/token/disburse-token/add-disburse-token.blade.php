@@ -35,7 +35,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
     Disburse Token Form
 </div>
 
@@ -64,7 +64,7 @@
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
 </div>
@@ -90,14 +90,14 @@
                     type: 'error',
                     title:'Token required!',
                     icon: 'error',
-                    confirmButtonColor: '#dd4b39',
+                    confirmButtonColor: '#3c8dbc',
                 });
             }else if($('#location').val() === ''){
                 Swal.fire({
                         type: 'error',
                         title: 'Please choose location!',
                         icon: 'error',
-                        confirmButtonColor: '#dd4b39',
+                        confirmButtonColor: '#3c8dbc',
                     });
             }else{
                  $.ajax({
