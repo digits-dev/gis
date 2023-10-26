@@ -139,7 +139,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"danger"];
+				$this->index_button[] = ["label"=>"Disburse Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('disburse-token'),"color"=>"success"];
 			}
 
 
