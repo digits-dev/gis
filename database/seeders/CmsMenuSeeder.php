@@ -693,10 +693,10 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Capsule History',
+                'name'              => 'Capsule Movement History',
             ],
             [
-                'name'              => 'Capsule History',
+                'name'              => 'Capsule Movement History',
                 'type'              => 'Route',
                 'path'              => 'Capsule\AdminHistoryCapsulesControllerGetIndex',
                 'color'             => NULL,
