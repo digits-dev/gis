@@ -131,6 +131,26 @@
   .summary-value span{
     font-size: 19px;
   }
+  .styled-table-swap {
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    width: 60%;
+    text-align: center;
+    border-collapse: collapse;
+    margin: 0 auto;
+    font-weight: bold;
+}
+
+.styled-table-swap td {
+  border: 1px solid #838383;
+  padding: 12px 15px;
+}
+
+.styled-table-swap tr td:nth-of-type(odd) {
+      color: #c02f2f;
+}
 </style>
 @endsection
 
@@ -411,7 +431,12 @@
                   Swal.fire({
                     icon: 'success',
                     title: 'Swap Successfully!',
-                    html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
+                    // html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
+                    html: '<table class="styled-table-swap">' +
+                          '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
+                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val()+'</td></tr>' +
+                          '<tr><td>Total</td><td>'+ $('#total_value').val()+'</td></tr>' +
+                          '</table>',
                   })
                 } 
 

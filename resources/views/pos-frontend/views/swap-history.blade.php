@@ -16,6 +16,24 @@
     .btn {
         margin: 5px
     }
+    .styled-table-void {
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    width: 60%;
+    text-align: center;
+    border-collapse: collapse;
+    margin: 0 auto;
+    font-weight: bold;
+    }
+    .styled-table-void td {
+    border: 1px solid #838383;
+    padding: 12px 15px;
+    }
+    .styled-table-void tr td:nth-of-type(odd) {
+        color: #c02f2f;
+}
 </style>
 @endsection
 
@@ -104,7 +122,12 @@
                 title: "Are you sure you want to void this transaction? ",
                 icon: 'warning',
                 html: 'Reference #:' + ' ' + swap_history_object.reference_number + '<br>' + 'Value:' + ' ' + swap_history_object.total_value + '<br>' + 'Token:' + ' ' + swap_history_object.token_value,
-                // showDenyButton: true,
+
+                html: '<table class="styled-table-void">' +
+                          '<tr><td>Reference Number</td><td>'+ swap_history_object.reference_number +'</td></tr>' +
+                          '<tr><td>Value</td><td>'+ swap_history_object.total_value+'</td></tr>' +
+                          '<tr><td>Token</td><td>'+ swap_history_object.token_value+'</td></tr>' +
+                          '</table>',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
                 denyButtonText: `Don't save`,
