@@ -1,6 +1,6 @@
-function inputIsNumber(){
-    $('input').keyup(function(event) {
-        if(event.which >= 37 && event.which <= 40) return;
+function inputIsNumber() {
+    $("input").keyup(function (event) {
+        if (event.which >= 37 && event.which <= 40) return;
 
         if(this.value.charAt(0) == '.'){
             this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2){
@@ -8,6 +8,7 @@ function inputIsNumber(){
             })
         }
 
+        // if(event.key == '.' && this.value.split('.').length > 2){
         // if(event.key == '.' && this.value.split('.').length > 2){
         if(this.value.split('.').length > 2){
             this.value = this.value.replace(/([\d,]+)([\.]+.+)/, '$1') 
@@ -21,15 +22,14 @@ function inputIsNumber(){
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return parts.join(".");
         });
-    })
+    });
 
-    $('input').keyup(function(event) {
-        if(event.which >= 37 && event.which <= 40) return;
-        $(this).val(function(index, value) {
+    $("input").keyup(function (event) {
+        if (event.which >= 37 && event.which <= 40) return;
+        $(this).val(function (index, value) {
             return value
-            .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-          });
-    })
+                .replace(/\D/g, "")
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        });
+    });
 }
