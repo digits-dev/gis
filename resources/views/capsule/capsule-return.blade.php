@@ -222,8 +222,8 @@
                     <p id="warning-message">You Won't be able to revert this!</p>
                 </div>
                 <div class="swal-buttons">
-                    <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
                     <button type="button" class="swal-btn btn-red swal-btn-cancel">Cancel</button>
+                    <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
                 </div>
             </div>
 
