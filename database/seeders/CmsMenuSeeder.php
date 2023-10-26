@@ -246,6 +246,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 7
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token Sales',
+            ],
+            [
+                'name'              => 'Token Sales',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminCollectRrTokenSalesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 9
+            ]
+        );
     }
 
     public function capsuleMenu() {
