@@ -275,7 +275,7 @@
 
 
     function onInput1(float1Input) {
-      float1Input.value = float1Input.value.replace(/[^0-9]/g,'');
+      float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
@@ -295,7 +295,8 @@
     }
 
     function onInput2(float2Input) {
-      float2Input.value = float2Input.value.replace(/[^0-9]/g,'');
+      float2Input.value = Number(float2Input.value.replace(/[^0-9]/g,''));
+      console.log(float2Input.value);
       const float2Value = float2Input.value;
       const converted = float2Value * {{ $cash_value }} ;
       $('#mode_of_payment').attr('disabled', false);
