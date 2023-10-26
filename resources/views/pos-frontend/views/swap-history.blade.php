@@ -121,12 +121,11 @@
         Swal.fire({
                 title: "Are you sure you want to void this transaction? ",
                 icon: 'warning',
-                html: 'Reference #:' + ' ' + swap_history_object.reference_number + '<br>' + 'Value:' + ' ' + swap_history_object.total_value + '<br>' + 'Token:' + ' ' + swap_history_object.token_value,
-
+                allowOutsideClick: false,
                 html: '<table class="styled-table-void">' +
                           '<tr><td>Reference Number</td><td>'+ swap_history_object.reference_number +'</td></tr>' +
-                          '<tr><td>Value</td><td>'+ swap_history_object.total_value+'</td></tr>' +
-                          '<tr><td>Token</td><td>'+ swap_history_object.token_value+'</td></tr>' +
+                          '<tr><td>Value</td><td>'+ swap_history_object.total_value.toLocaleString()+'</td></tr>' +
+                          '<tr><td>Token</td><td>'+ swap_history_object.token_value.toLocaleString()+'</td></tr>' +
                           '</table>',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
