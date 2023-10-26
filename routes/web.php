@@ -56,6 +56,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_swap_history/{id}', [POSSwapHistoryController::class, 'show'])->middleware('auth');
     Route::get('pos_swap_history/edit/{id}', [POSSwapHistoryController::class, 'edit'])->middleware('auth');
     Route::get('pos_float_history', [POSFloatHistoryController::class, 'index'])->middleware('auth');
+    Route::get('pos_float_history/{id}/view', [POSFloatHistoryController::class, 'viewFloatHistory'])->name('view_float_history');
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
