@@ -14,7 +14,7 @@ class AddValueToFloatEntries extends Migration
     public function up()
     {
         Schema::table('float_entries', function (Blueprint $table) {
-            $table->decimal('value')->length(18,2)->nullable()->after('description');;
+            $table->decimal('value')->length(18,2)->nullable()->change();
         });
     }
 
