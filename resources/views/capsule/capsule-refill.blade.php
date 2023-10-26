@@ -135,8 +135,18 @@
         const item = data.item;
         const machines = data.machines;
 
+        if (!item) return;
+
         if (!machines.length) {
             $('input[name="machine_code"]').val('');
+            Swal.fire({
+                title: `Item Found.`,
+                html: `🥚 ${item.digits_code} - ${item.item_description}`,
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+            });
         }
         else if (machines.length) {
             const clonedDiv = $('.swal-machine-list').clone().show();
@@ -221,6 +231,7 @@
             },
             success: function(res) {
                 const data = JSON.parse(res);
+                console.log(data);
                 showMachines(data);
             },
             error: function(err) {
@@ -294,7 +305,11 @@
 
     $('form').on('submit', function(event) {
         event.preventDefault();
-        if (!Number($('#quantity').val())) {
+        $('input').get().forEach(input => {
+            const value = $(this).val();
+            $(this).val(value.trim());
+        });
+        if (!Number($('#quantity').val().replace(/\D/, ''))) {
             Swal.fire({
                 title: 'Oops...',
                 html: 'Quantity cannot be 0!',
