@@ -223,7 +223,11 @@
 	        */
 	        $this->style_css = '
 				.panel-heading{
-					background-color:#dd4b39 !important;
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name="submit"]{
+					background-color:#3c8dbc !important;
 					color:#fff !important;
 				}
 				@media (min-width:729px){
@@ -270,8 +274,12 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
-	            
+	        if(CRUDBooster::isSuperadmin()){
+				$query->orderBy('gasha_machines.id', 'desc');
+			}else {
+				$query->where('gasha_machines.location_id', CRUDBooster::myLocationId())
+					  ->orderBy('gasha_machines.id', 'desc');
+			}    
 	    }
 
 	    /*

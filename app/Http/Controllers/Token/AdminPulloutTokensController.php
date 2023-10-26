@@ -143,7 +143,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Pullout Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('pullout-token'),"color"=>"danger"];
+				$this->index_button[] = ["label"=>"Pullout Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('pullout-token'),"color"=>"success"];
 			}
 
 
@@ -484,32 +484,37 @@
 		public function forPrintPulloutUpdate(){
 			$data = Request::all();
 			$header_id = $data['header_id'];
+			$checkPrinted = PulloutToken::where('id', $header_id)->first();   
+			if($checkPrinted->statuses_id === $this->forPrint){
+				PulloutToken::where('id',$header_id)
+				->update([
+					'statuses_id'=> $this->forReceiving,
+				]);
 
-			PulloutToken::where('id',$header_id)
-			->update([
-				'statuses_id'=> $this->forReceiving,
-			]);
+				$pullout_token = PulloutToken::find($header_id);   
+				$qty = -1 * abs($pullout_token->qty);
+				$location_id = $pullout_token->locations_id;
+				$tat_add_token = TokenActionType::where('id', 4)->first();
 
-			$pullout_token = PulloutToken::find($header_id);   
-			$qty = -1 * abs($pullout_token->qty);
-			$location_id = $pullout_token->locations_id;
-			$tat_add_token = TokenActionType::where('id', 4)->first();
+				//less in inventory
+				DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
 
-			//less in inventory
-			DB::table('token_inventories')->where('id',$location_id)->decrement('qty', $pullout_token->qty);
+				//Save History
+				TokenHistory::insert([
+					'reference_number' => $pullout_token->reference_number,
+					'qty'              => $qty,
+					'types_id'         => $tat_add_token->id,
+					'locations_id'     => $location_id,
+					'created_by'       => CRUDBooster::myId(),
+					'created_at'       => date('Y-m-d H:i:s'),
+				]);
 
-			//Save History
-	        TokenHistory::insert([
-				'reference_number' => $pullout_token->reference_number,
-				'qty'              => $qty,
-				'types_id'         => $tat_add_token->id,
-				'locations_id'     => $location_id,
-				'created_by'       => CRUDBooster::myId(),
-				'created_at'       => date('Y-m-d H:i:s'),
-			]);
-
-			$message = ['status'=>'success','redirect_url'=>CRUDBooster::adminpath('pullout_tokens')];
-			return json_encode($message);
+				$message = ['status'=>'success','redirect_url'=>CRUDBooster::adminpath('pullout_tokens')];
+				return json_encode($message);
+			}else{
+				$message = ['status'=>'error','message'=>'Already Printed!','redirect_url'=>CRUDBooster::adminpath('pullout_tokens')];
+				return json_encode($message);
+			}
 		}
 
 	}

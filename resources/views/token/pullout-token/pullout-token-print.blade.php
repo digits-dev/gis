@@ -1,6 +1,7 @@
 
 @extends('crudbooster::admin_template')
 @push('head')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <style type="text/css">   
     #border-table {
     padding: 15px;
@@ -297,6 +298,18 @@
                             if(data.status === 'success'){
                                 //window.location.replace(document.referrer);
                                 window.location.replace(data.redirect_url);
+                            }else{
+                                Swal.fire({
+                                    type: 'error',
+                                    title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#3c8dbc',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace(data.redirect_url);
+                                    }
+                                });
+                               
                             }            
                         },
                         error: function( e ) {

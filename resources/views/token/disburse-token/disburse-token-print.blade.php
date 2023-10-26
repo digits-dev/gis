@@ -1,6 +1,7 @@
 
 @extends('crudbooster::admin_template')
 @push('head')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <style type="text/css">   
     #border-table {
     padding: 15px;
@@ -278,6 +279,14 @@
 @push('bottom')
     <script type="text/javascript">
 
+    function preventBack() {
+        window.history.forward();
+    }
+     window.onunload = function() {
+        null;
+    };
+    
+    setTimeout("preventBack()", 0);
         function printDivision(divName) {
          //alert('Please print 2 copies!');
             var generator = window.open(",'printableArea,");
@@ -289,7 +298,7 @@
         }        
 
         $("#printARF").on('click',function(){
-        //var strconfirm = confirm("Are you sure you want to approve this pull-out request?");
+
             var data = $('#myform').serialize();
                 $.ajax({
                         type: 'GET',
@@ -300,8 +309,20 @@
                             if(data.status === 'success'){
                                 //window.location.replace(document.referrer);
                                 window.location.replace(data.redirect_url);
+                            }else{
+                                Swal.fire({
+                                    type: 'error',
+                                    title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#3c8dbc',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace(data.redirect_url);
+                                    }
+                                });
+                               
                             }      
-                            console.log(data.status)     
+  
                         },
                         error: function( e ) {
                             console.log(e);
