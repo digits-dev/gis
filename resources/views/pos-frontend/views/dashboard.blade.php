@@ -5,8 +5,6 @@
 
 {{-- Your Plugins --}}
 @section('plugins')
-<script src="{{ asset('plugins/sweetalert.js') }}"></script>
-
 @endsection
 
 {{-- Your CSS --}}
@@ -85,10 +83,10 @@
         <div class="cash-float-content">
             <form method="POST">
                 @csrf
-                <div class="d-flex-al-c">
-                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 c-danger fw-bold">Cash Float (SOD)</p>
+                <div class="cash-float-header bg-primary-c d-flex-al-c text-color-w">
+                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 fw-bold">Cash Float (SOD)</p>
                 </div>
-                <div class="eod-table m-top-20">
+                <div class="eod-table">
                     <table>
                         <thead>
                             <tr>
@@ -123,7 +121,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="m-top-20">
+                <div class="eod-v-q">
                     <div class="d-flex-al-c">
                         <p class="max-w-75">Total Value</p>
                         <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
@@ -135,7 +133,7 @@
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
-                <div class="d-flex-jcc-col m-top-30">
+                <div class="d-flex-jcc-col">
                     <p class="fw-bold m-top-10">Current Date:</p>
                     <p class="m-top-10 currentDateTime" id="currentDateTime">Loading Time...</p>
                     <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
@@ -225,7 +223,6 @@
     $(document).ready(function(){
         $(".cash_value_CASH").attr("readonly", true);
         $(".total_value").attr("readonly", true);
-        $('.cash-float-section').css('visibility', 'visible');
     });
 
     function updateCashValue (){
@@ -346,47 +343,6 @@
             }
         });
     });
-    
-    // function sales() {
-    //     var ctx = document.getElementById('myLineChart').getContext('2d');
-
-    //     // Dynamically set the canvas width to 100%
-    //     var canvas = document.getElementById('myLineChart');
-    //     canvas.style.width = '100%';
-    //     canvas.style.height = '350px';
-
-    //     var data = {
-    //         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    //         datasets: [{
-    //             label: 'Monthly Sales',
-    //             data: [10, 15, 7, 20, 14],
-    //             borderColor: 'rgb(75, 192, 192)',
-    //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
-    //             borderWidth: 2,
-    //             fill: true,
-    //             tension: 0.1,
-    //         }]
-    //     };
-
-    //     var options = {
-    //         responsive: true, // Make the chart responsive
-    //         maintainAspectRatio: true, // Maintain the aspect ratio
-    //         scales: {
-    //             y: {
-    //                 beginAtZero: true
-    //             }
-    //         }
-    //     };
-
-    //     var myLineChart = new Chart(ctx, {
-    //         type: 'line',
-    //         data: data,
-    //         options: options
-    //     });
-    // }
-
-    // // Call the function to create the chart
-    // sales();
 
     function sales() {
         var ctx = document.getElementById('myLineChart').getContext('2d');

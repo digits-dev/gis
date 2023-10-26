@@ -31,7 +31,7 @@
                             <div class="d-flex-jcev">
                                 <i class="fa-regular fa-bell" id="notif" style="font-size: 16px;"></i>
                                 {{-- <a href="" id="user-icon-my-profile"><i class="fa-solid fa-user"></i></a> --}}
-                                <a href="{{ route('logout') }}" id="user-icon-logout"><i class="fa-solid fa-power-off"></i></a>
+                                <a id="user-icon-logout"><i class="fa-solid fa-power-off"></i></a>
                             </div>
                         </div>
                     </div>

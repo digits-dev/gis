@@ -56,14 +56,14 @@
                             <div class="fw-bold title-color fs-15 success-color">
                                 @if(Session::has('logged_out_success'))
                                     <br>
-                                    <p>Successfully logged out</p>
+                                    <p>{{ Session::get('logged_out_success') }}</p>
                                 @endif
                             </div>
                             <div class="fw-bold title-color fs-15 danger-color">
-                                @if($errors->has('email'))
+                                @error('error')
                                     <br>
-                                    <p>Incorrect Email or Password</p>
-                                @endif
+                                    <p style="text-align: center; padding: 0 20px;">{{ $message }}</p> <!-- Display the error message -->
+                                @enderror
                             </div>
                         </div>
                     </div>

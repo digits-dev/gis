@@ -44,11 +44,6 @@ class POSEndOfDayController extends Controller
         // dd($data['have_eod_today']);
         return view('pos-frontend.views.end-of-day', $data);
 
-
-
-
-
-
     }
     public function submitEOD(Request $request){
         $data = $request->all();

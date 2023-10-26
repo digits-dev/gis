@@ -47,6 +47,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
     Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
+    Route::get('pos_logout_account_eod', [POSLoginController::class, 'logoutEOD'])->name('logout_eod');
+    Route::get('pos_logout_account_es', [POSLoginController::class, 'endSession'])->name('logout_end_session');
     Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
     Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
     Route::post('pos_token_swap/swap', [POSTokenSwapController::class, 'store'])->middleware('auth')->name('swap');

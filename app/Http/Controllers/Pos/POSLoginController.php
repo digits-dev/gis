@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CmsUsers;
 use Illuminate\Support\Facades\Auth;
+use DB;
+use Session;
 
 class POSLoginController extends Controller
 {
@@ -92,19 +94,39 @@ class POSLoginController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $email_auth = $request->all()['email'];
+
+        $user = DB::table('cms_users')
+            ->leftJoin('float_entry_view as fev', 'fev.locations_id', 'cms_users.location_id')
+            ->select('cms_users.*',
+                'fev.entry_date',
+                'fev.sod',
+                'fev.eod'
+            )
+            ->where('email', $email_auth)
+            ->where('status', 'ACTIVE')
+            ->where('entry_date', date('Y-m-d'))
+            ->get()
+            ->first();
+
+        if (!$user->eod && Auth::attempt($credentials)) {
+
             $request->session()->regenerate();
 
             return redirect()->intended('pos_dashboard');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        if($user->eod && $user){
+            $error = "EOD has been set, and you can't log in to the system after the end of the day.";
+        }else{
+            $error = "Incorrect email or password";
+        }
+        
+        return redirect('pos_login')->withErrors(['error' => $error]);
     }
 
     public function logout(Request $request)
@@ -112,9 +134,26 @@ class POSLoginController extends Controller
         Auth::logout();
     
         $request->session()->invalidate();
-    
         $request->session()->regenerateToken();
     
         return redirect('/pos_login')->with(['logged_out_success'=>'Successfully logout']);
+    }
+
+    public function logoutEOD(Request $request)
+    {
+        Auth::logout();
+    
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    
+        return redirect('/pos_login')->with(['logged_out_success'=>'Have a great day!']);
+    }
+
+    public function endSession(Request $request){
+
+        Auth::logout();
+    
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
     }
 }

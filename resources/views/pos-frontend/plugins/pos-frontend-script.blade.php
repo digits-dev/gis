@@ -41,5 +41,21 @@
     $(".cash-float").hide();
     $(".cash-float").fadeIn(500);
 
+    // Logout
+    $('#user-icon-logout').on('click', function() {
+        Swal.fire({
+            title: "Do you want to logout?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            returnFocus: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('logout') }}";
+            }
+        });
+    });
 
 </script>

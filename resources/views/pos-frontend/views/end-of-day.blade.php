@@ -31,10 +31,10 @@
         <div class="cash-float-content">
             <form method="POST">
                 @csrf
-                <div class="d-flex-al-c">
-                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 fw-bold text-color">Cash Float (EOD)</p>
+                <div class="cash-float-header bg-text-color d-flex-al-c text-color-w bg-primary-c">
+                    <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 fw-bold">Cash Float (EOD)</p>
                 </div>
-                <div class="eod-table m-top-20">
+                <div class="eod-table">
                     <table>
                         <thead>
                             <tr>
@@ -69,7 +69,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="m-top-20">
+                <div class="eod-v-q">
                     <div class="d-flex-al-c">
                         <p class="max-w-75">Total Value</p>
                         <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value">
@@ -81,13 +81,13 @@
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
-                <div class="d-flex-jcc-col m-top-30">
+                <div class="d-flex-jcc-col">
                     <p class="fw-bold m-top-10">Date: {{ $entry_date }}</p>
                     <button class="bg-text-color text-color-w fw-bold m-top-10 start-of-day" type="button" id="end_of_day">END OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
                     <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
-                    <p class="m-top-5 c-danger">*You can only "View" the system after end of day</p>
+                    <p class="m-top-5 c-danger">*You may not login to the system after end of day</p>
                 </div>
             </form>
         </div>
@@ -200,31 +200,58 @@
             url: "{{ route('submitEOD') }}",
             data: formData,
             success: function(res) {
-                console.log(res);
                 if (res.has_sod === false) {
-                    location.href = "{{ url('pos_dashboard') }}";
+                    Swal.fire({
+                        title: "POS (EOD) successfully recorded",
+                        html: 'This will redirect you to SOD.',
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ok',
+                        allowOutsideClick: false,
+                        returnFocus: false,
+                    }).then((result) => {
+                        console.log(res);
+                        location.href = "{{ url('pos_dashboard') }}";
+                    });
+                }else{
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ route("logout_end_session") }}',
+                        success: function(data){
+                            Swal.fire({
+                                title: "POS (EOD) successfully recorded",
+                                html: 'This will log-out your account.',
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Ok',
+                                allowOutsideClick: false,
+                                returnFocus: false,
+                            }).then((result) => {
+                                console.log(res);
+                                location.href = "{{ route('logout_eod') }}";
+                            });
+                        },
+                        error: function(error){
+                            console.log(error);
+                        }
+                    });
                 }
-                $('.cash-float-section').hide();
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'bottom-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    background: '#f1f2fa',
-                    color: 'black',
-                    customClass: {
-                    toast: 'bottom-0 end-0',
-                    },
-                });
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Successfully Submitted!',
-                });
             },
             error: function(err) {
                 console.log(err);
-                alert('An error occurred. Please try again later.');
+                Swal.fire({
+                    title: "An error occurred. Please try again later.",
+                    icon: 'error',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ok',
+                    returnFocus: false,
+                })
             }
         });
     });
