@@ -21,20 +21,56 @@ class POSFloatHistoryController extends Controller
     public function index()
     {
         $data = [];
-
-        
+        $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
+        $data['mode_of_payments'] = ModeOfPayment::get();
         $cash_floats_histories_id = CashFloatHistory::pluck('id');
-
-
         $data['entries'] = DB::table('float_history_view')
             ->leftJoin('float_types', 'float_types.id', 'float_history_view.float_types_id')
+            ->leftJoin('cash_float_histories','cash_float_histories.id','float_history_view.cash_float_histories_id')
+            ->leftJoin('cms_users','cms_users.id','cash_float_histories.created_by')
+            ->select('*','cash_float_histories.created_at')
+            ->get()
+            ->toArray();
+        
+        return view('pos-frontend.views.float-history', $data);
+    }
+
+    public function viewFloatHistory($id){
+        $data =[];
+
+        $data['cash_float_history'] = DB::table('cash_float_histories')
+            ->where('cash_float_histories.id', $id)
+            ->leftJoin('float_history_view', 'float_history_view.cash_float_histories_id', 'cash_float_histories.id')
+            ->leftJoin('float_types', 'float_types.id', 'cash_float_histories.float_types_id')
+            ->select(
+                'cash_float_histories.id',
+                'float_history_view.entry_date',
+                'float_history_view.cash_value',
+                'float_history_view.token_value',
+                'float_types.description',
+            )
+            ->first();
+
+        $data['cash_float_history_lines'] = DB::table('cash_float_history_lines')
+            ->where('cash_float_history_lines.cash_float_histories_id', $id)
+            ->leftJoin('float_entries', 'float_entries.id', 'cash_float_history_lines.float_entries_id')
+            ->leftJoin('mode_of_payments','mode_of_payments.id','cash_float_history_lines.mode_of_payments_id')
+            ->select(
+                'cash_float_history_lines.qty as line_qty',
+                'cash_float_history_lines.value as line_value',
+                'float_entries.description as entry_description',
+                'float_entries.value as entry_value',
+                'mode_of_payments.payment_description as payment_description',
+            )
             ->get()
             ->toArray();
 
         
-
-        return view('pos-frontend.views.float-history', $data);
+        
+        return response()->json($data);
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -100,5 +136,30 @@ class POSFloatHistoryController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function cronFloatHistory() {
+        $yesterday = date('Y-m-d', strtotime('yesterday'));
+
+        $locations_ids = DB::table('locations')
+            ->where('status', 'ACTIVE')
+            ->where('id', '!=', 1)
+            ->pluck('id')
+            ->toArray();
+        
+        foreach ($locations_ids as $location_id) {
+            $is_yesterday_existing = DB::table('float_entry_view')
+                ->where('entry_date', $yesterday)
+                ->where('locations_id', $location_id)
+                ->exists();
+
+            if (!$is_yesterday_existing) {
+                DB::table('cash_float_histories')->insert([
+                    'locations_id' => $location_id,
+                    'entry_date' => $yesterday,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
     }
 }
