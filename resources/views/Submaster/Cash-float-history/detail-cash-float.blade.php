@@ -389,9 +389,8 @@ input:disabled{
         $('input, select').prop('disabled', true);
 
         const rowId = "{{ $row->id }}";
-        const url_link = "{{ route('view_float_history', 'rowID') }}"; // Note: 'rowID' is a placeholder.
+        const url_link = "{{ route('view_float_history', 'rowID') }}"; 
 
-        // Replace 'rowID' with the actual rowId value in the URL
         const url = url_link.replace('rowID', rowId);
 
 
