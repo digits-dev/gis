@@ -1,6 +1,7 @@
 
 @extends('crudbooster::admin_template')
 @push('head')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <style type="text/css">   
     #border-table {
     padding: 15px;
@@ -50,7 +51,7 @@
 
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" >
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -170,7 +171,7 @@
     
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%">
+                                <table border="1" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" width="100%">
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -278,6 +279,14 @@
 @push('bottom')
     <script type="text/javascript">
 
+    function preventBack() {
+        window.history.forward();
+    }
+     window.onunload = function() {
+        null;
+    };
+    
+    setTimeout("preventBack()", 0);
         function printDivision(divName) {
          //alert('Please print 2 copies!');
             var generator = window.open(",'printableArea,");
@@ -289,15 +298,31 @@
         }        
 
         $("#printARF").on('click',function(){
-        //var strconfirm = confirm("Are you sure you want to approve this pull-out request?");
+
             var data = $('#myform').serialize();
                 $.ajax({
                         type: 'GET',
                         url: '{{ url('admin/store_rr_token/forPrintUpdate') }}',
                         data: data,
                         success: function( response ){
-                            console.log( response );              
-                        
+                            const data = JSON.parse(response);
+                            if(data.status === 'success'){
+                                //window.location.replace(document.referrer);
+                                window.location.replace(data.redirect_url);
+                            }else{
+                                Swal.fire({
+                                    type: 'error',
+                                    title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#3c8dbc',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.replace(data.redirect_url);
+                                    }
+                                });
+                               
+                            }      
+  
                         },
                         error: function( e ) {
                             console.log(e);

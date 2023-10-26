@@ -1,11 +1,16 @@
-<?php namespace App\Http\Controllers\Submaster;
+<?php namespace App\Http\Controllers\History;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
 
-	class AdminSalesTypesController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminSwapHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
+
+        public function __construct() {
+			// Register ENUM type
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+		}
 
 	    public function cbInit() {
 
@@ -17,46 +22,60 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
-			$this->button_edit = true;
+			$this->button_add = false;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
-			$this->table = "sales_types";
+			$this->button_export = true;
+			$this->table = "swap_histories";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Description","name"=>"description"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
+			$this->col[] = ["label"=>"Token Value","name"=>"token_value"];
+			$this->col[] = ["label"=>"Total Value","name"=>"total_value"];
+			$this->col[] = ["label"=>"Change Value","name"=>"change_value"];
+			$this->col[] = ["label"=>"Type Id","name"=>"type_id","join"=>"token_action_types,description"];
+			$this->col[] = ["label"=>"Mode of payment","name"=>"type_id","join"=>"token_action_types,description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Status","name"=>"status"];
+			// $this->col[] = ["label"=>"Mode Of Payments","name"=>"mode_of_payments"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:150','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE','type'=>'hidden'];
-			if(CRUDBooster::getCurrentMethod() == 'getEdit'){
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];		
-			}
-			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
-				$this->form[] = ["label"=>"Status","name"=>"status"];
-				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'text'];
-				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'text'];
-			}
+			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Cash Value','name'=>'cash_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Token Value','name'=>'token_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Total Value','name'=>'total_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Change Value','name'=>'change_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Type Id','name'=>'type_id','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'type,id','datatable'=>'token_action_types,description'];
+			$this->form[] = ['label'=>'Mode Of Payments','name'=>'mode_of_payments','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'token_action_types,description'];
+			$this->form[] = ['label'=>'Location Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
+			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Cash Value","name"=>"cash_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Token Value","name"=>"token_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Total Value","name"=>"total_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Change Value","name"=>"change_value","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Type Id","name"=>"type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|min:1|max:255","datatable"=>"type,id"];
+			//$this->form[] = ["label"=>"Mode Of Payments","name"=>"mode_of_payments","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Locations Id","name"=>"locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"locations,location_name"];
+			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Payment Reference","name"=>"payment_reference","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
@@ -159,9 +178,7 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-			$this->script_js = '
-				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
-			';
+
 
             /*
 	        | ---------------------------------------------------------------------- 

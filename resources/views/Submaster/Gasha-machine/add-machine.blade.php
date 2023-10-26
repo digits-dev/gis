@@ -24,6 +24,18 @@
                 }
             }
 
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                /* display: none; <- Crashes Chrome on hover */
+                -webkit-appearance: none;
+                margin: 0; 
+            }
+
+            input[type=number] {
+                appearance: textfield;
+                -moz-appearance: textfield; /* Firefox */
+            }
+
         </style>
     @endpush
     @extends('crudbooster::admin_template')
@@ -69,7 +81,7 @@
         </div>
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
         </div>
     </form>
 </div>

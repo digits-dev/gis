@@ -475,29 +475,39 @@
 		public function forPrintUpdate(){
 			$data = Request::all();
 			$header_id = $data['header_id'];
+			$checkPrinted = StoreRrToken::where('id', $header_id)->first();   
+			if($checkPrinted->statuses_id === $this->forPrint){
+				StoreRrToken::where('id',$header_id)
+				->update([
+					'statuses_id'=> $this->forReceiving,
+				]);
 
-			StoreRrToken::where('id',$header_id)
-			->update([
-				'statuses_id'=> $this->forReceiving,
-			]);
+				$disburse_token = StoreRrToken::find($header_id);   
+				$qty = -1 * abs($disburse_token->released_qty);
+				$location_id = $disburse_token->from_locations_id;
+				$tat_add_token = TokenActionType::where('id', 2)->first();
 
-			$disburse_token = StoreRrToken::find($header_id);   
-			$qty = -1 * abs($disburse_token->released_qty);
-			$location_id = $disburse_token->from_locations_id;
-			$tat_add_token = TokenActionType::where('id', 2)->first();
+				//less in inventory
+				DB::table('token_inventories')->where('id',1)->decrement('qty', $disburse_token->released_qty);
 
-			//less in inventory
-			DB::table('token_inventories')->where('id',1)->decrement('qty', $disburse_token->released_qty);
+				//Save History
+				TokenHistory::insert([
+					'reference_number' => $disburse_token->disburse_number,
+					'qty'              => $qty,
+					'types_id'         => $tat_add_token->id,
+					'locations_id'     => $location_id,
+					'created_by'       => CRUDBooster::myId(),
+					'created_at'       => date('Y-m-d H:i:s'),
+				]);
 
-			//Save History
-	        TokenHistory::insert([
-				'reference_number' => $disburse_token->disburse_number,
-				'qty'              => $qty,
-				'types_id'         => $tat_add_token->id,
-				'locations_id'     => $location_id,
-				'created_by'       => CRUDBooster::myId(),
-				'created_at'       => date('Y-m-d H:i:s'),
-			]);
+				$message = ['status'=>'success','redirect_url'=>CRUDBooster::adminpath('store_rr_token')];
+				return json_encode($message);
+			}else{
+				$message = ['status'=>'error','message'=>'Already Printed!','redirect_url'=>CRUDBooster::adminpath('store_rr_token')];
+				return json_encode($message);
+			}
+
+			
 		}
 
 	}
