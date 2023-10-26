@@ -64,7 +64,7 @@ class POSTokenSwapController extends Controller
         $token_inventory_qty = $token_inventory->first()->qty;
         $total_qty = $token_inventory_qty - intval(str_replace(',', '',$request->token_value));
 
-        if ($token_inventory_qty > intval(str_replace(',', '',$request->token_value))) {
+        if ($token_inventory_qty >= intval(str_replace(',', '',$request->token_value))) {
             
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
             $postokenSwap = new POSTokenSwap;
