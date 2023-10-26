@@ -212,6 +212,18 @@
 						width:40% !important; 
 						margin:auto !important;
 				}
+
+				input::-webkit-outer-spin-button,
+				input::-webkit-inner-spin-button {
+					/* display: none; <- Crashes Chrome on hover */
+					-webkit-appearance: none;
+					margin: 0; 
+				}
+
+				input[type=number] {
+					appearance: textfield;
+					-moz-appearance: textfield; /* Firefox */
+				}
 			';
 	        
 	        /*
