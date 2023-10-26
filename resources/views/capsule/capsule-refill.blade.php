@@ -253,17 +253,8 @@
 
     function validateInput(inputElement) {
         let value = inputElement.value;
-        // Remove any non-numeric and non-decimal characters
-        value = value.replace(/[^0-9]/g, '');
-        // Ensure there is only one decimal point
-        let decimalCount = value.split('.').length - 1;
-        if (decimalCount > 1) {
-            // If there is more than one decimal point, remove the extra ones
-            value = value.substring(0, value.lastIndexOf('.'));
-        }
-        // Format the value with commas for every 3 digits
-        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        inputElement.value = value;
+        value = Number(value.replace(/[^0-9]/g, ''));
+        inputElement.value = value ? value.toLocaleString() : '';
     }
 
     $('.open-camera').on('click', function() {
