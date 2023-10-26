@@ -52,6 +52,16 @@ class POSDashboardController extends Controller
         $entry_date = $request->input('entry_date');
         $float_types = $request->input('start_day');
         $float_type = FloatType::where('description', $float_types)->first();
+
+        $entry_today = DB::table('float_entry_view')
+            ->where('entry_date', date('Y-m-d'))
+            ->where('locations_id', $location_id)
+            ->first();
+
+        if ($entry_today->sod) {
+            return response()->json(['has_sod_today' => true]);
+        }
+
         if ($float_type) {
             $float_types_id = $float_type->id;
         } else {
@@ -147,6 +157,32 @@ class POSDashboardController extends Controller
             ->first();
 
         return $is_sod_existing;
+    }
+
+    public function check_sod_or_eod() {
+        $location_id = auth()->user()->location_id;
+        
+        $missing_eod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->where('eod',null)
+            ->where('entry_date', '!=', date('Y-m-d'))
+            ->first();
+
+        if ($missing_eod) {
+            return redirect(url('pos_end_of_day'))->with('is_missing', true);
+        }
+
+        $with_sod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->whereNotNull('sod')
+            ->where('entry_date', date('Y-m-d'))
+            ->first();
+
+        if (!$with_sod) {
+            return redirect(url('pos_dashboard'));
+        }
+
+        return false;
     }
 
     /**

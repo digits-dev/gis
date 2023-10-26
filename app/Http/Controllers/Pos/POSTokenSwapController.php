@@ -24,11 +24,9 @@ class POSTokenSwapController extends Controller
      */
     public function index()
     {
-        // check if no sod for this day
-        $is_sod_existing  = (new POSDashboardController)->check_sod();
-
-        if (!$is_sod_existing) {
-            return redirect(url('pos_dashboard'));
+        $is_missing_eod_or_sod = (new POSDashboardController)->check_sod_or_eod();
+        if ($is_missing_eod_or_sod) {
+            return $is_missing_eod_or_sod;
         }
 
         $data = [];

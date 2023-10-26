@@ -21,21 +21,22 @@ class POSEndOfDayController extends Controller
      */
     public function index()
     {
-        // check if no sod for this day
-        $is_sod_existing  = (new POSDashboardController)->check_sod();
-
-        if (!$is_sod_existing) {
-            return redirect(url('pos_dashboard'));
-        }
-
         $data = [];
         $location_id = auth()->user()->location_id;
+
+
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
         $missing_eod = DB::table('float_entry_view')
             ->where('locations_id',$location_id )
             ->where('eod',null)
             ->first();
+
+        $entry_date = $missing_eod->entry_date;
+
+        if (!$missing_eod) {
+            return redirect(url('pos_dashboard'));
+        }
 
         $data['entry_date'] = $missing_eod->entry_date;
 
@@ -48,7 +49,6 @@ class POSEndOfDayController extends Controller
 
 
         $data['have_eod_today'] = !!$entry_today->eod;
-        // dd($data['have_eod_today']);
         return view('pos-frontend.views.end-of-day', $data);
 
     }

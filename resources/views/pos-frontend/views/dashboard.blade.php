@@ -328,23 +328,34 @@
             data: formData,
             success: function(res) {
                 console.log(res);
-                $('.cash-float-section').hide();
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'bottom-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    background: '#f1f2fa',
-                    color: 'black',
-                    customClass: {
-                    toast: 'bottom-0 end-0',
-                    },
-                });
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Successfully Submitted!',
-                });
+                if (res.has_sod_today) {
+                    Swal.fire({
+                        title: `Today's SOD has been set!`,
+                        html: `SOD can be submitted only once a day.`,
+                        icon: 'error',
+                    });
+                    $('.cash-float-section').hide();
+                } else {
+                    $('.cash-float-section').hide();
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        background: '#f1f2fa',
+                        color: 'black',
+                        customClass: {
+                        toast: 'bottom-0 end-0',
+                        },
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Successfully Submitted!',
+                    });
+                }
+
+
             },
             error: function(err) {
                 console.log(err);
