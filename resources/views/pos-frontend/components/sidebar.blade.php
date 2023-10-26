@@ -1,12 +1,13 @@
 <section class="sidebar_section">
     <nav>
+        <div class="header-logo">
+            <a href="/pos_dashboard" class="gashapon_logo nav-title">
+                <img src="{{ asset('img/logo.png') }}" alt="">
+                <span class="nav-item">GASHAPON</span>
+            </a>
+        </div>
         <ul>
-            <li>
-                <a href="/pos_dashboard" class="gashapon_logo nav-title">
-                    <img src="{{ asset('img/logo.png') }}" alt="">
-                    <span class="nav-item">GASHAPON</span>
-                </a>
-            </li>
+          
             <li>
                 <a class="nav-module {{ Request::Segment(1) == 'pos_dashboard' ? 'active' : '' }}" href="/pos_dashboard">
                     <i class="fa fa-home {{ Request::Segment(1) == 'pos_dashboard' ? 'active_i' : '' }}"></i>
