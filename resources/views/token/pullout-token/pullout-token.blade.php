@@ -92,6 +92,11 @@
     setTimeout("preventBack()", 0);
     $('#location').select2();
     $(document).ready(function() {
+        $('#qty').keyup(function(){
+            var value = $(this).val();
+            value = value.replace(/^(0*)/,"");
+            $(this).val(value);
+        });
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
             
@@ -100,14 +105,14 @@
                     type: 'error',
                     title:'Token required!',
                     icon: 'error',
-                    confirmButtonColor: '#3c8dbc',
+                    confirmButtonColor: '#dd4b39',
                 });
             }else if($('#location').val() === ''){
                 Swal.fire({
                         type: 'error',
                         title: 'Please choose location!',
                         icon: 'error',
-                        confirmButtonColor: '#3c8dbc',
+                        confirmButtonColor: '#dd4b39',
                     });
             }else if(parseInt($('#qty').val().replace(/,/g, '')) > parseInt($('#inventory_qty').val().replace(/,/g, ''))){
                 Swal.fire({

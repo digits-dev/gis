@@ -165,6 +165,11 @@
 			$this->script_js = '
 				$("#qty").attr("onkeypress","inputIsNumber()");
 				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
+				$("#qty").keyup(function(){
+					var value = $(this).val();
+					value = value.replace(/^(0*)/,"");
+					$(this).val(value);
+				});
 			';
 
             /*
