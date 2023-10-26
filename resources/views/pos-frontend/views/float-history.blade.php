@@ -25,8 +25,8 @@
             <div class="cash-float-content">
                 <form method="POST">
                     @csrf
-                    <div class="d-flex-al-c">
-                        <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 c-danger fw-bold" id="float_type_description"></p>
+                    <div class="cash-float-header bg-text-color d-flex-al-c text-color-w">
+                        <i class="fa fa-circle-o m-right-10"></i><p class="fs-20 c-danger fw-bold text-color-w" id="float_type_description"></p>
                     </div>
                     <div class="eod-table m-top-20">
                         <table>
@@ -63,7 +63,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="m-top-20">
+                    <div class="eod-v-q">
                         <div class="d-flex-al-c">
                             <p class="max-w-75">Total Value</p>
                             <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value" readonly>
@@ -75,7 +75,7 @@
                             {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                         </div>
                     </div>
-                    <div class="d-flex-jcc-col m-top-30">
+                    <div class="d-flex-jcc-col m-top-30 m-bottom-15">
                         <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="close_tab">Close Tab</button>
                     </div>
                 </form>
@@ -165,7 +165,7 @@
                 });
                 const float_type_description = response.cash_float_history.description;
                 $('#float_type_description').text(float_type_description + ' OF THE DAY');
-                $('#float_type_description').css('color', (float_type_description == 'END' ? 'black' : ''));
+                // $('#float_type_description').css('color', (float_type_description == 'END' ? 'black' : ''));
                 $('.total_value').val(response.cash_float_history.cash_value);
                 $('#view_history_tab').attr('hidden', false);
 
