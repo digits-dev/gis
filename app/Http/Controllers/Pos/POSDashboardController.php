@@ -111,6 +111,7 @@ class POSDashboardController extends Controller
             $floatEntriesId = $fe['id'];
             $floatEntriesDescription = $fe['description'];
             $tokenWithoutComma = (float)str_replace(',','',$data['total_token']);
+            $qtyWithoutComma = (float)str_replace(',','',$data['cash_value_' . $fe['description']]);
 
             
             if ($floatEntriesDescription == 'TOKEN') {
@@ -119,7 +120,7 @@ class POSDashboardController extends Controller
                 $value = $token_price * $tokenWithoutComma;
             } else {
                 $modeOfPaymentsId = null;
-                $qty = $data['cash_value_' . $fe['description']];
+                $qty = $qtyWithoutComma;
                 $value = $data['cash_value_' . $fe['description']] * $fe['value'];
             }
         
@@ -133,6 +134,7 @@ class POSDashboardController extends Controller
                 'created_at' => $time_stamp,
             ];
         }
+
         
         CashFloatHistoryLine::insert($lines);
         // DB::table('cash_float_history_lines')->insert($lines);

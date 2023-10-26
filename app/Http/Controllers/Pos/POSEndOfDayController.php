@@ -107,6 +107,8 @@ class POSEndOfDayController extends Controller
             $floatEntriesId = $fe['id'];
             $floatEntriesDescription = $fe['description'];
             $tokenWithoutComma = (float)str_replace(',','',$data['total_token']);
+            $qtyWithoutComma = (float)str_replace(',','',$data['cash_value_' . $fe['description']]);
+
             
             if ($floatEntriesDescription == 'TOKEN') {
                 $modeOfPaymentsId = null;
@@ -114,7 +116,7 @@ class POSEndOfDayController extends Controller
                 $value = $token_price * $tokenWithoutComma;
             } else {
                 $modeOfPaymentsId = null;
-                $qty = $data['cash_value_' . $fe['description']];
+                $qty = $qtyWithoutComma;
                 $value = $data['cash_value_' . $fe['description']] * $fe['value'];
             }
         
