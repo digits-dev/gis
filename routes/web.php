@@ -69,8 +69,8 @@ Route::group(['middleware' => ['web']], function() {
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine');
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/check-inventory-qty',[AdminCollectRrTokensController::class, 'checkInventoryQty'])->name('check-inventory-qty');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine-collect', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine-collect');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/check-inventory-qty-collect',[AdminCollectRrTokensController::class, 'checkInventoryQty'])->name('check-inventory-qty-collect');
     //Pullout
     Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/getPulloutForPrint/{id}',[AdminPulloutTokensController::class, 'getPulloutForPrint'])->name('pullout-for-print');
     Route::get(config('crudbooster.ADMIN_PATH').'/pullout_tokens/forPrintPulloutUpdate',[AdminPulloutTokensController::class, 'forPrintPulloutUpdate']);

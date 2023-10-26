@@ -250,8 +250,8 @@
 				}
 				@media (min-width:729px){
 					.panel-default{
-							width:40% !important; 
-							margin:auto !important;
+							width:40%; 
+							margin:auto;
 					}
 				}
 			';

@@ -231,7 +231,7 @@
        
         $.ajax({ 
             type: 'POST',
-            url: "{{ route('check-inventory-qty') }}",
+            url: "{{ route('check-inventory-qty-collect') }}",
             data: {
                 "id": id
             },
@@ -306,7 +306,7 @@
     function checkMachinePartner(item_code) {
         $.ajax({
             type: 'POST',
-            url: "{{ route('get_machine') }}",
+            url: "{{ route('get_machine-collect') }}",
             data: {
                 _token: "{{ csrf_token() }}",
                 item_code: item_code,

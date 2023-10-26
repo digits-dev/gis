@@ -5,6 +5,9 @@
     #border-table {
     padding: 15px;
     }
+   
+
+    
 </style>
 @endpush
 @section('content')
@@ -14,7 +17,7 @@
 @else
 	<p class="noprint"><a title='Main Module' href='{{CRUDBooster::mainpath()}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @endif
-  <div class='panel panel-default'>
+  <div class='panel panel-default' style="width:100% !important; ">
     <div class='panel-heading'>  
         Print Form
     </div>
@@ -47,7 +50,7 @@
 
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center; border-collapse: collapse; font-size: 15px; height:20px">
+                                <table border="1" width="100%">
                                     
                                     <thead>
                                         <tr id="border-table">
@@ -141,7 +144,7 @@
 
                     <hr><br><br><br><br><br>
 
-                    <table width="100%" style="font-size: 13px;">
+                    <table class="table" width="100%" style="font-size: 13px;">
                     
                         <tr>
                             <td colspan="4">
@@ -167,7 +170,7 @@
     
                         <tr style="margin-bottom:50px">
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center; border-collapse: collapse; font-size: 15px; height:20px">
+                                <table border="1" width="100%">
                                     
                                     <thead>
                                         <tr id="border-table">

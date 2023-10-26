@@ -392,7 +392,7 @@
                         icon: 'error',
                         confirmButtonColor: '#367fa9',
                     });
-          }else if ({{ $inventory_qty }} <  $('#token_value').val()) {
+          }else if (Number("{{ $inventory_qty }}") <  Number($('#token_value').val())) {
             Swal.fire({
                     icon: 'error',
                     title: 'Error!',

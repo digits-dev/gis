@@ -1,30 +1,12 @@
-<?php namespace App\Http\Controllers\History;
+<?php namespace App\Http\Controllers\Token;
 
 	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Submaster\Locations;
-	use App\Models\Submaster\TokenActionType;
-	use App\Models\Token\TokenHistory;
-	use App\Models\Token\TokenInventory;
-	use App\Models\Submaster\GashaMachines;
-	use App\Models\Audit\CollectRrTokens;
-	use App\Models\Audit\CollectRrTokenLines;
-	use App\Models\Submaster\Counter;
-	use Carbon\Carbon;
 
-	class AdminCollectRrTokensHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $collected;
-		private $forChecking;
-		private $received;
+	class AdminCollectRrTokenSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
-		public function __construct() {
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->collected       =  5;    
-			$this->forChecking     =  6;
-			$this->received        =  8;      
-		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -43,21 +25,16 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = true;
-			$this->table = "collect_rr_tokens";
+			$this->table = "collect_rr_token_lines";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
-			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"collected_token_id","join"=>"collect_rr_tokens,reference_number"];
+			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Variance","name"=>"variance"];
-			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -66,16 +43,11 @@
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Statuses Id","name"=>"statuses_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"statuses,id"];
-			//$this->form[] = ["label"=>"Location Id","name"=>"location_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"location,id"];
-			//$this->form[] = ["label"=>"Collected Qty","name"=>"collected_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received Qty","name"=>"received_qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			$this->form = [];
+			$this->form[] = ["label"=>"Reference Number","name"=>"collected_token_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"collect_rr_tokens,reference_number",'width'=>'col-sm-10'];
+			$this->form[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"gasha_machines,serial_number",'width'=>'col-sm-10'];
+			$this->form[] = ["label"=>"Qty","name"=>"qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0",'width'=>'col-sm-10'];
+			$this->form[] = ["label"=>"Variance","name"=>"variance","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255",'width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
@@ -222,9 +194,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
-	        
-	        
+			$this->style_css = '
+				.panel-heading{
+					background-color:#dd4b39 !important;
+					color:#fff !important;
+				}
+				@media (min-width:729px){
+				.panel-default{
+						width:40% !important; 
+						margin:auto !important;
+				}
+			';
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -236,7 +216,7 @@
 	        */
 	        $this->load_css = array();
 			$this->load_css[] = asset("css/font-family.css");
-	        $this->load_css[] = asset('css/gasha-style.css');
+			$this->load_css[] = asset('css/gasha-style.css');
 	        
 	    }
 
@@ -263,17 +243,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
-				$query->whereNull('collect_rr_tokens.deleted_at')
-					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
-					  ->orderBy('collect_rr_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
-				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
-					  ->whereNull('collect_rr_tokens.deleted_at')
-					  ->whereNotNull('collect_rr_tokens.received_at')
-					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
-					  ->orderBy('collect_rr_tokens.id', 'desc');
-			}
+	        //Your code here
 	            
 	    }
 
@@ -284,18 +254,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$collected     = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
-			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
-			$received      = DB::table('statuses')->where('id', $this->received)->value('status_description');  
-			if($column_index == 1){
-				if($column_value == $collected){
-					$column_value = '<span class="label label-info">'.$collected.'</span>';
-				}else if($column_value == $forChecking){
-					$column_value = '<span class="label label-info">'.$forChecking.'</span>';
-				}else if($column_value == $received){
-					$column_value = '<span class="label label-success">'.$received.'</span>';
-				}
-			}
+	    	//Your code here
 	    }
 
 	    /*
@@ -371,21 +330,9 @@
 
 	    }
 
-		public function getDetail($id){
-			
-			$this->cbLoader();
-            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
-                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-            }
 
-			$data = array();
-			$data['page_title'] = 'Collected Token Details';
 
-			$data['detail_header'] = CollectRrTokens::detail($id);
-			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
-		
-			return $this->view("audit.collect-token.detail-collect-token", $data);
-		}
+	    //By the way, you can still create your own method in here... :) 
 
 
 	}

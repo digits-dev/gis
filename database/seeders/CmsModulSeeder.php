@@ -315,6 +315,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Token Sales',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_rr_token_sales',
+                'table_name'   => 'collect_rr_token_lines',
+                'controller'   => 'Token\AdminCollectRrTokenSalesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

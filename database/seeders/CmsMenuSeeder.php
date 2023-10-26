@@ -249,59 +249,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
-                'name'              => 'Token History',
+                'name'              => 'Token Sales',
             ],
             [
-                'name'              => 'Token History',
+                'name'              => 'Token Sales',
                 'type'              => 'Route',
-                'path'              => 'Token\AdminTokenHistoriesControllerGetIndex',
+                'path'              => 'Token\AdminCollectRrTokenSalesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 1,
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 8
+                'sorting'           => 9
             ]
         );
     }
 
     public function capsuleMenu() {
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Capsule Inventory',
-            ],
-            [
-                'name'              => 'Capsule Inventory',
-                'type'              => 'Route',
-                'path'              => 'Capsule\AdminInventoryCapsulesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 2,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 3
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Capsule History',
-            ],
-            [
-                'name'              => 'Capsule History',
-                'type'              => 'Route',
-                'path'              => 'Capsule\AdminHistoryCapsulesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 2,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 4
-            ]
-        );
 
         DB::table('cms_menus')->updateOrInsert(
             [
@@ -341,6 +306,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Capsule Inventory',
+            ],
+            [
+                'name'              => 'Capsule Inventory',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminInventoryCapsulesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Capsule Sales',
             ],
             [
@@ -353,7 +336,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 5
+                'sorting'           => 4
             ]
         );
 
@@ -393,82 +376,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 1
-            ]
-        );
-    }
-
-    public function historyMenu() {
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Receive Token History',
-            ],
-            [
-                'name'              => 'Receive Token History',
-                'type'              => 'Route',
-                'path'              => 'History\AdminReceiveTokenHistoryControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 5,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 1
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Collect Token History',
-            ],
-            [
-                'name'              => 'Collect Token History',
-                'type'              => 'Route',
-                'path'              => 'History\AdminCollectRrTokensHistoryControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 5,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
                 'sorting'           => 2
-            ]
-        );
-
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Cash Float History',
-            ],
-            [
-                'name'              => 'Cash Float History',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 5,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 3
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Pullout Token History',
-            ],
-            [
-                'name'              => 'Pullout Token History',
-                'type'              => 'Route',
-                'path'              => 'History\AdminPulloutTokensHistoryControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 5,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 4
             ]
         );
     }
@@ -507,7 +415,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 1
+                'sorting'           => 2
             ]
         );
 
@@ -525,7 +433,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 2
+                'sorting'           => 3
             ]
         );
 
@@ -543,7 +451,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 3
+                'sorting'           => 4
             ]
         );
 
@@ -561,7 +469,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 4
+                'sorting'           => 5
             ]
         );
 
@@ -573,24 +481,6 @@ class CmsMenuSeeder extends Seeder
                 'name'              => 'Token Conversion',
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminTokenConversionsControllerGetIndex',
-                'color'             => NULL,
-                'icon'              => 'fa fa-circle-o',
-                'parent_id'         => 4,
-                'is_active'         => 1,
-                'is_dashboard'      => 0,
-                'id_cms_privileges' => 1,
-                'sorting'           => 5
-            ]
-        );
-
-        DB::table('cms_menus')->updateOrInsert(
-            [
-                'name'              => 'Token Conversion History',
-            ],
-            [
-                'name'              => 'Token Conversion History',
-                'type'              => 'Route',
-                'path'              => 'Submaster\AdminTokenConversionHistoriesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 4,
@@ -651,7 +541,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 10
+                'sorting'           => 9
             ]
         );
 
@@ -669,7 +559,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 11
+                'sorting'           => 10
             ]
         );
 
@@ -687,7 +577,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 12
+                'sorting'           => 11
             ]
         );
 
@@ -705,7 +595,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 13
+                'sorting'           => 12
             ]
         );
 
@@ -723,7 +613,135 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 14
+                'sorting'           => 13
+            ]
+        );
+    }
+
+    public function historyMenu() {
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token History',
+            ],
+            [
+                'name'              => 'Token History',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminTokenHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Receive Token History',
+            ],
+            [
+                'name'              => 'Receive Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminReceiveTokenHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token History',
+            ],
+            [
+                'name'              => 'Collect Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminCollectRrTokensHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Token Conversion History',
+            ],
+            [
+                'name'              => 'Token Conversion History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminTokenConversionHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule History',
+            ],
+            [
+                'name'              => 'Capsule History',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminHistoryCapsulesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 5
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Cash Float History',
+            ],
+            [
+                'name'              => 'Cash Float History',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminCashFloatHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 6
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Pullout Token History',
+            ],
+            [
+                'name'              => 'Pullout Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminPulloutTokensHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 7
             ]
         );
     }
