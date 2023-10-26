@@ -57,7 +57,7 @@
                                             <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
                                         @else
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="numberOnly(this);" required ></td>
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="validateInput(this);" required ></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
                                         @endif
                                     @else
@@ -77,7 +77,7 @@
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="numberOnly(this);" required>                        
+                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="validateInput(this);" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
@@ -133,10 +133,10 @@
         const C10Value = ($(".cash_value_10C").val()) || 0;
         const C5Value = ($(".cash_value_5C").val()) || 0;
         const C1Value = ($(".cash_value_1C").val()) || 0;
-        const cashValue = (P1000Value * 1000) + (P500Value * 500) + (P200Value * 200) 
-        + (P100Value * 100) + (P50Value * 50) + (P20Value * 20) + (P10Value * 10)
-        + (P5Value * 5) + (P1Value * 1) + (C25Value * 0.25)+ (C10Value * 0.10)
-        + (C5Value * 0.05) + (C1Value * 0.01);
+        const cashValue = (removeComma(P1000Value) * 1000) + (removeComma(P500Value) * 500) + (removeComma(P200Value) * 200) 
+        + (removeComma(P100Value) * 100) + (removeComma(P50Value) * 50) + (removeComma(P20Value) * 20) + (removeComma(P10Value) * 10)
+        + (removeComma(P5Value) * 5) + (removeComma(P1Value) * 1) + (removeComma(C25Value) * 0.25)+ (removeComma(C10Value) * 0.10)
+        + (removeComma(C5Value) * 0.05) + (removeComma(C1Value) * 0.01);
         const formattedCashValue = cashValue.toFixed(2);
         const newFormattedCashValue = formatCashValue(formattedCashValue);
         $(".cash_value_CASH").val(newFormattedCashValue);
@@ -160,11 +160,8 @@
     updateCashValue();
 
 
-    function numberOnly(numberElement) {
-        numberElement.value = numberElement.value.replace(/[^0-9]/g, '');
-        if (numberElement.value.length > 0 && numberElement.value[0] === '0') {
-            numberElement.value = numberElement.value.substring(1); // Remove leading zero
-        }
+    function numberOnly(numberElement){
+        numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
     }
     
     function removeComma(number) {
