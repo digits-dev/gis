@@ -248,6 +248,14 @@
 				.select2-selection__arrow {
 					height: 34px !important;
 				}
+				.panel-heading{
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
+				input[name="submit"]{
+					background-color:#3c8dbc !important;
+					color:#fff !important;
+				}
 				@media (min-width:729px){
 					.panel-default{
 							width:40%; 
