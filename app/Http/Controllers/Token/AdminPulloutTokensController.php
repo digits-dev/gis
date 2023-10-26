@@ -507,6 +507,9 @@
 				'created_by'       => CRUDBooster::myId(),
 				'created_at'       => date('Y-m-d H:i:s'),
 			]);
+
+			$message = ['status'=>'success','redirect_url'=>CRUDBooster::adminpath('pullout_tokens')];
+			return json_encode($message);
 		}
 
 	}
