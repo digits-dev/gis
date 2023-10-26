@@ -9,4 +9,9 @@ class SalesType extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $table = 'sales_types';
+
+    public function scopeGetByDescription($query,$description) {
+        return $query->where('description',$description)->first();
+    }
 }
