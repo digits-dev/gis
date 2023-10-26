@@ -36,10 +36,9 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Cash Value","name"=>"cash_value"];
 			$this->col[] = ["label"=>"Token Value","name"=>"token_value"];
-			$this->col[] = ["label"=>"Total Value","name"=>"total_value"];
-			$this->col[] = ["label"=>"Change Value","name"=>"change_value"];
+			$this->col[] = ["label"=>"Payment","name"=>"total_value"];
+			$this->col[] = ["label"=>"Change","name"=>"change_value"];
 			$this->col[] = ["label"=>"Type Id","name"=>"type_id","join"=>"token_action_types,description"];
 			$this->col[] = ["label"=>"Mode of payment","name"=>"type_id","join"=>"mode_of_payments,payment_description"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
