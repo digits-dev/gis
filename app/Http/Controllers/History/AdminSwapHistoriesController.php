@@ -55,7 +55,7 @@
 			$this->form[] = ['label'=>'Payment','name'=>'total_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Change','name'=>'change_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Type','name'=>'type_id','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'type,id','datatable'=>'token_action_types,description'];
-			$this->form[] = ['label'=>'Mode Of Payments','name'=>'mode_of_payments','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'token_action_types,description'];
+			$this->form[] = ['label'=>'Mode Of Payments','name'=>'mode_of_payments','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-10','datatable'=>'mode_of_payments,payment_description'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
