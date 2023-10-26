@@ -70,5 +70,12 @@
                 </div>
             </form>
         </section>
+        <script>
+            window.onpageshow = function(event) {
+            if (event.persisted) {
+                    location.reload();
+                }
+            };
+        </script>
     </body>
 </html>
