@@ -138,12 +138,14 @@
         + (P5Value * 5) + (P1Value * 1) + (C25Value * 0.25)+ (C10Value * 0.10)
         + (C5Value * 0.05) + (C1Value * 0.01);
         const formattedCashValue = cashValue.toFixed(2);
-        $(".cash_value_CASH").val(formattedCashValue);
+        const newFormattedCashValue = formatCashValue(formattedCashValue);
+        $(".cash_value_CASH").val(newFormattedCashValue);
 
         const totalValue = (removeComma(cashValue) + removeComma(BDOValue) + removeComma(BPIValue) + removeComma(GCASHValue) + removeComma(PAYMAYAValue));
         // console.log(BDOValue, removeComma(BDOValue));
         const formattedTotalValue = totalValue.toFixed(2);
-        $(".total_value").val(formattedTotalValue);
+        const newFormattedTotalValue = formatCashValue(formattedTotalValue);
+        $(".total_value").val(newFormattedTotalValue);
 
         if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
             $("#end_of_day").prop('disabled', true);
@@ -177,6 +179,14 @@
         // Format the value with commas for every 3 digits
         value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         inputElement.value = value;
+    }
+    function formatCashValue(cashValue) {
+        const parts = cashValue.toString().split(".");
+        const wholePart = parts[0];
+        const decimalPart = parts[1] || '';
+        const formattedWholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const formattedCashValue = decimalPart === '' ? formattedWholePart : `${formattedWholePart}.${decimalPart}`;
+        return formattedCashValue;
     }
     function validateInputToken(inputElement) {
         let value = inputElement.value;
