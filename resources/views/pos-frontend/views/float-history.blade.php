@@ -81,7 +81,7 @@
                 </form>
             </div>
         </div>
-</form>
+    </form>
 </div>
 @endsection
 {{-- Define the content to be included in the 'content' section --}}

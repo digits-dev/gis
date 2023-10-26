@@ -53,6 +53,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Variance","name"=>"variance"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
@@ -277,7 +278,7 @@
 	    	$collected     = DB::table('statuses')->where('id', $this->collected)->value('status_description');
 			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');
 			$received      = DB::table('statuses')->where('id', $this->received)->value('status_description');
-			if($column_index == 1){
+			if($column_index == 2){
 				if($column_value == $collected){
 					$column_value = '<span class="label label-info">'.$collected.'</span>';
 				}else if($column_value == $forChecking){

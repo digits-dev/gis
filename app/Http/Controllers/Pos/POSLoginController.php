@@ -101,31 +101,27 @@ class POSLoginController extends Controller
         $email_auth = $request->all()['email'];
 
         $user = DB::table('cms_users')
-            ->leftJoin('float_entry_view as fev', 'fev.locations_id', 'cms_users.location_id')
-            ->select('cms_users.*',
-                'fev.entry_date',
-                'fev.sod',
-                'fev.eod'
-            )
             ->where('email', $email_auth)
-            ->where('status', 'ACTIVE')
-            ->where('entry_date', date('Y-m-d'))
-            ->get()
             ->first();
 
-        if (!$user->eod && Auth::attempt($credentials)) {
+        $locations_id = $user->location_id;
 
+        $with_eod = DB::table('float_entry_view')
+            ->where('locations_id',$location_id )
+            ->whereNotNull('eod')
+            ->where('entry_date', date('Y-m-d'))
+            ->first();
+
+        if (!$with_eod && Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
             return redirect()->intended('pos_dashboard');
         }
 
-        if($user->eod && $user){
+        if ($with_eod && $user) {
             $error = "EOD has been set, and you can't log in to the system after the end of the day.";
-        }else{
+        } else {
             $error = "Incorrect email or password";
         }
-        
         return redirect('pos_login')->withErrors(['error' => $error]);
     }
 
