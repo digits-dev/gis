@@ -11,7 +11,7 @@ class PulloutToken extends Model
     protected $table = 'pullout_tokens';
     protected $guarded = [];
 
-    public function scopegetDatas($query, $id){
+    public function scopeGetDatas($query, $id){
         return $query->leftjoin('locations as from_location', 'pullout_tokens.locations_id', '=', 'from_location.id')
         ->leftjoin('locations as to_location', 'pullout_tokens.to_locations_id', '=', 'to_location.id')
         ->leftjoin('statuses', 'pullout_tokens.statuses_id', '=', 'statuses.id')
