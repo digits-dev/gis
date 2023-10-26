@@ -40,7 +40,7 @@
 			$this->col[] = ["label"=>"Payment","name"=>"total_value"];
 			$this->col[] = ["label"=>"Change","name"=>"change_value"];
 			$this->col[] = ["label"=>"Type","name"=>"type_id","join"=>"token_action_types,description"];
-			$this->col[] = ["label"=>"Mode of payment","name"=>"mode_of_payment_id","join"=>"mode_of_payments,payment_description"];
+			$this->col[] = ["label"=>"Mode of payment","name"=>"mode_of_payments","join"=>"mode_of_payments,payment_description"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
