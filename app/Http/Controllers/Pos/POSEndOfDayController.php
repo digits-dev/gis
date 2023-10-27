@@ -122,7 +122,7 @@ class POSEndOfDayController extends Controller
                 'cash_float_histories_id' => $cash_float_history_id,
                 'mode_of_payments_id' => $modeOfPaymentsId,
                 'float_entries_id' => $floatEntriesId,
-                'qty' => $qty,
+                'qty' => preg_replace('/\D/', '', (string) $qty),
                 'value' => $value,
                 'created_by' => $created_by,
                 'created_at' => $time_stamp,

@@ -5,6 +5,7 @@
 
 {{-- Your Plugins --}}
 @section('plugins')
+<script src="{{ asset('jsHelper/withoutLeadingZeros.js') }}"></script>
 @endsection
 
 {{-- Your CSS --}}
@@ -78,6 +79,10 @@
         padding: 10px;
     }
 
+    .total_value, .cash_value_CASH {
+        background: #ddd;
+    }
+
 </style>
 @endsection
 
@@ -111,10 +116,10 @@
                                 @for ($i=0; $i<count($float_entries)+1; $i++)
                                     @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
                                         @if ($i == 0)
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }}" oninput="validateInput(this);" required></td>
-                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }} mode_of_payments" onkeypress="withoutLeadingZeros()" required {{ $mode_of_payment->payment_description == 'CASH' ? 'readonly' : ''}}></td>
+                                            {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="withoutLeadingZeros()" ></td> --}}
                                         @else
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }}" oninput="validateInput(this);" required ></td>
+                                            <td><input actual_value="{{ $float_entries[$i-1]->value }}" type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }} cash_values" onkeypress="withoutLeadingZeros()" required ></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
                                         @endif
                                     @else
@@ -223,99 +228,50 @@
 {{-- Your Script --}}
 @section('script-js')
 <script src="{{ asset('jsHelper/isNumber.js') }}"></script>
-<script>
 
-    $(document).ready(function(){
-        $(".cash_value_CASH").attr("readonly", true);
-        $(".total_value").attr("readonly", true);
+<script>
+    const modeOfPayments = $('.mode_of_payments').get();
+    const floatEntries = $('.cash_values').get();
+
+    function updateTotalCash() {
+        let totalCash = 0;
+        floatEntries.forEach(entry => {
+            const inputValue = Number($(entry).val().replace(/\D/g, ''));
+            const actualValue = Number($(entry).attr('actual_value'));
+            const product = inputValue * actualValue;
+            totalCash += product;
+        });
+
+        $('.cash_value_CASH').val(Number(totalCash.toFixed(2)).toLocaleString());
+        updateTotalValue();
+    }
+
+    function updateTotalValue() {
+        let totalValue = 0;
+        modeOfPayments.forEach(modeOfPayment => {
+            const value = $(modeOfPayment).val().replace(/\D/g, '');
+            totalValue += Number(value);
+        });
+
+        $('.total_value').val(Number(totalValue.toFixed(2)).toLocaleString());
+    }
+
+    $('input').on('input', function(event) {
+        console.log(event);
+        updateTotalCash();
     });
 
-    function updateCashValue (){
-        const BDOValue = ($(".cash_value_BDO").val()) || 0;
-        const BPIValue = ($(".cash_value_BPI").val()) || 0;
-        const GCASHValue = ($(".cash_value_GCASH").val()) || 0;
-        const PAYMAYAValue = ($(".cash_value_PAYMAYA").val()) || 0;
-        const P1000Value = ($(".cash_value_P1000").val()) || 0;
-        const P500Value = ($(".cash_value_P500").val()) || 0;
-        const P200Value = ($(".cash_value_P200").val()) || 0;
-        const P100Value = ($(".cash_value_P100").val()) || 0;
-        const P50Value = ($(".cash_value_P50").val()) || 0;
-        const P20Value = ($(".cash_value_P20").val()) || 0;
-        const P10Value = ($(".cash_value_P10").val()) || 0;
-        const P5Value = ($(".cash_value_P5").val()) || 0;
-        const P1Value = ($(".cash_value_P1").val()) || 0;
-        const C25Value = ($(".cash_value_25C").val()) || 0;
-        const C10Value = ($(".cash_value_10C").val()) || 0;
-        const C5Value = ($(".cash_value_5C").val()) || 0;
-        const C1Value = ($(".cash_value_1C").val()) || 0;
-        const cashValue = (removeComma(P1000Value) * 1000) + (removeComma(P500Value) * 500) + (removeComma(P200Value) * 200) 
-        + (removeComma(P100Value) * 100) + (removeComma(P50Value) * 50) + (removeComma(P20Value) * 20) + (removeComma(P10Value) * 10)
-        + (removeComma(P5Value) * 5) + (removeComma(P1Value) * 1) + (removeComma(C25Value) * 0.25)+ (removeComma(C10Value) * 0.10)
-        + (removeComma(C5Value) * 0.05) + (removeComma(C1Value) * 0.01);
-        const formattedCashValue = cashValue.toFixed(2);
-        const newFormattedCashValue = formatCashValue(formattedCashValue);
-        $(".cash_value_CASH").val(newFormattedCashValue);
 
-        const totalValue = (removeComma(cashValue) + removeComma(BDOValue) + removeComma(BPIValue) + removeComma(GCASHValue) + removeComma(PAYMAYAValue));
-        // console.log(BDOValue, removeComma(BDOValue));
-        const formattedTotalValue = totalValue.toFixed(2);
-        const newFormattedTotalValue = formatCashValue(formattedTotalValue);
-        $(".total_value").val(newFormattedTotalValue);
-
-        if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
-            $("#start_of_day").prop('disabled', true);
-            $("#start_of_day").css('background-color', 'rgb(243, 142, 142)');
-        } else{
-            $("#start_of_day").prop('disabled', false);
-            $("#start_of_day").css('background-color', 'rgb(254,62,62)');
+    $('input').on('keypress', function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            const swalSubmitBtn = $('#start_of_day');
+            const isDisabled = swalSubmitBtn.attr('disabled');
+            if (!isDisabled) {
+                swalSubmitBtn.click();
+            }
         }
-    }
-
-    $(".cash_value_BDO, .cash_value_BPI, .cash_value_GCASH, .cash_value_PAYMAYA, .cash_value_P1000, .cash_value_P500, .cash_value_P200, .cash_value_P100,.cash_value_P50, .cash_value_P20, .cash_value_P10, .cash_value_P5, .cash_value_P1, .cash_value_25C, .cash_value_10C, .cash_value_5C, .cash_value_1C, .total_token ").on("input", updateCashValue);
-    updateCashValue();
-
-
-    function numberOnly(numberElement){
-        numberElement.value = numberElement.value.replace(/[^0-9]/g,'');
-    }
-
-    
-    function removeComma(number) {
-        return Number(`${number}`.replaceAll(',', ''));
-    }
-
-    function validateInput(inputElement) {
-        let value = inputElement.value;
-        value = value.replace(/[^0-9.]/g, '');
-        let decimalCount = value.split('.').length - 1;
-        if (decimalCount > 1) {
-            value = value.substring(0, value.lastIndexOf('.'));
-        }
-        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        const [whole, decimal] = value.split('.');
-        if (decimal) {
-            value = `${whole}.${decimal.slice(0, 2)}`;
-        }
-        if (value.charAt(0) === '0' && value.length > 1) {
-            value = value.substring(1);
-        }
-        inputElement.value = value;
-    }
-
-    function validateInputToken(inputElement) {
-        let value = inputElement.value;
-        value = value.replace(/[^0-9]/g, '');
-        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        inputElement.value = value;
-    }
-    function formatCashValue(cashValue) {
-        const parts = cashValue.toString().split(".");
-        const wholePart = parts[0];
-        const decimalPart = parts[1] || '';
-        const formattedWholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        const formattedCashValue = decimalPart === '' ? formattedWholePart : `${formattedWholePart}.${decimalPart}`;
-        return formattedCashValue;
-    }
+    });
 
     $('#start_of_day').on('click', function() {
         Swal.fire({
@@ -377,7 +333,8 @@
             }
         });
     });
-
+</script>
+<script>
     function sales() {
         var ctx = document.getElementById('myLineChart').getContext('2d');
         
@@ -413,9 +370,5 @@
 
     // Call the function to create the chart
     sales();
-
-
-
-
 </script>
 @endsection
