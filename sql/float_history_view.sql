@@ -8,8 +8,10 @@ select
     entry_date,
     cash_entries.cash_value,
     token_entries.token_value,
+    cash_float_histories.conversion_rate,
     token_entries.token_qty,
-    cash_float_histories.conversion_rate
+    cash_float_histories.token_bal,
+    token_entries.token_qty = cash_float_histories.token_bal as is_tally
 from cash_float_histories
     left JOIN (
         select

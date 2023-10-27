@@ -109,6 +109,10 @@ body {
     margin-right: 35px;
 }
 
+.m-bottom-15{
+    margin-bottom: 15px;
+}
+
 .p-top-5 {
     padding-top: 5px;
 }
@@ -553,7 +557,6 @@ table.dataTable tfoot tr th {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    height: 600px;
     width: 100%;
     max-width: 1200px;
     background-color: #ffffff;
@@ -570,7 +573,9 @@ table.dataTable tfoot tr th {
 }
 
 .eod-table{
-    overflow-x: auto;
+    overflow: auto;
+    height: 300px;
+    margin: 10px 0;
 }
 
 .eod-table table{
