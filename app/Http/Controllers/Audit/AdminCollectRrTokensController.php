@@ -221,7 +221,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset("jsHelper/isNumber.js");
+			//$this->load_js[] = asset("jsHelper/isNumber.js");
 	        
 	        
 	        /*
