@@ -570,10 +570,11 @@ table.dataTable tfoot tr th {
 
 .eod-table{
     overflow: auto;
+    height: 300px;
+    margin-bottom: 10px;
 }
 
 .eod-table table{
-    min-width: auto;
     min-width: 900px;
 }
 
