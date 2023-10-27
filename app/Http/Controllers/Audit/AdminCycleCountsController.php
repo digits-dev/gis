@@ -1,8 +1,16 @@
 <?php namespace App\Http\Controllers\Audit;
 
-use App\Models\Capsule\InventoryCapsule;
-use App\Models\Submaster\GashaMachines;
+    use App\Models\Audit\CycleCount;
+    use App\Models\Capsule\CapsuleSales;
+    use App\Models\Capsule\HistoryCapsule;
+    use App\Models\Capsule\InventoryCapsule;
+use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\CmsModels\CmsModule;
+    use App\Models\Submaster\CapsuleActionType;
+    use App\Models\Submaster\Counter;
+    use App\Models\Submaster\GashaMachines;
     use App\Models\Submaster\Locations;
+    use App\Models\Submaster\SalesType;
     use Carbon\Carbon;
     use Session;
     use Illuminate\Http\Request;
@@ -11,19 +19,22 @@ use App\Models\Submaster\GashaMachines;
 
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
+        private const CYCLE_COUNT_ACTION = 'Cycle Count';
+        private const CYCLE_SALE_TYPE = 'CYCLEOUT';
+
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "id";
+			$this->title_field = "reference_number";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
-			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_add = false;
+			$this->button_edit = false;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -112,7 +123,12 @@ use App\Models\Submaster\GashaMachines;
 	        |
 	        */
 	        $this->index_button = array();
-
+            if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
+					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
+                    $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('count-stockroom'),"color"=>"success"];
+				}
+			}
 
 
 	        /*
@@ -146,6 +162,15 @@ use App\Models\Submaster\GashaMachines;
 	        |
 	        */
 	        $this->script_js = NULL;
+            $this->script_js = "
+				$(function(){
+					$('body').addClass('sidebar-collapse');
+					$('#table_dashboard').on('cut copy paste', function (e) {
+						e.preventDefault();
+						return false;
+					});
+				});
+			";
 
 
             /*
@@ -329,20 +354,121 @@ use App\Models\Submaster\GashaMachines;
 			$data['page_title'] = 'Cycle Count';
 			$data['locations'] = Locations::activeDisburseToken();
 			$data['gasha_machines'] = GashaMachines::activeMachines();
-			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
+			$data['dateTime'] = Carbon::now()->format('Y-m-d H:i:s');
 
 			return $this->view("audit.cycle-count.add-cycle-count", $data);
         }
 
+        public function submitcycleCountFloorRef(Request $request){
+
+            dd($request->all());
+
+			$return_inputs = $request->all();
+
+			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
+			$inventory_capsule = InventoryCapsule::get();
+
+			$filteredData = [];
+
+			foreach ($return_inputs as $key => $value) {
+				if (strpos($key, 'qty_') === 0) {
+					$newKey = substr($key, 4); // Remove "qty_" prefix
+					$filteredData[$newKey] = $value;
+				}
+			}
+
+			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			$sales_rn = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
+
+			foreach($filteredData as $key=>$value){
+
+				$capsule = new CycleCount([
+					'reference_number' =>$cycleCountFloorRef,
+					'item_code' => $inventory_capsule->where('item_code', $key)->first()->item_code,
+					'qty' => (int) str_replace(',', '', $value),
+					'sub_locations_id' => $return_inputs['stock_room'],
+					'gasha_machines_id' => $gasha_machines->id,
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+
+				$capsule->save();
+
+				HistoryCapsule::insert([
+					'reference_number' => $capsule->reference_number,
+					'item_code' => $capsule->item_code,
+					'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+					'gasha_machines_id' => $capsule->gasha_machines_id,
+					'locations_id' => $return_inputs['stock_room'],
+					'qty' => $capsule->qty,
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+
+				// Gasha Machine
+
+				$current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+				->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)->first()->qty;
+
+				InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+					->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)
+					->update([
+						// 'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $capsule->qty"),
+						'inventory_capsule_lines.qty' => 0,
+						'updated_by' => CRUDBooster::myId()
+				]);
+
+				// Stockroom
+				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+					->where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+					->where('inventory_capsules.item_code', $capsule->item_code)
+					->update([
+						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
+						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
+				]);
+
+				CapsuleSales::insert([
+					'reference_number' => $sales_rn,
+					'item_code' => $capsule->item_code,
+					'gasha_machines_id' => $capsule->gasha_machines_id,
+					'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+					'locations_id' => $gasha_machines->location_id,
+					'qty' =>  abs($capsule->qty - $current_capsule_value),
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+			}
+
+
+			return response()->json(['success'=>$filteredData, 'reference_number' => $cycleCountFloorRef, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
+		}
+
         public function getMachine(Request $request) {
-			$machines = GashaMachines::getMachineByLocation($request->serial,$request->location_id);
-			return json_encode([
-				'machines' => $machines,
-			]);
+			$machines = GashaMachines::getMachineByLocation($request->machine_code,$request->location_id);
+			return json_encode(['machines' => $machines]);
 		}
 
 		public function checkInventoryQty(Request $request){
-            $tokenInventory = InventoryCapsule::getByLocation($request->location_id);
-            return json_encode(['tokenInventory' => $tokenInventory]);
+            $capsuleInventory = InventoryCapsule::getByLocation($request->location_id);
+            return json_encode(['capsuleInventory' => $capsuleInventory]);
+		}
+
+        public function validateMachineItems(Request $request){
+
+			$gasha_machines = GashaMachines::getMachineByLocation($request->machine_code,$request->location_id);
+			$inventory_capsule_lines = InventoryCapsuleLine::get();
+			$inventory_capsules = InventoryCapsule::get();
+			$list_of_ic = $inventory_capsules->whereIn('id', InventoryCapsuleLine::getCapsuleNotZeroQty($gasha_machines->id));
+			$validateQty = $request->qty > InventoryCapsuleLine::getMachineInv($gasha_machines->id)->qty;
+
+			return response()->json([
+				'gasha_machine' => $gasha_machines->id,
+				'qty' => $validateQty,
+				'list_of_gm' => $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->where('qty', '>', 0),
+				'list_of_ic' => $list_of_ic,
+			]);
+
 		}
 	}

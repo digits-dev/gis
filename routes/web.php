@@ -90,5 +90,6 @@ Route::group(['middleware' => ['web']], function() {
     //Cycle Count
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-machine', [AdminCycleCountsController::class, 'getMachine'])->name('get-machine-cycle-count');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
-
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-return', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/validate-machine-items', [AdminCycleCountsController::class, 'validateMachineItems'])->name('validate-machine-items');
 });

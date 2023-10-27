@@ -24,11 +24,19 @@
             border-radius: 10px !important;
         }
 
+        .modal-header {
+            background-color: #3c8dbc;
+            -webkit-border-radius: 10px !important;
+            -moz-border-radius: 10px !important;
+            border-radius: 10px 10px 0px 0px !important;
+            color: #fff;
+        }
+
         #other-detail th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
         }
-        #collect-token th, td {
+        #cycle-count th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
         }
@@ -56,7 +64,7 @@
             /* border: 1px solid rgb(194, 193, 193); */
             font-size: 35px;
             color: white;
-            background-color: #dd4b39;
+            background-color: #3c8dbc;
 
         }
         #bigplus{
@@ -64,7 +72,7 @@
         }
         #bigplus:before {
             content: '\FF0B';
-            background-color: #dd4b39:
+            background-color: #3c8dbc:
             font-size: 50px;
         }
         #bigplus:hover{
@@ -86,7 +94,7 @@
 
         @media (min-width:729px){
            .panel-default{
-                width:40% !important;
+                width:70% !important;
                 margin:auto !important;
            }
         }
@@ -102,11 +110,11 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#dd4b39; color:#fff">
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
     Cycle Count (Capsule) Form
 </div>
 
-<form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="cycleCount" enctype="multipart/form-data">
+<form action="{{ route('submit-cycle-count-floor') }}" method="POST" id="cycleCount" enctype="multipart/form-data">
     <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
 
     <div class='panel-body'>
@@ -120,20 +128,36 @@
                                 <option value="{{ $location->id }}">{{ $location->location_name }}</option>
                             @endforeach
                         </select>
-                        <div id="location_error"></div>
+                        <span class="label label-danger" id="location_error"></span>
                 </div>
             </div>
         </div>
 
         <div class="row">
+
+            {{-- <div class="col-md-6">
+                <div class="form-group" style="display: flex">
+                    <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Scan/Enter Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off" readonly>
+                    <button btn-for="machine" type="button" class="btn btn-danger btn-sm open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
+                </div>
+            </div> --}}
+
+            {{-- <div class="col-md-6">
+                <div class="form-group" style="display: flex">
+                    <input input-for="searchitem" class="form-control text-center finput" type="text" placeholder="Scan/Enter Item Code" id="search_item" style="width:100%" autocomplete="off" readonly>
+                    <button btn-for="searchitem" type="button" class="btn btn-danger btn-sm open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
+                    <div id="item_display_error"></div>
+                </div>
+            </div> --}}
+
             <div class="col-md-12">
-                <table class="table" id="collect-token">
+                <table class="table" id="cycle-count">
                     <tbody id="bodyTable">
                         <tr>
-                            <th width="10%" class="text-center">Machine</th>
-                            <th width="10%" class="text-center">Digits Code</th>
-                            <th width="50%" class="text-center">Item Description</th>
-                            <th width="10%" class="text-center">Quantity</th>
+                            <th width="20%" class="text-center">Machine</th>
+                            <th width="15%" class="text-center">Item Code</th>
+                            <th width="30%" class="text-center">Item Description</th>
+                            <th width="15%" class="text-center">Quantity</th>
                             <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
                         </tr>
 
@@ -176,13 +200,14 @@
                         <div class="col-md-6">
                             <div class="form-group" style="display: flex">
                                 <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Scan/Enter Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">
-                                <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
+                                <button btn-for="machine" type="button" class="btn btn-danger btn-sm open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                             </div>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <input class="form-control text-center finput" type="text" placeholder="Scan/Enter Item Code" id="search_item" style="width:100%" autocomplete="off">
+                            <div class="form-group" style="display: flex">
+                                <input input-for="searchitem" class="form-control text-center finput" type="text" placeholder="Scan/Enter Item Code" id="search_item" style="width:100%" autocomplete="off">
+                                <button btn-for="searchitem" type="button" class="btn btn-danger btn-sm open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                                 <div id="item_display_error"></div>
                             </div>
                         </div>
@@ -198,11 +223,14 @@
                                 <tbody>
                                     <tr class="dynamicRow">
                                     </tr>
-                                    <tr>
-                                        <td>Item 1</td>
-                                        <td>1</td>
-                                    </tr>
+
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="pull-right">Total</td>
+                                        <td class="text-center">0</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -210,7 +238,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type='button' id="add-cycle-count" class="btn btn-danger btn-sm"><i class="fa fa-save"></i> Save</button>
+                    <button type='button' id="add-cycle-count" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Save</button>
                 </div>
             </div>
         </div>
@@ -218,7 +246,7 @@
 
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-        <button class="btn btn-danger pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
+        <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
 </div>
@@ -248,7 +276,7 @@
 
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
-        let locationID =  this.value;
+        let locationID =  $(this).val();
 
         $.ajax({
             type: 'POST',
@@ -258,12 +286,15 @@
             },
             success: function(res) {
                 const data = JSON.parse(res);
-                if(data.tokenInventory == null){
+                if($.isEmptyObject(data.capsuleInventory)){
                     $('#add-Row').attr('disabled',true);
-                    $('#location_error').html('<span class="label label-danger">No available inventory</span>');
+                    $('#location_error').text('No available inventory');
                 }else{
-                    $('#location_error').html('');
+                    $('#location_error').text('');
                     $('#add-Row').attr('disabled',false);
+                    // $('#gasha_machines_id_inputed').attr('readonly',false);
+                    // $('#search_item').attr('readonly',false);
+                    // $('#gasha_machines_id_inputed').focus();
                 }
                 console.log(res);
             }
@@ -279,7 +310,7 @@
             inputOptions: cameraOptions,
             inputPlaceholder: 'Select a camera',
             showCancelButton: true,
-            confirmButtonColor: '#dd4b39',
+            confirmButtonColor: '#3c8dbc',
             returnFocus: false,
             reverseButtons: true,
             inputValidator: (value) => {
@@ -324,24 +355,24 @@
     }
 
 
-    function checkMachinePartner(item_code) {
+    function checkMachinePartner(machine_code) {
         $.ajax({
             type: 'POST',
-            url: "{{ route('get_machine') }}",
+            url: "{{ route('get-machine-cycle-count') }}",
             data: {
                 _token: "{{ csrf_token() }}",
-                item_code: item_code,
+                machine_code: machine_code,
                 location_id: $('#location_id').val(),
             },
             success: function(res) {
                 const data = JSON.parse(res);
-                console.log(data);
-                if(data.machines == null){
+                // console.log(data.machines);
+                if($.isEmptyObject(data.machines)){
                     Swal.fire({
                         title: "Oops.",
                         html:  'Machine not found!',
                         icon: 'error',
-                        confirmButtonColor: '#dd4b39',
+                        confirmButtonColor: '#3c8dbc',
                         confirmButtonText: 'Ok',
                         returnFocus: false,
                     });
@@ -401,10 +432,13 @@
                 type: 'error',
                 title: 'Please select location first!',
                 icon: 'error',
-                confirmButtonColor: '#dd4b39',
+                confirmButtonColor: '#3c8dbc',
             });
         }else{
-            $('#addRowModal').modal('show');
+            $("#addRowModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
         }
     });
 
@@ -421,7 +455,7 @@
                     type: 'error',
                     title: 'Please fill all Fields!',
                     icon: 'error',
-                    confirmButtonColor: "#dd4b39",
+                    confirmButtonColor: "#3c8dbc",
                 });
                 count_fail++;
                 return false;
@@ -429,18 +463,18 @@
                 count_fail = 0;
             }
 
-            if ($('#qty_inputed').val() == null || $('#qty_inputed').val() == '') {
-                swal({
-                    type: 'error',
-                    title: 'Please fill all Fields!',
-                    icon: 'error',
-                    confirmButtonColor: "#dd4b39",
-                });
-                count_fail++;
-                return false;
-            }else{
-                count_fail = 0;
-            }
+            // if ($('#qty_inputed').val() == null || $('#qty_inputed').val() == '') {
+            //     swal({
+            //         type: 'error',
+            //         title: 'Please fill all Fields!',
+            //         icon: 'error',
+            //         confirmButtonColor: "#3c8dbc",
+            //     });
+            //     count_fail++;
+            //     return false;
+            // }else{
+            //     count_fail = 0;
+            // }
 
         $('#addRowModal').modal('hide');
         tableRow++;
@@ -456,7 +490,13 @@
                         '</td>' +
 
                         '<td>' +
-                            '<input class="form-control text-center finput qty" type="text" onkeypress="inputIsNumber()" placeholder="Qty..." name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%" value="'+$('#qty_inputed').val()+'" autocomplete="off" readonly>' +
+                        '</td>' +
+
+                        '<td>' +
+                        '</td>' +
+
+                        '<td>' +
+                            '<input class="form-control text-center finput qty" type="text" name="qty[]" id="qty'+tableRow+'" data-id="'+tableRow+'" style="width:100%" value="" autocomplete="off" required>' +
                         '</td>' +
 
                         '<td class="text-center">' +
@@ -465,14 +505,14 @@
 
                     '</tr>';
 
-                $('#collect-token tbody').append(newrow);
+                $('#cycle-count tbody').append(newrow);
             }
         }else{
             swal({
                 type: 'error',
                 title: 'Machine already added!',
                 icon: 'error',
-                confirmButtonColor: '#dd4b39',
+                confirmButtonColor: '#3c8dbc',
             });
 
         }
@@ -480,9 +520,9 @@
 
         $(document).on('click', '.removeRow', function(e) {
             e.preventDefault();
-            if ($('#collect-token tbody tr').length != 1) { //check if not the first row then delete the other rows
+            if ($('#cycle-count tbody tr').length != 1) { //check if not the first row then delete the other rows
                 tableRow--;
-                var removeItem =  $(this).val();
+                let removeItem =  $(this).val();
                 console.log(removeItem);
                 machineArray = jQuery.grep(machineArray, function(value) {
                     return value != removeItem;
@@ -507,11 +547,7 @@
         .end();
     });
 
-    $(document).on('keyup', '.qty', function(ev) {
-        $('#quantity_total').val(calculateTotalQuantity());
-    });
-
-    $(document).on('keyup','#qty_inputed', function (e) {
+    $(document).on('keyup','.qty', function (e) {
         if(event.which >= 37 && event.which <= 40) return;
 
         if(this.value.charAt(0) == '.'){
@@ -533,68 +569,73 @@
             return parts.join(".");
         });
 
-        if(event.which >= 37 && event.which <= 40) return;
         $(this).val(function(index, value) {
             return value
             .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-          });
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        });
+
+        $('#quantity_total').val(calculateTotalQuantity());
     });
 
-
+    $(document).on('keypress','#search_item', function(event){
+        if(event.which >= 37 && event.which <= 40) return;
+        if(event.which == 13) {
+            alert('You pressed enter!');
+        }
+    });
 
     $(document).ready(function() {
         $('#btnSubmit').click(function(event) {
             event.preventDefault();
-            var rowCount = $('#collect-token tr').length-2;
-            console.log(rowCount);
+            var rowCount = $('#cycle-count tr').length-2;
+            // console.log(rowCount);
             if (rowCount === 0) {
-                    swal({
-                        type: 'error',
-                        title: 'Please add an item!',
-                        icon: 'error',
-                        confirmButtonColor: "#dd4b39",
-                    });
-                    event.preventDefault();
-                    return false;
+                swal({
+                    type: 'error',
+                    title: 'Please add an item!',
+                    icon: 'error',
+                    confirmButtonColor: "#3c8dbc",
+                });
+                event.preventDefault();
+                return false;
             }else if($('#location_id').val() === ''){
                 swal({
                     type: 'error',
                     title: 'Location cannot be empty!',
                     icon: 'error',
-                    confirmButtonColor: '#dd4b39',
+                    confirmButtonColor: '#3c8dbc',
                 });
                 event.preventDefault();
                 return false;
             }
-            var gasha_machines_id = $('.gasha_machine').length;
-            var gasha_machines_id_value = $('.gasha_machine').find(':selected');;
+            let gasha_machines_id = $('.gasha_machine').length;
+            let gasha_machines_id_value = $('.gasha_machine').find(':selected');;
             for(i=0;i<gasha_machines_id;i++){
                 if(gasha_machines_id_value.eq(i).val() == 0 || gasha_machines_id_value.eq(i).val() == null){
                     swal({
-                            type: 'error',
-                            title: 'Machines cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: '#dd4b39',
-                        });
-                        event.preventDefault();
-                        return false;
+                        type: 'error',
+                        title: 'Machines cannot be empty!',
+                        icon: 'error',
+                        confirmButtonColor: '#3c8dbc',
+                    });
+                    event.preventDefault();
+                    return false;
                 }
             }
 
-            var qty = $('input[name^="qty[]"]').length;
-            var qty_value = $('input[name^="qty[]"]');
+            let qty = $('input[name^="qty[]"]').length;
+            let qty_value = $('input[name^="qty[]"]');
             for(i=0;i<qty;i++){
                 if(qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null){
                     swal({
-                            type: 'error',
-                            title: 'Qty cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: '#dd4b39',
-                        });
-                        event.preventDefault();
-                        return false;
+                        type: 'error',
+                        title: 'Qty cannot be empty!',
+                        icon: 'error',
+                        confirmButtonColor: '#3c8dbc',
+                    });
+                    event.preventDefault();
+                    return false;
                 }
 
             }
