@@ -26,7 +26,7 @@ class AddCurrentCashValue extends Migration
     public function down()
     {
         Schema::table('swap_histories', function (Blueprint $table) {
-            //
+                $table->dropColumn('current_cash_value');
         });
     }
 }

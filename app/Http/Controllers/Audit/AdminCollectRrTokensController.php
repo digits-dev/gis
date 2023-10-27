@@ -318,6 +318,11 @@
 					$column_value = '<span class="label label-success">'.$received.'</span>';
 				}
 			}
+			if($column_index == 6){
+				if($column_value == null){
+					$column_value = 'No';
+				}
+			}
 	    }
 
 	    /*
@@ -362,6 +367,7 @@
 			$gm_ids                  = [];
 			$gm_tokens               = [];
 			$gasha_machines_no_token = [];
+			$variances                = [];
 
 			foreach($gm_serials as $gm){
 				$machine = DB::table('gasha_machines')->where('serial_number',$gm)->first();
@@ -370,19 +376,24 @@
 			}
 			$qty 	           = $fields['qty'];
 
-			foreach($gm_tokens as $key => $variances){
-				$variance = fmod(intval(str_replace(',', '', $qty[$key])),$variances);
-				if(intval($variance) > 0){
+			foreach($gm_tokens as $key => $var){
+				$variances[] = fmod(intval(str_replace(',', '', $qty[$key])),$var);
+				
+			}
+			foreach($variances as $variance){
+				if(intval($variance) != 0){
 					CollectRrTokens::where(['id'=>$id])
 					->update([
 								'variance'      => 'Yes'
 							]);
-				}else{
-					CollectRrTokens::where(['id'=>$id])
-					->update([
-								'variance'      => 'No'
-							]);
 				}
+				
+				// else{
+				// 	CollectRrTokens::where(['id'=>$id])
+				// 	->update([
+				// 				'variance'      => 'No'
+				// 			]);
+				// }
 			}
 			$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
 
