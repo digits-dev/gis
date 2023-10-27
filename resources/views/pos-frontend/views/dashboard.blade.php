@@ -347,14 +347,26 @@
 
     const monthlySwaps = {!! json_encode($monthly_swap) !!}
     console.log(monthlySwaps);
+    let months = [];
+    let values = [];
+    monthlySwaps.forEach(month => {
+        const date = new Date(2000, month.month - 1, 1); // Use any year, 2000 in this case
+        const options = { month: 'long' };
+        const monthName = date.toLocaleDateString(undefined, options);
+        months.push(`${monthName} ${month.year}`);
+        values.push(month.token_value);
+    })
+
+    console.log(months);
+
     function sales() {
         var ctx = document.getElementById('myLineChart').getContext('2d');
         
         var data = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            labels: months,
             datasets: [{
                 label: 'Monthly Swap',
-                data: [10, 15, 7, 20, 14],
+                data: values,
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderWidth: 2,
