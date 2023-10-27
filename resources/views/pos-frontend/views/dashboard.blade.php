@@ -164,14 +164,14 @@
                 <i class="fa fa-database"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">No. of tokens.</p>
+                <p class="fs-13 title-color text-color1">Token Quantity.</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_tokens }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
+                {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                </a> --}}
             </div>
         </div>
         <div class="statistic-box m-top-30 m-right-25" style="border-left: 5px solid rgb(15, 183, 52);">
@@ -179,14 +179,14 @@
                 <i class="fa fa-circle-thin"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">No of capsules in stock room.</p>
+                <p class="fs-13 title-color text-color1">Capsules Quantity - Stockroom.</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_stock_room }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
+                {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                </a> --}}
             </div>
         </div>
         <div class="statistic-box m-top-30 m-right-25" style="border-left: 5px solid rgb(198, 55, 60);">
@@ -194,14 +194,14 @@
                 <i class="fa fa-circle-thin"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">No of capsules in machine.</p>
+                <p class="fs-13 title-color text-color1">Capsules Quantity - Machine.</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_machine }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
+                {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                </a> --}}
             </div>
         </div>
         <div class="statistic-box m-top-30 m-right-25" style="border-left: 5px solid rgb(35, 42, 63);">
@@ -213,10 +213,10 @@
                 <p class="fs-30 fw-bold text-color">{{ $no_of_gm }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
+                {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
-                </a>
+                </a> --}}
             </div>
         </div>
     </div>
