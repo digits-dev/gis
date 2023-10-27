@@ -449,17 +449,11 @@
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
-                  })
+                  }).then((result) => {
+                          history.go(0);
+                        })
                 } 
 
-                $('#cash_value').val('');
-                $('#token_value').val('');
-                $('#mode_of_payment').val('');
-                $('#total_value').val('');
-                $('#change_value').val('');
-                $('#payment_reference').val("");
-                $('#payment_reference_div').hide();
-                $('#mode_of_payment').attr('disabled', true);
             },
             error: function(err) {
                 console.log(err);
