@@ -553,7 +553,6 @@ table.dataTable tfoot tr th {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    height: 600px;
     width: 100%;
     max-width: 1200px;
     background-color: #ffffff;
