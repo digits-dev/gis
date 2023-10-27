@@ -165,7 +165,7 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">Token Quantity</p>
-                <p class="fs-30 fw-bold text-color">{{ $no_of_tokens ? $no_of_tokens : 0 }}</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_tokens ?? 0 }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
                 {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
@@ -180,7 +180,7 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">Capsules Quantity - Stockroom</p>
-                <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_stock_room ?  }}</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_stock_room ?? 0  }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
                 {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
@@ -195,7 +195,7 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">Capsules Quantity - Machine</p>
-                <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_machine }}</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_machine ?? 0 }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
                 {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
@@ -210,7 +210,7 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No of machines</p>
-                <p class="fs-30 fw-bold text-color">{{ $no_of_gm }}</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_gm ?? 0 }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
                 {{-- <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
