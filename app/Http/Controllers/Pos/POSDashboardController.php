@@ -69,10 +69,15 @@ class POSDashboardController extends Controller
         }
         $created_by = auth()->user()->id;
         $time_stamp = date('Y-m-d H:i:s');
+
+        $token_price = DB::table('token_conversions')->where('status', 'ACTIVE')
+            ->pluck('current_cash_value')
+            ->first();
         
         $cash_float_history_id = CashFloatHistory::insertGetId([
             'locations_id' => $locations_id,
             'float_types_id' => $float_types_id,
+            'conversion_rate' => $token_price,
             'entry_date' => date('Y-m-d'),
             'created_by' => $created_by,
             'created_at' => $time_stamp,
@@ -101,10 +106,6 @@ class POSDashboardController extends Controller
         $float_entries = FloatEntry::where('status', 'ACTIVE')
             ->get()
             ->toArray();
-
-        $token_price = DB::table('token_conversions')->where('status', 'ACTIVE')
-            ->pluck('current_cash_value')
-            ->first();
 
 
         foreach ($float_entries as $fe) {
