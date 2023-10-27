@@ -339,7 +339,7 @@
 		   $postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 		   $postdata['statuses_id']      = $this->collected;
 		   $postdata['location_id']      = $location_id;
-		   $postdata['collected_qty']    = $collected_qty;
+		   $postdata['collected_qty']    = intval(str_replace(',', '', $collected_qty));
 		   $postdata['created_by']       = CRUDBooster::myId();
 	
 	    }
@@ -397,10 +397,10 @@
 			}
 
 			//save histories
-			$tat_add_token = TokenActionType::where('id', 5)->first();
+			$tat_add_token = TokenActionType::where('id', 6)->first();
 			TokenHistory::insert([
 				'reference_number' => $header->reference_number,
-				'qty'              => $header->collected_qty,
+				'qty'              => -1 * abs($header->collected_qty),
 				'types_id'         => $tat_add_token->id,
 				'locations_id'     => $header->location_id,
 				'created_by'       => CRUDBooster::myId(),
