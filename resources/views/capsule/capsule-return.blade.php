@@ -244,7 +244,7 @@
                 <label>From Gasha Machine</label>
                 <div class="flex input-btn">
                     <input input-for="machine" type='text' name='gasha_machine' id="gasha_machine" required class='form-control'/>
-                    <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
+                    <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                 </div>
                 <label>To Stockroom</label>
                 <div class="flex input-btn">
@@ -261,7 +261,6 @@
             </form>
             </div>
             <div class='panel-footer'>
-            {{-- <button type='submit' class='btn btn-primary' id="save-btn" value='Save'>Submit</button> --}}
             </div>
         </div>
     </div>
@@ -460,7 +459,7 @@
                     url: "{{ route('validate_gasha_machine') }}",
                     data: formData,
                     success: function(res) {
-                        // const data = JSON.parse(res);
+
                         if(validateGashaMachines(res)){
 
                             let ics = Object.values(res.list_of_ic);
@@ -486,9 +485,9 @@
                                 </div>
                                 <div>
                                     <br>
-                                    <button type='button' class='save_gm' id="save-btn" value='Save' disabled>Submit</button>
                                     <button type='submit' class="hide" id="save_gm" type="button">Submit</button>
                                     <button id="cancel_gm" type="button">Cancel</button>
+                                    <button type='button' class='save_gm' id="save-btn" value='Save' disabled>Submit</button>
                                 </div>
                             `);
                             if(ics.length){
@@ -517,12 +516,6 @@
                             swal_content += additionalContent.prop('outerHTML');
                             
                             Swal.fire({
-                                // title: "Do you want to save the changes?",
-                                // icon: 'warning',
-                                // showCancelButton: true,
-                                // confirmButtonColor: '#3085d6',
-                                // cancelButtonColor: '#d33',
-                                // confirmButtonText: 'Save',
                                 showConfirmButton: false,
                                 showCloseButton: true,
                                 allowOutsideClick: false,
@@ -582,7 +575,7 @@
                 }
 
                 $(this).val( function(index, value) {
-                    value = value.replace(/[^0-9.]+/g,'')
+                    value = Number(value.replace(/[^0-9.]+/g,''))
                     let parts = value.toString().split(".");
                     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     return parts.join(".");
