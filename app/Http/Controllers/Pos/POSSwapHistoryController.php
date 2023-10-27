@@ -47,9 +47,16 @@ class POSSwapHistoryController extends Controller
                 ->select('description')
                 ->first();
 
+            $mod_description = DB::table('mode_of_payments')
+            ->where('id', $swap_history->mode_of_payments_id)
+            ->select('payment_description')
+            ->first();
+
+
             $swap_history->created_by = $user->name;
             $swap_history->location_name = $location->location_name;
             $swap_history->type_id = $typeId->description;
+            $swap_history->mod_description = $mod_description->payment_description;
          
         }
         return view('pos-frontend.views.swap-history', $data);
@@ -89,9 +96,9 @@ class POSSwapHistoryController extends Controller
         $data['swap_histories'] = SwapHistory::find($id);
         $swapData = $data['swap_histories'];
         
+        $data['mod_description'] = DB::table('mode_of_payments')->where('id', $swapData->mode_of_payments_id)->select('payment_description')->first();
         $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
         $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
-
         return view('pos-frontend.views.show-swap-history', $data);
     }
 

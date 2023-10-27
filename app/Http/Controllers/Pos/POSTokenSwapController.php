@@ -67,7 +67,7 @@ class POSTokenSwapController extends Controller
         if ($token_inventory_qty >= intval(str_replace(',', '',$request->token_value))) {
             
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
-
+            $current_cash_value = DB::table('token_conversions')->value('current_cash_value');
             $typeId = DB::table('token_action_types')->select('id')->where('description', 'Swap')->first()->id;
             
             DB::table('swap_histories')->insert([
@@ -76,6 +76,7 @@ class POSTokenSwapController extends Controller
                 'token_value' => intval(str_replace(',', '',$request->token_value)),
                 'total_value' => intval(str_replace(',', '',$request->total_value)),
                 'change_value' => intval(str_replace(',', '',$request->change_value)),
+                'current_cash_value' => $current_cash_value,
                 'type_id' => $typeId,
                 'locations_id' => Auth::user()->location_id,
                 'mode_of_payments_id' => $request->mode_of_payment,

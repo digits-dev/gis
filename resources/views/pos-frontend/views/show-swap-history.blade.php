@@ -94,15 +94,15 @@
                     </tr>
                     <tr>
                         <td>Value</td>
-                        <td>{{ $swap_histories->total_value }}</td>
+                        <td>{{number_format($swap_histories->total_value, 2,'.',',') }}</td>
                     </tr>
                     <tr>
                         <td>Token</td>
-                        <td>{{ $swap_histories->token_value }}</td>
+                        <td>{{ number_format($swap_histories->token_value) }}</td>
                     </tr>
                     <tr>
                         <td>Mode of Payments</td>
-                        <td>{{ $swap_histories->mode_of_payments }}</td>
+                        <td>{{ $mod_description->payment_description }}</td>
                     </tr>
                     <tr>
                         <td>Location</td>

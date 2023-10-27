@@ -66,10 +66,10 @@
                         </a>
                     </th>
                    <th>{{ $swap_history->reference_number }}</th>
-                   <th>{{ $swap_history->total_value }}</th>
-                   <th>{{ $swap_history->token_value }}</th>
+                   <th>{{ number_format($swap_history->total_value, 2,'.',',') }}</th>
+                   <th>{{ number_format($swap_history->token_value) }}</th>
                    <th>{{ $swap_history->type_id }}</th>
-                   <th>{{ $swap_history->mode_of_payments }}</th>
+                   <th>{{ $swap_history->mod_description }}</th>
                    <th>{{ $swap_history->location_name}}</th>
                    <th>{{ $swap_history->created_by }}</th>
                    <th>{{ $swap_history->created_at }}</th>

@@ -282,9 +282,9 @@
       const total = converted * {{ $cash_value }};
       $('#mode_of_payment').attr('disabled', false);
       if (float1Value) {
-        float2Input.value = converted;
-        totalElement.value = total;
-        if(mod.value == 'CASH'){
+        float2Input.value = converted.toLocaleString();
+        totalElement.value = total.toLocaleString();
+        if(mod.value == 1){
           changeElement.value = remainder;
         }
       } else {
@@ -296,13 +296,12 @@
 
     function onInput2(float2Input) {
       float2Input.value = Number(float2Input.value.replace(/[^0-9]/g,''));
-      console.log(float2Input.value);
       const float2Value = float2Input.value;
       const converted = float2Value * {{ $cash_value }} ;
       $('#mode_of_payment').attr('disabled', false);
       if (float2Value) {
-        float1Input.value = converted;
-        totalElement.value = converted;
+        float1Input.value = converted.toLocaleString();
+        totalElement.value = converted.toLocaleString();
       } else {
         float1Input.value = "";
         totalElement.value = "0";
