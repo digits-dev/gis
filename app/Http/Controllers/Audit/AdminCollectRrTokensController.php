@@ -357,18 +357,20 @@
 			$dataLines               = array();
 			$header                  = DB::table('collect_rr_tokens')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
 			$location_id             = $fields['location_id'];
-			$gm_id                   = $fields['gasha_machines_id'];
-			$gasha_machines_array    = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
-			$gasha_machines_id       = [];
+		
+			$gm_serials              = $fields['gasha_machines_id'];
+			$gm_ids                  = [];
+			$gm_tokens               = [];
 			$gasha_machines_no_token = [];
-			foreach($gasha_machines_array as $gm){
-				array_push($gasha_machines_id, $gm->id);
-				array_push($gasha_machines_no_token, $gm->no_of_token);
-			}
 
+			foreach($gm_serials as $gm){
+				$machine = DB::table('gasha_machines')->where('serial_number',$gm)->first();
+				$gm_ids[] = $machine->id;
+				$gm_tokens[] = $machine->no_of_token;
+			}
 			$qty 	           = $fields['qty'];
 
-			foreach($gasha_machines_no_token as $key => $variances){
+			foreach($gm_tokens as $key => $variances){
 				$variance = fmod(intval(str_replace(',', '', $qty[$key])),$variances);
 				if(intval($variance) > 0){
 					CollectRrTokens::where(['id'=>$id])
@@ -384,13 +386,11 @@
 			}
 			$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
 
-			$gasha_machines_array = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
-
-			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
+			for($x=0; $x < count((array)$gm_serials); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
-				$dataLines[$x]['gasha_machines_id']  = $gasha_machines_id[$x];
+				$dataLines[$x]['gasha_machines_id']  = $gm_ids[$x];
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
-				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gasha_machines_no_token[$x]);
+				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gm_tokens[$x]);
 				$dataLines[$x]['location_id']        = $location_id;
 				$dataLines[$x]['current_cash_value'] = $current_value->current_cash_value;
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
