@@ -109,7 +109,8 @@
         Swal.fire({
             icon:'warning',
             title: 'Missing END OF DAY!',
-            html:'Make EOD for: <strong>{{ $entry_date }}</strong>'
+            html:'Make EOD for: <strong>{{ $entry_date }}</strong>',
+            allowOutsideClick: false,
         })
     @endif
 
