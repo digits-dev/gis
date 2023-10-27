@@ -115,6 +115,17 @@
         $(".total_value").attr("readonly", true);
     });
 
+    $('input').on('keypress', function(event) {
+        if (event.keyCode == 13) {
+            event.preventDefault();
+            const swalSubmitBtn = $('#start_of_day');
+            const isDisabled = swalSubmitBtn.attr('disabled');
+            if (!isDisabled) {
+                swalSubmitBtn.click();
+            }
+        }
+    })
+
     function updateCashValue (){
         const BDOValue = ($(".cash_value_BDO").val()) || 0;
         const BPIValue = ($(".cash_value_BPI").val()) || 0;
@@ -170,16 +181,16 @@
 
     function validateInput(inputElement) {
         let value = inputElement.value;
-        value = value.replace(/[^0-9.]/g, '');
-        let decimalCount = value.split('.').length - 1;
-        if (decimalCount > 1) {
-            value = value.substring(0, value.lastIndexOf('.'));
-        }
-        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        const [whole, decimal] = value.split('.');
-        if (decimal) {
-            value = `${whole}.${decimal.slice(0, 2)}`;
-        }
+        value = Number(value.replace(/[^0-9]/g, ''));
+        // let decimalCount = value.split('.').length - 1;
+        // if (decimalCount > 1) {
+        //     value = value.substring(0, value.lastIndexOf('.'));
+        // }
+        value = value.toLocaleString();
+        // const [whole, decimal] = value.split('.');
+        // if (decimal) {
+        //     value = `${whole}.${decimal.slice(0, 2)}`;
+        // }
         if (value.charAt(0) === '0' && value.length > 1) {
             value = value.substring(1);
         }
