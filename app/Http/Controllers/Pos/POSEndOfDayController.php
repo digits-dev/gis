@@ -69,11 +69,17 @@ class POSEndOfDayController extends Controller
         $token_price = DB::table('token_conversions')->where('status', 'ACTIVE')
             ->pluck('current_cash_value')
             ->first();
+
+        $current_token_bal = DB::table('token_inventories')
+            ->where('locations_id', $location_id)
+            ->pluck('qty')
+            ->first();
         
         $cash_float_history_id = CashFloatHistory::insertGetId([
             'locations_id' => $locations_id,
             'float_types_id' => $float_types_id,
             'conversion_rate' => $token_price,
+            'token_bal' => $current_token_bal,
             'entry_date' => $entry_date,
             'created_by' => $created_by,
             'created_at' => $time_stamp,
