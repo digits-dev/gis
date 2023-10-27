@@ -51,12 +51,12 @@
                         <label>Capsule Barcode <span style="color: red">*</span></label>
                         <div class="flex input-btn">
                             <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control'/>
-                            <button btn-for="capsule" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
                             <input input-for="machine" type='text' id="tiem_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control'/>
-                            <button btn-for="machine" type="button" class="btn btn-danger open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
                         <input type='text' name='qty' required class='form-control' oninput="validateInput(this)" id="quantity" min="1"/>
@@ -68,7 +68,7 @@
                 </form>
             </div>
             <div class='panel-footer'>
-            <button class="btn btn-danger" id="save-btn" data-swal-toast-template="#my-template">Save</button>
+            <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>
         </div>
     </div>
