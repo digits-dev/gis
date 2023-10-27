@@ -135,7 +135,6 @@ class POSDashboardController extends Controller
             ];
         }
 
-        // return json_encode($lines);
         
         CashFloatHistoryLine::insert($lines);
         // DB::table('cash_float_history_lines')->insert($lines);
