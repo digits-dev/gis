@@ -45,6 +45,17 @@ class POSDashboardController extends Controller
             ->sum('qty');
         $data['no_of_gm'] = GashaMachines::where('location_id', $location_id)->count();
         $data['no_of_items'] = Item::count();
+        $data['monthly_swap'] = DB::table('monthly_swap_view')
+            ->where('locations_id', $location_id)
+            ->orderBy('year', 'desc')
+            ->orderBy('month')
+            ->get()
+            ->toArray();   
+        $data['user'] = DB::table('cms_users')
+            ->leftJoin('locations as loc', 'loc.id', 'cms_users.location_id')
+            ->where('cms_users.id',auth()->user()->id)
+            ->first();
+
         
         $missing_eod = DB::table('float_entry_view')
             ->where('locations_id',$location_id )

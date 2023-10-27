@@ -21,7 +21,7 @@
                     <div class="user_profile">
                         {{-- <img src="{{ asset('img/logo.png') }}" id="user-icon" alt=""> --}}
                         <div class="user_profile_info t-center">
-                            <p>{{ auth()->user()->name }}</p>
+                            <p>{{ auth()->user()->name }} - {{ $user->location_name }}</p>
                             <p class="title-color fs-13 currentDateTime">Loading Time...</p>
                         </div>
                         {{-- <div class="notif d-flex-jcev">
