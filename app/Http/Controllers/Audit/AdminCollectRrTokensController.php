@@ -382,6 +382,9 @@
 							]);
 				}
 			}
+			$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
+
+			$gasha_machines_array = DB::table('gasha_machines')->whereIn('serial_number',$gm_id)->get();
 
 			for($x=0; $x < count((array)$gasha_machines_id); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
@@ -389,6 +392,7 @@
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gasha_machines_no_token[$x]);
 				$dataLines[$x]['location_id']        = $location_id;
+				$dataLines[$x]['current_cash_value'] = $current_value->current_cash_value;
 				$dataLines[$x]['created_at']         = date('Y-m-d H:i:s');
 			}
 

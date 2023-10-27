@@ -130,8 +130,9 @@
                             <tr>
                                 <th width="10%" class="text-center">Machine</th> 
                                 <th width="10%" class="text-center">Machine no of tokens</th> 
-                                <th width="10%" class="text-center">Collected Tokens</th>
+                                <th width="10%" class="text-center">Collected tokens</th>
                                 <th width="10%" class="text-center">Variance</th>
+                                <th width="10%" class="text-center">Current cash value</th>
                             </tr>      
                         @foreach($detail_body as $row)
                             @if($row->qty % $row->no_of_token === 0)
@@ -148,6 +149,9 @@
                                     <td style="text-align:center" height="10">
                                         {{($row->variance ? $row->variance : 0)}}                               
                                     </td>
+                                    <td style="text-align:center" height="10">
+                                        {{($row->current_cash_value)}}                               
+                                    </td>
                                 </tr>
                             @else
                                 <tr style="background-color: #f8d7da; color:#721c24">
@@ -162,6 +166,9 @@
                                     </td>
                                     <td style="text-align:center" height="10">
                                         {{($row->variance ? $row->variance : 0)}}                                  
+                                    </td>
+                                    <td style="text-align:center" height="10">
+                                        {{($row->current_cash_value)}}                               
                                     </td>
                                 </tr>
                             @endif
@@ -226,6 +233,8 @@
                 '<strong>' +
                     qty +
                 '</strong>'+
+            '</td>'+
+            '<td style="text-align:center">'+
             '</td>'+
             '<td style="text-align:center">'+
             '</td>'+
