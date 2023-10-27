@@ -71,7 +71,7 @@
                         </div>
                         <div class="d-flex-al-c m-top-10">
                             <p class="max-w-75">Token qty</p>
-                            <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" oninput="numberOnly(this);" readonly>
+                            <input type="text" class="input-design total_token" name="total_token" style="height: 35px; width:165px;" placeholder="Token qty" oninput="numberOnly(this);" readonly>
                             {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                         </div>
                     </div>
