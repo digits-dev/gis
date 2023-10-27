@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddStatusToSalesType extends Migration
+class AddConversionRateInCashFloatHistoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddStatusToSalesType extends Migration
      */
     public function up()
     {
-        Schema::table('sales_types', function (Blueprint $table) {
-            $table->string('status')->length(20)->default('ACTIVE')->after('description')->nullable();
-
+        Schema::table('cash_float_histories', function (Blueprint $table) {
+            $table->decimal('conversion_rate')->length(18, 2)->unsigned()->nullable()->after('entry_date');
         });
     }
 
@@ -26,8 +25,8 @@ class AddStatusToSalesType extends Migration
      */
     public function down()
     {
-        Schema::table('sales_types', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('cash_float_histories', function (Blueprint $table) {
+            $table->dropColumn('conversion_rate');
         });
     }
 }
