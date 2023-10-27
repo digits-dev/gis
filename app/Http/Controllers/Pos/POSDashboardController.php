@@ -33,10 +33,16 @@ class POSDashboardController extends Controller
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
         $data['no_of_tokens'] = TokenInventory::where('locations_id', $location_id)->first()->qty;
-        $data['no_of_capsules'] =DB::table('inventory_capsules')
+        $data['no_of_capsules_in_stock_room'] =DB::table('inventory_capsules')
             ->where('locations_id', $location_id)
-            ->leftJoin('inventory_capsule_view as icv', 'icv.inventory_capsules_id', 'inventory_capsules.id')
-            ->sum('icv.onhand_qty');
+            ->where('sub_locations_id', '!=', 'null')
+            ->leftJoin('inventory_capsule_lines as icp', 'icp.inventory_capsules_id', 'inventory_capsules.id')
+            ->sum('qty');
+        $data['no_of_capsules_in_machine'] =DB::table('inventory_capsules')
+            ->where('locations_id', $location_id)
+            ->where('gasha_machines_id', '!=', 'null')
+            ->leftJoin('inventory_capsule_lines as icp', 'icp.inventory_capsules_id', 'inventory_capsules.id')
+            ->sum('qty');
         $data['no_of_gm'] = GashaMachines::where('location_id', $location_id)->count();
         $data['no_of_items'] = Item::count();
         
