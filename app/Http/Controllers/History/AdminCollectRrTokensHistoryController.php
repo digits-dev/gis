@@ -299,7 +299,7 @@
 	    	$collected     = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
 			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
 			$received      = DB::table('statuses')->where('id', $this->received)->value('status_description');  
-			if($column_index == 1){
+			if($column_index == 2){
 				if($column_value == $collected){
 					$column_value = '<span class="label label-info">'.$collected.'</span>';
 				}else if($column_value == $forChecking){
