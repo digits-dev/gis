@@ -135,7 +135,7 @@
     function updateTotalValue() {
         let totalValue = 0;
         modeOfPayments.forEach(modeOfPayment => {
-            const value = $(modeOfPayment).val().replace(/\D/g, '');
+            const value = $(modeOfPayment).val().replace(/[^0-9.]/g, '');
             totalValue += Number(value);
         });
 
