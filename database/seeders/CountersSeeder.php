@@ -18,7 +18,7 @@ class CountersSeeder extends Seeder
         $counters = [
             [   
                 'cms_moduls_id'    => '12',
-                'reference_code'   => 'GM',
+                'reference_code'   => 'GML',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -26,7 +26,7 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '26',
-                'reference_code'   => 'DB',
+                'reference_code'   => 'DBT',
                 'reference_number' => '10000001',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -34,7 +34,7 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '17',
-                'reference_code'   => 'PT',
+                'reference_code'   => 'PLT',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -50,7 +50,7 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '19',
-                'reference_code'   => 'AT',
+                'reference_code'   => 'ATB',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -58,7 +58,7 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '34',
-                'reference_code'   => 'CT',
+                'reference_code'   => 'CLT',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -74,7 +74,7 @@ class CountersSeeder extends Seeder
             ],
             [   
                 'cms_moduls_id'    => '42',
-                'reference_code'   => 'CS',
+                'reference_code'   => 'CPS',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
