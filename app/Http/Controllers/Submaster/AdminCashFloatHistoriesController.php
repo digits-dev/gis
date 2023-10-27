@@ -36,8 +36,12 @@ use App\Models\Submaster\CashFloatHistoryLine;
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"id","join"=>"float_history_view,reference_number","join_id"=>"cash_float_histories_id"];
+			$this->col[] = ["label"=>"Token Qty","name"=>"id","join"=>"float_history_view,token_qty","join_id"=>"cash_float_histories_id"];
+			$this->col[] = ["label"=>"Token Value","name"=>"id","join"=>"float_history_view,token_value","join_id"=>"cash_float_histories_id"];
+			$this->col[] = ["label"=>"Peso","name"=>"id","join"=>"float_history_view,cash_value","join_id"=>"cash_float_histories_id"];
 			$this->col[] = ["label"=>"Float Type","name"=>"float_types_id","join"=>"float_types,description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Entry Date","name"=>"entry_date"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created At","name"=>"created_at"];

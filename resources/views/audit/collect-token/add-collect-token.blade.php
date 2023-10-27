@@ -180,7 +180,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <input class="form-control" type="hidden" name="machine_token_qty" id="machine_token_qty">  
-                                <input class="form-control text-center finput" type="text" placeholder="Collected Token" name="qty_inputed" id="qty_inputed" style="width:100%" autocomplete="off">  
+                                <input class="form-control text-center finput" type="text" placeholder="Collected Token" name="qty_inputed" id="qty_inputed" style="width:100%" oninput="calculate(this)" autocomplete="off">  
                                 <div id="display_error"></div>
                             </div>
                         </div>
@@ -231,13 +231,26 @@
         $(this).val(value);
     });
 
+    $(function() {
+        var regExp = /[a-z]/i;
+        $('#qty_inputed').on('keydown keyup', function(e) {
+            var value = String.fromCharCode(e.which) || e.key;
+            // No letters
+            if (regExp.test(value)) {
+            e.preventDefault();
+            return false;
+            }
+        });
+    });
+
     $(function(){
-        $('#gasha_machines_id_inputed').bind('input', function(){
-            $(this).val(function(_, v){
+    $('#gasha_machines_id_inputed, #qty_inputed').bind('input', function(){
+        $(this).val(function(_, v){
             return v.replace(/\s+/g, '');
             });
         });
     });
+
 
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
@@ -517,7 +530,7 @@
             
         });
 
-        if($('#qty'+tableRow).val()  % $('#machine_token_qty').val() === 0){
+        if($('#qty'+tableRow).val().split(",").join("")  % $('#machine_token_qty').val() === 0){
             $("#tr-style"+tableRow).removeAttr("style", false);
         }else{
             $("#tr-style"+tableRow).attr("style", "background-color: #f8d7da; color:#721c24");
@@ -538,19 +551,26 @@
         .end();
         $('#display_error').html('');
     });
-
-    $(document).on('keyup', '#qty_inputed', function(ev) {
-        if(this.value  % $('#machine_token_qty').val() === 0){
+    
+    function calculate(input){
+        if(input.value  % $('#machine_token_qty').val() === 0){
             $('#display_error').html('');
         }else{
             $('#display_error').html(`<span id="notif" class="label label-danger">Collect token not divisible by machine token capacity ${$('#machine_token_qty').val()}</span>`);
         }
-    });
-
+    }
+    // $(document).on('keyup', '#qty_inputed', function(ev) {
+    //     if(Number($(this).val())  % $('#machine_token_qty').val() === 0){
+    //         $('#display_error').html('');
+    //     }else{
+    //         $('#display_error').html(`<span id="notif" class="label label-danger">Collect token not divisible by machine token capacity ${$('#machine_token_qty').val()}</span>`);
+    //     }
+    // });
+   
     $(document).on('keyup', '.qty', function(ev) {
         $('#quantity_total').val(calculateTotalQuantity());
     });
-
+   
     $(document).on('keyup','#qty_inputed', function (e) {
         if(event.which >= 37 && event.which <= 40) return;
 
@@ -581,6 +601,7 @@
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             ;
           });
+
     });  
 
    
@@ -670,8 +691,9 @@
   
             totalQuantity += qty;
         });
-        return totalQuantity;
+        return totalQuantity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     }
+    
 
     
 </script>

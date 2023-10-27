@@ -26,7 +26,7 @@ class AddVarianceToCollectRrTokens extends Migration
     public function down()
     {
         Schema::table('collect_rr_tokens', function (Blueprint $table) {
-            //
+            $table->dropColumn('variance');
         });
     }
 }
