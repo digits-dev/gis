@@ -243,6 +243,14 @@
         });
     });
 
+    $(function(){
+    $('#gasha_machines_id_inputed, #qty_inputed').bind('input', function(){
+        $(this).val(function(_, v){
+            return v.replace(/\s+/g, '');
+            });
+        });
+    });
+
 
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
