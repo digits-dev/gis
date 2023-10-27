@@ -554,7 +554,8 @@ table.dataTable tfoot tr th {
     top: 50%;
     transform: translate(-50%, -50%);
     height: 600px;
-    width: 1200px;
+    width: 100%;
+    max-width: 1200px;
     background-color: #ffffff;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
         rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
@@ -566,6 +567,14 @@ table.dataTable tfoot tr th {
 
 .cash-float-header {
     padding: 20px;
+}
+
+.eod-table{
+    overflow-x: auto;
+}
+
+.eod-table table{
+    min-width: 900px;
 }
 
 .eod-table,
