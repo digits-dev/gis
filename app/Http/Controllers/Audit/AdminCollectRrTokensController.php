@@ -318,7 +318,7 @@
 					$column_value = '<span class="label label-success">'.$received.'</span>';
 				}
 			}
-			if($column_index == 5){
+			if($column_index == 6){
 				if($column_value == null){
 					$column_value = 'No';
 				}
