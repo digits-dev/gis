@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Pos;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Capsule\InventoryCapsule;
 use App\Models\Submaster\FloatEntry;
 use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\CashFloatHistoryLine;
+use App\Models\Submaster\GashaMachines;
+use App\Models\Submaster\Item;
 use App\Models\Submaster\TokenConversion;
+use App\Models\Token\TokenInventory;
 use DB;
 
 
@@ -24,9 +28,18 @@ class POSDashboardController extends Controller
     {
 
         $location_id = auth()->user()->location_id;
+                
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
+        $data['no_of_tokens'] = TokenInventory::where('locations_id', $location_id)->first()->qty;
+        $data['no_of_capsules'] =DB::table('inventory_capsules')
+            ->where('locations_id', $location_id)
+            ->leftJoin('inventory_capsule_view as icv', 'icv.inventory_capsules_id', 'inventory_capsules.id')
+            ->sum('icv.onhand_qty');
+        $data['no_of_gm'] = GashaMachines::where('location_id', $location_id)->count();
+        $data['no_of_items'] = Item::count();
+        
         $missing_eod = DB::table('float_entry_view')
             ->where('locations_id',$location_id )
             ->where('eod',null)

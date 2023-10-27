@@ -165,10 +165,10 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No. of tokens</p>
-                <p class="fs-30 fw-bold text-color">200</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_tokens }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="" class="d-flex-al-c text-color1" style="width: 100%;">
+                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
                 </a>
@@ -180,10 +180,10 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No of capsules.</p>
-                <p class="fs-30 fw-bold text-color">200</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_capsules }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="" class="d-flex-al-c text-color1" style="width: 100%;">
+                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
                 </a>
@@ -195,10 +195,10 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No of machines.</p>
-                <p class="fs-30 fw-bold text-color">200</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_gm }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="" class="d-flex-al-c text-color1" style="width: 100%;">
+                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
                 </a>
@@ -210,10 +210,10 @@
             </div>
             <div class="statistic-title">
                 <p class="fs-13 title-color text-color1">No of items.</p>
-                <p class="fs-30 fw-bold text-color">200</p>
+                <p class="fs-30 fw-bold text-color">{{ $no_of_items }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
-                <a href="" class="d-flex-al-c text-color1" style="width: 100%;">
+                <a href="#" class="d-flex-al-c text-color1" style="width: 100%;">
                     <p class="fs-13 m-right-10">More info</p>
                     <i class="fa fa-arrow-circle-right"></i>
                 </a>
@@ -350,7 +350,7 @@
         var data = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
             datasets: [{
-                label: 'Monthly Sales',
+                label: 'Monthly Swap',
                 data: [10, 15, 7, 20, 14],
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
