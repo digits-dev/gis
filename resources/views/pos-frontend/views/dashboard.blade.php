@@ -164,7 +164,7 @@
                 <i class="fa fa-database"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">Token Quantity.</p>
+                <p class="fs-13 title-color text-color1">Token Quantity</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_tokens }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
@@ -179,7 +179,7 @@
                 <i class="fa fa-circle-thin"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">Capsules Quantity - Stockroom.</p>
+                <p class="fs-13 title-color text-color1">Capsules Quantity - Stockroom</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_stock_room }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
@@ -194,7 +194,7 @@
                 <i class="fa fa-circle-thin"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">Capsules Quantity - Machine.</p>
+                <p class="fs-13 title-color text-color1">Capsules Quantity - Machine</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_capsules_in_machine }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
@@ -209,7 +209,7 @@
                 <i class="fa fa-archive"></i>
             </div>
             <div class="statistic-title">
-                <p class="fs-13 title-color text-color1">No of machines.</p>
+                <p class="fs-13 title-color text-color1">No of machines</p>
                 <p class="fs-30 fw-bold text-color">{{ $no_of_gm }}</p>
             </div>
             <div class="statistic-more-info d-flex-jcev">
