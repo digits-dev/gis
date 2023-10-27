@@ -318,11 +318,6 @@
 					$column_value = '<span class="label label-success">'.$received.'</span>';
 				}
 			}
-			if($column_index == 6){
-				if($column_value == null){
-					$column_value = 'No';
-				}
-			}
 	    }
 
 	    /*
@@ -344,6 +339,7 @@
 		   $postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 		   $postdata['statuses_id']      = $this->collected;
 		   $postdata['location_id']      = $location_id;
+		   $postdata['variance']         = 'No';
 		   $postdata['collected_qty']    = intval(str_replace(',', '', $collected_qty));
 		   $postdata['created_by']       = CRUDBooster::myId();
 	

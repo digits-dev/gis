@@ -26,7 +26,7 @@ class AddCurrentCashValueToCollectRrTokenLines extends Migration
     public function down()
     {
         Schema::table('collect_rr_token_lines', function (Blueprint $table) {
-            //
+            $table->dropColumn('current_cash_value');
         });
     }
 }
