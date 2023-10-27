@@ -2,13 +2,21 @@
 
 select
     cash_float_histories.id as cash_float_histories_id,
-    CONCAT('FH-', LPAD(cash_float_histories.id, 8, '0')) as reference_number,
+    CONCAT(
+        'FH-',
+        LPAD(
+            cash_float_histories.id,
+            8,
+            '0'
+        )
+    ) as reference_number,
     locations_id,
     float_types_id,
     entry_date,
     cash_entries.cash_value,
     token_entries.token_value,
     token_entries.token_qty,
+    cash_float_histories.token_bal,
     cash_float_histories.conversion_rate
 from cash_float_histories
     left JOIN (
