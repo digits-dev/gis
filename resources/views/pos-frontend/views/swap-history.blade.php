@@ -121,6 +121,7 @@
         Swal.fire({
                 title: "Are you sure you want to void this transaction? ",
                 icon: 'warning',
+                reverseButtons: true,
                 allowOutsideClick: false,
                 html: '<table class="styled-table-void">' +
                           '<tr><td>Reference Number</td><td>'+ swap_history_object.reference_number +'</td></tr>' +

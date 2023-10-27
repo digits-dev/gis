@@ -198,7 +198,7 @@
                 <select name="mode_of_payment" id="mode_of_payment">
                     <option value="" disabled selected>Mode of Payment</option>
                     @foreach ($mode_of_payments as $mode_of_payment )
-                    <option value="{{ $mode_of_payment->payment_description  }}">{{ $mode_of_payment->payment_description  }}</option>                      
+                    <option value="{{ $mode_of_payment->id  }}">{{ $mode_of_payment->payment_description  }}</option>                      
                     @endforeach
                 </select>
             </div>
@@ -316,7 +316,7 @@
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
         const selectedValue = $(this).val();
-        if(selectedValue != "CASH"){
+        if(selectedValue != 1){
           $('#change_value').val('0');
           $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').val("");
@@ -406,7 +406,7 @@
                         confirmButtonColor: '#367fa9',
                     });
             }
-          else if( $('#payment_reference').val() === '' && $('#mode_of_payment').val() != 'CASH') {
+          else if( $('#payment_reference').val() === '' && $('#mode_of_payment').val() != 1) {
             Swal.fire({
                         type: 'error',
                         title: 'Reference Number is Required!',
@@ -421,19 +421,30 @@
                   })
                 }
         else {
-          $.ajax({
-            type: 'POST',
-            url: "{{ route('swap') }}",
-            data: formData,
-            success: function(res) {
-                const data = JSON.parse(res);
-                console.log(data)
-            if (data.message === 'success') {
+          Swal.fire({
+                  title: 'Are you sure you want to continue?',
+                  icon: 'info',
+                  html: '<table class="styled-table-swap">' +
+                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '</table>',
+                  showCancelButton: true,
+                  reverseButtons: true,
+                  confirmButtonText: 'Yes',
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    $.ajax({
+                    type: 'POST',
+                    url: "{{ route('swap') }}",
+                    data: formData,
+                    success: function(res) {
+                        const data = JSON.parse(res);
+                        console.log(data)
+                    if (data.message === 'success') {
                   Swal.fire({
                     icon: 'success',
                     title: 'Swap Successfully!',
                     allowOutsideClick: false,
-                    // html: 'Reference #:' + ' ' + data.reference_number + '<br>' + 'Number of Tokens:' + ' ' + $('#token_value').val()
                     html: '<table class="styled-table-swap">' +
                           '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
@@ -455,6 +466,8 @@
                 console.log(err);
             }
         });
+                  }
+              })
         }
     });
 });
