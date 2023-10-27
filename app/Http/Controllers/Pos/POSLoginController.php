@@ -107,7 +107,7 @@ class POSLoginController extends Controller
         $locations_id = $user->location_id;
 
         $with_eod = DB::table('float_entry_view')
-            ->where('locations_id',$location_id )
+            ->where('locations_id',$locations_id )
             ->whereNotNull('eod')
             ->where('entry_date', date('Y-m-d'))
             ->first();
@@ -117,7 +117,7 @@ class POSLoginController extends Controller
             return redirect()->intended('pos_dashboard');
         }
 
-        if ($with_eod && $user) {
+        if ($with_eod) {
             $error = "EOD has been set, and you can't log in to the system after the end of the day.";
         } else {
             $error = "Incorrect email or password";
