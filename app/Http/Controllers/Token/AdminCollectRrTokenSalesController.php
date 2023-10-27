@@ -34,6 +34,7 @@
 			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Variance","name"=>"variance"];
+			$this->col[] = ["label"=>"Current cash value","name"=>"current_cash_value"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 

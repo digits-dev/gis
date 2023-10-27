@@ -50,6 +50,7 @@
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes',
+            reverseButtons: true,
             returnFocus: false,
         }).then((result) => {
             if (result.isConfirmed) {

@@ -139,14 +139,14 @@
                     </div>
                     <div class="d-flex-al-c m-top-10">
                         <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" oninput="validateInput(this);" required>
+                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" onkeypress="withoutLeadingZeros()" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
                     </div>
                 </div>
                 <div class="d-flex-jcc-col m-bottom-15">
                     <p class="fw-bold m-top-10">Current Date:</p>
                     <p class="m-top-10 currentDateTime" id="currentDateTime">Loading Time...</p>
-                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day">START OF DAY</button>
+                    <button class="bg-primary-c text-color-w fw-bold m-top-10 start-of-day" type="button" id="start_of_day" disabled>START OF DAY</button>
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="start_day" name="start_day" value="START" readonly hidden>               
                 </div>
@@ -230,6 +230,8 @@
 <script src="{{ asset('jsHelper/isNumber.js') }}"></script>
 
 <script>
+    $("#start_of_day").prop('disabled', true);
+    $("#start_of_day").css('background-color', 'rgb(243, 142, 142)');
     const modeOfPayments = $('.mode_of_payments').get();
     const floatEntries = $('.cash_values').get();
 
@@ -257,7 +259,13 @@
     }
 
     $('input').on('input', function(event) {
-        console.log(event);
+        if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
+            $("#start_of_day").prop('disabled', true);
+            $("#start_of_day").css('background-color', 'rgb(243, 142, 142)');
+        } else{
+            $("#start_of_day").prop('disabled', false);
+            $("#start_of_day").css('background-color', 'rgb(254,62,62)');
+        }
         updateTotalCash();
     });
 
