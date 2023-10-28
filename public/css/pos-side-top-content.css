@@ -196,16 +196,13 @@ body {
 .sidebar_section {
     min-height: 100vh;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
-    /* background-color: #f33b3b; */
     overflow: hidden;
-
     -webkit-transition: width 0.3s ease-out;
     -moz-transition: width 0.3s ease-out;
     -o-transition: width 0.3s ease-out;
     transition: width 0.6s ease-out;
     width: 90px;
-
-    /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
+    flex: 0 0 auto; /* Prevent the sidebar from growing or shrinking */
 }
 
 .gashapon_logo {
@@ -377,11 +374,11 @@ body {
 }
 
 .topbar-content {
+    position: relative;
     padding: 12.6px 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* margin-left: 90px; */
 }
 
 .user_profile {
@@ -544,7 +541,7 @@ table.dataTable tfoot tr th {
 
 /* Cash Float EOD */
 .cash-float-section {
-    position: absolute;
+    position: fixed;
     height: 100%;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.679);
@@ -635,4 +632,36 @@ input:disabled {
     bottom: 10px;
     right: 10px;
     color: #fff;
+}
+
+/* Responsive sidebar */
+
+.menu{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 25px;
+    cursor: pointer;
+    visibility: hidden;
+}
+
+@media only screen and (max-width: 700px) {
+    .user_profile_info {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 470px) {
+    .statistic-title {
+        margin-top: 20px;
+    }
+    .sidebar_section{
+        position: fixed;
+        display: none;
+        z-index: 1; 
+    }
+    .menu{
+        visibility: visible;
+    }
 }

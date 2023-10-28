@@ -2,6 +2,7 @@
     <section class="topbar_section">
         <div class="topbar-box">
             <div class="topbar-content">
+                <div class="fa fa-bars menu"></div>
                 <div class="title-color fs-20">
                     @if(Request::Segment(1) == 'pos_dashboard')
                     <p>Dashboard</p>
