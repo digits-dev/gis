@@ -91,7 +91,7 @@
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
                     <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
-                    <p class="m-top-5 c-danger">*You may not login to the system after end of day</p>
+                    <p class="m-top-5 c-danger t-center">*You may not login to the system after end of day</p>
                 </div>
             </form>
         </div>

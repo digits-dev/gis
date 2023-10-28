@@ -65,11 +65,6 @@
         }
     };
 
-
-
-
-
-
     let isSidebarShown = true; // Initially, set it to true
     let isScreenPhoneSize = false;
 
@@ -96,12 +91,8 @@
 
     $(document).on('click', function (e) {
         if ($(e.target).closest('.sidebar_section').length === 0 && !$(e.target).is('.menu') && isScreenPhoneSize) {
-            // Click was outside of the sidebar and not on the specific element to exclude
             $('.sidebar_section').hide();
         }
     });
-
-
-
 
 </script>
