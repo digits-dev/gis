@@ -83,6 +83,10 @@
         background: #ddd;
     }
 
+    .statistic-box{
+        display: none;
+    }
+
 </style>
 @endsection
 
@@ -333,7 +337,16 @@
                         title: 'Successfully Submitted!',
                     });
                 }
-
+                
+                // Animate each statistic box
+                $(".statistic-box").each(function(index) {
+                    $(this).delay(500 * index).fadeIn(500, function() {
+                        // After fading in, animate sliding from the left
+                        $(this).animate({
+                            left: "0px"
+                        }, 500);
+                    });
+                });
 
             },
             error: function(err) {
