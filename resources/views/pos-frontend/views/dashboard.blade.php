@@ -234,6 +234,11 @@
 <script src="{{ asset('jsHelper/isNumber.js') }}"></script>
 
 <script>
+
+    if("{{ $missing_sod }}"){
+        $('.statistic-box').show();
+    }
+
     $("#start_of_day").prop('disabled', true);
     $("#start_of_day").css('background-color', 'rgb(243, 142, 142)');
     const modeOfPayments = $('.mode_of_payments').get();
