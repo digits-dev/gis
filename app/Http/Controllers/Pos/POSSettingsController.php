@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Pos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pos\POSDashboardController;
+use App\Models\CMsUsers;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 
 
 class POSSettingsController extends Controller
@@ -24,6 +29,27 @@ class POSSettingsController extends Controller
         $data = [];
         
         return view('pos-frontend.views.settings', $data);
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $user = CmsUsers::find($id);
+        if (Hash::check($request->all()['current_password'], $user->password)){
+            
+            $request->validate([
+
+                'new_password' => 'required|min:8',
+                'confirmation_password' => 'required|min:8|same:new_password'
+            ]);
+
+            $user->password = Hash::make($request->get('new_password'));
+            $user->save();
+
+            return redirect()->back()->with('success','Password Updated, You will be Log-out.');
+            
+        } else {
+            return redirect()->back()->with('error','Incorrect Current Password.');
+        }
     }
 
     /**
