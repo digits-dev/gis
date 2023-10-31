@@ -67,6 +67,10 @@ Route::group(['middleware' => ['web']], function() {
     //POS EOD
     Route::post('admin/pos_end_of_day/eod', [POSEndOfDayController::class, 'submitEOD'])->name('submitEOD');
 
+    //POS Setting
+    Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
+
+
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']);
