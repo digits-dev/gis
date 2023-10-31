@@ -33,7 +33,10 @@
     }
     .styled-table-void tr td:nth-of-type(odd) {
         color: #c02f2f;
-}
+    }
+    .swal2-confirm {
+        width: 95px;
+    }
 </style>
 @endsection
 
