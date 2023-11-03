@@ -48,6 +48,7 @@ class CmsUsers extends Authenticatable
             ->select('cms_users.*',
             'locations.location_name')
             ->where('cms_users.status', 'active')
+            ->where('cms_users.id', auth()->user()->id)
             ->first();
     }
 }
