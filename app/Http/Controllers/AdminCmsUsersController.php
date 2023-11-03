@@ -24,6 +24,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->col[] = array("label"=>"Name","name"=>"name");
 		$this->col[] = array("label"=>"Email","name"=>"email");
 		$this->col[] = array("label"=>"Privilege","name"=>"id_cms_privileges","join"=>"cms_privileges,name");
+		$this->col[] = array("label"=>"Location","name"=>"location_id","join"=>"locations,location_name");	
 		$this->col[] = array("label"=>"Photo","name"=>"photo","image"=>1);	
 		$this->col[] = array("label"=>"Status","name"=>"status");	
 		# END COLUMNS DO NOT REMOVE THIS LINE
