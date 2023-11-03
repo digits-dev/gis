@@ -58,7 +58,7 @@
                                 @for ($i=0; $i<count($float_entries)+1; $i++)
                                     @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
                                         @if ($i == 0)
-                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_description }} mode_of_payments" onkeypress="withoutLeadingZeros()" required {{ $mode_of_payment->payment_description == 'CASH' ? 'readonly' : ''}}></td>
+                                            <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->id }}" class="cash_value_{{ $mode_of_payment->payment_description }} mode_of_payments" onkeypress="withoutLeadingZeros()" required {{ $mode_of_payment->payment_description == 'CASH' ? 'readonly' : ''}}></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="inputIsNumber()" ></td> --}}
                                         @else
                                             <td><input actual_value="{{ $float_entries[$i-1]->value }}" type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }} cash_values" onkeypress="withoutLeadingZeros()" required ></td>

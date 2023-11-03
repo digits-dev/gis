@@ -125,7 +125,7 @@ class POSDashboardController extends Controller
             ->toArray();
 
         foreach ($mode_of_payments as $mop) {
-            $valueWithComma = $data['cash_value_' . $mop['payment_description']];
+            $valueWithComma = $data['cash_value_' . $mop['id']];
             $valueWithoutComma = (float)str_replace(',','',$valueWithComma);
             $lines[] = [
                 'cash_float_histories_id' => $cash_float_history_id,
