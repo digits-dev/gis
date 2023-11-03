@@ -98,6 +98,7 @@
                 <th>Peso</th>
                 <th>Float Type</th>
                 <th>Created by</th>
+                <th>Store Location</th>
                 <th>Entry Date</th>
                 <th>Created Date</th>
             </tr>
@@ -114,6 +115,7 @@
                     <td>PHP {{ $entry->cash_value }}</td>
                     <td>{{ $entry->description }}</td>
                     <td>{{ $entry->name }}</td>
+                    <td>{{ $entry->location_name }}</td>
                     <td>{{ $entry->entry_date }}</td>
                     <td>{{ $entry->created_at }}</td>
                 </tr>
@@ -127,6 +129,7 @@
                 <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
+                <th>Store Location</th>
                 <th>Created by</th>
                 <th>Entry Date</th>
                 <th>Created Date</th>
