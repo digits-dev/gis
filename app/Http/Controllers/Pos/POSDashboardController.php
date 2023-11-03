@@ -55,7 +55,6 @@ class POSDashboardController extends Controller
             ->leftJoin('locations as loc', 'loc.id', 'cms_users.location_id')
             ->where('cms_users.id',auth()->user()->id)
             ->first();
-        
         $missing_eod = DB::table('float_entry_view')
             ->where('locations_id',$location_id )
             ->where('eod',null)
