@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pos\POSDashboardController;
-use App\Models\CMsUsers;
+use App\Models\CmsUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;

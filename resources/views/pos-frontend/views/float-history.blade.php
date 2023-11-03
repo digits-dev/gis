@@ -129,8 +129,8 @@
                 <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
-                <th>Store Location</th>
                 <th>Created by</th>
+                <th>Store Location</th>
                 <th>Entry Date</th>
                 <th>Created Date</th>
             </tr>
