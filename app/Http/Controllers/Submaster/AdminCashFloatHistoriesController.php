@@ -389,7 +389,7 @@ use App\Models\Submaster\CashFloatHistoryLine;
 				$obj->payment_custom_desc = preg_replace("/[^a-zA-Z]/", '_', $obj->payment_description);
 				return $obj;
 			}, $data['mode_of_payments']);
-			$data['float_entries'] = FloatEntry::where('status', 'ACTIVE')->get();
+			$data['float_entries'] = FloatEntry::where('status', 'ACTIVE')->orderBy('id', 'desc')->get();
 	
 			//Please use view method instead view method from laravel
 			return $this->view('submaster.cash-float-history.detail-cash-float',$data);

@@ -324,6 +324,9 @@ input:disabled{
                                                     <th>Mode of Payment</th>
                                                     <th>Value</th>
                                                     @foreach ($float_entries as $float_entry)
+                                                        @if ($float_entry->description == 'TOKEN')
+                                                                @continue
+                                                        @endif
                                                     <th>
                                                         {{ $float_entry->description }}
                                                     </th>
@@ -335,7 +338,11 @@ input:disabled{
                                                 <tr>
                                                     <td>{{ $mode_of_payment->payment_description }}</td>
                                                     @for ($i=0; $i<count($float_entries)+1; $i++)
+                                                        @if ($float_entries[$i-1]->description == 'TOKEN')
+                                                            @continue
+                                                        @endif
                                                         @if ($i == 0 || $mode_of_payment->payment_description == 'CASH')
+
                                                             @if ($i == 0)
                                                                 <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->payment_description }}" class="cash_value_{{ $mode_of_payment->payment_custom_desc }}" readonly></td>
                                                                 {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" readonly onkeypress="inputIsNumber()" ></td> --}}
