@@ -309,6 +309,7 @@
 				'token_conversions_id' => $id,
 				'new_token_qty' => $inserted_item['token_qty'],
 				'new_cash_value' => $inserted_item['cash_value'],
+				'start_date' => $inserted_item['start_date'],
 				'created_by' => CRUDBooster::myId(),
 				'created_at' => date('Y-m-d H:i:s'),
 			];
@@ -341,6 +342,7 @@
 				'old_cash_value' => $old_values['cash_value'],
 				'new_token_qty' => $postdata['token_qty'],
 				'new_cash_value' => $postdata['cash_value'],
+				'start_date' => $postdata['start_date'],
 				'created_by' => CRUDBooster::myId(),
 				'created_at' => date('Y-m-d H:i:s'),
 			];
@@ -389,7 +391,8 @@
 	    //By the way, you can still create your own method in here... :) 
 
 		public function updateCurrentCashValue() {
-			DB::table('token_conversions')->where('start_date', date('Y-m-d'))
+			DB::table('token_conversions')
+				->where('start_date', date('Y-m-d'))
 				->update(['current_cash_value' => DB::raw('cash_value')]);
 		}
 

@@ -241,7 +241,16 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('capsule_returns.deleted_at')
+					  ->orderBy('capsule_returns.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query
+					->leftJoin('gasha_machines as gm', 'capsule_returns.gasha_machines_id', 'gm.id')
+					->where('capsule_returns.created_by', CRUDBooster::myId())
+					->where('gm.location_id' , CRUDBooster::myLocationId())
+					->orderBy('capsule_returns.id', 'desc');
+			} 
 	    }
 
 	    /*

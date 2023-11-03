@@ -269,16 +269,12 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        if(CRUDBooster::isSuperadmin()){
-				$query->whereNull('store_rr_token.deleted_at')
-					  ->orderBy('store_rr_token.statuses_id', 'asc')
-					  ->orderBy('store_rr_token.id', 'desc');
+				$query->whereNull('capsule_returns.deleted_at')
+					  ->orderBy('capsule_returns.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
-				$query->where('store_rr_token.received_by', CRUDBooster::myId())
-					  ->where('store_rr_token.statuses_id',$this->closed)
-					  ->whereNull('store_rr_token.deleted_at')
-					  ->orderBy('store_rr_token.statuses_id', 'asc')
-					  ->orderBy('store_rr_token.id', 'desc');
-			}
+				$query->where('capsule_returns.created_by', CRUDBooster::myId())
+					  ->orderBy('capsule_returns.id', 'desc');
+			} 
 	            
 	    }
 

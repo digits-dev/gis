@@ -151,6 +151,9 @@
 .styled-table-swap tr td:nth-of-type(odd) {
       color: #c02f2f;
 }
+.swal2-confirm {
+  width: 95px;
+}
 </style>
 @endsection
 
@@ -202,6 +205,7 @@
                     @endforeach
                 </select>
             </div>
+            <div id="mode_of_payment_description"></div>
             <div id="payment_reference_div">
               <span>Reference Number</span>
               <input class="input-field acc-number" type="text" name="payment_reference" id="payment_reference">
@@ -314,7 +318,13 @@
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
-        const selectedValue = $(this).val();
+      const selectedValue = $(this).val();
+        
+      const selectedDescription = $('option:selected', this).text();
+      $('#mode_of_payment_description').text(selectedDescription);
+      $('#mode_of_payment_description').hide();
+
+    
         if(selectedValue != 1){
           $('#change_value').val('0');
           $('#payment_reference_div').fadeIn(1000);
@@ -425,6 +435,7 @@
                   icon: 'info',
                   html: '<table class="styled-table-swap">' +
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   showCancelButton: true,
@@ -447,6 +458,7 @@
                     html: '<table class="styled-table-swap">' +
                           '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   }).then((result) => {

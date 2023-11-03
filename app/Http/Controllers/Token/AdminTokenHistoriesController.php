@@ -255,7 +255,14 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+			if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('token_histories.deleted_at')
+					  ->orderBy('token_histories.id', 'desc');
+			}else {
+				$query->where('token_histories.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('token_histories.deleted_at')
+					  ->orderBy('token_histories.id', 'desc');
+			}
 		
 	    }
 

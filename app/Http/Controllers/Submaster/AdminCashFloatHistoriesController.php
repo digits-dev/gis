@@ -238,7 +238,13 @@ use App\Models\Submaster\CashFloatHistoryLine;
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('cash_float_histories.deleted_at')
+					  ->orderBy('cash_float_histories.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('cash_float_histories.created_by', CRUDBooster::myId())
+					  ->orderBy('cash_float_histories.id', 'desc');
+			} 
 
 	    }
 

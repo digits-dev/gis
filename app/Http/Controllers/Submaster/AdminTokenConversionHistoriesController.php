@@ -34,6 +34,7 @@
 			$this->col[] = ["label"=>"New Cash Value","name"=>"new_cash_value"];
 			$this->col[] = ["label"=>"Old Token Qty","name"=>"old_token_qty"];
 			$this->col[] = ["label"=>"New Token Qty","name"=>"new_token_qty"];
+			$this->col[] = ["label"=>"Start Date","name"=>"start_date"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -44,6 +45,7 @@
 			$this->form[] = ['label'=>'New Cash Value','name'=>'new_cash_value','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Old Token  Qty','name'=>'old_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'New Token Qty','name'=>'new_token_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'date','validation'=>'required','width'=>'col-sm-10'];
 			$this->form[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END FORM DO NOT REMOVE THIS LINE
 

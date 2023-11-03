@@ -33,7 +33,10 @@
     }
     .styled-table-void tr td:nth-of-type(odd) {
         color: #c02f2f;
-}
+    }
+    .swal2-confirm {
+        width: 95px;
+    }
 </style>
 @endsection
 
@@ -126,6 +129,7 @@
                 html: '<table class="styled-table-void">' +
                           '<tr><td>Reference Number</td><td>'+ swap_history_object.reference_number +'</td></tr>' +
                           '<tr><td>Value</td><td>'+ swap_history_object.total_value.toLocaleString()+'</td></tr>' +
+                          '<tr><td>Mode of Payments</td><td>'+ swap_history_object.mod_description+'</td></tr>' +
                           '<tr><td>Token</td><td>'+ swap_history_object.token_value.toLocaleString()+'</td></tr>' +
                           '</table>',
                 showCancelButton: true,
