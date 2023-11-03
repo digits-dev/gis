@@ -532,7 +532,7 @@
         });
 
         function validateGashaMachines(data){
-            if(!data.gasha_machine && ($('#gasha_machine').val() != '' ) || data.not_exist){
+            if((!data.gasha_machine || data.not_exist) && ($('#gasha_machine').val() != '' )){
                 Swal.fire({
                     title: `Gasha Machine not existing.`,
                     icon: 'error',
