@@ -262,7 +262,13 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('swap_histories.deleted_at')
+					  ->orderBy('swap_histories.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+				$query->where('swap_histories.created_by', CRUDBooster::myId())
+					  ->orderBy('swap_histories.id', 'desc');
+			} 
 	            
 	    }
 
