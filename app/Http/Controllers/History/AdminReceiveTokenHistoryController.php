@@ -268,13 +268,14 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
-				$query->whereNull('capsule_returns.deleted_at')
-					  ->orderBy('capsule_returns.id', 'desc');
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8])){
+				$query->whereNull('store_rr_token.deleted_at')
+					  ->orderBy('store_rr_token.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
-				$query->where('capsule_returns.created_by', CRUDBooster::myId())
-					  ->orderBy('capsule_returns.id', 'desc');
-			} 
+				$query->where('store_rr_token.to_locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('store_rr_token.deleted_at')
+					  ->orderBy('store_rr_token.id', 'desc');
+			}
 	            
 	    }
 
