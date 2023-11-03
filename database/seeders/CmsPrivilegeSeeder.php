@@ -15,6 +15,7 @@ class CmsPrivilegeSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('cms_privileges')->truncate();
         $privileges = [
             [   
                 'name'          => 'Super Administrator',
