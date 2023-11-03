@@ -9,6 +9,7 @@ use App\Models\Submaster\FloatType;
 use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\CashFloatHistoryLine;
+use App\Models\Submaster\Locations;
 use App\Http\Controllers\Pos\POSDashboardController;
 
 use DB;
@@ -27,7 +28,7 @@ class POSFloatHistoryController extends Controller
         if ($is_missing_eod_or_sod) {
             return $is_missing_eod_or_sod;
         }
-        
+        $token_id = FloatEntry::where('description', 'TOKEN')->pluck('id');
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
@@ -37,8 +38,9 @@ class POSFloatHistoryController extends Controller
             ->leftJoin('cash_float_histories','cash_float_histories.id','float_history_view.cash_float_histories_id')
             ->leftJoin('cms_users','cms_users.id','cash_float_histories.created_by')
             ->leftJoin('cash_float_history_lines', 'cash_float_history_lines.cash_float_histories_id', 'float_history_view.cash_float_histories_id')
+            ->leftJoin('locations', 'locations.id','cash_float_histories.locations_id')
             ->select('*','cash_float_histories.created_at', 'cash_float_history_lines.qty as token_qty', 'float_history_view.entry_date')
-            ->where('cash_float_history_lines.float_entries_id', 14)
+            ->where('cash_float_history_lines.float_entries_id', $token_id)
             ->get()
             ->toArray();
 
