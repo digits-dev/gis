@@ -47,7 +47,7 @@ class CmsUsers extends Authenticatable
         return $this->leftJoin('locations', 'cms_users.location_id', 'locations.id')
             ->select('cms_users.*',
             'locations.location_name')
-            ->where('cms_users.status', 'active')
+            ->where('cms_users.status', 'ACTIVE')
             ->where('cms_users.id', auth()->user()->id)
             ->first();
     }
