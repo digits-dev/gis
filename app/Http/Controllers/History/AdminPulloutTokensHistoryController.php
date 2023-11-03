@@ -266,7 +266,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8])){
 				$query->whereNull('pullout_tokens.deleted_at')
 					  ->whereNotNull('pullout_tokens.received_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
