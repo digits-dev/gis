@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pos\POSDashboardController;
-use App\Models\CmsUsers;
+use App\Models\CMsUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -45,11 +45,8 @@ class POSSettingsController extends Controller
             $user->password = Hash::make($request->get('new_password'));
             $user->save();
 
-            // Add a delay before logging out
-            sleep(2); // Sleep for 2 seconds
-
-
-            return redirect()->route('logout')->with('success', 'Password Updated, You will be Log-out.');
+            return redirect()->back()->with('success','Password Updated, You will be Log-out.');
+            
         } else {
             return redirect()->back()->with('error','Incorrect Current Password.');
         }
