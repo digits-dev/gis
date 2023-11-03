@@ -91,6 +91,9 @@
     margin-top: 10px
 
     }
+    .addaccount_btn:hover{
+        background-color: #a43f3f;
+    }
 </style>
 @endsection
 
@@ -145,5 +148,14 @@
 {{-- Your Script --}}
 @section('script-js')
 
+    <script>
+
+        if ("{{ session('success') }}"){
+            setTimeout(function(){
+                window.location.href = "{{ route('logout') }}"
+            }, 2000);
+        }
+        
+    </script>
 
 @endsection

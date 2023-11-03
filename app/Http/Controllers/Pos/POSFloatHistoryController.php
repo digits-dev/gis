@@ -28,6 +28,7 @@ class POSFloatHistoryController extends Controller
         if ($is_missing_eod_or_sod) {
             return $is_missing_eod_or_sod;
         }
+        $account_location_id = auth()->user()->location_id;
         $token_id = FloatEntry::where('description', 'TOKEN')->pluck('id');
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
@@ -46,6 +47,7 @@ class POSFloatHistoryController extends Controller
             ->leftJoin('locations', 'locations.id','cash_float_histories.locations_id')
             ->select('*','cash_float_histories.created_at', 'cash_float_history_lines.qty as token_qty', 'float_history_view.entry_date')
             ->where('cash_float_history_lines.float_entries_id', $token_id)
+            ->where('cash_float_histories.locations_id', $account_location_id)
             ->get()
             ->toArray();
 

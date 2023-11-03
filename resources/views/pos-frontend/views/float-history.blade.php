@@ -97,9 +97,9 @@
                 <th>Token Value</th>
                 <th>Peso</th>
                 <th>Float Type</th>
-                <th>Created by</th>
                 <th>Store Location</th>
                 <th>Entry Date</th>
+                <th>Created by</th>
                 <th>Created Date</th>
             </tr>
         </thead>
@@ -114,9 +114,9 @@
                     <td>PHP {{ $entry->token_value }}</td>
                     <td>PHP {{ $entry->cash_value }}</td>
                     <td>{{ $entry->description }}</td>
-                    <td>{{ $entry->name }}</td>
                     <td>{{ $entry->location_name }}</td>
                     <td>{{ $entry->entry_date }}</td>
+                    <td>{{ $entry->name }}</td>
                     <td>{{ $entry->created_at }}</td>
                 </tr>
             @endforeach
@@ -130,8 +130,8 @@
                 <th>Peso</th>
                 <th>Float Type</th>
                 <th>Store Location</th>
-                <th>Created by</th>
                 <th>Entry Date</th>
+                <th>Created by</th>
                 <th>Created Date</th>
             </tr>
         </tfoot>
