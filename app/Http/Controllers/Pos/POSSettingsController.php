@@ -45,8 +45,11 @@ class POSSettingsController extends Controller
             $user->password = Hash::make($request->get('new_password'));
             $user->save();
 
-            return redirect()->back()->with('success','Password Updated, You will be Log-out.');
-            
+            // Add a delay before logging out
+            sleep(2); // Sleep for 2 seconds
+
+
+            return redirect()->route('logout')->with('success', 'Password Updated, You will be Log-out.');
         } else {
             return redirect()->back()->with('error','Incorrect Current Password.');
         }
