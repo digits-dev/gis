@@ -64,8 +64,10 @@
                     <th><a class="btn btn-details" href="/pos_swap_history/{{ $swap_history->id }}""><i class="fa-solid fa-eye"></i></a>
                         <a class="btn btn-void ajax-request-icon" data-id="{{ $swap_history}}" href="">
                             @if ($swap_history->status != "VOID" && date('Y-m-d', strtotime($swap_history->created_at)) == date('Y-m-d'))
-                            <i class="fa-solid fa-x"></i>
-                        @endif
+                                @if (auth()->user()->id != 3)
+                                <i class="fa-solid fa-x"></i>
+                                @endif
+                            @endif
                         </a>
                     </th>
                    <th>{{ $swap_history->reference_number }}</th>
