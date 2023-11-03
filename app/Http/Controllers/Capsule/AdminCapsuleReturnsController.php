@@ -27,7 +27,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = in_array(CRUDBooster::myPrivilegeId(), [1,3,5]);
 			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -244,11 +244,11 @@
 	        if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('capsule_returns.deleted_at')
 					  ->orderBy('capsule_returns.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
 				$query
 					->leftJoin('gasha_machines as gm', 'capsule_returns.gasha_machines_id', 'gm.id')
 					->where('capsule_returns.created_by', CRUDBooster::myId())
-					->where('gm.location_id' , CRUDBooster::myLocationId())
+					->where('gm.location_id', CRUDBooster::myLocationId())
 					->orderBy('capsule_returns.id', 'desc');
 			} 
 	    }
