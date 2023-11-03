@@ -19,25 +19,55 @@ class CmsPrivilegeSeeder extends Seeder
             [   
                 'name'          => 'Super Administrator',
                 'is_superadmin' => 1,
-                'theme_color'   => 'skin-red',
+                'theme_color'   => 'skin-blue',
                  'created_at' => date('Y-m-d H:i:s')
             ],
             [   
                 'name'          => 'Accounting',
                 'is_superadmin' => 0,
-                'theme_color'   => 'skin-red',
+                'theme_color'   => 'skin-blue',
                  'created_at' => date('Y-m-d H:i:s')
             ],
             [   
-                'name'          => 'Store',
+                'name'          => 'Cashier',
                 'is_superadmin' => 0,
-                'theme_color'   => 'skin-red',
+                'theme_color'   => 'skin-blue',
                  'created_at' => date('Y-m-d H:i:s')
             ],
             [   
                 'name'          => 'Audit',
                 'is_superadmin' => 0,
-                'theme_color'   => 'skin-red',
+                'theme_color'   => 'skin-blue',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [   
+                'name'          => 'OIC',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-blue',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [   
+                'name'          => 'Area Manager',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-blue',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [   
+                'name'          => 'Operations Head',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-blue',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [   
+                'name'          => 'Inventory Control',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-blue',
+                 'created_at' => date('Y-m-d H:i:s')
+            ],
+            [   
+                'name'          => 'ISD',
+                'is_superadmin' => 0,
+                'theme_color'   => 'skin-blue',
                  'created_at' => date('Y-m-d H:i:s')
             ],
            
