@@ -55,6 +55,9 @@
         border-bottom: 1px solid #ddd;
         padding-bottom: 20px;
     }
+    .statistic-title p {
+        margin-left: 75px;
+    }
     .statistic-more-info{
         height: 100%;
     }
