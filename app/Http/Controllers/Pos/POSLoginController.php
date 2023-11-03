@@ -102,6 +102,7 @@ class POSLoginController extends Controller
 
         $user = DB::table('cms_users')
             ->where('email', $email_auth)
+            ->where('status', 'ACTIVE')
             ->first();
 
         if(!in_array($user->id_cms_privileges, [1,3,5])){
