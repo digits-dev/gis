@@ -499,6 +499,7 @@
 			$validateQty = $return_inputs['qty'] > $validateGM->qty;
 
 			return response()->json([
+				'not_exist' => $gasha_machines->location_id != CRUDBooster::myLocationId(),
 				'gasha_machine'=>$validateGM->gasha_machines_id,
 				'qty' => $validateQty,
 				'list_of_gm' => $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->where('qty', '>', 0),

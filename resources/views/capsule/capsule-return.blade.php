@@ -434,8 +434,6 @@
         });
     })
 
-    
-
     $(document).ready(function () {
 
         $('#save-btn').attr('disabled', true)
@@ -459,9 +457,9 @@
                     url: "{{ route('validate_gasha_machine') }}",
                     data: formData,
                     success: function(res) {
-
+                        
                         if(validateGashaMachines(res)){
-
+                            
                             let ics = Object.values(res.list_of_ic);
                             const gm = Object.values(res.list_of_gm);
                             const div = $('<div>').addClass('swal-inputs');
@@ -509,6 +507,7 @@
                                 `);
                                 additionalContent.append(no_item_found);
                                 $(swal_btn).find('button').hide();
+                                
                             }
 
                             additionalContent.append(swal_btn);
@@ -533,7 +532,7 @@
         });
 
         function validateGashaMachines(data){
-            if(!data.gasha_machine && ($('#gasha_machine').val() != '' )){
+            if(!data.gasha_machine && ($('#gasha_machine').val() != '' ) || data.not_exist){
                 Swal.fire({
                     title: `Gasha Machine not existing.`,
                     icon: 'error',
