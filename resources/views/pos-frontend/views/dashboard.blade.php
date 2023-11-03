@@ -55,6 +55,9 @@
         border-bottom: 1px solid #ddd;
         padding-bottom: 20px;
     }
+    .statistic-title p {
+        margin-left: 75px;
+    }
     .statistic-more-info{
         height: 100%;
     }
@@ -299,7 +302,7 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Submit',
             returnFocus: false,
-            reverseButtons: false,
+            reverseButtons: true,
         }).then((result) => {
             if (result.isConfirmed) {
                 $('#real-submit-btn').click();

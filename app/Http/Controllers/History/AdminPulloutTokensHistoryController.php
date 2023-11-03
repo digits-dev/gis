@@ -271,8 +271,8 @@
 					  ->whereNotNull('pullout_tokens.received_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
 					  ->orderBy('pullout_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[2])){
-				$query->where('pullout_tokens.received_by', CRUDBooster::myId())
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
+				$query->where('pullout_tokens.locations_id', CRUDBooster::myLocationId())
 					  ->where('pullout_tokens.statuses_id',$this->closed)
 					  ->whereNull('pullout_tokens.deleted_at')
 					  ->whereNotNull('pullout_tokens.received_at')

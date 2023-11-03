@@ -104,6 +104,10 @@ class POSLoginController extends Controller
             ->where('email', $email_auth)
             ->first();
 
+        if(!in_array($user->id_cms_privileges, [1,3,5])){
+            return redirect('pos_login');
+        }
+
         $locations_id = $user->location_id;
 
         $with_eod = DB::table('float_entry_view')

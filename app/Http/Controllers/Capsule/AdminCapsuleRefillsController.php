@@ -372,6 +372,8 @@
 			$time_stamp = date('Y-m-d H:i:s');
 			$action_by = CRUDBooster::myId();
 
+			if ($machine->location_id != CRUDBooster::myLocationId()) $machine = null;
+
 			// checking if item is found
 			if (!$item) {
 				return json_encode(['is_missing'=>true, 'missing'=>'Item']);
