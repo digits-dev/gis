@@ -299,7 +299,7 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Submit',
             returnFocus: false,
-            reverseButtons: true,
+            reverseButtons: false,
         }).then((result) => {
             if (result.isConfirmed) {
                 $('#real-submit-btn').click();
