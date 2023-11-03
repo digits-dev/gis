@@ -93,7 +93,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,3])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,3,5])){
 					$this->addaction[] = ['title'=>'Check Collected Tokens','url'=>CRUDBooster::mainpath('get-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == "'.$this->collected.'"','color'=>'success'];
 				}
 			}
