@@ -248,7 +248,13 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if (in_array(CRUDBooster::myPrivilegeId(), [1, 2, 4, 6, 7, 8])) {
+				$query->whereNull('capsule_sales.deleted_at')
+					->orderBy('capsule_sales.id', 'desc');
+			} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5])) {
+				$query->where('capsule_sales.locations_id', CRUDBooster::myLocationId())
+					->orderBy('capsule_sales.id', 'desc');
+			} 
 	            
 	    }
 
