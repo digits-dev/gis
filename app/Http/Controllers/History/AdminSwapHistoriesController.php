@@ -266,7 +266,7 @@
 				$query->whereNull('swap_histories.deleted_at')
 					->orderBy('swap_histories.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
-				$query->where('swap_histories.created_by', CRUDBooster::myId())
+				$query->where('swap_histories.location_id', CRUDBooster::myLocationId())
 					->orderBy('swap_histories.id', 'desc');
 			} 
 	            
