@@ -238,12 +238,12 @@ use App\Models\Submaster\CashFloatHistoryLine;
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8])){
 				$query->whereNull('cash_float_histories.deleted_at')
-					  ->orderBy('cash_float_histories.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+					->orderBy('cash_float_histories.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
 				$query->where('cash_float_histories.created_by', CRUDBooster::myId())
-					  ->orderBy('cash_float_histories.id', 'desc');
+					->orderBy('cash_float_histories.id', 'desc');
 			} 
 
 	    }
@@ -358,7 +358,7 @@ use App\Models\Submaster\CashFloatHistoryLine;
 
 		public function getAdd() {
 			//Create an Auth
-			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {
+			if(!CRUDBooster::isCreate()) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}
 
@@ -375,7 +375,7 @@ use App\Models\Submaster\CashFloatHistoryLine;
 
 		public function getDetail($id) {
 			//Create an Auth
-			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {
+			if(!CRUDBooster::isRead()) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}
 

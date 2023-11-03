@@ -303,11 +303,11 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1])){
 				$query->whereNull('pullout_tokens.deleted_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
 					  ->orderBy('pullout_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[3])){
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
 				$query->where('pullout_tokens.locations_id', CRUDBooster::myLocationId())
 					  ->whereNull('pullout_tokens.deleted_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
