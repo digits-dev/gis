@@ -15,7 +15,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -251,6 +251,12 @@
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
+			if ($column_index == 4 || $column_index == 5){
+				if ($column_value == null){
+					$column_value = '<span>0</span>';
+				}
+			}
+			
 	    }
 
 	    /*

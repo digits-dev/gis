@@ -53,28 +53,28 @@
                                     <thead>
                                         <tr id="border-table">
                                             <th id="border-table" style="text-align:center" width="10%;">Reference Number</th>
-                                            <th id="border-table" style="text-align:center" width="8%">Pullout Qty</th>
+                                            <th id="border-table" style="text-align:center" width="5%">Pullout Qty</th>
                                             <th id="border-table" style="text-align:center" width="10%">Description</th>
-                                            <th id="border-table" style="text-align:center" width="30%">From location</th>          
-                                            <th id="border-table" style="text-align:center" width="10%">To location</th>
+                                            <th id="border-table" style="text-align:center" width="15%">From location</th>          
+                                            <th id="border-table" style="text-align:center" width="15%">To location</th>
                                             
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr id="border-table">
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->reference_number}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->qty}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                TOKEN
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->from_location}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->to_location}}
                                             </td>
                                         </tr>
@@ -173,28 +173,28 @@
                                     <thead>
                                         <tr id="border-table">
                                             <th id="border-table" style="text-align:center" width="10%;">Reference Number</th>
-                                            <th id="border-table" style="text-align:center" width="8%">Pullout Qty</th>
+                                            <th id="border-table" style="text-align:center" width="5%">Pullout Qty</th>
                                             <th id="border-table" style="text-align:center" width="10%">Description</th>
-                                            <th id="border-table" style="text-align:center" width="30%">From location</th>          
-                                            <th id="border-table" style="text-align:center" width="10%">To location</th>
+                                            <th id="border-table" style="text-align:center" width="15%">From location</th>          
+                                            <th id="border-table" style="text-align:center" width="15%">To location</th>
                                             
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr id="border-table">
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->reference_number}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->qty}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                TOKEN
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->from_location}}
                                             </td>
-                                            <td id="border-table">
+                                            <td id="border-table" style="text-align:center">
                                                 {{$pulloutToken->to_location}}
                                             </td>
                                         </tr>
