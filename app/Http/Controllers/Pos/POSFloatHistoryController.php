@@ -48,6 +48,7 @@ class POSFloatHistoryController extends Controller
             ->select('*','cash_float_histories.created_at', 'cash_float_history_lines.qty as token_qty', 'float_history_view.entry_date')
             ->where('cash_float_history_lines.float_entries_id', $token_id)
             ->where('cash_float_histories.locations_id', $account_location_id)
+            ->orderBy('float_history_view.reference_number','desc')
             ->get()
             ->toArray();
 

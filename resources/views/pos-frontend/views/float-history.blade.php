@@ -110,9 +110,9 @@
                         <a class="btn btn-details history_btn_view" href="{{ route('view_float_history', $entry->cash_float_histories_id) }}" data-entry-id="{{ $entry->cash_float_histories_id }}" ><i class="fa-solid fa-eye"></i></a>
                     </td>
                     <td>FH-{{ str_pad($entry->cash_float_histories_id, 8, "0", STR_PAD_LEFT) }}</td>
-                    <td>{{ $entry->token_qty }}</td>
-                    <td>PHP {{ $entry->token_value }}</td>
-                    <td>PHP {{ $entry->cash_value }}</td>
+                    <td>{{ number_format($entry->token_qty) }}</td>
+                    <td>PHP {{ number_format($entry->token_value, 2, '.', ',') }}</td>
+                    <td>PHP {{ number_format($entry->cash_value, 2, '.', ',') }}</td>
                     <td>{{ $entry->description }}</td>
                     <td>{{ $entry->location_name }}</td>
                     <td>{{ $entry->entry_date }}</td>
