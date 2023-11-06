@@ -5,8 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" type="image/x-icon" href="{{ asset('img/logo.png') }}">
         <title>Gashapon POS Login Page</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="{{ asset('css/pos-frontend.css') }}">
         <link rel="stylesheet" href="{{ asset('vendor/crudbooster/assets/adminlte/font-awesome/css/font-awesome.min.css') }}">
+        {{-- SWEET ALERT --}}
+        <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     </head>
     <body>
         <section class="login">
@@ -51,7 +54,7 @@
                                 <button type="submit" class="login-btn fw-bold">Login</button>
                             </div>
                             <div class="fw-bold title-color fs-15">
-                                <p>Forgot the password? <a href="/admin/forgot" class="primary-color cursor-p">Click here</a></p>
+                                <p>Forgot the password? <a href="#" id="forgot_pass" class="primary-color cursor-p">Click here</a></p>
                             </div>
                             <div class="fw-bold title-color fs-15 success-color">
                                 @if(Session::has('logged_out_success'))
@@ -76,6 +79,15 @@
                     location.reload();
                 }
             };
+            $('#forgot_pass').click(function(event) {
+                Swal.fire({
+                    type: 'info',
+                    text: 'Please contact ISD department!',
+                    title:'Forgot Password',
+                    icon: 'info',
+                    confirmButtonColor: '#3c8dbc',
+                });
+            });
         </script>
     </body>
 </html>

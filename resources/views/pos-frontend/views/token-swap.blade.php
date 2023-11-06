@@ -345,6 +345,7 @@
       const tokenIcon = document.querySelector(".token");
       const tokenSpan = document.querySelector(".token-span");
       const pesoSpan = document.querySelector(".peso-span");
+
       
       const change = document.getElementById('change_value')
       const div1 = document.getElementById("div1");
@@ -385,6 +386,14 @@
         parent.insertBefore(btnReverse, floatWrapper2);
         isSwapped = true;
       }
+
+      float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
+      const float1Value = float1Input.value;
+      const converted = Math.floor(float1Value / {{ $cash_value }});
+      const total = converted * {{ $cash_value }};
+  
+     
+        float1Input.value = total.toLocaleString();
     }
     
     $(document).ready(function() {
