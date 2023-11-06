@@ -80,7 +80,7 @@ class POSTokenSwapController extends Controller
                 'type_id' => $typeId,
                 'locations_id' => Auth::user()->location_id,
                 'mode_of_payments_id' => $request->mode_of_payment,
-                'payment_reference' => $request->payment_reference,
+                'payment_reference' => $request->amount_received ?? $request->payment_reference,
                 'created_by' => Auth::user()->id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
