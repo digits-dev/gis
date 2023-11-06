@@ -291,7 +291,7 @@
       if (float1Value) {
         float2Input.value = converted.toLocaleString();
         totalElement.value = total.toLocaleString();
-        amountReceivedInput.value = amountReceivedTotal.toLocaleString();
+        amountReceivedInput.value = "";
 
             if(mod.value == 1 || float2Input.readOnly == false){
               changeElement.value = remainder;
@@ -315,6 +315,7 @@
       if (float2Value) {
         float1Input.value = converted.toLocaleString();
         totalElement.value = converted.toLocaleString();
+        amountReceivedInput.value = "";
       } else {
         float1Input.value = "";
         totalElement.value = "0";
