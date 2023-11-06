@@ -7,6 +7,7 @@
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\Counter;
+	use Excel;
 	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -120,6 +121,7 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Upload Machines","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('machines-upload'),'color'=>'primary'];
 			}
 
 
@@ -399,5 +401,10 @@
 			return $this->view("submaster.gasha-machine.add-machine", $data);
 		}
 
+		//IMPORT
+		public function UploadMachines() {
+			$data['page_title']= 'Machines Upload';
+			return view('import.gasha-machine-import.gasha-machine-import', $data)->render();
+		}
 
 	}

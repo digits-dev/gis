@@ -20,6 +20,8 @@ use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
 use App\Http\Controllers\capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
+use App\Http\Controllers\Submaster\AdminGashaMachinesController;
+use App\Http\Controllers\Submaster\AdminImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,4 +98,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-return', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/validate-machine-items', [AdminCycleCountsController::class, 'validateMachineItems'])->name('validate-machine-items');
+
+    //GASHA MACHINES IMPORT
+    Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');
+    Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/download-machines-template',[AdminImportController::class, 'downloadMachinesTemplate']);
 });
