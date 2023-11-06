@@ -293,13 +293,13 @@
         totalElement.value = total.toLocaleString();
         amountReceivedInput.value = "";
 
-            if(mod.value == 1 || float2Input.readOnly == false){
-              changeElement.value = remainder;
-              // amountReceivedInput.readOnly = false;
-            }
-            // else {
-            //   amountReceivedInput.readOnly = true;
+            // if(mod.value == 1 || float2Input.readOnly == false){
+            //   changeElement.value = remainder;
+            //   // amountReceivedInput.readOnly = false;
             // }
+            // // else {
+            // //   amountReceivedInput.readOnly = true;
+            // // }
       } else {
         float2Input.value = "";
         changeElement.value = "0";
@@ -356,7 +356,7 @@
           $('#amount_received').val(""); 
           $('#payment_reference_div').fadeIn(1000);
         }else {
-          $('#change_value').val(remainder);
+          // $('#change_value').val(remainder);
           $('#amount_received').val(float1Value);
           $('#payment_reference_div').fadeIn(1000);
           $('#reference').text("Amount Received"); 
