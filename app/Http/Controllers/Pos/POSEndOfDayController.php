@@ -71,7 +71,7 @@ class POSEndOfDayController extends Controller
             ->first();
 
         $current_token_bal = DB::table('token_inventories')
-            ->where('locations_id', $location_id)
+            ->where('locations_id', $locations_id)
             ->pluck('qty')
             ->first();
         
