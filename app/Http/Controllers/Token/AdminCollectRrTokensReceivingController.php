@@ -51,8 +51,8 @@
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty"];
-			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Collected Qty","name"=>"collected_qty",'callback_php'=>'number_format($row->collected_qty)'];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty",'callback_php'=>'number_format($row->received_qty)'];
 			$this->col[] = ["label"=>"Variance","name"=>"variance"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];

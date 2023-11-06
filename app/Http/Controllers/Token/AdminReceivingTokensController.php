@@ -37,7 +37,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty","callback_php"=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Locations","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];

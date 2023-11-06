@@ -47,9 +47,9 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Disburse#","name"=>"disburse_number"];
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty"];
+			$this->col[] = ["label"=>"Released Qty","name"=>"released_qty",'callback_php'=>'number_format($row->released_qty)'];
 			$this->col[] = ["label"=>"From Location","name"=>"from_locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
+			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty",'callback_php'=>'number_format($row->received_qty)'];
 			//$this->col[] = ["label"=>"Variance Qty","name"=>"variance_qty"];
 			$this->col[] = ["label"=>"To Location","name"=>"to_locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];

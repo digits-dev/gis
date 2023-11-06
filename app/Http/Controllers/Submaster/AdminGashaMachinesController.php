@@ -390,8 +390,12 @@
 			}
 			$data = [];
 
-			$data['locations'] = Locations::active();
-			
+			if(CRUDBooster::isSuperAdmin()){
+				$data['locations'] = Locations::active();
+			}else{
+				$data['locations'] = Locations::activeLocationPerUserPullout(CRUDBooster::myLocationId());
+			}
+		
 			return $this->view("submaster.gasha-machine.add-machine", $data);
 		}
 

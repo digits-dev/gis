@@ -56,10 +56,10 @@
                                     <thead>
                                         <tr id="border-table">
                                             <th id="border-table" style="text-align:center" width="10%;">Disburse#</th>
-                                            <th id="border-table" style="text-align:center" width="8%">Released Qty</th>
+                                            <th id="border-table" style="text-align:center" width="5%">Released Qty</th>
                                             <th id="border-table" style="text-align:center" width="10%">Description</th>
-                                            <th id="border-table" style="text-align:center" width="30%">From location</th>          
-                                            <th id="border-table" style="text-align:center" width="10%">To location</th>
+                                            <th id="border-table" style="text-align:center" width="10%">From location</th>          
+                                            <th id="border-table" style="text-align:center" width="15%">To location</th>
                                             
                                         </tr>
                                     </thead>
@@ -176,11 +176,10 @@
                                     <thead>
                                         <tr id="border-table">
                                             <th id="border-table" style="text-align:center" width="10%;">Disburse#</th>
-                                            <th id="border-table" style="text-align:center" width="8%">Released Qty</th>
+                                            <th id="border-table" style="text-align:center" width="5%">Released Qty</th>
                                             <th id="border-table" style="text-align:center" width="10%">Description</th>
-                                            <th id="border-table" style="text-align:center" width="30%">From location</th>          
-                                            <th id="border-table" style="text-align:center" width="10%">To location</th>
-                                            
+                                            <th id="border-table" style="text-align:center" width="10%">From location</th>          
+                                            <th id="border-table" style="text-align:center" width="15%">To location</th>
                                         </tr>
                                     </thead>
                                     <tbody>

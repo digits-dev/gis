@@ -69,12 +69,17 @@
 
                 <div class="form-group">
                     <label class="control-label"><span style="color:red">*</span> Location</label>
-                    <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
-                    @foreach($locations as $location)
-                    <option value=""></option>
-                        <option value="{{ $location->id }}">{{ $location->location_name }}</option>
-                    @endforeach
-                    </select>
+                    @if(CRUDBooster::isSuperAdmin())
+                        <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;">
+                        @foreach($locations as $location)
+                        <option value=""></option>
+                            <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                        @endforeach
+                        </select>
+                    @else
+                        <input type="text" class="form-control" value="{{ $locations->location_name }}" readonly>
+                        <input type="hidden" class="form-control" value="{{ $locations->id }}" name="location">
+                    @endif
                 </div>
             
             </div>

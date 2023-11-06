@@ -47,7 +47,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty"];
+			$this->col[] = ["label"=>"Qty","name"=>"qty",'callback_php'=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Received Qty","name"=>"received_qty"];
 			$this->col[] = ["label"=>"Received By","name"=>"received_by","join"=>"cms_users,name"];
