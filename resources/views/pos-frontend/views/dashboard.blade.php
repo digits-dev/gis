@@ -126,7 +126,7 @@
                                             <td><input type="text" style="height: 100%;" name="cash_value_{{ $mode_of_payment->id }}" class="cash_value_{{ $mode_of_payment->payment_description }} mode_of_payments" onkeypress="withoutLeadingZeros()" required {{ $mode_of_payment->payment_description == 'CASH' ? 'readonly' : ''}}></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $mode_of_payment->payment_description }}" onkeypress="withoutLeadingZeros()" ></td> --}}
                                         @else
-                                            <td><input actual_value="{{ $float_entries[$i-1]->value }}" type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }} cash_values" onkeypress="withoutLeadingZeros()" required ></td>
+                                            <td><input actual_value="{{ $float_entries[$i-1]->value }}" type="text" style="height: 100%;" name="cash_value_{{ $float_entries[$i-1]->description }}" class="cash_value_{{ $float_entries[$i-1]->description }} cash_values" onkeypress="withoutLeadingZeros()" required></td>
                                             {{-- <td><input type="text" style="height: 100%;" class="cash_value_{{ $float_entries[$i-1]->description }}" onkeypress="inputIsNumber()"></td> --}}
                                         @endif
                                     @else
@@ -271,7 +271,9 @@
     }
 
     $('input').on('input', function(event) {
-        if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
+        const totalValue = Number($('.total_value').val().replace(/[^0-9.]/g, ''));
+        const totalToken = Number($('.total_token').val().replace(/[^0-9.]/g, ''));
+        if (totalValue <= 0 || totalToken  <= 0) {
             $("#start_of_day").prop('disabled', true);
             $("#start_of_day").css('background-color', 'rgb(243, 142, 142)');
         } else{
@@ -292,6 +294,10 @@
             }
         }
     });
+
+    $('input[type="text"], input[type="number"]').on('paste', function() {
+        return false;
+    })
 
     $('#start_of_day').on('click', function() {
         Swal.fire({
