@@ -143,7 +143,9 @@
     }
 
     $('input').on('input', function(event) {
-        if ($('.total_value').val() <= 0 || $('.total_token').val()  <= 0) {
+        const totalValue = Number($('.total_value').val().replace(/[^0-9.]/g, ''));
+        const totalToken = Number($('.total_token').val().replace(/[^0-9.]/g, ''));
+        if (totalValue <= 0 || totalToken  <= 0) {
             $("#end_of_day").prop('disabled', true);
             $("#end_of_day").css('background-color', '#3333');
         } else{
@@ -152,6 +154,10 @@
         }
         updateTotalCash();
     });
+    
+    $('input[type="text"], input[type="number"]').on('paste', function() {
+        return false;
+    })
 
     $(document).ready(function(){
         $(".cash-float-content").fadeIn(1000);
