@@ -45,7 +45,7 @@ class POSSettingsController extends Controller
             $user->password = Hash::make($request->get('new_password'));
             $user->save();
 
-            return redirect()->back()->with('success','Password Updated, You will be Log-out.');
+            return redirect()->back()->with('success','Password Updated, You Will Be Logged-Out.');
             
         } else {
             return redirect()->back()->with('error','Incorrect Current Password.');
