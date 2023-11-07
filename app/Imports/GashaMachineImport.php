@@ -39,7 +39,7 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
             }
             GashaMachines::Create(
                 [
-                    'serial_number'         => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
+                    'serial_number'         => Counter::getNextMachineReference(CRUDBooster::getCurrentModule()->id),
                     'location_id'           => CRUDBooster::myLocationId(),
 			        'location_name'         => $location_name->location_name,
                     'no_of_token'           => $row['no_of_token'],
@@ -48,7 +48,7 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
                     'created_by'            => CRUDBooster::myId(),
                     'created_at'            => date('Y-m-d H:i:s')
                 ]
-            );  
+            );
 
 
         }

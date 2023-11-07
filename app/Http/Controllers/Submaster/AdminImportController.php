@@ -23,31 +23,31 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         $path = storage_path('app').'/'.$path_excel;
         $headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
 
-        if (count($headings) !== 2) {
-            CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), 'Template column not match, please refer to downloaded template.', 'danger');
-        } else {
+        // if (count($headings) !== 2) {
+        //     CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), 'Template column not match, please refer to downloaded template.', 'danger');
+        // } else {
             try {
                 Excel::import(new GashaMachineImport, $path);
                 CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), trans("Upload Successfully!"), 'success');
-                
+
             } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
                 $failures = $e->failures();
-                
+
                 $error = [];
                 foreach ($failures as $failure) {
                     $line = $failure->row();
                     foreach ($failure->errors() as $err) {
-                        $error[] = $err . " on line: " . $line; 
+                        $error[] = $err . " on line: " . $line;
                     }
                 }
-                
+
                 $errors = collect($error)->unique()->toArray();
-        
+
             }
             CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), $errors[0], 'danger');
 
-        }
-        
+        // }
+
     }
 
     function downloadMachinesTemplate() {
