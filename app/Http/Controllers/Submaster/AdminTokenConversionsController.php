@@ -339,7 +339,7 @@
 			$data = [
 				'token_conversions_id' => $id,
 				'old_token_qty' => $old_values['token_qty'],
-				'old_cash_value' => $old_values['cash_value'],
+				'old_cash_value' => $old_values['current_cash_value'],
 				'new_token_qty' => $postdata['token_qty'],
 				'new_cash_value' => $postdata['cash_value'],
 				'start_date' => $postdata['start_date'],
