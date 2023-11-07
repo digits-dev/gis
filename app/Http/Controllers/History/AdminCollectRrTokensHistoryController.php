@@ -307,6 +307,8 @@
 				}else if($column_value == $received){
 					$column_value = '<span class="label label-success">'.$received.'</span>';
 				}
+			} else if ($column_index == 3 || $column_index == 4) {
+				$column_value = number_format($column_value);
 			}
 	    }
 
