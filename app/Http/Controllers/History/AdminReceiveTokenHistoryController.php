@@ -297,7 +297,7 @@
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}
-			} else if ($column_index == 3) {
+			} else if ($column_index == 4) {
 				$column_value = number_format($column_value);
 			}
 	    }
