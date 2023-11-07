@@ -242,7 +242,7 @@ use App\Models\Submaster\CashFloatHistoryLine;
 				$query->whereNull('cash_float_histories.deleted_at')
 					->orderBy('cash_float_histories.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
-				$query->where('cash_float_histories.created_by', CRUDBooster::myId())
+				$query->where('cash_float_histories.locations_id', CRUDBooster::myLocationId())
 					->orderBy('cash_float_histories.id', 'desc');
 			} 
 
