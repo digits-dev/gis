@@ -15,6 +15,7 @@ use DB;
 use CRUDBooster;
 use Excel;
 use App\Imports\GashaMachineImport;
+use App\Imports\GashaMachineUpdate;
 
 class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBController
 {
@@ -26,25 +27,30 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         // if (count($headings) !== 2) {
         //     CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), 'Template column not match, please refer to downloaded template.', 'danger');
         // } else {
-            try {
-                Excel::import(new GashaMachineImport, $path);
+            // try {
+                if($request->upload_type == "Update"){
+                    Excel::import(new GashaMachineUpdate, $path);
+                }else{
+                    Excel::import(new GashaMachineImport, $path);	
+                }
+                
                 CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), trans("Upload Successfully!"), 'success');
 
-            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-                $failures = $e->failures();
+            // } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            //     $failures = $e->failures();
 
-                $error = [];
-                foreach ($failures as $failure) {
-                    $line = $failure->row();
-                    foreach ($failure->errors() as $err) {
-                        $error[] = $err . " on line: " . $line;
-                    }
-                }
+            //     $error = [];
+            //     foreach ($failures as $failure) {
+            //         $line = $failure->row();
+            //         foreach ($failure->errors() as $err) {
+            //             $error[] = $err . " on line: " . $line;
+            //         }
+            //     }
 
-                $errors = collect($error)->unique()->toArray();
+            //     $errors = collect($error)->unique()->toArray();
 
-            }
-            CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), $errors[0], 'danger');
+            // }
+            // CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), $errors[0], 'danger');
 
         // }
 

@@ -17,12 +17,25 @@
                 * File format should be : CSV, XLSX file format<br/>
             </div>
 
-            <label class='col-sm-2 control-label'>Import Template File: </label>
-            <div class='col-sm-4'>
+            <label class='col-sm-1 control-label'>Import Template File: </label>
+            <div class='col-sm-3'>
                 <a href='{{ CRUDBooster::mainpath('download-machines-template') }}' class="btn btn-primary" role="button">Download Template</a>
             </div>
-            <br/>
-            <br/>
+
+            <label class='col-sm-1 control-label'>Upload Type: </label>
+            <div class='col-sm-3'>
+                <select class="form-control select2" style="width: 100%;" required name="upload_type" id="upload_type">
+                    <option value="">Select Upload Type</option>
+                    {{-- @if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "SIM") --}}
+                    
+                    <option value="Add">Add</option>
+                    <option value="Update">Update</option>
+                    {{-- @elseif(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "MCB")
+                    <option selected value="po">PURCHASE ORDER</option>
+                    @endif --}}
+                </select>
+                
+            </div>
 
             <label for='import_file' class='col-sm-2 control-label'>File to Import: </label>
             <div class='col-sm-4'>
