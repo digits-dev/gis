@@ -31,7 +31,8 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
+			$this->col[] = ["label"=>"JAN #","name"=>"digits_code"];
+			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code2"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
 			$this->col[] = ["label"=>"No Of Tokens","name"=>"no_of_tokens"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
