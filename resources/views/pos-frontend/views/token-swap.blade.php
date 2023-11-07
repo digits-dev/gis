@@ -171,7 +171,7 @@
               {{ session('message') }}
           </p></div>
     @endif
-        <form method="POST">
+        <form method="POST" autocomplete="off">
           @csrf
             <div class="float-wrapper">
                   <i class="fa-solid fa-peso-sign peso-sign"></i>
@@ -207,7 +207,8 @@
             </div>
             <div id="mode_of_payment_description"></div>
             <div id="payment_reference_div">
-              <span>Reference Number</span>
+              <span id="reference" >Reference Number</span>
+              <input class="input-field acc-number" type="text" name="amount_received" id="amount_received" oninput="onAmountReceived()">
               <input class="input-field acc-number" type="text" name="payment_reference" id="payment_reference">
             </div>
             <div class="summary">
@@ -241,6 +242,7 @@
       
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
+    const amountReceivedInput = document.getElementById("amount_received");
     const changeElement = document.getElementById("change_value");
     const totalElement = document.getElementById("total_value");
     const mod = document.getElementById('mode_of_payment');
@@ -284,13 +286,20 @@
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
       const total = converted * {{ $cash_value }};
+      const amountReceivedTotal = total + remainder;
       $('#mode_of_payment').attr('disabled', false);
       if (float1Value) {
         float2Input.value = converted.toLocaleString();
         totalElement.value = total.toLocaleString();
-        if(mod.value == 1){
-          changeElement.value = remainder;
-        }
+        amountReceivedInput.value = "";
+        changeElement.value = "0";
+            // if(mod.value == 1 || float2Input.readOnly == false){
+            //   changeElement.value = remainder;
+            //   // amountReceivedInput.readOnly = false;
+            // }
+            // // else {
+            // //   amountReceivedInput.readOnly = true;
+            // // }
       } else {
         float2Input.value = "";
         changeElement.value = "0";
@@ -306,15 +315,30 @@
       if (float2Value) {
         float1Input.value = converted.toLocaleString();
         totalElement.value = converted.toLocaleString();
+        amountReceivedInput.value = "";
+        changeElement.value = "0";
       } else {
         float1Input.value = "";
         totalElement.value = "0";
         changeElement.value = "0";
       }
     }
+    
+      function onAmountReceived() {
+            float2Input.value = Number(float2Input.value.replace(/[^0-9]/g,''));
+            const amountReceived = Number(amountReceivedInput.value.replace(/[^0-9]/g,''))
+            amountReceivedInput.value =  amountReceived.toLocaleString();
+            const float2Value = float2Input.value
+            const totalAmount = float2Value * {{ $cash_value }} ;
+            const changeToAmountRecieved = amountReceived - totalAmount;
+            changeElement.value =  changeToAmountRecieved.toLocaleString();
+
+          }
+
     $('#payment_reference_div').hide();
     $(document).ready(function() {
     $("#mode_of_payment").on("change", function() {
+      float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
@@ -324,14 +348,22 @@
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
 
-    
         if(selectedValue != 1){
           $('#change_value').val('0');
-          $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').val("");
+          $('#reference').text("Reference Number"); 
+          $('#payment_reference').fadeIn(); 
+          $('#amount_received').hide(); 
+          $('#amount_received').val(""); 
+          $('#payment_reference_div').fadeIn(1000);
         }else {
-          $('#change_value').val(remainder);
-          $('#payment_reference_div').fadeOut(500); 
+          // $('#change_value').val(remainder);
+          $('#amount_received').val(float1Value);
+          $('#payment_reference_div').fadeIn(1000);
+          $('#reference').text("Amount Received"); 
+          $('#amount_received').fadeIn(); 
+          $('#amount_received').val(""); 
+          $('#payment_reference').hide();  
         }
        
     });
@@ -369,9 +401,11 @@
       if (float1Input.readOnly) {
             float1Input.readOnly = false;
             float2Input.readOnly = true;
+            // amountReceivedInput.readOnly = true;
         } else {
             float1Input.readOnly = true;
             float2Input.readOnly = false;
+            // amountReceivedInput.readOnly = false;
         }
 
       // swap div position
@@ -392,14 +426,17 @@
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const total = converted * {{ $cash_value }};
   
-     
-        float1Input.value = total.toLocaleString();
+      float1Input.value = total.toLocaleString();
+      // amountReceivedInput.value = totalElement.value;
+      amountReceivedInput.value = "";
     }
     
     $(document).ready(function() {
     $('form').submit(function(e) {
         e.preventDefault(); // Prevent the form from submitting the traditional way.
         const formData = $('form').serialize();
+        const cashValue = Number($('#cash_value').val().replace(/[.,]/g, ''));
+        const amountReceived = Number($('#amount_received').val().replace(/[.,]/g, ''));
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
                 Swal.fire({
                     type: 'error',
@@ -408,10 +445,18 @@
                     confirmButtonColor: '#367fa9',
                 });
             }
-          else if($('#cash_value').val() < {{ $cash_value }}  ){
+          else if(cashValue < {{ $cash_value }}  ){
                 Swal.fire({
                         type: 'error',
                         title: 'Value is not enough for 1 Token!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+            }
+          else if(cashValue > amountReceived && $('#mode_of_payment').val() == 1){
+                Swal.fire({
+                        type: 'error',
+                        title: 'Amount Received should be greater than Peso Amount!',
                         icon: 'error',
                         confirmButtonColor: '#367fa9',
                     });
@@ -445,6 +490,7 @@
                   html: '<table class="styled-table-swap">' +
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
+                          ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   showCancelButton: true,
@@ -468,6 +514,7 @@
                           '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
+                          ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   }).then((result) => {
