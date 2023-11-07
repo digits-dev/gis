@@ -42,7 +42,7 @@
                             <td width="40%"><p>{{$disburseToken->disburse_number}}</p></td>
 
                             <td width="20%"><label><strong>Created date:<strong></label></td>
-                            <td width="40%"><p>{{$disburseToken->created_at}}</p></td>
+                            <td width="40%"><p>{{$disburseToken->date_print}}</p></td>
                         </tr>
                         
                         <tr>
@@ -98,7 +98,7 @@
                             </td>
                             <td width="40%"><p>{{$disburseToken->requested_name}}</p></td>
                             <td width="20%"><label><strong>Processed Date:<strong></label></td>
-                            <td><p>{{$disburseToken->created_at}}</p></td>
+                            <td><p>{{$disburseToken->date_print}}</p></td>
                         </tr>
 
                         {{-- <tr>
@@ -162,7 +162,7 @@
                             <td width="40%"><p>{{$disburseToken->disburse_number}}</p></td>
     
                             <td width="20%"><label><strong>Created date:<strong></label></td>
-                            <td width="40%"><p>{{$disburseToken->created_at}}</p></td>
+                            <td width="40%"><p>{{$disburseToken->date_print}}</p></td>
                         </tr>
                         
                         <tr>
@@ -217,7 +217,7 @@
                             </td>
                             <td width="40%"><p>{{$disburseToken->requested_name}}</p></td>
                             <td width="20%"><label><strong>Processed Date:<strong></label></td>
-                            <td><p>{{$disburseToken->created_at}}</p></td>
+                            <td><p>{{$disburseToken->date_print}}</p></td>
                         </tr>
     
                         {{-- <tr>

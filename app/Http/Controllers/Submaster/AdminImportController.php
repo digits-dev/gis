@@ -23,7 +23,7 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         $path = storage_path('app').'/'.$path_excel;
         $headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
 
-        if (count($headings) !== 1) {
+        if (count($headings) !== 2) {
             CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), 'Template column not match, please refer to downloaded template.', 'danger');
         } else {
             try {

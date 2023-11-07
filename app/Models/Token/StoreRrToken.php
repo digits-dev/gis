@@ -26,7 +26,8 @@ class StoreRrToken extends Model
                 'to_location.location_name as to_location',
                 'requested.name as requested_name',
                 'receive_by.name as receive_by_name',
-                'updated_by.name as updated_by_name'
+                'updated_by.name as updated_by_name',
+                'store_rr_token.created_at as date_print'
                 )
         ->where('store_rr_token.id', $id)->first();
     }
