@@ -66,6 +66,14 @@
                     <label class="require control-label"><span style="color:red">*</span> No of tokens</label>
                     <input type="number" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" value="9" min="1" max="9999999999" step="any" onKeyPress="if(this.value.length==1) return false;" oninput="validity.valid;" autocomplete="off">
                 </div>
+                <div class="form-group">
+                    <label class="require control-label"><span style="color:red">*</span> Bay</label>
+                    <input type="text" class="form-control finput" style="" placeholder="Bay" name="bay" id="bay" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="require control-label"><span style="color:red">*</span> Layer</label>
+                    <input type="text" class="form-control finput" style="" placeholder="layer" name="layer" id="layer" autocomplete="off">
+                </div>
 
                 <div class="form-group">
                     <label class="control-label"><span style="color:red">*</span> Location</label>

@@ -37,6 +37,8 @@
 			//$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
+			$this->col[] = ["label"=>"Bay","name"=>"bay"];
+			$this->col[] = ["label"=>"Layer","name"=>"layer"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
@@ -51,6 +53,9 @@
 			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Bay','name'=>'bay','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Layer','name'=>'layer','type'=>'text','width'=>'col-sm-10'];
+			
 			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
 			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -306,13 +311,15 @@
 			// $count_header       = DB::table('gasha_machines')->count();
 			// $header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);
 			// $serial_number	    = "GM-".$header_ref;
-			$description        = $fields['description'];
+			$bay                = $fields['bay'];
+			$layer              = $fields['layer'];
 			$location           = $fields['location'];
 			$location_name      = DB::table('locations')->where('id',$location)->first();
 			$no_of_tokens       = $fields['no_of_tokens'];
 
 			$postdata['serial_number']         = Counter::getNextMachineReference(CRUDBooster::getCurrentModule()->id);
-			$postdata['description']           = $description;
+			$postdata['bay']                   = $bay;
+			$postdata['layer']                 = $layer;
 			$postdata['location_id']           = $location;
 			$postdata['location_name']         = $location_name->location_name;
 			$postdata['no_of_token']           = intval(str_replace(',', '', $no_of_tokens));

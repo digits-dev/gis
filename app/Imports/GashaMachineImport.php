@@ -43,6 +43,8 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
                     'location_id'           => CRUDBooster::myLocationId(),
 			        'location_name'         => $location_name->location_name,
                     'no_of_token'           => $row['no_of_token'],
+                    'bay'                   => $row['bay'],
+                    'layer'                 => $row['layer'],
                     'machine_statuses_id'   => 1,
 			        'status'                => 'ACTIVE',
                     'created_by'            => CRUDBooster::myId(),
