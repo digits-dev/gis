@@ -30,7 +30,8 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
+			$this->col[] = ["label"=>"JAN #","name"=>"item_code","join"=>"items,digits_code","join_id"=>"digits_code2"];
+            $this->col[] = ["label"=>"Digits Code","name"=>"item_code"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Onhand","name"=>"id","join"=>"inventory_capsule_view,onhand_qty","join_id"=>"inventory_capsules_id"];
