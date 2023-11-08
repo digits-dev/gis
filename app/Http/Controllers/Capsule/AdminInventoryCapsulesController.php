@@ -31,7 +31,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
-			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Onhand","name"=>"id","join"=>"inventory_capsule_view,onhand_qty","join_id"=>"inventory_capsules_id"];
 			$this->col[] = ["label"=>"Stock Room","name"=>"id","join"=>"inventory_capsule_view,stockroom_capsule_qty","join_id"=>"inventory_capsules_id"];
@@ -239,7 +239,7 @@
 			} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5])) {
 				$query->where('inventory_capsules.locations_id', CRUDBooster::myLocationId())
 					->orderBy('inventory_capsules.id', 'desc');
-			} 
+			}
 
 	    }
 
@@ -256,7 +256,7 @@
 					$column_value = '<span>0</span>';
 				}
 			}
-			
+
 	    }
 
 	    /*
