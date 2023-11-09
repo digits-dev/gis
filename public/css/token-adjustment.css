@@ -1,0 +1,154 @@
+
+.panel-content{
+    /* height: 500px; */
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.panel-default{
+    border-radius: 20px;
+    width: 400px;
+    margin-top: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+.panel-header{
+    text-align:center;
+    font-size: 25px;
+    padding: 15px;
+}
+
+.panel-body {
+    position: relative;
+}
+.panel-body div{
+    margin-bottom: 15px;
+}
+
+/* .panel-body{
+    height: 400px;
+} */
+
+.panel-footer{
+    border-radius: 0px 0px 20px 20px;
+    text-align: center;
+}
+.select_store_div{
+    display: flex;
+    flex-direction: column;
+}
+.select_store_div label{
+    font-size: 15px;
+}
+.select_store_div select{
+    height: 30px;
+}
+.display_qty_div{
+    display: flex;
+    flex-direction: column;
+}
+.input_qty_div label,
+.display_qty_div label{
+    font-size: 15px;
+}
+.input_qty_div input,
+.display_qty_div input{
+    height: 30px;
+}
+.input_qty_div{
+    display: flex;
+    flex-direction: column;
+}
+
+.reason_input_div{
+    display: flex;
+    flex-direction: column;
+}
+.reason_input_div textarea{
+    resize: none;
+}
+.add_deduct_div{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.add_token_btn,
+.deduct_token_btn{
+    text-decoration: none;
+    padding: 10px 40px;
+    background-color: #3C8DBC;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    min-width: 50px;
+    cursor: pointer;
+}
+
+.token_adj_save{
+    text-decoration: none;
+    padding: 10px 40px;
+    background-color: #3C8DBC;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    min-width: 50px;
+}
+.token_adj_save:hover{
+    background-color: #006faf;
+
+}
+.active_button{
+    background-color: #035c93;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(0, 0, 0);
+}
+#new_token_add,
+#new_token_deduct,
+#add_token_input,
+#deduct_token_input,
+#current_token_amount{
+    text-align: center;
+}
+
+.token_adj_save:disabled{
+    background-color: #035c936a;
+}
+
+
+#textarea_add,
+#textarea_deduct{
+    padding: 10px;
+    text-indent: 30px;
+}
+
+.styled-table-swap {
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    width: 80%;
+    text-align: center;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.styled-table-swap td {
+    border: 1px solid rgb(75, 75, 75);
+    padding: 12px 15px;
+}
+
+/* .styled-table-swap tr td:nth-of-type(odd) {
+} */
+
+
+.new-token-cell,
+.new-token-amount-cell{
+    background-color: #3C8DBC;
+    font-weight: bold;
+    color: white;
+}
+
+/* .table_summary{
+
+} */

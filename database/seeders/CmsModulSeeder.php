@@ -333,6 +333,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Adjust Token Balance',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'token_adjustments',
+                'table_name'   => 'token_adjustments',
+                'controller'   => 'Token\AdminTokenAdjustmentsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {
