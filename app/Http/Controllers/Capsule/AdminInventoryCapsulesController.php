@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use Session;
+    use App\Models\Capsule\InventoryCapsule;
+    use App\Models\Capsule\InventoryCapsuleLine;
+    use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -334,28 +336,10 @@
 	    }
 
 		public function getDetail($id) {
-			$item = DB::table('inventory_capsules')
-				->where('inventory_capsules.id', $id)
-				->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
-				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
-				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
-				->first();
-
-			$lines = DB::table('inventory_capsule_lines')
-				->select(
-					'inventory_capsule_lines.qty',
-					'gasha_machines.serial_number',
-					'sub_locations.description as sub_location'
-				)
-				->where('inventory_capsules_id', $id)
-				->leftJoin('gasha_machines', 'gasha_machines.id', 'inventory_capsule_lines.gasha_machines_id')
-				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-				->get()
-				->toArray();
 
 			$data = [];
-			$data['item'] = $item;
-			$data['lines'] = $lines;
+			$data['item'] = InventoryCapsule::getHeader($id);
+			$data['lines'] = InventoryCapsuleLine::getLineItems($id);
 			$data['page_title'] = 'Detail Inventory Breakdown';
 
 			return $this->view('capsule.capsule-inventory-detail', $data);
