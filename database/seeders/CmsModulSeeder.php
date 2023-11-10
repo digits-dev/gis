@@ -333,6 +333,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Presets',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'presets',
+                'table_name'   => 'presets',
+                'controller'   => 'Submaster\AdminPresetsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

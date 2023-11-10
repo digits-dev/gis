@@ -108,6 +108,12 @@
                         <td>Location</td>
                         <td>{{ $location_name->location_name}}</td>
                     </tr>
+                    @if ($mod_description->payment_description != "CASH")
+                    <tr>
+                        <td>Payment Reference</td>
+                        <td>{{ $swap_histories->payment_reference}}</td>
+                    </tr>
+                    @endif
                     <tr>
                         <td>Created By</td>
                         <td>{{ $created_by->name}}</td>

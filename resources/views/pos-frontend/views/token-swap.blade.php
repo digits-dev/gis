@@ -15,6 +15,7 @@
     justify-content: center;
     align-items: center;
     font-family: "Open Sans", sans-serif;
+    position: relative;
   }
   .container {
     width: 460px;
@@ -24,6 +25,7 @@
     border-radius: 30px;
     padding: 20px 30px;
     display: none;
+    z-index: 10;
   }
   .header {
     display: flex;
@@ -112,27 +114,11 @@
     border: 2px solid #e60213;
     background-color: #ffbfbf;
   }
-  .btn-swap {
-    cursor: pointer;
-    width: 100%;
-    height: 40px;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: #e60213;
-    border: none;
-    color: white;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-  }
-  .btn-swap:hover {
-    background-color: #a43f3f;
-  }
 
   .summary-value span{
     font-size: 19px;
   }
   .styled-table-swap {
-    margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 400px;
@@ -154,6 +140,204 @@
 .swal2-confirm {
   width: 95px;
 }
+.presets {
+  align-self: flex-start;
+  margin-top: 25px;
+  background-color: #f0f0f0;
+  width: 220px;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: white;
+  border-radius: 0 10px 10px 0px;
+  transition: width 0.5s, height 0.5s;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+      rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+.presets-header {
+  display: flex;
+  gap: 20px;
+}
+.preset-label{
+  align-self: center;
+  font-weight: bold;
+}
+.presets-value {
+  padding: 10px;
+  background-color: #e60213;
+  border-radius: 10px;
+  border: none;
+  width: 50px;
+  cursor: pointer;
+  color: white;
+}
+.presets-value:hover {
+  background-color: #c02f2f;
+}
+.btn-preset {
+  align-self: flex-start;
+}
+.bar-icon{
+ font-size: 20px;
+ padding: 12px 14px;
+ cursor: pointer;
+ background-color: white;
+ transition: background-color 0.3s;
+ border-radius: 0 10px 10px 0px;
+}
+.bar-icon:hover {
+  background-color: #e60213;
+}
+.presets-value-div {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 20px;
+  margin: 16px;
+}
+.horizontal-line {
+ 	width: 100%;
+	border-bottom: 1px solid rgb(189, 189, 189);
+}
+
+/* CSS */
+.button-pushable {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition:
+    transform
+    600ms
+    cubic-bezier(.3, .7, .4, 1);
+}
+
+.button-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(
+    to left,
+    hsl(340deg 100% 16%) 0%,
+    hsl(340deg 100% 32%) 8%,
+    hsl(340deg 100% 32%) 92%,
+    hsl(340deg 100% 16%) 100%
+  );
+}
+
+.button-front {
+  padding: 10px;
+  border: none;
+  width: 50px;
+  cursor: pointer;
+  display: block;
+  position: relative;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: white;
+  background-color: #e60213;
+  will-change: transform;
+  transform: translateY(-4px);
+  transition:
+    transform
+    600ms
+    cubic-bezier(.3, .7, .4, 1);
+}
+
+@media (min-width: 768px) {
+  .button-front {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+}
+
+.button-pushable:hover {
+  filter: brightness(110%);
+  -webkit-filter: brightness(110%);
+}
+
+.button-pushable:hover .button-front {
+  transform: translateY(-6px);
+  transition:
+    transform
+    250ms
+    cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.button-pushable:active .button-front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.button-pushable:hover .button-shadow {
+  transform: translateY(4px);
+  transition:
+    transform
+    250ms
+    cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.button-pushable:active .button-shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.button-pushable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+ .btn-swap {
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    /* height: 40px;
+    font-size: 20px;
+    background-color: #e60213;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    transition: background-color 0.3s; */
+  }
+  /* .btn-swap:hover {
+    background-color: #a43f3f;
+  } */
+
+.btn-reset-div {
+  margin: 16px 10px;
+}
+.btn-reset {
+  width: 200px;
+}
+.presets-container {
+ align-self: flex-start;
+ display: none;
+}
+
 </style>
 @endsection
 
@@ -221,9 +405,50 @@
                     <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
-            <button class="btn-swap" type="submit" >Swap</button>
+            {{-- <button class="btn-swap" type="submit" >Swap</button> --}}
+              <button class="button-pushable btn-swap" role="button">
+          <span class="button-shadow"></span>
+          <span class="button-edge"></span>
+          <span class="button-front text btn-swap">
+            <i style="margin-right: 10px;" class="fa-solid fa-rotate"></i>
+             Swap
+          </span>
+      </button>
         </form>
     </div> 
+    <div class="presets-container">
+      <div class="presets">
+        <div class="presets-header">
+          <div class="btn-preset">
+            <i class="fa-solid fa-bars bar-icon" id="resizeButton"></i>
+          </div>
+          <span class="preset-label">Add Tokens</span>
+        </div>
+        <div class="horizontal-line"></div>
+        <div class="presets-value-div">
+          @foreach ($presets as $preset)
+            <button class="btn button-pushable" role="button">
+              <span class="button-shadow"></span>
+              <span class="button-edge"></span>
+              <span class="button-front text">
+                  {{ $preset->value }}
+              </span>
+          </button>
+          @endforeach
+        </div>
+        <div class="horizontal-line"></div>
+        <div class="btn-reset-div">
+          <button class="button-pushable" role="button">
+            <span class="button-shadow"></span>
+            <span class="button-edge"></span>
+            <span class="button-front text btn-reset">
+              <i class="fas fa-undo"></i>
+              Reset
+            </span>
+        </button>
+        </div>
+      </div>
+    </div>
 </div>
 @endsection
 
@@ -237,15 +462,91 @@
 
       $(document).ready(function() {
           $(".container").fadeIn(1000);
+          $(".presets-container").fadeIn(1000);
           $('#mode_of_payment').attr('disabled', true);
+          $("#cash_value").focus();
+          $('#payment_reference_div').hide();
       });
-      
+    
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
     const amountReceivedInput = document.getElementById("amount_received");
     const changeElement = document.getElementById("change_value");
     const totalElement = document.getElementById("total_value");
     const mod = document.getElementById('mode_of_payment');
+
+    // Presets
+    const presetsDiv = document.querySelector('.presets');
+    const resizeButton = document.getElementById('resizeButton');
+    const presetsValueDiv = document.querySelector('.presets-value-div');
+    const presetsLabel = document.querySelector('.preset-label');
+    const horizontalLine = document.querySelector('.horizontal-line');
+    const resetDiv = document.querySelector('.btn-reset-div');
+
+    resizeButton.addEventListener('click', () => {
+      if (presetsDiv.offsetWidth === 44) {
+        presetsDiv.style.width = '220px';
+        presetsDiv.style.height = '100%'; 
+        presetsValueDiv.style.display = 'grid';
+        presetsLabel.style.display = 'inline';
+        horizontalLine.style.display = 'inline';
+        resetDiv.style.display = 'inline';
+      } else {
+        presetsDiv.style.width = '44px';
+        presetsDiv.style.height = '44px';
+        presetsValueDiv.style.display = 'none';
+        presetsLabel.style.display = 'none';
+        horizontalLine.style.display = 'none';
+        resetDiv.style.display = 'none';
+      }
+    });
+
+    function removeCommas(localeString) {
+            return localeString.replace(/,/g, '');
+        }
+      function setPresetValue(presetValue) {
+            var currentCashValue = parseInt(removeCommas($("#cash_value").val())) || 0;
+            var currentTokenValue = parseInt(removeCommas($("#token_value").val())) || 0;
+            var currentTotalValue = parseInt(removeCommas($("#total_value").val())) || 0;
+
+            const tokenValue = presetValue * {{ $cash_value }};
+            
+            $("#cash_value").val((currentCashValue + tokenValue).toLocaleString());
+            $("#token_value").val((currentTokenValue + presetValue).toLocaleString());
+            $("#total_value").val((currentTotalValue + tokenValue).toLocaleString());
+
+
+        }
+      $(document).ready(function() {
+            $(".btn").click(function() {
+                var presetValue = parseInt($(this).text());
+                setPresetValue(presetValue);
+                $('#mode_of_payment').attr('disabled', false);
+                amountReceivedInput.value = "";
+                changeElement.value = "0";
+            });
+        });
+
+        $(document).ready(function() {
+          $('.btn-reset').click(function() {
+            amountReceivedInput.value = "";
+            $("#cash_value").val("")
+            $("#token_value").val("")
+            $("#total_value").val("")
+            $("#change_value").val("")
+            $("#mode_of_payment").val("");
+            $('#mode_of_payment').attr('disabled', true);
+            $('#payment_reference_div').fadeOut();
+
+            if(float1Input.readOnly) {
+              $("#token_value").focus();  
+            }else {
+              $("#cash_value").focus();
+            }
+
+          })
+        });
+
 
     $(document).on('keyup','#cash_value,#token_value', function (e) {
         if(event.which >= 37 && event.which <= 40) return;
@@ -278,7 +579,6 @@
             ;
      });
 });
-
 
     function onInput1(float1Input) {
       float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
@@ -324,7 +624,7 @@
       }
     }
     
-      function onAmountReceived() {
+    function onAmountReceived() {
             float2Input.value = Number(float2Input.value.replace(/[^0-9]/g,''));
             const amountReceived = Number(amountReceivedInput.value.replace(/[^0-9]/g,''))
             amountReceivedInput.value =  amountReceived.toLocaleString();
@@ -335,7 +635,6 @@
 
           }
 
-    $('#payment_reference_div').hide();
     $(document).ready(function() {
     $("#mode_of_payment").on("change", function() {
       float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
@@ -348,6 +647,7 @@
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
 
+
         if(selectedValue != 1){
           $('#change_value').val('0');
           $('#payment_reference').val("");
@@ -356,6 +656,7 @@
           $('#amount_received').hide(); 
           $('#amount_received').val(""); 
           $('#payment_reference_div').fadeIn(1000);
+          $('#payment_reference').focus();  
         }else {
           // $('#change_value').val(remainder);
           $('#amount_received').val(float1Value);
@@ -364,12 +665,14 @@
           $('#amount_received').fadeIn(); 
           $('#amount_received').val(""); 
           $('#payment_reference').hide();  
+          $('#amount_received').focus()
         }
        
     });
 });
 
     let isSwapped = false;
+    let cashValueHasFocus = true;
 
     function swap() {
    
@@ -378,7 +681,6 @@
       const tokenSpan = document.querySelector(".token-span");
       const pesoSpan = document.querySelector(".peso-span");
 
-      
       const change = document.getElementById('change_value')
       const div1 = document.getElementById("div1");
       const div2 = document.getElementById("div2");
@@ -396,16 +698,14 @@
       const tempText = pesoSpan.textContent;
       pesoSpan.textContent = tokenSpan.textContent;
       tokenSpan.textContent = tempText;
-
+     
       // Swap readonly
       if (float1Input.readOnly) {
             float1Input.readOnly = false;
             float2Input.readOnly = true;
-            // amountReceivedInput.readOnly = true;
         } else {
             float1Input.readOnly = true;
             float2Input.readOnly = false;
-            // amountReceivedInput.readOnly = false;
         }
 
       // swap div position
@@ -421,12 +721,25 @@
         isSwapped = true;
       }
 
+      // Swap focus
+        if (cashValueHasFocus) {
+          $("#token_value").focus();
+          cashValueHasFocus = false;
+        } else {
+          $("#cash_value").focus();
+          cashValueHasFocus = true;
+        }
+
       float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const float1Value = float1Input.value;
       const converted = Math.floor(float1Value / {{ $cash_value }});
       const total = converted * {{ $cash_value }};
-  
-      float1Input.value = total.toLocaleString();
+      
+      if ($('#token_value').val() == "") {
+        float1Input.value = "";
+      }else {
+        float1Input.value = total.toLocaleString();
+      }
       // amountReceivedInput.value = totalElement.value;
       amountReceivedInput.value = "";
     }
@@ -491,8 +804,8 @@
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                           ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
-                          '<tr><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   showCancelButton: true,
                   reverseButtons: true,
@@ -516,8 +829,8 @@
                           '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                           ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
-                          '<tr><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '</table>',
                   }).then((result) => {
                           history.go(0);
@@ -528,7 +841,7 @@
             error: function(err) {
                 console.log(err);
             }
-        });
+                });
                   }
               })
         }

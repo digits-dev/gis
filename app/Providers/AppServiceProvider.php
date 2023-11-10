@@ -19,7 +19,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-        Paginator::useBootstrap();
+        // Paginator::useBootstrap();
+        
+        if (strpos(url()->current(), url('/admin')) === 0) {
+            Paginator::useBootstrap();
+        } else {
+            Paginator::defaultView('pagination::default');
+        }
     }
     
     public function register()

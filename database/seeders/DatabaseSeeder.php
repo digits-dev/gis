@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             TokenConversionSeeder::class,
             CountersSeeder::class,
             SalesTypeSeeder::class,
+            PresetSeeder::class,
         ]);
 
     }

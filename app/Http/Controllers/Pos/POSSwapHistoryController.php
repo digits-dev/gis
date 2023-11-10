@@ -25,40 +25,20 @@ class POSSwapHistoryController extends Controller
             return $is_missing_eod_or_sod;
         }   
         $data = [];
-        if (Auth::user()->id == 1) {
-            $data['swap_histories'] = SwapHistory::get();
-        } else {
-            $data['swap_histories'] = SwapHistory::where('locations_id',Auth::user()->location_id)->get();
+        
+        $query = SwapHistory::leftjoin('cms_users', 'cms_users.id', 'swap_histories.created_by')
+        ->leftjoin('locations', 'locations.id', 'swap_histories.locations_id')
+        ->leftjoin('token_action_types', 'token_action_types.id', 'swap_histories.type_id')
+        ->leftjoin('mode_of_payments', 'mode_of_payments.id', 'swap_histories.mode_of_payments_id')
+        ->select('swap_histories.id', 'swap_histories.reference_number', 'swap_histories.total_value', 'swap_histories.token_value', 'token_action_types.description as type_id', 'mode_of_payments.payment_description as mod_description', 'locations.location_name', 'cms_users.name as created_by', 'swap_histories.created_at', 'swap_histories.status', 'swap_histories.payment_reference')
+        ->orderBy('swap_histories.created_at', 'desc');
+    
+        if (Auth::user()->id_cms_privileges != 1) {
+            $query->where('swap_histories.locations_id', Auth::user()->location_id);
         }
+        
+        $data['swap_histories'] = $query->paginate(10);
 
-        foreach ($data['swap_histories'] as $swap_history) {
-            $user = DB::table('cms_users')
-                ->where('id', $swap_history->created_by)
-                ->select('name', 'location_id')
-                ->first();
-
-            $location = DB::table('locations')
-                ->where('id', $user->location_id)
-                ->select('location_name')
-                ->first();
-
-            $typeId = DB::table('token_action_types')
-                ->where('id', $swap_history->type_id)
-                ->select('description')
-                ->first();
-
-            $mod_description = DB::table('mode_of_payments')
-            ->where('id', $swap_history->mode_of_payments_id)
-            ->select('payment_description')
-            ->first();
-
-
-            $swap_history->created_by = $user->name;
-            $swap_history->location_name = $location->location_name;
-            $swap_history->type_id = $typeId->description;
-            $swap_history->mod_description = $mod_description->payment_description;
-         
-        }
         return view('pos-frontend.views.swap-history', $data);
     }
 
