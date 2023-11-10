@@ -126,7 +126,7 @@ use App\Models\CmsModels\CmsModule;
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
 					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
-                    $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('count-stockroom'),"color"=>"success"];
+                    $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
 				}
 			}
 
@@ -351,12 +351,25 @@ use App\Models\CmsModels\CmsModule;
 			}
 
 			$data = [];
-			$data['page_title'] = 'Cycle Count';
+			$data['page_title'] = 'Cycle Count - Floor';
 			$data['locations'] = Locations::activeDisburseToken();
 			$data['gasha_machines'] = GashaMachines::activeMachines();
 			$data['dateTime'] = Carbon::now()->format('Y-m-d H:i:s');
 
 			return $this->view("audit.cycle-count.add-cycle-count", $data);
+        }
+
+        public function getAddCycleCountStockRoom() {
+            $this->cbLoader();
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$data = [];
+			$data['page_title'] = 'Cycle Count - Stock Room';
+			$data['locations'] = Locations::activeDisburseToken();
+			$data['gasha_machines'] = GashaMachines::activeMachines();
+			$data['dateTime'] = Carbon::now()->format('Y-m-d H:i:s');
+			return $this->view("audit.cycle-count.add-cycle-count-stock-room", $data);
         }
 
         public function submitcycleCountFloorRef(Request $request){
