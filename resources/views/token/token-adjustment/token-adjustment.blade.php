@@ -120,6 +120,14 @@
 <script>
     $('.s-single').select2();
 
+    function preventBack() {
+        window.history.forward();
+    }
+     window.onunload = function() {
+        null;
+    };
+    setTimeout("preventBack()",0);
+    
     $(document).ready(function(){
         $('#select_store_location').on('change',function() {
             const selectedValue = $(this).val();
