@@ -408,6 +408,9 @@
 				]);
 				$token_type = 7;
 			} else {
+				if ($adjustment_qty > $inventory_query->pluck('qty')->first()){
+					return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Deduct Token cannot exceed to token inventory.',"danger");
+				}
 				$adjustment_qty = "-$adjustment_qty";
 				$inventory_query->update([
 					'qty' => DB::raw("qty + ($adjustment_qty)"),
@@ -415,6 +418,7 @@
 					'updated_by' => $action_by,
 				]);
 				$token_type = 8;
+
 			}
 			$after_qty = $inventory_query->pluck('qty')->first();
 			$to_be_inserted = [
