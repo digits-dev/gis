@@ -25,15 +25,15 @@
                 <td class="action-cell"></td>
             </tr>
             <tr>
-                <td>Current Token Amount</td>
+                <td>Current Token Quantity</td>
                 <td class="current-token-amount-cell"></td>
             </tr>
             <tr>
-                <td>Adjustment Amount</td>
+                <td>Adjustment Quantity</td>
                 <td class="adjusment-amount-cell"></td>
             </tr>
             <tr>
-                <td class="new-token-cell">New Token Amount</td>
+                <td class="new-token-cell">New Token Quantity</td>
                 <td class="new-token-amount-cell"></td>
             </tr>
         </tbody>
@@ -59,7 +59,7 @@
                     </select>
                 </div>
                 <div class="display_qty_div">
-                    <label>Current Token Amount:</label>
+                    <label>Current Token Quantity:</label>
                     <input type="text" id ="current_token_amount" readonly>
                 </div>
                 
@@ -79,11 +79,11 @@
                 <div class="add_token_div" style="display: none" >
                     <hr style="border: 1px solid #5b89a3">
                     <div class="input_qty_div">
-                        <label>Add Token Amount:</label>
+                        <label>Add Token Quantity:</label>
                         <input type="text" name="adjustment_qty_add" id="add_token_input" _action="add" oninput="formatNumber(this)">
                     </div>
                     <div class="display_qty_div">
-                        <label>New Token Amount:</label>
+                        <label>New Token Quantity:</label>
                         <input type="text" id="new_token_add" readonly>
                     </div>
                     <div class="reason_input_div">
@@ -94,11 +94,11 @@
                 <div class="deduct_token_div" style="display: none" >
                     <hr style="border: 1px solid #5b89a3">
                     <div class="input_qty_div">
-                        <label>Deduct Token Amount:</label>
+                        <label>Deduct Token Quantity:</label>
                         <input type="text" name="adjustment_qty_deduct" id="deduct_token_input" _action="deduct" oninput="formatNumber(this)" >
                     </div>
                     <div class="display_qty_div">
-                        <label>New Token Amount:</label>
+                        <label>New Token Quantity:</label>
                         <input type="text" id="new_token_deduct" readonly>
                     </div>
                     <div class="reason_input_div">
