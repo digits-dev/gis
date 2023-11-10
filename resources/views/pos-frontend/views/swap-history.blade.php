@@ -53,6 +53,7 @@
                 <th>Type</th>
                 <th>Mode of Payments</th>
                 <th>Location</th>
+                <th>Payment Reference</th>
                 <th>Created by</th>
                 <th>Created Date</th>
                 <th>Status</th>
@@ -76,6 +77,13 @@
                    <th>{{ $swap_history->type_id }}</th>
                    <th>{{ $swap_history->mod_description }}</th>
                    <th>{{ $swap_history->location_name}}</th>
+
+                    @if ( $swap_history->mod_description == "CASH")
+                    <th></th>
+                    @else
+                    <th>{{ $swap_history->payment_reference}}</th>
+                    @endif
+
                    <th>{{ $swap_history->created_by }}</th>
                    <th>{{ $swap_history->created_at }}</th>
                    <th>{{ $swap_history->status }}</th>
@@ -91,12 +99,14 @@
                 <th>Type</th>
                 <th>Mode of Payments</th>
                 <th>Location</th>
+                <th>Payment Reference</th>
                 <th>Created by</th>
                 <th>Created Date</th>
                 <th>Status</th>
             </tr>
         </tfoot>
     </table>
+    {{ $swap_histories->links() }}
 </div>
 @endsection
 
@@ -107,7 +117,10 @@
 <script>
     $(function () {
         $('#myTable').DataTable({
-            "order": [[1, 'desc']]
+            "order": [[9, 'desc']],
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
         });
     })
 

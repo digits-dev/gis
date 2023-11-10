@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\TokenConversion;
+use App\Models\Submaster\Preset;
 use App\Models\Token\TokenInventory;
 use App\Models\PosFrontend\POSTokenSwap;
 use App\Models\PosFrontend\SwapHistory;
@@ -30,6 +31,7 @@ class POSTokenSwapController extends Controller
         } 
 
         $data = [];
+        $data['presets'] = Preset::where('status', 'ACTIVE')->select('value')->get();
         $data['mode_of_payments'] = ModeOfPayment::get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;
         $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
