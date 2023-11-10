@@ -334,19 +334,20 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ],
             [
-<<<<<<< HEAD
                 'name'         => 'Presets',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'presets',
                 'table_name'   => 'presets',
                 'controller'   => 'Submaster\AdminPresetsController',
-=======
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
                 'name'         => 'Adjust Token Balance',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'token_adjustments',
                 'table_name'   => 'token_adjustments',
                 'controller'   => 'Token\AdminTokenAdjustmentsController',
->>>>>>> f6a163f58b19a2aad44f00236d8bd60869887976
                 'is_protected' => 0,
                 'is_active'    => 0
             ],

@@ -18,7 +18,7 @@ class CountersSeeder extends Seeder
         $counters = [
             [   
                 'cms_moduls_id'    => '12',
-                'reference_code'   => 'GML',
+                'reference_code'   => 'PH',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
@@ -27,7 +27,7 @@ class CountersSeeder extends Seeder
             [   
                 'cms_moduls_id'    => '26',
                 'reference_code'   => 'DBT',
-                'reference_number' => '10000001',
+                'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
                 'created_at'       => date('Y-m-d H:i:s')
@@ -75,6 +75,14 @@ class CountersSeeder extends Seeder
             [   
                 'cms_moduls_id'    => '42',
                 'reference_code'   => 'CPS',
+                'reference_number' => '1',
+                'status'           => 'ACTIVE',
+                'created_by'       => CRUDBooster::myId(),
+                'created_at'       => date('Y-m-d H:i:s')
+            ],
+            [   
+                'cms_moduls_id'    => '48',
+                'reference_code'   => 'AJT',
                 'reference_number' => '1',
                 'status'           => 'ACTIVE',
                 'created_by'       => CRUDBooster::myId(),
