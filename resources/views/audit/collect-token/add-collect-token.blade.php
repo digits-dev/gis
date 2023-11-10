@@ -699,18 +699,21 @@
 
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
-       swal({
-            title: "Are you sure?",
-            type: "warning",
+       Swal.fire({
+            title: 'Are you sure you want to cancel?',
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, Go back!",
-            width: 450,
-            height: 200
-            }, function () {
-                window.history.back();                                                  
-        });
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Cancel',
+            cancelButtonText: "No",
+            returnFocus: false,
+            reverseButtons: true,
+       }).then((result) => {
+            if (result.isConfirmed) {
+                window.history.back();    
+            }
+       });
     });
     
 
