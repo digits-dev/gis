@@ -238,6 +238,7 @@
                 showMachines(data);
             },
             error: function(err) {
+                console.log(err);
                 Swal.fire({
                     title: "Oops.",
                     html:  'Something went wrong!',

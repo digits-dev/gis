@@ -390,7 +390,7 @@
 
 			// getting the current inventory for this item_code and this location
 			$current_inventory = InventoryCapsule::where([
-				'item_code' => $item_code,
+				'item_code' => $item->digits_code2,
 				'locations_id' => $locations_id
 			])->leftJoin(
 				'inventory_capsule_view',
@@ -422,7 +422,7 @@
 			// generating a new reference number
 			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// inserting capsule refill entry
-			$item = CapsuleRefill::insert([
+			$capsule = CapsuleRefill::insert([
 				'reference_number' => $reference_number,
 				'item_code' => $item_code,
 				'gasha_machines_id' => $machine->id,
@@ -476,7 +476,7 @@
 				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
 				->where('sub_locations.location_id', $locations_id)
-				->where('inventory_capsules.item_code', $item_code)
+				->where('inventory_capsules.item_code', $item->digits_code2)
 				->update([
 					'inventory_capsule_lines.updated_by' => $action_by,
 					'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $qty")
@@ -493,15 +493,7 @@
 				->where('digits_code', $item_code)
 				->first();
 
-			$machines = DB::table('inventory_capsules')
-				->leftJoin('inventory_capsule_lines', 'inventory_capsule_lines.inventory_capsules_id', 'inventory_capsules.id')
-				->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', 'gasha_machines.id')
-				->whereNotNull('gasha_machines.id')
-				->where('inventory_capsules.item_code', $item_code)
-				->where('inventory_capsule_lines.qty', '>', 0)
-				->where('inventory_capsules.locations_id', CRUDBooster::myLocationId())
-				->get()
-				->toArray();
+			$machines = InventoryCapsule::getMachine($item->digits_code2);
 
 			return json_encode([
 				'item' => $item,
