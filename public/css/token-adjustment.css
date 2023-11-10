@@ -1,5 +1,4 @@
-
-.panel-content{
+.panel-content {
     /* height: 500px; */
     display: flex;
     justify-content: center;
@@ -7,14 +6,15 @@
     align-items: center;
 }
 
-.panel-default{
+.panel-default {
     border-radius: 20px;
     width: 400px;
     margin-top: 5px;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
-.panel-header{
-    text-align:center;
+.panel-header {
+    text-align: center;
     font-size: 25px;
     padding: 15px;
 }
@@ -22,7 +22,7 @@
 .panel-body {
     position: relative;
 }
-.panel-body div{
+.panel-body div {
     margin-bottom: 15px;
 }
 
@@ -30,54 +30,54 @@
     height: 400px;
 } */
 
-.panel-footer{
+.panel-footer {
     border-radius: 0px 0px 20px 20px;
     text-align: center;
 }
-.select_store_div{
+.select_store_div {
     display: flex;
     flex-direction: column;
 }
-.select_store_div label{
+.select_store_div label {
     font-size: 15px;
 }
-.select_store_div select{
+.select_store_div select {
     height: 30px;
 }
-.display_qty_div{
+.display_qty_div {
     display: flex;
     flex-direction: column;
 }
 .input_qty_div label,
-.display_qty_div label{
+.display_qty_div label {
     font-size: 15px;
 }
 .input_qty_div input,
-.display_qty_div input{
+.display_qty_div input {
     height: 30px;
 }
-.input_qty_div{
+.input_qty_div {
     display: flex;
     flex-direction: column;
 }
 
-.reason_input_div{
+.reason_input_div {
     display: flex;
     flex-direction: column;
 }
-.reason_input_div textarea{
+.reason_input_div textarea {
     resize: none;
 }
-.add_deduct_div{
+.add_deduct_div {
     display: flex;
     justify-content: center;
     gap: 10px;
 }
 .add_token_btn,
-.deduct_token_btn{
+.deduct_token_btn {
     text-decoration: none;
     padding: 10px 40px;
-    background-color: #3C8DBC;
+    background-color: #3c8dbc;
     color: white;
     border-radius: 10px;
     border: none;
@@ -85,20 +85,19 @@
     cursor: pointer;
 }
 
-.token_adj_save{
+.token_adj_save {
     text-decoration: none;
     padding: 10px 40px;
-    background-color: #3C8DBC;
+    background-color: #3c8dbc;
     color: white;
     border-radius: 10px;
     border: none;
     min-width: 50px;
 }
-.token_adj_save:hover{
+.token_adj_save:hover {
     background-color: #006faf;
-
 }
-.active_button{
+.active_button {
     background-color: #035c93;
     color: rgb(255, 255, 255);
     border: 2px solid rgb(0, 0, 0);
@@ -107,19 +106,17 @@
 #new_token_deduct,
 #add_token_input,
 #deduct_token_input,
-#current_token_amount{
+#current_token_amount {
     text-align: center;
 }
 
-.token_adj_save:disabled{
+.token_adj_save:disabled {
     background-color: #035c936a;
 }
 
-
 #textarea_add,
-#textarea_deduct{
+#textarea_deduct {
     padding: 10px;
-    text-indent: 30px;
 }
 
 .styled-table-swap {
@@ -141,10 +138,9 @@
 /* .styled-table-swap tr td:nth-of-type(odd) {
 } */
 
-
 .new-token-cell,
-.new-token-amount-cell{
-    background-color: #3C8DBC;
+.new-token-amount-cell {
+    background-color: #3c8dbc;
     font-weight: bold;
     color: white;
 }

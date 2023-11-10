@@ -5,6 +5,9 @@
     <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
     <style>
+    input:read-only {
+        background-color: #dddd;
+    }
 
     </style>
 @endpush
@@ -59,10 +62,20 @@
                     <label>Current Token Amount:</label>
                     <input type="text" id ="current_token_amount" readonly>
                 </div>
-                <div class="add_deduct_div" style="display: none">
+                
+                <div class="add_deduct_div select_store_div" style="display:none;">
+                    <label>Action</label>
+                    <select class="js-example-basic-single s-single" id="action_type" >
+                        <option value="" disabled selected>None Selected</option>
+                        <option value="Add">Add</option>
+                        <option value="Deduct">Deduct</option>
+                    </select>
+                </div>
+
+                 {{-- <div class="add_deduct_div" style="display: none">
                     <a class="action_btn add_token_btn" id="add_token_btn">Add Token</a>
                     <a class="action_btn deduct_token_btn" id="deduct_token_btn">Deduct Token</a>
-                </div>
+                </div> --}}
                 <div class="add_token_div" style="display: none" >
                     <hr style="border: 1px solid #5b89a3">
                     <div class="input_qty_div">
@@ -75,7 +88,7 @@
                     </div>
                     <div class="reason_input_div">
                         <label>Reason:</label>
-                        <textarea name="reason_add" id="textarea_add" cols="50" rows="10"></textarea>
+                        <textarea name="reason_add" id="textarea_add" cols="50" rows="1"></textarea>
                     </div>
                 </div>
                 <div class="deduct_token_div" style="display: none" >
@@ -90,7 +103,7 @@
                     </div>
                     <div class="reason_input_div">
                         <label>Reason:</label>
-                        <textarea name="reason_deduct" id="textarea_deduct" cols="50" rows="10"></textarea>
+                        <textarea name="reason_deduct" id="textarea_deduct" cols="50" rows="1"></textarea>
                     </div>
                 </div>
             </div>
@@ -105,12 +118,12 @@
 @endsection
 @push('bottom')
 <script>
-    $('#select_store_location').select2();
+    $('.s-single').select2();
 
     $(document).ready(function(){
         $('#select_store_location').on('change',function() {
             const selectedValue = $(this).val();
-            console.log(selectedValue);
+            $(this).attr('disabled', true);
             $.ajax({
                 url:"{{ route('viewAmount')}}",
                 type:"POST",
@@ -128,6 +141,31 @@
                 },
             });
         });
+
+        $('#action_type').on('change', function(){
+            
+            if($(this).val() == 'Add'){
+                $('input[name="action"]').val('add');
+                $('#textarea_deduct').attr('required', false);
+                $('#textarea_add').attr('required', true);
+                $(".deduct_token_div").fadeOut({
+                    done: function() {
+                        $(".add_token_div").fadeIn();
+                        $(".panel-footer").show();
+                    }
+                });
+            }else{
+                $('input[name="action"]').val('deduct');
+                $('#textarea_add').attr('required', false);
+                $('#textarea_deduct').attr('required', true);
+                $(".add_token_div").fadeOut({
+                    done: function() {
+                        $(".deduct_token_div").fadeIn();
+                        $(".panel-footer").show();
+                    }
+                });
+            }
+        })
 
         $(".add_token_btn").click(function(e){
             $('input[name="action"]').val('add');
@@ -155,6 +193,7 @@
     });
 
     function populateAmount(res){
+        // $('#current_token_amount').val(res.qty)
         $(".add_deduct_div").fadeOut({
             done: function() {
                 console.log(res.qty)
@@ -242,6 +281,7 @@
                     reverseButtons: true,
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        $('#select_store_location').attr('disabled', false);
                         $('#real-submit-btn').click();
                     }
                 });
