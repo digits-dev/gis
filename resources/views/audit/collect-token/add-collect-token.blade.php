@@ -175,6 +175,7 @@
                                 <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">  
                                 <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                             </div>
+                            <div id="display_error_machine_not_found"></div>
                         </div>
     
                         <div class="col-md-12">
@@ -196,7 +197,7 @@
     </div>
 
     <div class='panel-footer'>
-        <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+        <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
         <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.new') }}</button>
     </div>
 </form>
@@ -343,17 +344,19 @@
                 const data = JSON.parse(res);
                 console.log(data);
                 if(data.machines == null){
-                    Swal.fire({
-                        title: "Oops.",
-                        html:  'Machine not found!',
-                        icon: 'error',
-                        confirmButtonColor: '#3c8dbc',
-                        confirmButtonText: 'Ok',
-                        returnFocus: false,
-                    });
+                    // Swal.fire({
+                    //     title: "Oops.",
+                    //     html:  'Machine not found!',
+                    //     icon: 'error',
+                    //     confirmButtonColor: '#3c8dbc',
+                    //     confirmButtonText: 'Ok',
+                    //     returnFocus: false,
+                    // });
                     $('#copy-row').attr('disabled',true);
+                    $('#display_error_machine_not_found').html(`<span id="notif" class="label label-danger">Machine not found</span>`);
                     return false;
                 }else{
+                    $('#display_error_machine_not_found').html('');
                     $('#machine_token_qty').val(data.machines.no_of_token);
                     $('#copy-row').attr('disabled',false);
                 }
@@ -693,6 +696,22 @@
         });
         return totalQuantity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     }
+
+    $("#btn-cancel").click(function(event) {
+       event.preventDefault();
+       swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, Go back!",
+            width: 450,
+            height: 200
+            }, function () {
+                window.history.back();                                                  
+        });
+    });
     
 
     
