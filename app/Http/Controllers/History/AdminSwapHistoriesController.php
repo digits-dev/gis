@@ -265,11 +265,11 @@
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
-			if($column_index == 6){
-				if(is_int($column_value)){
-					$column_value = '';
-				}
-			}
+			// if($column_index == 6){
+			// 	if(is_int($column_value)){
+			// 		$column_value = '';
+			// 	}
+			// }
 	    }
 
 	    /*
