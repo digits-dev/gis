@@ -511,10 +511,9 @@
 
             const tokenValue = presetValue * {{ $cash_value }};
             
-            $("#cash_value").val((currentCashValue + tokenValue).toLocaleString());
+            $("#cash_value").val((currentTotalValue + tokenValue).toLocaleString());
             $("#token_value").val((currentTokenValue + presetValue).toLocaleString());
             $("#total_value").val((currentTotalValue + tokenValue).toLocaleString());
-
 
         }
       $(document).ready(function() {
@@ -523,6 +522,7 @@
                 setPresetValue(presetValue);
                 $('#mode_of_payment').attr('disabled', false);
                 amountReceivedInput.value = "";
+                $('#payment_reference').val("");
                 changeElement.value = "0";
             });
         });
@@ -637,10 +637,7 @@
 
     $(document).ready(function() {
     $("#mode_of_payment").on("change", function() {
-      float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
-      const float1Value = float1Input.value;
-      const converted = Math.floor(float1Value / {{ $cash_value }});
-      const remainder = float1Value.replace(/,/g, '') % {{ $cash_value }};
+      const float1Value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const selectedValue = $(this).val();
         
       const selectedDescription = $('option:selected', this).text();
@@ -658,7 +655,6 @@
           $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').focus();  
         }else {
-          // $('#change_value').val(remainder);
           $('#amount_received').val(float1Value);
           $('#payment_reference_div').fadeIn(1000);
           $('#reference').text("Amount Received"); 
