@@ -64,7 +64,7 @@
 
                 <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> No of tokens</label>
-                    <input type="number" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" value="9" min="1" max="9999999999" step="any" onKeyPress="if(this.value.length==1) return false;" oninput="validity.valid;" autocomplete="off">
+                    <input type="text" class="form-control finput" style="" placeholder="No of tokens" name="no_of_tokens" id="no_of_tokens" oninput="event.target.value = event.target.value.replace(/[e\+\-\.]/gi, '');" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> Bay</label>
@@ -118,6 +118,46 @@
         $('#no_of_tokens').on('paste', function(e) {
             e.preventDefault();
         });
+
+        $("#no_of_tokens").keyup(function(){
+            var value = $(this).val();
+            value = value.replace(/^(0*)/,"");
+            $(this).val(value);
+        });
+
+        $(document).on('keyup','#no_of_tokens', function (e) {
+            if(event.which >= 37 && event.which <= 40) return;
+
+            if(this.value.charAt(0) == '.'){
+                this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2){
+                    return '.' + g1;
+                })
+            }
+
+            // if(event.key == '.' && this.value.split('.').length > 2){
+            if(this.value.split('.').length > 2){
+                this.value = this.value.replace(/([\d,]+)([\.]+.+)/, '$1') 
+                    + '.' + this.value.replace(/([\d,]+)([\.]+.+)/, '$2').replace(/\./g,'')
+                return;
+            }
+
+            $(this).val( function(index, value) {
+                value = value.replace(/[^0-9.]+/g,'')
+                let parts = value.toString().split(".");
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                return parts.join(".");
+            });
+
+            if(event.which >= 37 && event.which <= 40) return;
+            $(this).val(function(index, value) {
+                return value
+                .replace(/\D/g, "")
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                ;
+            });
+
+        });  
+        
         $(document).ready(function() {
             $('#btnSubmit').click(function(event) {
                 event.preventDefault();
@@ -128,14 +168,16 @@
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     });
-                }else if($('#no_of_tokens').val() >= 10){
-                    Swal.fire({
-                            type: 'error',
-                            title: 'Token must be equal or less than 9!',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                }else if($('#location').val() === ''){
+                }
+                // else if($('#no_of_tokens').val() >= 10){
+                //     Swal.fire({
+                //             type: 'error',
+                //             title: 'Token must be equal or less than 9!',
+                //             icon: 'error',
+                //             confirmButtonColor: "#367fa9",
+                //         });
+                // }
+                else if($('#location').val() === ''){
                     Swal.fire({
                             type: 'error',
                             title: 'Please choose location!',

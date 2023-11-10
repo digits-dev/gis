@@ -52,7 +52,7 @@
 			$this->form[] = ['label'=>'Serial Number','name'=>'serial_number','type'=>'text','width'=>'col-sm-10','readonly'=>true];
 			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1|max:9','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Bay','name'=>'bay','type'=>'text','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Layer','name'=>'layer','type'=>'text','width'=>'col-sm-10'];
 			

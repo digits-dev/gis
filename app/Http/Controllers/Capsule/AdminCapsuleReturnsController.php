@@ -8,7 +8,8 @@
 	use App\Models\Submaster\CapsuleActionType;
 	use App\Models\Submaster\Counter;
 	use App\Models\Submaster\GashaMachines;
-	use App\Models\Submaster\Locations;
+use App\Models\Submaster\Item;
+use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
 	use Session;
 	use Request;
@@ -356,27 +357,30 @@
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
 			$validateGM = $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->first();
-			$inventory_capsule = InventoryCapsule::get();
-			// $validateQty = $return_inputs['qty'] > $validateGM->qty;
-			// $qty = $return_inputs['qty'];
-
+						
 			$filteredData = [];
-
+			
 			foreach ($return_inputs as $key => $value) {
 				if (strpos($key, 'qty_') === 0) {
 					$newKey = substr($key, 4); // Remove "qty_" prefix
-					$filteredData[$newKey] = $value;
+					// $filteredData[$newKey] = $value;
+					$jan_no = Item::where('digits_code2', $newKey)->pluck('digits_code')->first();
+					$filteredData[$jan_no] = $value;
 				}
 			}
-
+			
 			$capsule_return_rn = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			$sales_rn = Counter::getNextReference(DB::table('cms_moduls')->where('name', 'Capsule Sales')->first()->id);
-
+			
 			foreach($filteredData as $key=>$value){
+				$inventory_capsule = InventoryCapsule::leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
+					->where('locations_id', CRUDBooster::myLocationId());
 
+				$inventory_capsule_id = $inventory_capsule->where('items.digits_code', $key)->select('inventory_capsules.id')->first()->id;
+				
 				$capsule = new CapsuleReturn([
 					'reference_number' =>$capsule_return_rn,
-					'item_code' => $inventory_capsule->where('item_code', $key)->first()->item_code,
+					'item_code' => $key,
 					'qty' => (int) str_replace(',', '', $value),
 					'sub_locations_id' => $return_inputs['stock_room'],
 					'gasha_machines_id' => $gasha_machines->id,
@@ -398,14 +402,15 @@
 				]);
 
 				// Gasha Machine
+				$current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule_id)
+					->where('gasha_machines_id', $capsule->gasha_machines_id)
+					->where('sub_locations_id', null)
+					->first()
+					->qty;
 
-				$current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-				->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)->first()->qty;
-
-				InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+				InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule_id)
 					->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)
 					->update([
-						// 'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $capsule->qty"),
 						'inventory_capsule_lines.qty' => 0,
 						'updated_by' => CRUDBooster::myId()
 				]);
@@ -414,7 +419,7 @@
 				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
 					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-					->where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+					->where('inventory_capsules_id', $inventory_capsule_id)
 					->where('inventory_capsules.item_code', $capsule->item_code)
 					->update([
 						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
@@ -432,56 +437,6 @@
 					'created_at' => date('Y-m-d H:i:s')
 				]);
 			}
-
-
-
-			// $capsule = new CapsuleReturn([
-			// 	'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
-			// 	'item_code' => $inventory_capsule->where('id', $validateGM->inventory_capsules_id)->first()->item_code,
-			// 	'qty' => $value,
-			// 	'sub_locations_id' => $return_inputs['stock_room'],
-			// 	'gasha_machines_id' => $gasha_machines->id,
-			// 	'created_by' => CRUDBooster::myId(),
-			// 	'created_at' => date('Y-m-d H:i:s')
-			// ]);
-
-			// $capsule->save();
-
-
-			// HistoryCapsule::insert([
-			// 	'reference_number' => $capsule->reference_number,
-			// 	'item_code' => $inventory_capsule->where('id', $validateGM->inventory_capsules_id)->first()->item_code,
-			// 	'capsule_action_types_id' => CapsuleActionType::where('description', 'Return')->first()->id,
-			// 	'gasha_machines_id' => $gasha_machines->id,
-			// 	'locations_id' => $return_inputs['stock_room'],
-			// 	'qty' => $return_inputs['qty'],
-			// 	'created_by' => CRUDBooster::myId(),
-			// 	'created_at' => date('Y-m-d H:i:s')
-			// ]);
-
-			// InventoryCapsuleLine::where('gasha_machines_id', $gasha_machines->id)->update([
-			// 	'qty' => $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->first()->qty - $return_inputs['qty'],
-			// 	'updated_by' => CRUDBooster::myId()
-			// ]);
-
-			// DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
-			// 	->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-			// 	->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-			// 	->where('inventory_capsules_id', $gasha_machines->id)
-			// 	->where('inventory_capsules.item_code', $inventory_capsule->where('id', $validateGM->inventory_capsules_id)->first()->item_code)
-			// 	->update([
-			// 		'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
-			// 		'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $qty")
-			// ]);
-
-			// // DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
-			// // ->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-			// // ->where('sub_locations.location_id', $gasha_machines)
-			// // ->update([
-			// // 	'updated_by' => $action_by,
-			// // 	'qty' => DB::raw("qty + $qty")
-			// // ]);
-
 
 			return response()->json(['success'=>$filteredData, 'reference_number' => $capsule_return_rn, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
 		}

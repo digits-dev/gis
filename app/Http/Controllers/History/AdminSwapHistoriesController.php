@@ -265,6 +265,11 @@
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
+			if($column_index == 6){
+				if(!preg_match('/[a-z]/i', $column_value)){
+					$column_value  = '';
+				}
+			}
 	    }
 
 	    /*
