@@ -303,7 +303,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(in_array(CRUDBooster::myPrivilegeId(),[1])){
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8])){
 				$query->whereNull('pullout_tokens.deleted_at')
 					  ->orderBy('pullout_tokens.statuses_id', 'asc')
 					  ->orderBy('pullout_tokens.id', 'desc');

@@ -14,6 +14,7 @@ use App\Http\Controllers\Token\AdminStoreRrTokenController;
 use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
 use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
+use App\Http\Controllers\Token\AdminTokenAdjustmentsController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
@@ -72,6 +73,10 @@ Route::group(['middleware' => ['web']], function() {
     //POS Setting
     Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
 
+    //Token Adjustment
+    Route::post('admin/token_adjustments/view',[AdminTokenAdjustmentsController::class,'viewAmount'])->name('viewAmount');
+    Route::post('admin/token_adjustments/submit',[AdminTokenAdjustmentsController::class,'submitAmount'])->name('submitAmount');
+    Route::post('admin/token_adjustments/getTokenInventory',[AdminTokenAdjustmentsController::class,'getTokenInventory'])->name('getTokenInventory');
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');

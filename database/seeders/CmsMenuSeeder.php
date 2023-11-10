@@ -264,6 +264,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 9
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Adjust Token Balance',
+            ],
+            [
+                'name'              => 'Adjust Token Balance',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminTokenAdjustmentsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 1,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 10
+            ]
+        );
     }
 
     public function capsuleMenu() {

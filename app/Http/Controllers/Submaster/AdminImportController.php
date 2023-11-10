@@ -59,10 +59,14 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
     function downloadMachinesTemplate() {
         $arrHeader = [
             "no_of_token"        => "No of token",
+            "bay"                => "Bay",
+            "layer"              => "Layer"
         ];
 
         $arrData = [
             "no_of_token"        => "1",
+            "bay"                => "Bay 1",
+            "layer"              => "Layer 1"
         ];
 
         $spreadsheet = new Spreadsheet();

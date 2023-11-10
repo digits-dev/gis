@@ -40,6 +40,8 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
             GashaMachines::where('serial_number',$row['serial_number'])
             ->update([
                     'no_of_token'    => $row['no_of_token'],
+                    'bay'            => $row['bay'],
+                    'layer'          => $row['layer'],
                     'updated_by'	 => CRUDBooster::myId(),
                     'updated_at'     => date('Y-m-d H:i:s')
             ]);	

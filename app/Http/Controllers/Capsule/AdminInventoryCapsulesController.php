@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use Session;
+    use App\Models\Capsule\InventoryCapsule;
+    use App\Models\Capsule\InventoryCapsuleLine;
+    use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -30,8 +32,9 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
-			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code"];
+			$this->col[] = ["label"=>"JAN #","name"=>"item_code","join"=>"items,digits_code","join_id"=>"digits_code2"];
+            $this->col[] = ["label"=>"Digits Code","name"=>"item_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Onhand","name"=>"id","join"=>"inventory_capsule_view,onhand_qty","join_id"=>"inventory_capsules_id"];
 			$this->col[] = ["label"=>"Stock Room","name"=>"id","join"=>"inventory_capsule_view,stockroom_capsule_qty","join_id"=>"inventory_capsules_id"];
@@ -239,7 +242,7 @@
 			} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5])) {
 				$query->where('inventory_capsules.locations_id', CRUDBooster::myLocationId())
 					->orderBy('inventory_capsules.id', 'desc');
-			} 
+			}
 
 	    }
 
@@ -256,7 +259,7 @@
 					$column_value = '<span>0</span>';
 				}
 			}
-			
+
 	    }
 
 	    /*
@@ -333,28 +336,10 @@
 	    }
 
 		public function getDetail($id) {
-			$item = DB::table('inventory_capsules')
-				->where('inventory_capsules.id', $id)
-				->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
-				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
-				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
-				->first();
-
-			$lines = DB::table('inventory_capsule_lines')
-				->select(
-					'inventory_capsule_lines.qty',
-					'gasha_machines.serial_number',
-					'sub_locations.description as sub_location'
-				)
-				->where('inventory_capsules_id', $id)
-				->leftJoin('gasha_machines', 'gasha_machines.id', 'inventory_capsule_lines.gasha_machines_id')
-				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-				->get()
-				->toArray();
 
 			$data = [];
-			$data['item'] = $item;
-			$data['lines'] = $lines;
+			$data['item'] = InventoryCapsule::getHeader($id);
+			$data['lines'] = InventoryCapsuleLine::getLineItems($id);
 			$data['page_title'] = 'Detail Inventory Breakdown';
 
 			return $this->view('capsule.capsule-inventory-detail', $data);
