@@ -9,7 +9,8 @@ use App\Models\CmsModels\CmsModule;
     use App\Models\Submaster\CapsuleActionType;
     use App\Models\Submaster\Counter;
     use App\Models\Submaster\GashaMachines;
-    use App\Models\Submaster\Locations;
+use App\Models\Submaster\Item;
+use App\Models\Submaster\Locations;
     use App\Models\Submaster\SalesType;
     use Carbon\Carbon;
     use Session;
@@ -483,5 +484,21 @@ use App\Models\CmsModels\CmsModule;
 				'list_of_ic' => $list_of_ic,
 			]);
 
+		}
+
+		public function checkItem(Request $request){
+
+			$return_inputs = $request->all();
+
+			$item = Item::where('digits_code', $return_inputs['item_code'])->first();
+			$machine = GashaMachines::where('serial_number', $return_inputs['gm'])->first();
+
+			if(!$item){
+				return json_encode(['missing'=>true]);
+			}else if($item->no_of_tokens != $machine->no_of_token){
+				return json_encode(['mismatch_token'=>true, 'item'=>$item, 'machine'=>$machine]);
+			}
+
+			return json_encode(['item'=>$item, 'machine'=>$machine]);
 		}
 	}

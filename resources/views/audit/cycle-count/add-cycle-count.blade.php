@@ -3,6 +3,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/code-scanner.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('css/custom.css')}}">
     <style type="text/css">
         .select2-selection__choice {
             font-size: 14px !important;
@@ -47,6 +48,11 @@
             padding: 8px;
         }
 
+        .td-style{
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
         .plus {
             font-size: 20px;
         }
@@ -73,6 +79,10 @@
             color: white;
             background-color: #3c8dbc;
 
+        }
+
+        #bodytable tr td{
+            text-align: center;
         }
 
         #bigplus {
@@ -158,11 +168,10 @@
                                     <th width="15%" class="text-center">Quantity</th>
                                     <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
                                 </tr>
-
                             </tbody>
-                            <tfoot>
+                            <tfoot> 
                                 <tr id="tr-table1" class="bottom">
-                                    <td style="text-align:left">
+                                    <td class="text-center">
                                         <button class="red-tooltip" id="add-Row" name="add-Row" title="Add Row">
                                             <div class="iconPlus" id="bigplus"></div>
                                         </button>
@@ -198,12 +207,12 @@
                                         <div id="reader"></div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group" style="display: flex">
+                                <div class="col-md-6 machine-form-group">
+                                    <div class="form-group" style="display: flex; position: relative">
                                         <input input-for="machine" class="form-control text-center finput" type="text"
                                             placeholder="Scan/Enter Machine" name="gasha_machines_id_inputed"
                                             id="gasha_machines_id_inputed" autocomplete="off">
-                                        <button btn-for="machine" type="button" class="btn btn-danger btn-sm open-camera"
+                                        <button btn-for="machine" type="button" class="btn btn-danger btn-sm open-camera" id="gm-camera"
                                             tabindex="-1"><i class="fa fa-camera"></i></button>
                                     </div>
                                 </div>
@@ -214,7 +223,7 @@
                                             type="text" placeholder="Scan/Enter Item Code" id="search_item"
                                             style="width:100%" autocomplete="off" readonly>
                                         <button btn-for="searchitem" type="button"
-                                            class="btn btn-danger btn-sm open-camera" tabindex="-1"><i
+                                            class="btn btn-danger btn-sm open-camera" id="ic-camera" tabindex="-1" disabled><i
                                                 class="fa fa-camera"></i></button>
                                         <div id="item_display_error"></div>
                                     </div>
@@ -229,9 +238,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="dynamicRow">
-                                            </tr>
-
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -246,8 +252,8 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type='button' id="add-cycle-count" class="btn btn-primary btn-sm"><i
-                                    class="fa fa-save"></i> Save</button>
+                            <button type='button' id="add-cycle-count" class="btn btn-primary btn-sm" disabled><i
+                                    class="fa fa-save"></i> Add</button>
                         </div>
                     </div>
                 </div>
@@ -263,13 +269,13 @@
 @endsection
 @push('bottom')
     <script type="text/javascript">
-        function preventBack() {
-            window.history.forward();
-        }
-        window.onunload = function() {
-            null;
-        };
-        setTimeout("preventBack()", 0);
+        // function preventBack() {
+        //     window.history.forward();
+        // }
+        // window.onunload = function() {
+        //     null;
+        // };
+        // setTimeout("preventBack()", 0);
         $('#location_id').select2();
 
         var tableRow = 1;
@@ -373,22 +379,34 @@
                     location_id: $('#location_id').val(),
                 },
                 success: function(res) {
+                    $('.machine-form-group .machine-warning').remove();
                     const data = JSON.parse(res);
-                    if ($.isEmptyObject(data.machines)) {
-                        Swal.fire({
-                            title: "Oops.",
-                            html: 'Machine not found!',
-                            icon: 'error',
-                            confirmButtonColor: '#3c8dbc',
-                            confirmButtonText: 'Ok',
-                            returnFocus: false,
+                    const existingMachines = $('#cycle-count .existing-machines').get().map(e => $(e).attr('machine'));
+                    const alreadyExists = existingMachines.includes(machine_code);
+                    console.log(existingMachines, machine_code);
+                    const isInvalidMachine = $.isEmptyObject(data.machines);
+                    console.log(data.machines);
+                    if (alreadyExists) {
+                        const span = $('<span>').addClass('label label-danger machine-warning').text('Machine already exists in table!').css({
+                            position: 'absolute',
+                            bottom: '0',
                         });
-                        $('#add-cycle-count').attr('disabled', true);
-                        return false;
+                        $('.machine-form-group').append(span);
+
+                    } else if (!machine_code || !isInvalidMachine) {
+                        $('.machine-form-group .machine-warning').remove();
+                        
                     } else {
-                        $('#add-cycle-count').attr('disabled', false);
-                        $('#search_item').removeAttr('readonly');
+                        const span = $('<span>').addClass('label label-danger machine-warning').text('Machine not Found!').css({
+                            position: 'absolute',
+                            bottom: '0',
+                        });
+                        $('.machine-form-group').append(span);
                     }
+
+                    $('#ic-camera').attr('disabled', isInvalidMachine || alreadyExists);
+                    $('#search_item').attr('readonly', isInvalidMachine || alreadyExists);
+
                 },
                 error: function(err) {
                     Swal.fire({
@@ -424,6 +442,9 @@
         });
 
         $('#gasha_machines_id_inputed').on('input', function() {
+        
+            $(this).val($(this).val().trim());
+
             clearTimeout(timeout);
 
             timeout = setTimeout(() => {
@@ -450,104 +471,43 @@
         });
 
         //Add Row
-        $('#add-cycle-count').click(function() {
+        $('#add-cycle-count').on('click', function(event) {
             event.preventDefault();
-            var gasha_machine = "";
-            var qty = "";
-            var count_fail = 0;
-            tableRow++;
-
-            if ($('#gasha_machines_id_inputed').val() == null || $('#gasha_machines_id_inputed').val() == '') {
-                swal({
-                    type: 'error',
-                    title: 'Please fill all Fields!',
-                    icon: 'error',
-                    confirmButtonColor: "#3c8dbc",
-                });
-                count_fail++;
-                return false;
-            } else {
-                count_fail = 0;
-            }
-
-            // if ($('#qty_inputed').val() == null || $('#qty_inputed').val() == '') {
-            //     swal({
-            //         type: 'error',
-            //         title: 'Please fill all Fields!',
-            //         icon: 'error',
-            //         confirmButtonColor: "#3c8dbc",
-            //     });
-            //     count_fail++;
-            //     return false;
-            // }else{
-            //     count_fail = 0;
-            // }
-
-            $('#addRowModal').modal('hide');
-            tableRow++;
-            if (!machineArray.includes($('#gasha_machines_id_inputed').val())) {
-                if (count_fail == 0) {
-                    machineArray.push($('#gasha_machines_id_inputed').val());
-
-                    var newrow =
-                        '<tr id="tr-style' + tableRow + '" style="background-color: #d4edda; color:#155724">' +
-                        '<td>' +
-                        '<input class="form-control text-center finput gasha_machines_id" type="text" placeholder="Machine" name="gasha_machines_id[]" id="gasha_machines_id' +
-                        tableRow + '" data-id="' + tableRow + '" value="' + $('#gasha_machines_id_inputed').val() +
-                        '" autocomplete="off" readonly>' +
-
-                        '</td>' +
-
-                        '<td>' +
-                        '</td>' +
-
-                        '<td>' +
-                        '</td>' +
-
-                        '<td>' +
-                        '<input class="form-control text-center finput qty" type="text" name="qty[]" id="qty' +
-                        tableRow + '" data-id="' + tableRow +
-                        '" style="width:100%" value="" autocomplete="off" required>' +
-                        '</td>' +
-
-                        '<td class="text-center">' +
-                        '<button id="deleteRow" name="removeRow" data-id="' + tableRow + '" value="' + $(
-                            '#gasha_machines_id_inputed').val() +
-                        '" class="btn btn-danger btn-sm removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
-                        '</td>' +
-
-                        '</tr>';
-
-                    $('#cycle-count tbody').append(newrow);
+            const data = {
+                items: []
+            };
+            const rows = $('#newItemModalTable').find('tbody').find('tr').get();
+            rows.forEach(row=> {
+                const input = $(row).find('.item-data');
+                const machine = input.attr('machine');
+                data.machine = machine;
+                const item_obj = {
+                    item_description: input.attr('item-description'),
+                    machine,
+                    qty: input.val(),
+                    item_code : input.attr('item-code'),
                 }
-            } else {
-                swal({
-                    type: 'error',
-                    title: 'Machine already added!',
-                    icon: 'error',
-                    confirmButtonColor: '#3c8dbc',
-                });
-
-            }
-            $('#quantity_total').val(calculateTotalQuantity());
-
-            $(document).on('click', '.removeRow', function(e) {
-                e.preventDefault();
-                if ($('#cycle-count tbody tr').length !=
-                    1) { //check if not the first row then delete the other rows
-                    tableRow--;
-                    let removeItem = $(this).val();
-                    console.log(removeItem);
-                    machineArray = jQuery.grep(machineArray, function(value) {
-                        return value != removeItem;
-                    });
-                    $(this).closest('tr').remove();
-                    $('#quantity_total').val(calculateTotalQuantity());
-                    return false;
-                }
-
+                data.items.push(item_obj);
             });
 
+            populateOutsideTable(data);
+            $('.modal-header .close').click();
+            resetModal();
+            $('#quantity_total').val(calculateTotalQuantity());
+        });
+
+        function resetModal() {
+            $('#newItemModalTable tbody').html('');
+            $('#gasha_machines_id_inputed').attr('readonly', false);
+            $('#gm-camera').attr('disabled', false)
+            $('#ic-camera').attr('disabled', true)
+            $('#add-cycle-count').attr('disabled', true);
+            $('#search_item').attr('readonly', true);
+            $('#total-item-qty').text('0');
+        }
+
+        $(document).on('click', 'button[data-dismiss="modal"]', function() {
+            resetModal();
         });
 
         $('#addRowModal').on('shown.bs.modal', function() {
@@ -592,46 +552,83 @@
             $('#quantity_total').val(calculateTotalQuantity());
         });
 
-        const tableBody = $("table tbody .dynamicRow");
-        let itemStack = [];
+        function validateModal() {
+            const allItemQty = $('table tbody .itemQty').get();
+            const isValid = allItemQty.every(e => $(e).val());
+            $('#search_item').attr('readonly', !isValid);
+            $('#add-cycle-count, #ic-camera').attr('disabled', !isValid);
+        }
+
+        $(document).on('input', '#search_item', function(){
+
+            $(this).val($(this).val().trim());
+        });
 
         $(document).on('keypress', '#search_item', function(event) {
             if (event.which >= 37 && event.which <= 40) return;
             if (event.which == 13) {
+                if (!$('#search_item').val()) return;
                 //disable machine
                 $('#gasha_machines_id_inputed').attr('readonly', true);
-                let searchedItem = $(this).val();
+                $('#gm-camera').attr('disabled', true);
 
-                if(!itemStack.includes(searchedItem)){
-                    itemStack.push(searchedItem);
-                    //add to table list
-                    let newItem = "<tr><td class='text-center'>"+searchedItem+"<input type='hidden' name='item_code[]' value='"+searchedItem+"'></td>"+
-                    "<td><input class='form-control text-center finput itemQty' type='number' placeholder='Qty' name='item_qty[]' style='width:100%' autocomplete='off'</td></tr>";
+                const gm = $('#gasha_machines_id_inputed').val();
+                const item_code = $(this).val();
 
-                    $(newItem).insertAfter(tableBody);
+                $.ajax({
 
-                    //reset search and focus qty
-                    $('#search_item').val('');
-                    $('table tbody .itemQty').first().focus();
-                }
-                else{
-                    $('#search_item').val('');
-                    swal({
-                        type: 'error',
-                        title: 'Item already added! Please try again with different Item Code.',
-                        icon: 'error',
-                        confirmButtonColor: "#3c8dbc",
-                    });
-                    event.preventDefault();
-                    return false;
-                }
+                    url: "{{ route('check-item-code') }}",
+                    type: "POST",
+                    data: {
+                        gm,
+                        item_code,
+                        _token: $('#token').val(),
+                    },
+                    success: function(res){
+                        console.log(JSON.parse(res));
+                        const data = JSON.parse(res);
 
+                        if(data.missing){
+                            Swal.fire({
+                                title: "Oops.",
+                                html:  'Item code not found!',
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Ok',
+                                returnFocus: false,
+                                reverseButtons: true,
+                                allowOutsideClick: false,
+                            });
+                        }else if(data.mismatch_token){
+                            Swal.fire({
+                                title: "Oops.",
+                                html:  'No. of tokens mismatch!',
+                                icon: 'warning  ',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'Ok',
+                                returnFocus: false,
+                                reverseButtons: true,
+                                allowOutsideClick: false,
+                            }).then(function(){
+                                populateTable(data);
+                            });
+                        }
+                        else{
+                            populateTable(data);
+                        }
+                        validateModal();
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
 
             }
         });
 
-        $(document).on('keyup', '.itemQty', function(e) {
-            if (event.which >= 37 && event.which <= 40) return;
+        $(document).on('keyup', '.item-data', function(e) {
+            
+            if (e.which >= 37 && e.which <= 40) return;
 
             if (this.value.charAt(0) == '.') {
                 this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2) {
@@ -659,6 +656,7 @@
             });
 
             $('#total-item-qty').text(calculateItemQuantity());
+            validateModal();
         });
 
         $(document).ready(function() {
@@ -736,6 +734,15 @@
             });
         });
 
+
+
+        // fix for bug when pressing enter key removing lines on outside table
+        $(document).on('keypress', 'input', function(event) {
+            if (event.key == 'Enter') {
+                event.preventDefault();
+            }
+        });
+
         function calculateTotalQuantity() {
             let totalQuantity = 0;
             $('.qty').each(function() {
@@ -751,7 +758,7 @@
 
         function calculateItemQuantity() {
             let itemQty = 0;
-            $('table tbody .itemQty').each(function() {
+            $('table tbody .item-data').each(function() {
                 let qty = 0;
                 if (!($(this).val() === '')) {
                     qty = parseInt($(this).val().replace(/,/g, ''));
@@ -759,7 +766,95 @@
 
                 itemQty += qty;
             });
-            return itemQty;
+            return itemQty.toLocaleString();
         }
+
+        function populateTable(data) {
+
+            let searchedItem = data.item.digits_code;
+            const existingItems = $('#newItemModalTable tbody .existing-item-code').get().map(e => $(e).text());
+            console.log(existingItems);
+
+            if(!existingItems.includes(searchedItem)){
+                let newItem = `
+                <tr>
+                    <td class='text-center existing-item-code'>${searchedItem}</td>
+                    <td><input item-description="${data.item.item_description}" machine='${data.machine.serial_number}' item-code='${searchedItem}' class='form-control text-center finput itemQty item-data' type='text' placeholder='Qty' name='item_qty[]' style='width:100%' autocomplete='off'</td>
+                </tr>`;
+
+                $(newItem).prependTo($('#newItemModalTable tbody'));
+
+                //reset search and focus qty
+                $('#search_item').val('').attr('readonly', true);
+                $(`table tbody .itemQty[item-code="${searchedItem}"]`).focus();
+                $('#ic-camera').attr('disabled', true);
+            }
+            else{
+                $('#search_item').val('');
+                swal({
+                    type: 'error',
+                    title: 'Item already added! Please try again with different Item Code.',
+                    icon: 'error',
+                    confirmButtonColor: "#3c8dbc",
+                });
+                event.preventDefault();
+                return false;
+            }
+        }
+
+        $(document).on('click', '#deleteRow', function() {
+            const machine = $(this).attr('machine');
+            $(`tr[machine="${machine}"]`).remove();
+        });
+
+        function populateOutsideTable(data){
+
+            data.items.forEach((item, index) => {
+                let rowspan = data.items.length;
+                const newrow =`
+                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${data.machine}">
+                        ${index == 0 ? `
+                            <td rowspan="${rowspan}" class="td-style"> 
+                                ${data.machine}
+                            </td> ` : ''
+                        }
+
+                        <td class="td-style">${item.item_code}</td> 
+    
+                        <td class="td-style existing-item-description">${item.item_description}</td> 
+    
+                        <td class="td-style"> 
+                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="${item.qty}" autocomplete="off" required> 
+                        </td> 
+
+                        ${index == 0 ? `
+                            <td rowspan=${rowspan} class="td-style"> 
+                                <button id="deleteRow" machine="${data.machine}" class="btn btn-danger btn-sm removeRow">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </button> 
+                            </td>` : ''
+                        }
+                        
+                    </tr>
+    
+                `;
+
+                $('#cycle-count tbody').append(newrow);
+            });
+        }
+
+        $(document).on('submit', 'form#cycle-count', function(vent) {
+            const itemsToBeSubmitted = [];
+            const items = $(this).find('.item-details').get();
+            items.forEach(item => {
+                item = $(item);
+                itemsToBeSubmitted.push({
+                    item_code: item.attr('item_code'),
+                    machine: item.attr('machine'),
+                    description: item.attr('description'),
+                    qty: item.val(),
+                });
+            });
+        });
     </script>
 @endpush
