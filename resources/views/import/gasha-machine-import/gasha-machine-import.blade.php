@@ -26,15 +26,10 @@
             <div class='col-sm-3'>
                 <select class="form-control select2" style="width: 100%;" required name="upload_type" id="upload_type">
                     <option value="">Select Upload Type</option>
-                    {{-- @if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "SIM") --}}
-                    
                     <option value="Add">Add</option>
                     <option value="Update">Update</option>
-                    {{-- @elseif(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "MCB")
-                    <option selected value="po">PURCHASE ORDER</option>
-                    @endif --}}
                 </select>
-                
+
             </div>
 
             <label for='import_file' class='col-sm-2 control-label'>File to Import: </label>

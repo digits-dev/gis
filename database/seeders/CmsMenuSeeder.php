@@ -13,12 +13,12 @@ class CmsMenuSeeder extends Seeder
      * @return void
      */
     public function run() {
-        DB::table('cms_menus')->truncate();
-        self::indexMenu();
+        // DB::table('cms_menus')->truncate();
+        // self::indexMenu();
         self::tokenMenu();
-        self::capsuleMenu();
-        self::auditMenu();
-        self::historyMenu();
+        // self::capsuleMenu();
+        // self::auditMenu();
+        // self::historyMenu();
         self::submasterMenu();
     }
 

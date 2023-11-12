@@ -50,7 +50,7 @@
             </div>
             <div class='panel-body'>
                 <div class="select_store_div">
-                    <label>Select Store Location:</label>
+                    <label><span style="color:red">*</span>Select Store Location:</label>
                     <select class="js-example-basic-single s-single" name="locations_id" id="select_store_location" >
                         <option selected disabled>None Selected</option>
                         @foreach ( $locations as $location )
@@ -64,7 +64,7 @@
                 </div>
                 
                 <div class="add_deduct_div select_store_div" style="display:none;">
-                    <label>Action</label>
+                    <label><span style="color:red">*</span>Action</label>
                     <select class="js-example-basic-single s-single" id="action_type" >
                         <option value="" disabled selected>None Selected</option>
                         <option value="Add">Add</option>
@@ -79,7 +79,7 @@
                 <div class="add_token_div" style="display: none" >
                     <hr style="border: 1px solid #5b89a3">
                     <div class="input_qty_div">
-                        <label>Add Token Quantity:</label>
+                        <label><span style="color:red">*</span>Add Token Quantity:</label>
                         <input type="text" name="adjustment_qty_add" id="add_token_input" _action="add" oninput="formatNumber(this)">
                     </div>
                     <div class="display_qty_div">
@@ -87,7 +87,7 @@
                         <input type="text" id="new_token_add" readonly>
                     </div>
                     <div class="reason_input_div">
-                        <label>Reason:</label>
+                        <label><span style="color:red">*</span>Reason:</label>
                         <textarea name="reason_add" id="textarea_add" cols="50" rows="1"></textarea>
                     </div>
                 </div>

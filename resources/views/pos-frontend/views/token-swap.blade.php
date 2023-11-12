@@ -140,9 +140,9 @@
 .swal2-confirm {
   width: 95px;
 }
-.presets {
+.presets, .paymaya {
   align-self: flex-start;
-  margin-top: 25px;
+  margin-top: 50px;
   background-color: #f0f0f0;
   width: 220px;
   height: 100%;
@@ -150,9 +150,18 @@
   flex-wrap: wrap;
   background-color: white;
   border-radius: 0 10px 10px 0px;
+  z-index: 5;
   transition: width 0.5s, height 0.5s;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
       rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  position: relative;
+}
+
+.paymaya{
+  padding: 10px;
+  border-radius: 0 10px 10px 10px;
+  margin-top: 0;
+  z-index: 4;
 }
 .presets-header {
   display: flex;
@@ -193,6 +202,14 @@
   grid-template-columns: auto auto auto;
   gap: 20px;
   margin: 16px;
+}
+.paymaya-div {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
 }
 .horizontal-line {
  	width: 100%;
@@ -315,18 +332,16 @@
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    /* height: 40px;
-    font-size: 20px;
-    background-color: #e60213;
-    border: none;
-    color: white;
-    border-radius: 10px;
-    transition: background-color 0.3s; */
   }
-  /* .btn-swap:hover {
-    background-color: #a43f3f;
-  } */
-
+  .btn-paymaya {
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+  }
 .btn-reset-div {
   margin: 16px 10px;
 }
@@ -426,12 +441,12 @@
         </div>
         <div class="horizontal-line"></div>
         <div class="presets-value-div">
-          @foreach ($presets as $preset)
+          @foreach ($tokens as $token)
             <button class="btn button-pushable" role="button">
               <span class="button-shadow"></span>
               <span class="button-edge"></span>
               <span class="button-front text">
-                  {{ $preset->value }}
+                  {{ $token->value }}
               </span>
           </button>
           @endforeach
@@ -448,7 +463,21 @@
         </button>
         </div>
       </div>
+        <div class="paymaya">
+          <div class="paymaya-div">
+            @foreach ($paymayas as $paymayas)
+              <button class="btn-paymaya button-pushable" role="button">
+                <span class="button-shadow"></span>
+                <span class="button-edge"></span>
+                <span class="button-front btn-paymaya">
+                    {{ $paymayas->value }}
+                </span>
+            </button>
+            @endforeach
+          </div>
+        </div>
     </div>
+
 </div>
 @endsection
 
@@ -466,6 +495,7 @@
           $('#mode_of_payment').attr('disabled', true);
           $("#cash_value").focus();
           $('#payment_reference_div').hide();
+          $('.paymaya').hide();
       });
     
     const float1Input = document.getElementById("cash_value");
@@ -527,6 +557,12 @@
             });
         });
 
+        $('.btn-paymaya').click(function () {
+          const paymayaPresetValue = $(this).text().trim();
+          $('#payment_reference').val(paymayaPresetValue + " ");
+          $('#payment_reference').focus() 
+        })
+
         $(document).ready(function() {
           $('.btn-reset').click(function() {
             amountReceivedInput.value = "";
@@ -537,6 +573,7 @@
             $("#mode_of_payment").val("");
             $('#mode_of_payment').attr('disabled', true);
             $('#payment_reference_div').fadeOut();
+            $('.paymaya').fadeOut(500);
 
             if(float1Input.readOnly) {
               $("#token_value").focus();  
@@ -644,13 +681,19 @@
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
 
-
+      if(selectedValue == 5) {
+        $('.paymaya').fadeIn(1000);
+      }
+      else {
+        $('.paymaya').fadeOut(1000);
+      }
         if(selectedValue != 1){
           $('#change_value').val('0');
           $('#payment_reference').val("");
           $('#reference').text("Reference Number"); 
           $('#payment_reference').fadeIn(); 
           $('#amount_received').hide(); 
+          
           $('#amount_received').val(""); 
           $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').focus();  
