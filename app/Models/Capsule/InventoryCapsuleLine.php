@@ -9,6 +9,16 @@ class InventoryCapsuleLine extends Model
 {
     use HasFactory;
     protected $table = 'inventory_capsule_lines';
+    protected $fillable = [
+        'inventory_capsules_id',
+        'gasha_machines_id',
+        'sub_locations_id',
+        'qty',
+        'created_by',
+        'created_at',
+        'updated_by',
+        'updated_at'
+    ];
 
     public function scopeGetMachineInv($query,$gasha_machines_id) {
         return $query->where('gasha_machines_id',$gasha_machines_id)->first();
