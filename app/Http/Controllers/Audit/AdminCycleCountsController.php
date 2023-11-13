@@ -381,14 +381,17 @@
                 foreach($item_value as $key_item => $value){
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
-                    $capsule = new CycleCount([
+                    $capsuleHeader = [
+                        'reference_number' => $cycleCountFloorRef,
+                        'locations_id' => $request->location_id
+                    ];
+
+                    $capsule = CycleCount::firstOrCreate($capsuleHeader,[
                         'reference_number' =>$cycleCountFloorRef,
                         'locations_id' => $request->location_id,
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
-
-                    $capsule->save();
 
                     $capsuleLines = new CycleCountLine([
                         'cycle_counts_id' => $capsule->id,
