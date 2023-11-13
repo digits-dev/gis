@@ -16,9 +16,9 @@ use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Token\AdminTokenAdjustmentsController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
-use App\Http\Controllers\capsule\AdminCapsuleRefillsController;
+use App\Http\Controllers\Capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
-use App\Http\Controllers\capsule\AdminCapsuleReturnsController;
+use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
@@ -95,6 +95,11 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
 
+    //CAPSULES IMPORT
+    Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/capsules-upload', [AdminCapsuleRefillsController::class, 'uploadCapsules']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/capsule_refills/upload-capsules',[AdminCapsuleRefillsController::class, 'saveUploadCapsules'])->name('upload-capsules');
+    Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/download-capsules-template',[AdminCapsuleRefillsController::class, 'downloadCapsulesTemplate']);
+
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
 
@@ -110,4 +115,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);
     Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/download-machines-template',[AdminImportController::class, 'downloadMachinesTemplate']);
+
+    
 });
