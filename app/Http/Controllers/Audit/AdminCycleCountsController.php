@@ -456,38 +456,8 @@
                     ]);
                 }
 
-
-
-                    // ->update();
-				// Gasha Machine
-
-				// $current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-				// ->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)->first()->qty;
-
-				// InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-				// 	->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)
-				// 	->update([
-				// 		// 'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $capsule->qty"),
-				// 		'inventory_capsule_lines.qty' => 0,
-				// 		'updated_by' => CRUDBooster::myId()
-				// ]);
-
-				// // Stockroom
-				// DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
-				// 	->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-				// 	->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-				// 	->where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-				// 	->where('inventory_capsules.item_code', $capsule->item_code)
-				// 	->update([
-				// 		'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
-				// 		'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
-				// ]);
-
-
 			}
             CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been created','success ')->send();
-
-			// return response()->json(['success'=>true, 'reference_number' => $cycleCountFloorRef, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
 		}
 
         public function getMachine(Request $request) {

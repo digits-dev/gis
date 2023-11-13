@@ -804,6 +804,7 @@
         $(document).on('click', '#deleteRow', function() {
             const machine = $(this).attr('machine');
             $(`tr[machine="${machine}"]`).remove();
+            $('#quantity_total').val(calculateTotalQuantity());
         });
 
         function populateOutsideTable(data){
