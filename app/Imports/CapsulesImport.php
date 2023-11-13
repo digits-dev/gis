@@ -168,11 +168,11 @@ class CapsulesImport implements ToCollection, WithHeadingRow, WithValidation
                     $onFailure('Invalid Jan No! Please refer to valid Jan No in system');
                 }
             },
-            // '*.machine_exist' => function($attribute, $value, $onFailure) {
-            //     if ($value['check'] === false) {
-            //         $onFailure('Machine not found!');
-            //     }
-            // },
+            '*.machine_exist' => function($attribute, $value, $onFailure) {
+                if ($value['check'] === false) {
+                    $onFailure('Machine not found!');
+                }
+            },
         ];
     }
 
