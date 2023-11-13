@@ -380,7 +380,7 @@
 			foreach($request->item_code as $key_machine => $item_value){
                 foreach($item_value as $key_item => $value){
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
-
+                    $item = Item::where('digits_code',$value)->first();
                     $capsule = new CycleCount([
                         'reference_number' =>$cycleCountFloorRef,
                         'locations_id' => $request->location_id,
@@ -411,6 +411,25 @@
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
                 }
+
+                $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+                    ->where('locations_id',$request->location_id)->first();
+
+
+                $capsuleInventoryLine = [
+                    'inventory_capsules_id'=>$capsuleInventory->id,
+                    'gasha_machines_id'=> $machine_id,
+                    'sub_locations_id'=> null
+                ];
+
+                InventoryCapsuleLine::updateOrCreate($capsuleInventoryLine,[
+                    'inventory_capsules_id' => $capsuleInventory->id,
+                    'gasha_machines_id'=> $machine_id,
+                    'qty' => $qty[$key_machine][$key_item],
+                    'updated_by' => CRUDBooster::myId(),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+                    // ->update();
 				// Gasha Machine
 
 				// $current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
@@ -446,7 +465,7 @@
 				// 	'created_at' => date('Y-m-d H:i:s')
 				// ]);
 			}
-            CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been created','success')->send();
+            CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been created','success ')->send();
 
 			// return response()->json(['success'=>true, 'reference_number' => $cycleCountFloorRef, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
 		}
