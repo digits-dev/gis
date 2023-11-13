@@ -100,7 +100,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#location_id').removeAttr('required');
 
 					$('#id_cms_privileges').change(function() {
-						if($(this).val() == 3 || $(this).val() == 5 || $(this).val() == 6){
+						if($(this).val() == 3 || $(this).val() == 5 || $(this).val() == 6 || $(this).val() == 7 || $(this).val() == 10 || $(this).val() == 11 || $(this).val() == 12){
 							$('#form-group-location_id').show();
 							$('#location_id').attr('required', 'required');
 						}else{
@@ -114,7 +114,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#location_id').removeAttr('required');
 
 					$('#id_cms_privileges').change(function() {
-						if($(this).val() == 3 || $(this).val() == 5 || $(this).val() == 6){
+						if($(this).val() == 3 || $(this).val() == 5 || $(this).val() == 6 || $(this).val() == 7 || $(this).val() == 10 || $(this).val() == 11 || $(this).val() == 12){
 							$('#form-group-location_id').show();
 							$('#location_id').attr('required', 'required');
 						}else{
@@ -123,7 +123,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						}
 					});
 
-					if($('#id_cms_privileges').val() == 3 || $('#id_cms_privileges').val() == 5 || $('#id_cms_privileges').val() == 6){
+					if($('#id_cms_privileges').val() == 3 || $('#id_cms_privileges').val() == 5 || $('#id_cms_privileges').val() == 6 || $('#id_cms_privileges').val() == 7 || $('#id_cms_privileges').val() == 10 || $('#id_cms_privileges').val() == 11 || $('#id_cms_privileges').val() == 12){
 						$('#form-group-location_id').show();
 						$('#location_id').attr('required', 'required');
 					}else{

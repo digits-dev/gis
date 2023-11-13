@@ -279,7 +279,7 @@
 				$query->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.statuses_id', 'asc')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,11])){
 				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 					  ->whereNull('collect_rr_tokens.deleted_at')
 					  ->whereNotNull('collect_rr_tokens.received_at')
