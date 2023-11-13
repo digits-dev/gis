@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Audit;
 
     use App\Models\Audit\CycleCount;
+    use App\Models\Audit\CycleCountLine;
     use App\Models\Capsule\CapsuleSales;
     use App\Models\Capsule\HistoryCapsule;
     use App\Models\Capsule\InventoryCapsule;
@@ -9,8 +10,8 @@
     use App\Models\Submaster\CapsuleActionType;
     use App\Models\Submaster\Counter;
     use App\Models\Submaster\GashaMachines;
-use App\Models\Submaster\Item;
-use App\Models\Submaster\Locations;
+    use App\Models\Submaster\Item;
+    use App\Models\Submaster\Locations;
     use App\Models\Submaster\SalesType;
     use Carbon\Carbon;
     use Session;
@@ -371,90 +372,83 @@ use App\Models\Submaster\Locations;
 			return $this->view("audit.cycle-count.add-cycle-count-stock-room", $data);
         }
 
-        public function submitcycleCountFloorRef(Request $request){
-
-            dd($request->all());
-
-			$return_inputs = $request->all();
-
-			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
-			$inventory_capsule = InventoryCapsule::get();
-
-			$filteredData = [];
-
-			foreach ($return_inputs as $key => $value) {
-				if (strpos($key, 'qty_') === 0) {
-					$newKey = substr($key, 4); // Remove "qty_" prefix
-					$filteredData[$newKey] = $value;
-				}
-			}
+        public function submitcycleCountFloor(Request $request){
 
 			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			$sales_rn = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
+			// $sales_rn = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
+            $qty = $request->qty;
+			foreach($request->item_code as $key_machine => $item_value){
+                foreach($item_value as $key_item => $value){
+                    $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
 
-			foreach($filteredData as $key=>$value){
+                    $capsule = new CycleCount([
+                        'reference_number' =>$cycleCountFloorRef,
+                        'locations_id' => $request->location_id,
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
 
-				$capsule = new CycleCount([
-					'reference_number' =>$cycleCountFloorRef,
-					'item_code' => $inventory_capsule->where('item_code', $key)->first()->item_code,
-					'qty' => (int) str_replace(',', '', $value),
-					'sub_locations_id' => $return_inputs['stock_room'],
-					'gasha_machines_id' => $gasha_machines->id,
-					'created_by' => CRUDBooster::myId(),
-					'created_at' => date('Y-m-d H:i:s')
-				]);
+                    $capsule->save();
 
-				$capsule->save();
+                    $capsuleLines = new CycleCountLine([
+                        'cycle_counts_id' => $capsule->id,
+                        'digits_code' => $value,
+                        'gasha_machines_id' => $machine_id,
+                        'qty' => $qty[$key_machine][$key_item],
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
 
-				HistoryCapsule::insert([
-					'reference_number' => $capsule->reference_number,
-					'item_code' => $capsule->item_code,
-					'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-					'gasha_machines_id' => $capsule->gasha_machines_id,
-					'locations_id' => $return_inputs['stock_room'],
-					'qty' => $capsule->qty,
-					'created_by' => CRUDBooster::myId(),
-					'created_at' => date('Y-m-d H:i:s')
-				]);
+                    $capsuleLines->save();
 
+                    HistoryCapsule::insert([
+                        'reference_number' => $capsule->reference_number,
+                        'item_code' => $value,
+                        'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                        'gasha_machines_id' => $machine_id,
+                        'locations_id' => $request->location_id,
+                        'qty' => $qty[$key_machine][$key_item],
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
 				// Gasha Machine
 
-				$current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-				->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)->first()->qty;
+				// $current_capsule_value = InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+				// ->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)->first()->qty;
 
-				InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-					->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)
-					->update([
-						// 'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $capsule->qty"),
-						'inventory_capsule_lines.qty' => 0,
-						'updated_by' => CRUDBooster::myId()
-				]);
+				// InventoryCapsuleLine::where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+				// 	->where('gasha_machines_id', $capsule->gasha_machines_id)->where('sub_locations_id', null)
+				// 	->update([
+				// 		// 'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $capsule->qty"),
+				// 		'inventory_capsule_lines.qty' => 0,
+				// 		'updated_by' => CRUDBooster::myId()
+				// ]);
 
-				// Stockroom
-				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
-					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-					->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-					->where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
-					->where('inventory_capsules.item_code', $capsule->item_code)
-					->update([
-						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
-						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
-				]);
+				// // Stockroom
+				// DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
+				// 	->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				// 	->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				// 	->where('inventory_capsules_id', $inventory_capsule->where('item_code', $key)->first()->id)
+				// 	->where('inventory_capsules.item_code', $capsule->item_code)
+				// 	->update([
+				// 		'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
+				// 		'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
+				// ]);
 
-				CapsuleSales::insert([
-					'reference_number' => $sales_rn,
-					'item_code' => $capsule->item_code,
-					'gasha_machines_id' => $capsule->gasha_machines_id,
-					'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
-					'locations_id' => $gasha_machines->location_id,
-					'qty' =>  abs($capsule->qty - $current_capsule_value),
-					'created_by' => CRUDBooster::myId(),
-					'created_at' => date('Y-m-d H:i:s')
-				]);
+				// CapsuleSales::insert([
+				// 	'reference_number' => $sales_rn,
+				// 	'item_code' => $capsule->item_code,
+				// 	'gasha_machines_id' => $capsule->gasha_machines_id,
+				// 	'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+				// 	'locations_id' => $gasha_machines->location_id,
+				// 	'qty' =>  abs($capsule->qty - $current_capsule_value),
+				// 	'created_by' => CRUDBooster::myId(),
+				// 	'created_at' => date('Y-m-d H:i:s')
+				// ]);
 			}
+            CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been created','success')->send();
 
-
-			return response()->json(['success'=>$filteredData, 'reference_number' => $cycleCountFloorRef, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
+			// return response()->json(['success'=>true, 'reference_number' => $cycleCountFloorRef, 'module_id'=>CRUDBooster::getCurrentModule()->id]);
 		}
 
         public function getMachine(Request $request) {

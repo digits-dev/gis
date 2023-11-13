@@ -169,7 +169,7 @@
                                     <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
                                 </tr>
                             </tbody>
-                            <tfoot> 
+                            <tfoot>
                                 <tr id="tr-table1" class="bottom">
                                     <td class="text-center">
                                         <button class="red-tooltip" id="add-Row" name="add-Row" title="Add Row">
@@ -210,8 +210,7 @@
                                 <div class="col-md-6 machine-form-group">
                                     <div class="form-group" style="display: flex; position: relative">
                                         <input input-for="machine" class="form-control text-center finput" type="text"
-                                            placeholder="Scan/Enter Machine" name="gasha_machines_id_inputed"
-                                            id="gasha_machines_id_inputed" autocomplete="off">
+                                            placeholder="Scan/Enter Machine" id="gasha_machines_id_inputed" autocomplete="off">
                                         <button btn-for="machine" type="button" class="btn btn-danger btn-sm open-camera" id="gm-camera"
                                             tabindex="-1"><i class="fa fa-camera"></i></button>
                                     </div>
@@ -395,7 +394,7 @@
 
                     } else if (!machine_code || !isInvalidMachine) {
                         $('.machine-form-group .machine-warning').remove();
-                        
+
                     } else {
                         const span = $('<span>').addClass('label label-danger machine-warning').text('Machine not Found!').css({
                             position: 'absolute',
@@ -442,7 +441,7 @@
         });
 
         $('#gasha_machines_id_inputed').on('input', function() {
-        
+
             $(this).val($(this).val().trim());
 
             clearTimeout(timeout);
@@ -627,7 +626,7 @@
         });
 
         $(document).on('keyup', '.item-data', function(e) {
-            
+
             if (e.which >= 37 && e.which <= 40) return;
 
             if (this.value.charAt(0) == '.') {
@@ -814,29 +813,32 @@
                 const newrow =`
                     <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${data.machine}">
                         ${index == 0 ? `
-                            <td rowspan="${rowspan}" class="td-style"> 
+                            <td rowspan="${rowspan}" class="td-style">
                                 ${data.machine}
+                                <input type="hidden" name="machine_code[]" value="${item.machine}">
                             </td> ` : ''
                         }
 
-                        <td class="td-style">${item.item_code}</td> 
-    
-                        <td class="td-style existing-item-description">${item.item_description}</td> 
-    
-                        <td class="td-style"> 
-                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="${item.qty}" autocomplete="off" required> 
-                        </td> 
+                        <td class="td-style">${item.item_code}
+                            <input type="hidden" name="item_code[${item.machine}][]" value="${item.item_code}">
+                        </td>
+
+                        <td class="td-style existing-item-description">${item.item_description}</td>
+
+                        <td class="td-style">
+                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required>
+                        </td>
 
                         ${index == 0 ? `
-                            <td rowspan=${rowspan} class="td-style"> 
+                            <td rowspan=${rowspan} class="td-style">
                                 <button id="deleteRow" machine="${data.machine}" class="btn btn-danger btn-sm removeRow">
                                     <i class="glyphicon glyphicon-trash"></i>
-                                </button> 
+                                </button>
                             </td>` : ''
                         }
-                        
+
                     </tr>
-    
+
                 `;
 
                 $('#cycle-count tbody').append(newrow);
