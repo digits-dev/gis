@@ -207,7 +207,7 @@
                                         <div id="reader"></div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 machine-form-group">
+                                <div class="col-md-12 machine-form-group">
                                     <div class="form-group" style="display: flex; position: relative">
                                         <input input-for="machine" class="form-control text-center finput" type="text"
                                             placeholder="Scan/Enter Machine" id="gasha_machines_id_inputed" autocomplete="off">
@@ -216,7 +216,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
                                     <div class="form-group" style="display: flex">
                                         <input input-for="searchitem" class="form-control text-center finput"
                                             type="text" placeholder="Scan/Enter Item Code" id="search_item"
@@ -226,7 +226,7 @@
                                                 class="fa fa-camera"></i></button>
                                         <div id="item_display_error"></div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-md-12">
                                     <table class="table table-responsive table-bordered" id="newItemModalTable">
@@ -402,7 +402,8 @@
                             });
                         });
                         $('#search_item').attr('readonly', true);
-                        $('#ic-camera').attr('disabled', true)
+                        $('#ic-camera').attr('disabled', true);
+                        $('#gasha_machines_id_inputed').attr('readonly', true)
                     } else {
                         const span = $('<span>').addClass('label label-danger machine-warning').text('Machine not Found!').css({
                             position: 'absolute',
@@ -449,15 +450,14 @@
         });
 
         $('#gasha_machines_id_inputed').on('input', function() {
-
             $(this).val($(this).val().trim());
-
-            clearTimeout(timeout);
-
-            timeout = setTimeout(() => {
-                checkMachine($('#gasha_machines_id_inputed').val());
-            }, 500);
         });
+
+        $('#gasha_machines_id_inputed').on('keypress', function(event) {
+            if (event.keyCode == 13) {
+                checkMachine($(this).val());
+            }
+        })
 
         //Add Row
         $('#add-Row').click(function(e) {
