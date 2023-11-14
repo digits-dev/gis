@@ -398,6 +398,7 @@
 			for($x=0; $x < count((array)$gm_serials); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gm_ids[$x];
+				$dataLines[$x]['no_of_token']        = $gm_tokens[$x];
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gm_tokens[$x]);
 				$dataLines[$x]['location_id']        = $location_id;
