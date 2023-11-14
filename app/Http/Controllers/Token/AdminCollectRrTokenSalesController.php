@@ -124,9 +124,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Update No of Token","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('update-no-of-token'),'color'=>'primary'];
-			}
+			// if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+			// 	$this->index_button[] = ["label"=>"Update No of Token","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('update-no-of-token'),'color'=>'primary'];
+			// }
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
