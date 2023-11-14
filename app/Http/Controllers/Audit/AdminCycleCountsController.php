@@ -23,7 +23,7 @@ use Carbon\Carbon;
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
         private const CYCLE_COUNT_ACTION = 'Cycle Count';
-        private const CYCLE_SALE_TYPE = 'CYCLEOUT';
+        private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
         private const STOCK_ROOM = 'STOCK ROOM';
 
 	    public function cbInit() {
@@ -362,9 +362,9 @@ use Carbon\Carbon;
         }
 
 		public function getDetail($id){
-			
+
 			$this->cbLoader();
-            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -373,7 +373,7 @@ use Carbon\Carbon;
 
 			$data['detail_header'] = CycleCount::detail($id);
 			$data['detail_body']   = CycleCountLine::detailBody($id);
-		
+
 			return $this->view("audit.cycle-count.detail-cycle-count", $data);
 		}
 
