@@ -15,7 +15,7 @@ class CreateAddOnsTable extends Migration
     {
         Schema::create('add_ons', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('digital_code')->length(20)->nullable();
+            $table->string('digits_code')->length(20)->nullable();
             $table->integer('qty')->length(10)->nullable();
             $table->string('description')->length(255)->nullable();
             $table->string('status')->nullable()->default('ACTIVE');

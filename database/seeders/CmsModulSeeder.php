@@ -351,6 +351,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Add Ons',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'add_ons',
+                'table_name'   => 'add_ons	',
+                'controller'   => 'Submaster\AdminAddOnsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {
