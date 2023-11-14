@@ -333,6 +333,10 @@
 		//    $reference_number             = "CT-".$header_ref;	
 		   $location_id                  = $fields['location_id'];
 		   $collected_qty                = intval(str_replace(',', '', $fields['quantity_total']));
+
+		   if($collected_qty == 0){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Not allow zero quantity!","danger");
+		   }
 		   
 		   $postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 		   $postdata['statuses_id']      = $this->collected;

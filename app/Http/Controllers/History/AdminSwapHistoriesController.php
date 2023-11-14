@@ -49,7 +49,12 @@
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
-			$this->form = [];
+			
+			if((CRUDBooster::isSuperadmin()) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
+				$this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"POSTED;VOID",'required'=>true, 'width'=>'col-sm-5');
+			}
+			if((CRUDBooster::isSuperadmin()) && (CRUDBooster::getCurrentMethod() == 'getDetail' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
+				$this->form = [];
 			$this->form[] = ['label'=>'Reference #','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Token Qty','name'=>'token_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Token Value','name'=>'total_value','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
@@ -60,7 +65,8 @@
             $this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'cms_users,name'];
 			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'date','validation'=>'required','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"POSTED;VOID",'required'=>true, 'width'=>'col-sm-5');
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/*
@@ -90,7 +96,16 @@
 	        |
 	        */
 	        $this->addaction = array();
-
+			if (CRUDBooster::isUpdate() && CRUDBooster::isSuperadmin() ) {
+				$this->addaction[] = [
+					'title'=>'Edit',
+					'url' => CRUDBooster::mainpath('requestVoid/[id]'),
+					'icon'=>'fa fa-pencil',
+					'color' => 'success',
+					'showIf' => '[status] != "VOID"'
+				];
+			}
+			
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -306,7 +321,11 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {
 	        //Your code here
+			$histories_status = DB::table('swap_histories')->where('id', $id)->value('status');
 
+			if ($histories_status == 'VOID') {
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Already Voided!","danger");
+			}
 	    }
 
 	    /*
@@ -318,7 +337,17 @@
 	    */
 	    public function hook_after_edit($id) {
 	        //Your code here
-
+			$histories_id = DB::table('swap_histories')->where('id', $id)->first();
+			DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID"]);
+			// $token_inventory = DB::table('token_inventories')->where('locations_id', $histories_id->locations_id)->first();
+			// $token_inventory_qty = $token_inventory->qty;
+			// $total_qty = $token_inventory_qty + $histories_id->token_value;
+			
+				DB::table('token_inventories')
+					->where('locations_id', $histories_id->locations_id)
+					->update([
+						'qty' =>  DB::raw("qty + $histories_id->token_value"),
+					]);
 	    }
 
 	    /*
@@ -345,9 +374,11 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :)
-
+		public function requestVoid ($id) {
+			$data = [];
+			$data['page_title'] = 'Void Token Swap History';
+			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
+			return view('history.token-swap-void', $data);
+		}
 
 	}

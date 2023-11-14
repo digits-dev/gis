@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
 use App\Http\Controllers\Submaster\AdminImportController;
+use App\Http\Controllers\History\AdminSwapHistoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +64,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
-
+    
     //POS Dashboard
     Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
 
@@ -106,7 +107,10 @@ Route::group(['middleware' => ['web']], function() {
     //Cycle Count
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-machine', [AdminCycleCountsController::class, 'getMachine'])->name('get-machine-cycle-count');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
-    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-return', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-sr-inventory-qty',[AdminCycleCountsController::class, 'checkStockRoomInventoryQty'])->name('check-sr-inventory-qty');
+
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-flr', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-sr', [AdminCycleCountsController::class, 'submitCycleCountStockRoom'])->name('submit-cycle-count-sr');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/validate-machine-items', [AdminCycleCountsController::class, 'validateMachineItems'])->name('validate-machine-items');
     Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/add-cycle-count-sr', [AdminCycleCountsController::class, 'getAddCycleCountStockRoom'])->name('get-add-cycle-count-stock-room');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-item-code', [AdminCycleCountsController::class, 'checkItem'])->name('check-item-code');
@@ -116,5 +120,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/download-machines-template',[AdminImportController::class, 'downloadMachinesTemplate']);
 
-
+    //SWAP HISTORY VOID BACKEND
+    Route::get(config('crudbooster.ADMIN_PATH').'/swap_histories/requestVoid/{id}', [AdminSwapHistoriesController::class, 'requestVoid']);
 });

@@ -18,15 +18,14 @@ class POSSwapHistoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         $is_missing_eod_or_sod = (new POSDashboardController)->check_sod_or_eod();
         if ($is_missing_eod_or_sod) {
             return $is_missing_eod_or_sod;
         }   
         $data = [];
         
-        $query = SwapHistory::leftjoin('cms_users', 'cms_users.id', 'swap_histories.created_by')
+        $swap_histories = SwapHistory::leftjoin('cms_users', 'cms_users.id', 'swap_histories.created_by')
         ->leftjoin('locations', 'locations.id', 'swap_histories.locations_id')
         ->leftjoin('token_action_types', 'token_action_types.id', 'swap_histories.type_id')
         ->leftjoin('mode_of_payments', 'mode_of_payments.id', 'swap_histories.mode_of_payments_id')
@@ -34,11 +33,15 @@ class POSSwapHistoryController extends Controller
         ->orderBy('swap_histories.created_at', 'desc');
     
         if (Auth::user()->id_cms_privileges != 1) {
-            $query->where('swap_histories.locations_id', Auth::user()->location_id);
+            $swap_histories->where('swap_histories.locations_id', Auth::user()->location_id);
         }
         
-        $data['swap_histories'] = $query->paginate(10);
+        // $data['swap_histories'] = $swap_histories->filter(request(['search']))->paginate(10);
 
+        $searchTerm = request('search');
+
+        $data['swap_histories'] = $swap_histories->filter(['search' => $searchTerm])->paginate(10);
+        $data['swap_histories']->appends(['search' => $searchTerm]);
         return view('pos-frontend.views.swap-history', $data);
     }
 
