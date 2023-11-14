@@ -380,6 +380,7 @@
                 success: function(res) {
                     $('.machine-form-group .machine-warning').remove();
                     const data = JSON.parse(res);
+                    console.log('items are ', data);
                     const existingMachines = $('#cycle-count .existing-machines').get().map(e => $(e).attr('machine'));
                     const alreadyExists = existingMachines.includes(machine_code);
                     const isInvalidMachine = $.isEmptyObject(data.machines);

@@ -552,14 +552,14 @@ use Carbon\Carbon;
         }
 
         public function getMachine(Request $request) {
-			$machines = GashaMachines::getMachineByLocation($request->machine_code,$request->location_id);
+			$machines = GashaMachines::getMachineByLocation($request->machine_code,$request->get('location_id'));
 			$machine = GashaMachines::where('serial_number', $request->machine_code)->first();
 			$item = Item::where('digits_code', $request->item_code)->first();
 			$inventory_lines = InventoryCapsuleLine::leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 				->select('items.*')
-				->where('inventory_capsules.locations_id', $machines->location_id)
-				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
+				->where('inventory_capsules.locations_id', $request->get('location_id'))
 				->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
+				->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
 				->get();
 			return json_encode([
 				'machines' => $machines,
@@ -569,13 +569,13 @@ use Carbon\Carbon;
 		}
 
 		public function checkInventoryQty(Request $request){
-            $capsuleInventory = InventoryCapsule::getByLocation($request->location_id);
+            $capsuleInventory = InventoryCapsule::getByLocation($request->get('location_id'));
             return json_encode(['capsuleInventory' => $capsuleInventory]);
 		}
 
         public function validateMachineItems(Request $request){
 
-			$gasha_machines = GashaMachines::getMachineByLocation($request->machine_code,$request->location_id);
+			$gasha_machines = GashaMachines::getMachineByLocation($request->machine_code,$request->get('location_id'));
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
 			$inventory_capsules = InventoryCapsule::get();
 			$list_of_ic = $inventory_capsules->whereIn('id', InventoryCapsuleLine::getCapsuleNotZeroQty($gasha_machines->id));
