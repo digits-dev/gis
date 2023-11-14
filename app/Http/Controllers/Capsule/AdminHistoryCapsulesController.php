@@ -31,9 +31,9 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
-			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
-            $this->col[] = ["label"=>"Digits Code","name"=>"item_code","join"=>"items,digits_code2","join_id"=>"digits_code"];
-			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code"];
+			$this->col[] = ["label"=>"JAN #","name"=>"item_code","join"=>"items,digits_code","join_id"=>"digits_code2"];
+            $this->col[] = ["label"=>"Digits Code","name"=>"item_code","join"=>"items,digits_code2","join_id"=>"digits_code2"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Capsule Action Type","name"=>"capsule_action_types_id","join"=>"capsule_action_types,description"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
