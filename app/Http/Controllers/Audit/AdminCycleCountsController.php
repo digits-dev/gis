@@ -400,7 +400,7 @@ use Carbon\Carbon;
                 foreach($item_value as $key_item => $value){
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
-                    $fqty = preg_replace('/,/', '', $qty[$key_machine][$key_item]);
+                    $fqty = str_replace(',', '', $qty[$key_machine][$key_item]);
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
                         'locations_id' => $request->location_id
