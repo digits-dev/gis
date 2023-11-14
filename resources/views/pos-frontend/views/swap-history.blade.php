@@ -37,12 +37,84 @@
     .swal2-confirm {
         width: 95px;
     }
+    .search-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 8px;
+        position: relative;
+    }
+    .search-bar {
+        padding: 10px 8px;
+        border: 1px solid gray;
+        border-radius: 10px;
+        width: 400px;
+        align-self: flex-end;
+    }
+    .search-btn-container {
+        position: absolute;
+        top: 5px;
+        right: 4px;
+    }
+    .search-btn {
+        padding: 6px 10px;
+        background-color: #dd2a40;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+    .search-btn:hover {
+        filter: brightness(110%);
+    }
 </style>
 @endsection
 
 {{-- Define the content to be included in the 'content' section --}}
 @section('content')
+
 <div class="responsive_table">
+    {{-- <form action="/pos_swap_history">
+        <div class="relative border-2 border-gray-100 m-4 rounded-lg">
+            <div class="absolute top-4 left-3">
+                <i
+                    class="fa fa-search text-gray-400 z-20 hover:text-gray-500"
+                ></i>
+            </div>
+            <input
+                type="text"
+                name="search"
+                class="h-14 w-full pl-10 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
+                placeholder="Search Laravel Gigs..."
+            />
+            <div class="absolute top-2 right-2">
+                <button
+                    type="submit"
+                    class="h-10 w-20 text-white rounded-lg bg-red-500 hover:bg-red-600"
+                >
+                    Search
+                </button>
+            </div>
+        </div>
+    </form> --}}
+    <form action="/pos_swap_history">
+        <div class="search-container">
+            <input
+                class="search-bar"
+                autofocus
+                type="text"
+                name="search"
+                placeholder="Search"
+            />
+            <div class="search-btn-container">
+                <button
+                class="search-btn"
+                    type="submit"
+                >
+                    Search
+                </button>
+            </div>
+        </div>
+    </form>
     <table id="myTable" class="display" style="width:100%">
         <thead>
             <tr>

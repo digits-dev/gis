@@ -353,6 +353,13 @@
  display: none;
 }
 
+.swal-button--confirm{
+ background-color: #7066e0;
+}
+
+.swal-footer {
+  text-align: center; 
+}
 </style>
 @endsection
 
@@ -423,7 +430,7 @@
             {{-- <button class="btn-swap" type="submit" >Swap</button> --}}
               <button class="button-pushable btn-swap" role="button">
           <span class="button-shadow"></span>
-          <span class="button-edge"></span>
+          <span class="button-edge btn-swap-edge"></span>
           <span class="button-front text btn-swap">
             <i style="margin-right: 10px;" class="fa-solid fa-rotate"></i>
              Swap
@@ -487,6 +494,7 @@
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
 
       $(document).ready(function() {
@@ -496,7 +504,10 @@
           $("#cash_value").focus();
           $('#payment_reference_div').hide();
           $('.paymaya').hide();
+     
       });
+
+
     
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
@@ -782,7 +793,7 @@
       // amountReceivedInput.value = totalElement.value;
       amountReceivedInput.value = "";
     }
-    
+
     $(document).ready(function() {
     $('form').submit(function(e) {
         e.preventDefault(); // Prevent the form from submitting the traditional way.
@@ -836,53 +847,77 @@
                   })
                 }
         else {
-          Swal.fire({
-                  title: 'Are you sure you want to continue?',
-                  icon: 'info',
-                  html: '<table class="styled-table-swap">' +
-                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+          $('.btn-swap').css({"background-color": "gray", "border-radius": "12px"});
+          $('.btn-swap').attr('disabled', true);
+                      swal({
+                        title: 'Are you sure you want to continue?',
+                        icon: 'info',
+                        closeOnClickOutside: false,
+                        content: {
+                        element: "table",
+                        attributes: {
+                          className: "styled-table-swap",
+                          innerHTML: '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                           '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                           ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
                           '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '</table>',
-                  showCancelButton: true,
-                  reverseButtons: true,
-                  confirmButtonText: 'Yes',
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    $.ajax({
-                    type: 'POST',
-                    url: "{{ route('swap') }}",
-                    data: formData,
-                    success: function(res) {
-                        const data = JSON.parse(res);
-                        console.log(data)
-                    if (data.message === 'success') {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Swap Successfully!',
-                    allowOutsideClick: false,
-                    html: '<table class="styled-table-swap">' +
-                          '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
-                          '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
-                          ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
-                          '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '</table>',
-                  }).then((result) => {
-                          history.go(0);
-                        })
-                } 
+                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' 
+                        }
+                      },
+                        buttons: {
+                          cancel: {
+                              text: "Cancel",
+                              visible: true,
+                              closeModal: true,
+                          },
+                          confirm: {
+                              text: "Yes",
+                              closeModal: false,
+                          },
+                  },
+                    }).then(save => {
+                      if (save) {
+                        // setTimeout(() => {
+                          return $.ajax({
+                            type: 'POST',
+                            url: "{{ route('swap') }}",
+                            data: formData,
+                            success: function(res) {
+                                const data = JSON.parse(res);
+                                console.log(data)
+                              swal.stopLoading();
+                              swal.close();
+                              if (data.message === 'success') {
+                                Swal.fire({
+                                  icon: 'success',
+                                  title: 'Swap Successfully!',
+                                  allowOutsideClick: false,
+                                  html: '<table class="styled-table-swap">' +
+                                        '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
+                                        '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                                        '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
+                                        ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
+                                        '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                                        '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                                        '</table>',
+                                }).then((result) => {
+                                        history.go(0);
+                                })
+                            } 
+                          },
+                          error: function(err) {
+                              console.log(err);
+                          }
+                            });
+                        // }, 6000);
+                        
+                      } else {
+                        $('.btn-swap').css({"background-color": "#e60213", "border-radius": "12px"});
+                        $('.btn-swap').attr('disabled', false);
+                        }   
+                    
+                    })
 
-            },
-            error: function(err) {
-                console.log(err);
-            }
-                });
-                  }
-              })
         }
     });
 });
