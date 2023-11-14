@@ -481,6 +481,12 @@
         //Add Row
         $('#add-cycle-count').on('click', function(event) {
             event.preventDefault();
+            const allItemQty = $('table tbody .itemQty').get();
+            const isValid = allItemQty.every(e => $(e).val() && Number($(e).val().replace(/\D/g, '')) <= Number($(e).attr('max-qty')));
+            if (!isValid) {
+                $(this).attr('disabled', false);
+                return;
+            }
             const data = {
                 items: []
             };
