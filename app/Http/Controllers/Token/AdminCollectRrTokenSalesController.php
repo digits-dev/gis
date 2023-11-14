@@ -1,9 +1,16 @@
 <?php namespace App\Http\Controllers\Token;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Excel;
+	use Maatwebsite\Excel\HeadingRowImport;
+	use App\Imports\UpdateNoOfTokenImport;
 
 	class AdminCollectRrTokenSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -32,11 +39,12 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"collected_token_id","join"=>"collect_rr_tokens,reference_number"];
 			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"No of token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty",'callback_php'=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Variance","name"=>"variance"];
 			$this->col[] = ["label"=>"Current cash value","name"=>"current_cash_value"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Collected Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -116,8 +124,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"Update No of Token","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('update-no-of-token'),'color'=>'primary'];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -342,9 +351,37 @@
 
 	    }
 
+		//IMPORT
+		public function UploadNoOfToken() {
+			$data['page_title']= 'Update No Of Token in Collect Token Lines';
+			return view('import.collect-token.update-no-of-token-lines', $data)->render();
+		}
 
+		public function saveNoOfToken(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			$headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
 
-	    //By the way, you can still create your own method in here... :) 
+			try {
+				Excel::import(new UpdateNoOfTokenImport, $path);	
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Upload Successfully!"), 'success');
+
+			} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+				$failures = $e->failures();
+				$error = [];
+				foreach ($failures as $failure) {
+					$line = $failure->row();
+					foreach ($failure->errors() as $err) {
+						$error[] = $err . " on line: " . $line;
+					}
+				}
+				$errors = collect($error)->unique()->toArray();
+			}
+			CRUDBooster::redirect(CRUDBooster::mainpath(), $errors[0], 'danger');
+
+			
+
+		}
 
 
 	}
