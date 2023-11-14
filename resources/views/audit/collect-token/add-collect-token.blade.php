@@ -233,27 +233,13 @@
     $("#qty_inputed").keyup(function(){
         var value = $(this).val();
         value = value.replace(/^(0*)/,"");
-        $(this).val(value);
-
-       
+        $(this).val(value); 
     });
 
     $('#gasha_machines_id_inputed, #qty_inputed').keydown(function(event) { 
         if (event.keyCode == 13) {
             event.preventDefault();
         }
-    });
-
-    $(function() {
-        var regExp = /[a-z]/i;
-        $('#qty_inputed').on('keydown keyup', function(e) {
-            var value = String.fromCharCode(e.which) || e.key;
-            // No letters
-            if (regExp.test(value)) {
-            e.preventDefault();
-            return false;
-            }
-        });
     });
 
     $(function(){
@@ -609,7 +595,7 @@
     });
     
     function calculate(input){
-        if(input.value  % $('#machine_token_qty').val() === 0){
+        if(parseInt(input.value)  % $('#machine_token_qty').val() === 0){
             $('#display_error').html('');
         }else{
             $('#display_error').html(`<span id="notif" class="label label-danger">Collect token not divisible by machine token capacity ${$('#machine_token_qty').val()}</span>`);
