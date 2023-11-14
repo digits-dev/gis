@@ -369,7 +369,8 @@
 			$data['locations'] = Locations::activeDisburseToken();
 			$data['gasha_machines'] = GashaMachines::activeMachines();
 			$data['dateTime'] = Carbon::now()->format('Y-m-d H:i:s');
-			return $this->view("audit.cycle-count.add-cycle-count-stock-room", $data);
+
+            return $this->view("audit.cycle-count.add-cycle-count-stock-room", $data);
         }
 
         public function submitcycleCountFloor(Request $request){
@@ -501,5 +502,10 @@
 			}
 
 			return json_encode(['item'=>$item, 'machine'=>$machine]);
+		}
+
+        public function checkStockRoomInventoryQty(Request $request){
+            $capsuleInventory = InventoryCapsule::getInventoryByLocation($request->location_id);
+            return json_encode(['capsuleInventory' => $capsuleInventory]);
 		}
 	}

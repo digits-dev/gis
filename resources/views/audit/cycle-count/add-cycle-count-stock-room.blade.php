@@ -287,18 +287,17 @@
 
             $.ajax({
                 type: 'POST',
-                url: "{{ route('check-inventory-qty') }}",
+                url: "{{ route('check-sr-inventory-qty') }}",
                 data: {
                     "location_id": $(this).val()
                 },
                 success: function(res) {
                     const data = JSON.parse(res);
                     if ($.isEmptyObject(data.capsuleInventory)) {
-                        $('#add-Row').attr('disabled', true);
                         $('#location_error').text('No available inventory');
                     } else {
                         $('#location_error').text('');
-                        $('#add-Row').attr('disabled', false);
+                        populateOutsideTable(data.capsuleInventory);
                     }
                     console.log(res);
                 }
@@ -803,34 +802,25 @@
 
         function populateOutsideTable(data){
 
-            data.items.forEach((item, index) => {
-                let rowspan = data.items.length;
+            data.forEach((item, index) => {
                 const newrow =`
-                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${data.machine}">
-                        ${index == 0 ? `
-                            <td rowspan="${rowspan}" class="td-style">
-                                ${data.machine}
-                                <input type="hidden" name="machine_code[]" value="${item.machine}">
-                            </td> ` : ''
-                        }
+                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724">
 
-                        <td class="td-style">${item.item_code}
-                            <input type="hidden" name="item_code[${item.machine}][]" value="${item.item_code}">
+                        <td class="td-style">${item.digits_code}
+                            <input type="hidden" name="item_code[]" value="${item.digits_code}">
                         </td>
 
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required>
+                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="${item.stockroom_capsule_qty}" autocomplete="off" required>
                         </td>
 
-                        ${index == 0 ? `
-                            <td rowspan=${rowspan} class="td-style">
-                                <button id="deleteRow" machine="${data.machine}" class="btn btn-danger btn-sm removeRow">
-                                    <i class="glyphicon glyphicon-trash"></i>
-                                </button>
-                            </td>` : ''
-                        }
+                        <td class="td-style">
+                            <button id="deleteRow" machine="${item.digits_code2}" class="btn btn-danger btn-sm removeRow">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </td>
 
                     </tr>
 
