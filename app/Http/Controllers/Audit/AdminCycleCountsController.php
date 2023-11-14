@@ -538,16 +538,16 @@ use Carbon\Carbon;
         public function getMachine(Request $request) {
 			$machines = GashaMachines::getMachineByLocation($request->machine_code,$request->location_id);
 			$machine = GashaMachines::where('serial_number', $request->machine_code)->first();
-			$item = Item::where('digits_code', $return_inputs['item_code'])->first();
+			$item = Item::where('digits_code', $request->item_code)->first();
 			$inventory_lines = InventoryCapsuleLine::leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 				->select('items.*')
 				->where('inventory_capsules.locations_id', $machines->location_id)
 				->leftJoin('items', 'items.digits_code', 'inventory_capsules.item_code')
-				->where('inventory_capsule_lines.gasha_machines_id', $machines_id)
+				->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
 				->get();
 			return json_encode([
-				'machines' => $machines, 
-				'items' => $inventory_lines, 
+				'machines' => $machines,
+				'items' => $inventory_lines,
 				'machine' => $machine,
 			]);
 		}
