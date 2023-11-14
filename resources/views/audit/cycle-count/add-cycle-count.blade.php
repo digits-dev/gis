@@ -259,7 +259,7 @@
             </div>
 
             <div class='panel-footer'>
-                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <a href="#" id="cancel-form" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save"></i>
                     {{ trans('message.form.new') }}</button>
             </div>
@@ -268,13 +268,13 @@
 @endsection
 @push('bottom')
     <script type="text/javascript">
-        // function preventBack() {
-        //     window.history.forward();
-        // }
-        // window.onunload = function() {
-        //     null;
-        // };
-        // setTimeout("preventBack()", 0);
+        function preventBack() {
+            window.history.forward();
+        }
+        window.onunload = function() {
+            null;
+        };
+        setTimeout("preventBack()", 0);
         $('#location_id').select2();
 
         var tableRow = 1;
@@ -881,6 +881,23 @@
                     description: item.attr('description'),
                     qty: item.val(),
                 });
+            });
+        });
+
+        $('#cancel-form').on('click', function() {
+            Swal.fire({
+                title: "Are you sure you want to cancel?",
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                showCancelButton: true,
+                returnFocus: false,
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.assign("{{ CRUDBooster::mainPath() }}");
+                }
             });
         });
     </script>
