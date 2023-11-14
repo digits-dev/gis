@@ -130,7 +130,7 @@
  
                             </tr>      
                         @foreach($detail_body as $row)
-                                <tr style="background-color: #f8d7da; color:#721c24">
+                                <tr>
                                     <td style="text-align:center" height="10">
                                         {{$row->serial_number}}                               
                                     </td>
