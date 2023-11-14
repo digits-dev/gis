@@ -400,6 +400,7 @@ use Carbon\Carbon;
                 foreach($item_value as $key_item => $value){
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
+                    $fqty = preg_replace('/,/', '', $qty[$key_machine][$key_item]);
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
                         'locations_id' => $request->location_id
@@ -416,7 +417,7 @@ use Carbon\Carbon;
                         'cycle_counts_id' => $capsule->id,
                         'digits_code' => $value,
                         'gasha_machines_id' => $machine_id,
-                        'qty' => $qty[$key_machine][$key_item],
+                        'qty' => $fqty,
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
 
@@ -428,12 +429,11 @@ use Carbon\Carbon;
                         'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
                         'gasha_machines_id' => $machine_id,
                         'locations_id' => $request->location_id,
-                        'qty' => $qty[$key_machine][$key_item],
+                        'qty' => $fqty,
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
                 }
-
                 $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
                     ->where('locations_id',$request->location_id)->first();
 
@@ -448,7 +448,7 @@ use Carbon\Carbon;
                         'inventory_capsules_id' => $capsuleInventory->id,
                         'gasha_machines_id'=> $machine_id
                     ])->update([
-                        'qty' => $qty[$key_machine][$key_item],
+                        'qty' => $fqty,
                         'updated_by' => CRUDBooster::myId(),
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
@@ -460,7 +460,7 @@ use Carbon\Carbon;
                         'gasha_machines_id' => $machine_id,
                         'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
                         'locations_id' => $request->location_id,
-                        'qty' =>  abs($qty[$key_machine][$key_item] - $capsuleInventoryLine->qty),
+                        'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
@@ -469,7 +469,7 @@ use Carbon\Carbon;
                     InventoryCapsuleLine::insert([
                         'inventory_capsules_id' => $capsuleInventory->id,
                         'gasha_machines_id'=> $machine_id,
-                        'qty' => $qty[$key_machine][$key_item],
+                        'qty' => $fqty,
                         'updated_by' => CRUDBooster::myId(),
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
