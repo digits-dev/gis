@@ -557,7 +557,7 @@ use Carbon\Carbon;
 			$machine = GashaMachines::where('serial_number', $request->machine_code)->first();
 			$item = Item::where('digits_code', $request->item_code)->first();
 			$inventory_lines = InventoryCapsuleLine::leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-				->select('items.*')
+				->select('items.*', 'inventory_capsule_lines.qty')
 				->where('inventory_capsules.locations_id', $request->get('location_id'))
 				->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
 				->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')

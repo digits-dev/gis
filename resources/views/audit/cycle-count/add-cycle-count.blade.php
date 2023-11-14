@@ -380,7 +380,7 @@
                 success: function(res) {
                     $('.machine-form-group .machine-warning').remove();
                     const data = JSON.parse(res);
-                    console.log('items are ', data);
+                    console.log(data);
                     const existingMachines = $('#cycle-count .existing-machines').get().map(e => $(e).attr('machine'));
                     const alreadyExists = existingMachines.includes(machine_code);
                     const isInvalidMachine = $.isEmptyObject(data.machines);
@@ -403,7 +403,8 @@
                         });
                         $('#search_item').attr('readonly', true);
                         $('#ic-camera').attr('disabled', true);
-                        $('#gasha_machines_id_inputed').attr('readonly', true)
+                        $('#gasha_machines_id_inputed').attr('readonly', true);
+                        $('#gm-camera').attr('disabled', true);
                     } else {
                         const span = $('<span>').addClass('label label-danger machine-warning').text('Machine not Found!').css({
                             position: 'absolute',
@@ -561,7 +562,7 @@
 
         function validateModal() {
             const allItemQty = $('table tbody .itemQty').get();
-            const isValid = allItemQty.every(e => $(e).val());
+            const isValid = allItemQty.every(e => $(e).val() && Number($(e).val().replace(/\D/g, '')) <= Number($(e).attr('max-qty')));
             $('#search_item').attr('readonly', !isValid);
             $('#add-cycle-count, #ic-camera').attr('disabled', !isValid);
         }
@@ -662,6 +663,14 @@
                     .replace(/\D/g, "")
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             });
+
+            const max = Number($(this).attr('max-qty'));
+            const val = Number($(this).val().replace(/\D/g, ''));
+            if (val > max) {
+                $(this).css('border', '2px solid red');
+            } else {
+                $(this).css('border', '');
+            }
 
             $('#total-item-qty').text(calculateItemQuantity());
             validateModal();
@@ -787,7 +796,7 @@
                 let newItem = `
                 <tr>
                     <td class='text-center existing-item-code'>${searchedItem}</td>
-                    <td><input item-description="${data.item.item_description}" machine='${data.machine.serial_number}' item-code='${searchedItem}' class='form-control text-center finput itemQty item-data' type='text' placeholder='Qty' name='item_qty[]' style='width:100%' autocomplete='off'</td>
+                    <td><input item-description="${data.item.item_description}" machine='${data.machine.serial_number}' item-code='${searchedItem}' max-qty='${data.item.qty}' class='form-control text-center finput itemQty item-data' type='text' placeholder='Qty' name='item_qty[]' style='width:100%' autocomplete='off'</td>
                 </tr>`;
 
                 $(newItem).prependTo($('#newItemModalTable tbody'));
@@ -836,7 +845,7 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required>
+                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required readonly>
                         </td>
 
                         ${index == 0 ? `
