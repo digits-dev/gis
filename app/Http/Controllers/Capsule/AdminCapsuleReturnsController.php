@@ -370,7 +370,7 @@ use App\Models\Submaster\Locations;
 			}
 			
 			$capsule_return_rn = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			$sales_rn = Counter::getNextReference(DB::table('cms_moduls')->where('name', 'Capsule Sales')->first()->id);
+			// $sales_rn = Counter::getNextReference(DB::table('cms_moduls')->where('name', 'Capsule Sales')->first()->id);
 			
 			foreach($filteredData as $key=>$value){
 				$inventory_capsule = InventoryCapsule::leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
@@ -429,7 +429,7 @@ use App\Models\Submaster\Locations;
 				]);
 
 				CapsuleSales::insert([
-					'reference_number' => $sales_rn,
+					'reference_number' => $capsule->reference_number,
 					'item_code' => $capsule->item_code,
 					'gasha_machines_id' => $capsule->gasha_machines_id,
 					'sales_type_id' => SalesType::where('description', 'RETURN')->first()->id,
