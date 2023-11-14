@@ -443,7 +443,7 @@
 			// creating history for the transaction
 			HistoryCapsule::insert([
 				'reference_number' => $reference_number,
-				'item_code' => $item_code,
+				'item_code' => $item->digits_code2,
 				'capsule_action_types_id' => $action_type->id,
 				'locations_id' => $locations_id,
 				'gasha_machines_id' => $machine->id,
