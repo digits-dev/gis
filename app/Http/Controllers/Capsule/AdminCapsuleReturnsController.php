@@ -391,7 +391,7 @@ use App\Models\Submaster\Locations;
 				$capsule->save();
 
 				$items = Item::where('digits_code', $capsule->item_code)->get()->first();
-				
+
 				HistoryCapsule::insert([
 					'reference_number' => $capsule->reference_number,
 					'item_code' => $items->digits_code2,
@@ -449,9 +449,12 @@ use App\Models\Submaster\Locations;
 
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
-			$inventory_capsules = InventoryCapsule::get();
+			$inventory_capsules = new InventoryCapsule;
 			$list_of_gm = $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->where('qty', '>', 0)->pluck('inventory_capsules_id');
-			$list_of_ic = $inventory_capsules->whereIn('id', $list_of_gm);
+			$list_of_ic = $inventory_capsules->whereIn('inventory_capsules.id', $list_of_gm)->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
+				->select('inventory_capsules.*',
+					'items.digits_code')
+				->get();
 			$validateGM = $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->first();
 			$validateQty = $return_inputs['qty'] > $validateGM->qty;
 
