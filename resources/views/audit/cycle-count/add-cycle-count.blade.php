@@ -382,9 +382,7 @@
                     const data = JSON.parse(res);
                     const existingMachines = $('#cycle-count .existing-machines').get().map(e => $(e).attr('machine'));
                     const alreadyExists = existingMachines.includes(machine_code);
-                    console.log(existingMachines, machine_code);
                     const isInvalidMachine = $.isEmptyObject(data.machines);
-                    console.log(data.machines);
                     if (alreadyExists) {
                         const span = $('<span>').addClass('label label-danger machine-warning').text('Machine already exists in table!').css({
                             position: 'absolute',
@@ -392,9 +390,18 @@
                         });
                         $('.machine-form-group').append(span);
 
-                    } else if (!machine_code || !isInvalidMachine) {
+                    } else if (!machine_code) {
                         $('.machine-form-group .machine-warning').remove();
-
+                    } else if (!isInvalidMachine) {
+                        $('.machine-form-group .machine-warning').remove();
+                        data.items.forEach(item => {
+                            populateTable({
+                                item,
+                                machine: data.machine,
+                            });
+                        });
+                        $('#search_item').attr('readonly', true);
+                        $('#ic-camera').attr('disabled', true)
                     } else {
                         const span = $('<span>').addClass('label label-danger machine-warning').text('Machine not Found!').css({
                             position: 'absolute',
@@ -584,8 +591,9 @@
                         _token: $('#token').val(),
                     },
                     success: function(res){
-                        console.log(JSON.parse(res));
+                        // console.log(JSON.parse(res));
                         const data = JSON.parse(res);
+                        console.log(data);return;
 
                         if(data.missing){
                             Swal.fire({

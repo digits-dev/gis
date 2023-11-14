@@ -14,7 +14,8 @@ class InventoryCapsule extends Model
     public function scopeGetByLocation($query,$location_id) {
         return $query->where('inventory_capsules.locations_id', $location_id)
             ->leftJoin('locations','inventory_capsules.locations_id','=','locations.id')
-            ->select('inventory_capsules.item_code','inventory_capsules.onhand_qty','locations.location_name')
+            ->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
+            ->select('inventory_capsules.item_code','inventory_capsule_view.onhand_qty','locations.location_name')
             ->first();
     }
 
