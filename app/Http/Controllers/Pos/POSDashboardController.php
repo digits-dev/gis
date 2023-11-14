@@ -31,7 +31,7 @@ class POSDashboardController extends Controller
                 
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
-        $data['mode_of_payments'] = ModeOfPayment::get();
+        $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
         $data['no_of_tokens'] = TokenInventory::where('locations_id', $location_id)->first()->qty;
         $data['no_of_capsules_in_stock_room'] =DB::table('inventory_capsules')
             ->where('locations_id', $location_id)
