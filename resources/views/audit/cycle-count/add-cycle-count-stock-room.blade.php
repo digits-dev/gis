@@ -367,9 +367,7 @@
                         </td>
 
                         <td class="td-style">
-                            <button id="deleteRow" machine="${item.digits_code2}" class="btn btn-danger btn-sm removeRow" tabindex="-1">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </button>
+
                         </td>
 
                     </tr>
