@@ -471,7 +471,7 @@
                                 <form type="POST" id="swal_form">
                                     <input class="hidden" value="{{ csrf_token() }}">
                                     <div class="swal-inputs">
-                                        <label>Item Code</label>
+                                        <label>Jan #</label>
                                         <label>QTY</label>
                                     </div>
                                 </form>

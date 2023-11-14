@@ -390,9 +390,11 @@ use App\Models\Submaster\Locations;
 
 				$capsule->save();
 
+				$items = Item::where('digits_code', $capsule->item_code)->get()->first();
+				
 				HistoryCapsule::insert([
 					'reference_number' => $capsule->reference_number,
-					'item_code' => $capsule->item_code,
+					'item_code' => $items->digits_code2,
 					'capsule_action_types_id' => CapsuleActionType::where('description', 'Return')->first()->id,
 					'gasha_machines_id' => $capsule->gasha_machines_id,
 					'locations_id' => $return_inputs['stock_room'],
@@ -420,7 +422,7 @@ use App\Models\Submaster\Locations;
 					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
 					->where('inventory_capsules_id', $inventory_capsule_id)
-					->where('inventory_capsules.item_code', $capsule->item_code)
+					->where('inventory_capsules.item_code', $items->digits_code2)
 					->update([
 						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
 						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
