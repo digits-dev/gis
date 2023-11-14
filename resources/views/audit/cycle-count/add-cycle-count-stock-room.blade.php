@@ -292,7 +292,7 @@
                 let qty = $('input[name^="qty[]"]').length;
                 let qty_value = $('input[name^="qty[]"]');
                 for (i = 0; i < qty; i++) {
-                    if (qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null) {
+                    if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null) {
                         swal({
                             type: 'error',
                             title: 'Qty cannot be empty!',
