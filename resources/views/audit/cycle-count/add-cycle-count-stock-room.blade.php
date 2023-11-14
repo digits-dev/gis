@@ -369,7 +369,7 @@
                         </td>
 
                         <td class="td-style">
-
+                            ${index+1}
                         </td>
 
                     </tr>
