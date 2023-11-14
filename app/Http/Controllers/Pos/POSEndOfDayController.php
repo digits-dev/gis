@@ -26,7 +26,7 @@ class POSEndOfDayController extends Controller
 
 
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
-        $data['mode_of_payments'] = ModeOfPayment::get();
+        $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
         $missing_eod = DB::table('float_entry_view')
             ->where('locations_id',$location_id )
             ->where('eod',null)
