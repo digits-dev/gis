@@ -26,10 +26,11 @@ class POSSwapHistoryController extends Controller
         $data = [];
         
         $swap_histories = SwapHistory::leftjoin('cms_users', 'cms_users.id', 'swap_histories.created_by')
+        ->leftjoin('cms_users as updated_by', 'updated_by.id', 'swap_histories.updated_by')
         ->leftjoin('locations', 'locations.id', 'swap_histories.locations_id')
         ->leftjoin('token_action_types', 'token_action_types.id', 'swap_histories.type_id')
         ->leftjoin('mode_of_payments', 'mode_of_payments.id', 'swap_histories.mode_of_payments_id')
-        ->select('swap_histories.id', 'swap_histories.reference_number', 'swap_histories.total_value', 'swap_histories.token_value', 'token_action_types.description as type_id', 'mode_of_payments.payment_description as mod_description', 'locations.location_name', 'cms_users.name as created_by', 'swap_histories.created_at', 'swap_histories.status', 'swap_histories.payment_reference')
+        ->select('swap_histories.id', 'swap_histories.reference_number', 'swap_histories.total_value', 'swap_histories.token_value', 'token_action_types.description as type_id', 'mode_of_payments.payment_description as mod_description', 'locations.location_name', 'cms_users.name as created_by', 'swap_histories.created_at','swap_histories.updated_at', 'updated_by.name as updated_by', 'swap_histories.status', 'swap_histories.payment_reference')
         ->orderBy('swap_histories.created_at', 'desc');
     
         if (Auth::user()->id_cms_privileges != 1) {
@@ -82,6 +83,7 @@ class POSSwapHistoryController extends Controller
         $data['mod_description'] = DB::table('mode_of_payments')->where('id', $swapData->mode_of_payments_id)->select('payment_description')->first();
         $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
         $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
+        $data['updated_by'] = DB::table('cms_users')->where('id', $swapData->updated_by)->select('name')->first();
         return view('pos-frontend.views.show-swap-history', $data);
     }
 
@@ -109,7 +111,7 @@ class POSSwapHistoryController extends Controller
         $token_inventory = DB::table('token_inventories')->where('locations_id', Auth::user()->location_id)->first();
         $token_inventory_qty = $token_inventory->qty;
         $total_qty = $token_inventory_qty + $histories_id;
-        DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID"]);
+        DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
         
             TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
             return json_encode(['message'=>'success', 'swap_history' => SwapHistory::find($id), 'histories_id' => $histories_status ]);

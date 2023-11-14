@@ -123,6 +123,14 @@
                         <td>{{ $swap_histories->created_at}}</td>
                     </tr>
                     <tr>
+                        <td>Updated By</td>
+                        <td>{{ $updated_by->name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Updated Date</td>
+                        <td>{{ $swap_histories->updated_at}}</td>
+                    </tr>
+                    <tr>
                         <td>Status</td>
                         <td>{{ $swap_histories->status}}</td>
                     </tr>
