@@ -108,7 +108,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-inventory-qty',[AdminCycleCountsController::class, 'checkInventoryQty'])->name('check-inventory-qty');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/check-sr-inventory-qty',[AdminCycleCountsController::class, 'checkStockRoomInventoryQty'])->name('check-sr-inventory-qty');
 
-    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-return', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-flr', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-sr', [AdminCycleCountsController::class, 'submitCycleCountStockRoom'])->name('submit-cycle-count-sr');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/validate-machine-items', [AdminCycleCountsController::class, 'validateMachineItems'])->name('validate-machine-items');
     Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/add-cycle-count-sr', [AdminCycleCountsController::class, 'getAddCycleCountStockRoom'])->name('get-add-cycle-count-stock-room');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-item-code', [AdminCycleCountsController::class, 'checkItem'])->name('check-item-code');
