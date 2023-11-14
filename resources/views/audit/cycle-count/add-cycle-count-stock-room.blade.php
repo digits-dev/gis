@@ -804,7 +804,7 @@
 
             data.forEach((item, index) => {
                 const newrow =`
-                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724">
+                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${item.digits_code2}">
 
                         <td class="td-style">${item.digits_code}
                             <input type="hidden" name="item_code[]" value="${item.digits_code}">
@@ -813,7 +813,7 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="${item.stockroom_capsule_qty}" autocomplete="off" required>
+                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="" autocomplete="off" required>
                         </td>
 
                         <td class="td-style">
