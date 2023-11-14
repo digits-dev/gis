@@ -17,4 +17,14 @@ class CycleCountLine extends Model
         "created_at",
         "updated_at"
     ];
+
+    public function scopeDetailBody($query, $id){
+        return $query->leftjoin('gasha_machines', 'cycle_count_lines.gasha_machines_id', '=', 'gasha_machines.id')
+                     ->select('cycle_count_lines.id as id',
+                              'cycle_count_lines.*',
+                              'gasha_machines.*'
+                              )
+                     ->where('cycle_count_lines.cycle_counts_id',$id)
+                     ->get();
+    }
 }

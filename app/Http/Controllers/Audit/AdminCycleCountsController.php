@@ -361,6 +361,22 @@ use Carbon\Carbon;
 			return $this->view("audit.cycle-count.add-cycle-count", $data);
         }
 
+		public function getDetail($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Cycle Count(Capsule) Details';
+
+			$data['detail_header'] = CycleCount::detail($id);
+			$data['detail_body']   = CycleCountLine::detailBody($id);
+		
+			return $this->view("audit.cycle-count.detail-cycle-count", $data);
+		}
+
         public function getAddCycleCountStockRoom() {
             $this->cbLoader();
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {

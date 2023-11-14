@@ -154,7 +154,7 @@
     </div>
 
     {{-- Collect Token Modal --}}
-    <div id="addRowModal" class="modal fade" tabindex="-1">
+    <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             
             <div class="modal-content">
@@ -171,11 +171,15 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="form-group" style="display: flex">
-                                <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">  
-                                <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <div class="form-group" >
+                                <div style="display: flex">
+                                    <input input-for="machine" class="form-control text-center finput" type="text" placeholder="Machine" name="gasha_machines_id_inputed" id="gasha_machines_id_inputed" autocomplete="off">  
+                                    <input class="form-control" type="hidden" name="machine_serial" id="machine_serial">  
+                                    <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                                </div>
+                                <div id="display_error_machine_not_found"></div>
                             </div>
-                            <div id="display_error_machine_not_found"></div>
+                         
                         </div>
     
                         <div class="col-md-12">
@@ -230,6 +234,14 @@
         var value = $(this).val();
         value = value.replace(/^(0*)/,"");
         $(this).val(value);
+
+       
+    });
+
+    $('#gasha_machines_id_inputed, #qty_inputed').keydown(function(event) { 
+        if (event.keyCode == 13) {
+            event.preventDefault();
+        }
     });
 
     $(function() {
@@ -358,6 +370,7 @@
                 }else{
                     $('#display_error_machine_not_found').html('');
                     $('#machine_token_qty').val(data.machines.no_of_token);
+                    $('#machine_serial').val(data.machines.serial_number);
                     $('#copy-row').attr('disabled',false);
                 }
             },
@@ -443,6 +456,46 @@
                 swal({  
                     type: 'error',
                     title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#dd4b39",
+                });
+                count_fail++;
+                return false;
+            }else{
+                count_fail = 0;
+            }
+
+            if($('#gasha_machines_id_inputed').val() != $('#machine_serial').val()){
+                Swal.fire({ 
+                    type: 'error',
+                    title: 'Oops.',
+                    html: `Machine ${$('#gasha_machines_id_inputed').val()} not match to ${$('#machine_serial').val()}`,
+                    icon: 'error',
+                    confirmButtonColor: "#dd4b39",
+                });
+                count_fail++;
+                return false;
+            }else{
+                count_fail = 0;
+            }
+
+            if(!$.isNumeric($('#qty_inputed').val())){
+                Swal.fire({ 
+                    type: 'error',
+                    title: 'Number Only!',
+                    icon: 'error',
+                    confirmButtonColor: "#dd4b39",
+                });
+                count_fail++;
+                return false;
+            }else{
+                count_fail = 0;
+            }
+
+            if($('#qty_inputed').val() == 0){
+                Swal.fire({ 
+                    type: 'error',
+                    title: 'Not allowed zero!',
                     icon: 'error',
                     confirmButtonColor: "#dd4b39",
                 });
