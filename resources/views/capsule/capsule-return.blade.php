@@ -471,7 +471,7 @@
                                 <form type="POST" id="swal_form">
                                     <input class="hidden" value="{{ csrf_token() }}">
                                     <div class="swal-inputs">
-                                        <label>Item Code</label>
+                                        <label>Jan #</label>
                                         <label>QTY</label>
                                     </div>
                                 </form>
@@ -496,7 +496,7 @@
                                     const clonedDiv = div.clone();
                                     const clonedLabel = label.clone();
                                     const clonedInput = input.clone().attr('class', 'qty_input');
-                                    clonedLabel.attr({'value':ic.item_code, 'disabled':true});
+                                    clonedLabel.attr({'value':ic.digits_code, 'disabled':true});
                                     clonedInput.attr({'name':'qty_'+ic.item_code, 'max-value': maxAmount});
                                     clonedDiv.append(clonedLabel, clonedInput);
                                     additionalContent.append(clonedDiv);

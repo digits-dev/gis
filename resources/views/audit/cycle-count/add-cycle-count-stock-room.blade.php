@@ -317,6 +317,8 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $('#location_id').attr('disabled', false);
+                        $('#btnSubmit').attr('disabled',true);
+                        $('.qty').attr('readonly',true);
                         $('#cycleCount').submit();
                     }
                 });
@@ -367,7 +369,7 @@
                         </td>
 
                         <td class="td-style">
-
+                            ${index+1}
                         </td>
 
                     </tr>

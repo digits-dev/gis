@@ -128,6 +128,8 @@
                 <th>Payment Reference</th>
                 <th>Created by</th>
                 <th>Created Date</th>
+                <th>Updated by</th>
+                <th>Updated Date</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -158,6 +160,8 @@
 
                    <th>{{ $swap_history->created_by }}</th>
                    <th>{{ $swap_history->created_at }}</th>
+                   <th>{{ $swap_history->updated_by }}</th>
+                   <th>{{ $swap_history->updated_at }}</th>
                    <th>{{ $swap_history->status }}</th>
                 </tr>
                 @endforeach
@@ -174,6 +178,8 @@
                 <th>Payment Reference</th>
                 <th>Created by</th>
                 <th>Created Date</th>
+                <th>Updated by</th>
+                <th>Updated Date</th>
                 <th>Status</th>
             </tr>
         </tfoot>

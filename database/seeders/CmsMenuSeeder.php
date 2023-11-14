@@ -652,6 +652,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 14
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Add Ons',
+            ],
+            [
+                'name'              => 'Add Ons',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminAddOnsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 15
+            ]
+        );
     }
 
     public function historyMenu() {

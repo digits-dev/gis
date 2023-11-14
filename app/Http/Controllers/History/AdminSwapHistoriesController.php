@@ -45,7 +45,10 @@
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
+
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -338,7 +341,11 @@
 	    public function hook_after_edit($id) {
 	        //Your code here
 			$histories_id = DB::table('swap_histories')->where('id', $id)->first();
-			DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID"]);
+			DB::table('swap_histories')->where('id', $id)->update([
+				'status'      => "VOID",
+				'updated_by'  => CRUDBooster::myId(),
+				'updated_at'  => date('Y-m-d H:i:s'),
+			]);
 			// $token_inventory = DB::table('token_inventories')->where('locations_id', $histories_id->locations_id)->first();
 			// $token_inventory_qty = $token_inventory->qty;
 			// $total_qty = $token_inventory_qty + $histories_id->token_value;
