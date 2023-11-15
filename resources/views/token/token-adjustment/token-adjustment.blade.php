@@ -118,7 +118,9 @@
 @endsection
 @push('bottom')
 <script>
-    $('.s-single').select2();
+    $('.s-single').select2({
+        width: '100%'
+    });
 
     function preventBack() {
         window.history.forward();
