@@ -159,7 +159,7 @@
                                         {{$row->serial_number}}                               
                                     </td>
                                     <td style="text-align:center" height="10">
-                                        {{$row->no_of_token}}                               
+                                        {{$row->no_of_token_line}}                              
                                     </td>
                                     <td style="text-align:center" height="10" class="qty">
                                         {{$row->qty}}                               
