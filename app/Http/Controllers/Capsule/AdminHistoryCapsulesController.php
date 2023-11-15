@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use Session;
+use App\Models\Capsule\HistoryCapsule;
+use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -35,6 +36,7 @@
             $this->col[] = ["label"=>"Digits Code","name"=>"item_code","join"=>"items,digits_code2","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Capsule Action Type","name"=>"capsule_action_types_id","join"=>"capsule_action_types,description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"From","name"=>"id","join"=>"history_capsule_view,from_description","join_id"=>"history_capsules_id"];
 			$this->col[] = ["label"=>"To","name"=>"id","join"=>"history_capsule_view,to_description","join_id"=>"history_capsules_id"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
@@ -328,6 +330,31 @@
 	        //Your code here
 
 	    }
+
+		public function getDetail($id) {
+			//Create an Auth
+			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_edit==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Detail Capsule Movement History';
+			$data['capsule_history'] = HistoryCapsule::where('history_capsules.id',$id)
+				->leftJoin('capsule_action_types as cat', 'cat.id', 'history_capsules.capsule_action_types_id')
+				->leftJoin('locations as loc', 'loc.id', 'history_capsules.locations_id')
+				->leftJoin('cms_users as cms', 'cms.id', 'history_capsules.created_by')
+				->leftJoin('history_capsule_view as hcv', 'hcv.history_capsules_id', 'history_capsules.id' )
+				->select('history_capsules.*',
+					'cat.description as capsule_action_type_description',
+					'loc.location_name as location_name',
+					'cms.name as cms_name',
+					'hcv.*'
+				)
+				->first();
+
+			//Please use view method instead view method from laravel
+			return $this->view('history.capsule-history-view',$data);
+		}
 
 
 	}
