@@ -56,31 +56,52 @@ body{
     background-color: aliceblue;
 }
 
-.login{
+/* .login{
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    width: 100%;
+    padding: 20px;
+} */
+
+.login{
+    /* height: 100vh; */
+    position: absolute;
+    /* margin: auto;   */
+    max-width: 1400px;
+    width: 100%;
+    padding: 20px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
 }
+
 
 .login-box{
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     display: flex;
     max-width: 1400px;
     min-height: 670px;
+    
 }
 
 .store-logo-box{
-    min-width: 700px;
+    /* flex: 1; */
+    width: 100%;
+    max-width: 700px;
     position: relative;
     background-color: #fff;
+    /* padding: 10px; */
 }
 
 .store-login-box{
-    min-width: 700px;
+    /* flex: 1; */
+    width: 100%;
+    max-width: 700px;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px;
 }
 
 .store-login-box-bgc-f{
@@ -98,7 +119,7 @@ body{
     align-items: center;
     flex-direction: column;
     height: 100%;
-    /* margin-top: -40px; */
+    padding: 10px;
 }
 
 .store-logo-brand{
@@ -106,6 +127,7 @@ body{
 }
 
 .store-logo-brand img{
+    width: 100%;
     max-width: 500px;
 }
 
@@ -171,9 +193,10 @@ body{
     min-width: 370px;
     height: 45px;
     border-radius: 50px;
-    margin: 12px;
+    margin: 12px 0;
     padding: 15px;
     border: 1px solid #4b4848;
+    transition: ease 0.8s;
 }
 
 .store-login-inputs input::placeholder{
@@ -209,20 +232,51 @@ body{
     outline-offset: 2px;
 }
 
-@media only screen and (max-width: 1400px) {
-    .store-logo-box {
-        display: none;
+@media only screen and (max-width: 870px) {
+
+    .store-logo-link-to-frontend{
+        /* position: relative; */
+        bottom: 25px;
+        
     }
 
-    .store-login-box-bgc-f, .store-login-box-bgc-b{
-        background-color: none;
+    .store-logo-official{
+        bottom: 0;
     }
 
-    .store-login-box{
-        background: aliceblue;
+    .store-logo-brand{
+        margin: auto;
     }
+
+    .store-logo-box-content{
+        height: 100%;
+        padding-bottom: 120px;
+    }
+
 
     .login-box{
-        box-shadow: none;
+        display: block;
+        flex-direction: row;
+    }
+
+}
+
+@media only screen and (max-width: 445px) {
+    .login{
+        min-width: 385px;
+    }
+
+    .store-login-inputs input, .login-btn{
+        min-width: 260px;
+    }
+
+    .login{
+        position: relative;
+        width: 100%;
+        left: 0;
+        top: 0;
+        transform: translate(0, 0);
+    
     }
 }
+
