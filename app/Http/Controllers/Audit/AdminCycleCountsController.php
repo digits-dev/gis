@@ -438,6 +438,7 @@ use Carbon\Carbon;
                         'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
                         'gasha_machines_id' => $machine_id,
                         'locations_id' => $request->location_id,
+                        'from_machines_id' => $machine_id,
                         'qty' => ($fqty - $capsuleInventoryLine->qty),
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
@@ -523,6 +524,7 @@ use Carbon\Carbon;
                     'item_code' => $item->digits_code2,
                     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
                     'locations_id' => $request->location_id,
+                    'from_sub_locations_id' => $sublocation_id->id,
                     'qty' => ($fqty - $capsuleInventoryLine->qty),
                     'created_by' => CRUDBooster::myId(),
                     'created_at' => date('Y-m-d H:i:s')
