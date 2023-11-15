@@ -35,8 +35,8 @@
             $this->col[] = ["label"=>"Digits Code","name"=>"item_code","join"=>"items,digits_code2","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code2"];
 			$this->col[] = ["label"=>"Capsule Action Type","name"=>"capsule_action_types_id","join"=>"capsule_action_types,description"];
-			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"From","name"=>"id","join"=>"history_capsule_view,from_description","join_id"=>"history_capsules_id"];
+			$this->col[] = ["label"=>"To","name"=>"id","join"=>"history_capsule_view,to_description","join_id"=>"history_capsules_id"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
