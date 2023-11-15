@@ -11,7 +11,8 @@
 use App\Models\Submaster\Item;
 use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
-	use Session;
+use App\Models\Submaster\SubLocations;
+use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -357,7 +358,8 @@ use App\Models\Submaster\Locations;
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
 			$validateGM = $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->first();
-						
+			$sub_location_id = SubLocations::where('location_id', $gasha_machines->location_id)->first()->id;
+
 			$filteredData = [];
 			
 			foreach ($return_inputs as $key => $value) {
@@ -396,7 +398,20 @@ use App\Models\Submaster\Locations;
 					'reference_number' => $capsule->reference_number,
 					'item_code' => $items->digits_code2,
 					'capsule_action_types_id' => CapsuleActionType::where('description', 'Return')->first()->id,
-					'gasha_machines_id' => $capsule->gasha_machines_id,
+					'from_machines_id' => $capsule->gasha_machines_id,
+					'to_sub_locations_id' => $sub_location_id,
+					'locations_id' => $return_inputs['stock_room'],
+					'qty' => "-$capsule->qty",
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+
+				HistoryCapsule::insert([
+					'reference_number' => $capsule->reference_number,
+					'item_code' => $items->digits_code2,
+					'capsule_action_types_id' => CapsuleActionType::where('description', 'Return')->first()->id,
+					'to_machines_id' => $capsule->gasha_machines_id,
+					'from_sub_locations_id' => $sub_location_id,
 					'locations_id' => $return_inputs['stock_room'],
 					'qty' => $capsule->qty,
 					'created_by' => CRUDBooster::myId(),
