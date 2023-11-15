@@ -33,7 +33,7 @@ class POSTokenSwapController extends Controller
         $data = [];
         $data['tokens'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'token')->select('value')->get();
         $data['paymayas'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'paymaya')->select('value')->get();
-        $data['mode_of_payments'] = ModeOfPayment::get();
+        $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;
         $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
 
