@@ -451,7 +451,7 @@
         });
 
         $('#gasha_machines_id_inputed').on('input', function() {
-            $(this).val($(this).val().trim());
+            $(this).val($(this).val().trim().toUpperCase());
         });
 
         $('#gasha_machines_id_inputed').on('keypress', function(event) {
@@ -642,6 +642,8 @@
         });
 
         $(document).on('keyup', '.item-data', function(e) {
+            const withoutLeadingZero = Number($(this).val().replace(/\D/g, ''));
+            $(this).val($(this).val() ? withoutLeadingZero : '');
 
             if (e.which >= 37 && e.which <= 40) return;
 
