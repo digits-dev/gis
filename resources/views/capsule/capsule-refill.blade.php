@@ -17,11 +17,34 @@
         appearance: textfield;
         -moz-appearance: textfield; /* Firefox */
     }
+    .swal-machine-list table tr td, .swal-machine-list table tr th {
+        border: 1px solid rgba(136, 149, 222, 0.621);
+        padding: 10px;
+    }
    </style>
 @endpush
 @section('content')
     <div class="swal-machine-list" style="display: none;">
-        <p class="swal-item-description text-bold"></p>
+        <table style="width: 100%; font-size: 16px">
+            <tbody>
+                <tr>
+                    <th class="text-center">JAN #</th>
+                    <td class="swal-item-code"></td>
+                </tr>
+                <tr>
+                    <th class="text-center">Item Description</th>
+                    <td class="swal-item-description"></td>
+                </tr>
+                <tr>
+                    <th class="text-center">No. of Tokens</th>
+                    <td class="swal-no-of-tokens"></td>
+                </tr>
+                <tr class="machine-tr" style="display: none;">
+                    <th class="text-center" style="vertical-align: middle">Machines</th>
+                    <td class="swal-machines"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="swal-token-mismatch" style="display: none;">
         <table class="table table-striped table-bordered" style="width: 100%">
@@ -50,16 +73,16 @@
                     <div class='form-group'>
                         <label>Capsule Barcode <span style="color: red">*</span></label>
                         <div class="flex input-btn">
-                            <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control'/>
+                            <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control text-center'/>
                             <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>To Gasha Machine <span style="color: red">*</span> </label>
                         <div class="flex input-btn">
-                            <input input-for="machine" type='text' id="tiem_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control'/>
+                            <input input-for="machine" type='text' id="machine_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control text-center'/>
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
                         <label>Quantity <span style="color: red">*</span></label>
-                        <input type='text' name='qty' required class='form-control' oninput="validateInput(this)" id="quantity" min="1"/>
+                        <input type='text' name='qty' required class='form-control text-center' oninput="validateInput(this)" id="quantity" min="1"/>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
@@ -137,34 +160,38 @@
 
         if (!item) return;
 
+        $('input[name="machine_code"]').val('');
+        const clonedDiv = $('.swal-machine-list').clone().show();
+        clonedDiv.find('.swal-item-code').text(`${item.digits_code}`);
+        clonedDiv.find('.swal-item-description').text(`${item.item_description}`);
+        clonedDiv.find('.swal-no-of-tokens').text(`${item.no_of_tokens}`);
+        clonedDiv.find('.swal-machines').html(machines.map(machine => `${machine.serial_number} - ${machine.no_of_token} TOKENS`).join('<br>'));
+        clonedDiv.find('.machine-tr').css('display', machines.length ? '' : 'none');
+        const outerHTML = clonedDiv.prop('outerHTML');
         if (!machines.length) {
-            $('input[name="machine_code"]').val('');
             Swal.fire({
-                title: `Item Found.`,
-                html: `🥚 ${item.digits_code} - ${item.item_description}`,
-                icon: 'info',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Ok',
-                returnFocus: false,
-                reverseButtons: true,
-            });
-        }
-        else if (machines.length) {
-            const clonedDiv = $('.swal-machine-list').clone().show();
-            clonedDiv.find('.swal-item-description').text(`🥚 ${item.digits_code} - ${item.item_description}`)
-            machines.forEach(machine => {
-                const pTag = $('<p>').text(`📥 ${machine.serial_number}`);
-                clonedDiv.append(pTag);
-            })
-            const outerHTML = clonedDiv.prop('outerHTML');
-            Swal.fire({
-                title: `Machine${machines.length > 1 ? 's' : ''} Found.`,
+                title: `Item Found!`,
                 html: outerHTML,
                 icon: 'info',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Ok',
                 returnFocus: false,
                 reverseButtons: true,
+            }).then(() => {
+                $('#machine_code').focus();
+            });
+        }
+        else if (machines.length) {
+            Swal.fire({
+                title: `Machine${machines.length > 1 ? 's' : ''} Found!`,
+                html: outerHTML,
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok',
+                returnFocus: false,
+                reverseButtons: true,
+            }).then(() => {
+                $('#machine_code').focus();
             });
         }
     }
