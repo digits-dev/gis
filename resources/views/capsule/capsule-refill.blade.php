@@ -90,6 +90,7 @@
                      <button class="hide" type="submit" id="real-submit-btn"></button> 
                 </form>
             </div>
+            <br>
             <div class='panel-footer'>
             <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>

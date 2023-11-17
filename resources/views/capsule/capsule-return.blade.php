@@ -243,6 +243,9 @@
                 <button class="hide" type="submit" id="real-submit-btn"></button> 
             </form>
             </div>
+            <br>
+            <br>
+            <br>
             <div class='panel-footer'>
             </div>
         </div>
