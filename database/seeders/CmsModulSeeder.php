@@ -392,7 +392,7 @@ class CmsModulSeeder extends Seeder
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'capsule_swap_headers',
                 'table_name'   => 'capsule_swap_headers',
-                'controller'   => 'Capsule/AdminCapsuleSwapHeadersController',
+                'controller'   => 'Capsule\AdminCapsuleSwapHeadersController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
