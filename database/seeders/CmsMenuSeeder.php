@@ -376,6 +376,24 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Capsule Swap',
+            ],
+            [
+                'name'              => 'Capsule Swap',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleSwapHeadersControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
 
     }
 

@@ -387,6 +387,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Capsule Swap',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_swap_headers',
+                'table_name'   => 'capsule_swap_headers',
+                'controller'   => 'Capsule/AdminCapsuleSwapHeadersController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {
