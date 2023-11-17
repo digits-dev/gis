@@ -464,6 +464,9 @@
         $('#warning-label-from').text(data.missing_from ? 'Machine Not Found!' : '');
         $('#warning-label-to').text(data.missing_to ? 'Machine Not Found!' : '');
         if (data.missing_from || data.missing_to) return;
+        else if (data.is_tally == false) {
+            // Swal.fire()
+        }
     }
 
 

@@ -355,10 +355,12 @@ use Session;
 			$data = $request->all();
 			$user_location = CRUDBooster::myLocationId();
 			
+			// getting the machine for 'from'
 			$from_machine = GashaMachines::where('serial_number', $data['from_machine'])
 				->where('location_id', $user_location)
 				->first();
 
+			// getting the machine for 'to'
 			$to_machine = GashaMachines::where('serial_number', $data['to_machine'])
 				->where('location_id', $user_location)
 				->first();
@@ -367,6 +369,14 @@ use Session;
 				return json_encode([
 					'missing_from' => !$from_machine,
 					'missing_to' => !$to_machine,
+				]);
+			}
+
+			if ($from_machine->no_of_token != $to_machine->no_of_token) {
+				return json_encode([
+					'is_tally' => false,
+					'from_machine' => $from_machine,
+					'to_machine' => $to_machine,
 				]);
 			}
 
