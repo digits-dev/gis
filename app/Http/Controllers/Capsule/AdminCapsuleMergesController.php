@@ -1,7 +1,11 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use Session;
-	use Request;
+	use App\Models\Capsule\InventoryCapsule;
+	use App\Models\Capsule\InventoryCapsuleLine;
+	use App\Models\Submaster\GashaMachines;
+use crocodicstudio\crudbooster\helpers\CRUDBooster as HelpersCRUDBooster;
+use Session;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 
@@ -41,13 +45,13 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Item Code','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'To Machines Id','name'=>'to_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_machines,id'];
-			$this->form[] = ['label'=>'From Machines Id','name'=>'from_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_machines,id'];
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Locations Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
-			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Item Code','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'To Machines Id','name'=>'to_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_machines,id'];
+			// $this->form[] = ['label'=>'From Machines Id','name'=>'from_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_machines,id'];
+			// $this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Locations Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			// $this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -331,6 +335,44 @@
 	        //Your code here
 
 	    }
+
+		public function getAdd() {
+			//Create an Auth
+			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+
+			$data = [];
+			// $data['user_location_id'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['page_title'] = 'Add Data';
+			// $data['stockroom'] = Locations::find(CRUDBooster::myLocationId());
+			//Please use view method instead view method from laravel
+			return $this->view('capsule.capsule-merge-add',$data);
+		}
+
+		public function checkMachines(Request $request) {
+
+			$data = $request->all();
+			$user_location = CRUDBooster::myLocationId();
+			
+			$from_machine = GashaMachines::where('serial_number', $data['from_machine'])
+				->where('location_id', $user_location)
+				->first();
+
+			$to_machine = GashaMachines::where('serial_number', $data['to_machine'])
+				->where('location_id', $user_location)
+				->first();
+
+			if (!$from_machine || !$to_machine) {
+				return json_encode([
+					'missing_from' => !$from_machine,
+					'missing_to' => !$to_machine,
+				]);
+			}
+
+
+			dd($from_machine, $to_machine);
+		}
 
 
 

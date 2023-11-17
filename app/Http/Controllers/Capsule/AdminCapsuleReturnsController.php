@@ -8,11 +8,11 @@
 	use App\Models\Submaster\CapsuleActionType;
 	use App\Models\Submaster\Counter;
 	use App\Models\Submaster\GashaMachines;
-use App\Models\Submaster\Item;
-use App\Models\Submaster\Locations;
+	use App\Models\Submaster\Item;
+	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
-use App\Models\Submaster\SubLocations;
-use Session;
+	use App\Models\Submaster\SubLocations;
+	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
