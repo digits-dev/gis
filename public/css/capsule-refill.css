@@ -1,6 +1,7 @@
 
 .panel-content{
-    height: 500px;
+    margin-top: 25px;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-content: center;
@@ -8,43 +9,34 @@
 }
 .panel-default{
     border-radius: 20px;
-    width: 400px;
-    margin-top: 100px;
+    width: 100%;
+    max-width: 480px;
+    min-width: 250px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 .panel-header{
     text-align:center;
-    margin-bottom: 10px;
     font-size: 25px;
-    padding: 20px;
+    padding-top: 23px;
 }
-
 .panel-body {
     position: relative;
 }
-
 .panel-footer{
     border-radius: 0px 0px 20px 20px;
     text-align: center;
 }
-.form-group{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.form-group input{
-    width: 250px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-.panel-body{
-    height: 400px;
+.form-group p{
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
 }
 .panel-img{
     text-align: center;
 }
 .panel-img img{
-    width: 250px;
+    width: 100%;
+    max-width: 600px;
 }
 
 .flex {
@@ -52,9 +44,11 @@
 }
 
 .input-btn {
-    justify-content: center;
-    align-items:first baseline;
-    gap: 10px;
+    width: 100%;
+}
+.input-btn input{
+    width: 100%;
+    max-width: 400px;
 }
 
 #quantity {

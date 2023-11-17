@@ -8,57 +8,11 @@
 @endpush
 @section('content')
 <style>
-
     .btn-blue{
         background-color: rgb(48, 133, 214);
     }
-
     .btn-red{
         background-color: rgb(221, 51, 51);
-    }
-
-    .panel-content{
-        height: 500px;
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-    }
-    .panel-default{
-        border-radius: 20px;
-        width: 400px;
-        margin-top: 100px;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    }
-    .panel-header{
-        /* background-color: green;  */
-        text-align:center;
-        margin-bottom: 10px;
-        font-size: 25px;
-        padding: 20px;
-    }
-    .panel-footer{
-        border-radius: 0px 0px 20px 20px;
-        text-align: center;
-    }
-    .form-group{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .form-group input{
-        width: 250px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .panel-body{
-        height: 320px;
-    }
-    .panel-img{
-        text-align: center;
-    }
-    .panel-img img{
-        width: 300px;
     }
     input{
         text-align: center;
@@ -224,14 +178,14 @@
             <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
                 @csrf
                 <div class='form-group'>
-                <label>From Gasha Machine</label>
+                <p>From Gasha Machine</p>
                 <div class="flex input-btn">
                     <input input-for="machine" type='text' name='gasha_machine' id="gasha_machine" required class='form-control'/>
                     <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                 </div>
-                <label>To Stockroom</label>
+                <p>To Stockroom</p>
                 <div class="flex input-btn">
-                    <input input-for="stockroom" type='text'  required class='form-control' value="{{ $stockroom->location_name }}" readonly style="width: 300.6px"/>
+                    <input input-for="stockroom" type='text'  required class='form-control' value="{{ $stockroom->location_name }}" readonly style="max-width: 450px;"/>
                     <input class="hide" input-for="stockroom" type='text' name='stock_room' required class='form-control' value="{{ $user_location_id->location_id }}" readonly style="width: 300.6px"/>
                 </div>
                 {{-- <label>Quantity</label>
@@ -243,9 +197,6 @@
                 <button class="hide" type="submit" id="real-submit-btn"></button> 
             </form>
             </div>
-            <br>
-            <br>
-            <br>
             <div class='panel-footer'>
             </div>
         </div>

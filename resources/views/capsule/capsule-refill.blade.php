@@ -71,18 +71,20 @@
                 <form method="POST" autocomplete="off">
                     @csrf
                     <div class='form-group'>
-                        <label>Capsule Barcode <span style="color: red">*</span></label>
+                        <p>Capsule Barcode <span style="color: red">*</span></p>
                         <div class="flex input-btn">
                             <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control text-center'/>
                             <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
-                        <label>To Gasha Machine <span style="color: red">*</span> </label>
+                        <p>To Gasha Machine <span style="color: red">*</span> </p>
                         <div class="flex input-btn">
                             <input input-for="machine" type='text' id="machine_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control text-center'/>
                             <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                         </div>
-                        <label>Quantity <span style="color: red">*</span></label>
-                        <input type='text' name='qty' required class='form-control text-center' oninput="validateInput(this)" id="quantity" min="1"/>
+                        <p>Quantity <span style="color: red">*</span></p>
+                        <div class="flex input-btn">
+                        <input type='text' name='qty' required class='form-control text-center' oninput="validateInput(this)" id="quantity" min="1" style="width: 100%; max-width: 450px;"/>
+                        </div>
                     </div>
                     <div class='panel-img'>
                         <img src="{{ asset('img/capsule-refill.png') }}">
@@ -90,7 +92,6 @@
                      <button class="hide" type="submit" id="real-submit-btn"></button> 
                 </form>
             </div>
-            <br>
             <div class='panel-footer'>
             <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>

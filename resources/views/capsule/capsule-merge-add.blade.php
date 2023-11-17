@@ -16,50 +16,6 @@
     .btn-red{
         background-color: rgb(221, 51, 51);
     }
-
-    .panel-content{
-        height: 500px;
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-    }
-    .panel-default{
-        border-radius: 20px;
-        width: 400px;
-        margin-top: 100px;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-    }
-    .panel-header{
-        /* background-color: green;  */
-        text-align:center;
-        margin-bottom: 10px;
-        font-size: 25px;
-        padding: 20px;
-    }
-    .panel-footer{
-        border-radius: 0px 0px 20px 20px;
-        text-align: center;
-    }
-    .form-group{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .form-group input{
-        width: 250px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .panel-body{
-        height: 320px;
-    }
-    .panel-img{
-        text-align: center;
-    }
-    .panel-img img{
-        width: 300px;
-    }
     input{
         text-align: center;
     }
@@ -210,13 +166,20 @@
 
     .machine-group {
         position: relative;
+        width: 100%;
+        max-width: 550px;
     }
 
     .input-validation {
         position: absolute;
-        bottom: -3px;
-        left: 50%;
-        transform: translateX(-50%)
+        bottom: -24px;
+        left: 0;
+        /* left: 50%;
+        transform: translateX(-50%) */
+    }
+
+    .form-group p{
+        margin: 20px 0;
     }
 
 </style>
@@ -251,7 +214,7 @@
             </div>
             <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
                 <div class='form-group'>
-                <label>From Gasha Machine</label>
+                <p>From Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="from_machine" type='text' name='from_machine' id="from_machine" required class='form-control'/>
@@ -260,7 +223,7 @@
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                 </div>
                 <p></p>
-                <label>To Gasha Machine</label>
+                <p>To Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="to_machine" type='text' name='to_machine' id="to_machine" required class='form-control'/>
@@ -270,7 +233,7 @@
                 </div>
                 </div>
                 <div class='panel-img'>
-                    <img src="{{ asset('img/capsule-merge.png') }}">
+                    <img src="{{ asset('img/capsule-merge.jpg') }}">
                 </div>
             </form>
             </div>
