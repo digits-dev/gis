@@ -45,6 +45,7 @@
 
 .input-btn {
     width: 100%;
+    /* position: relative; */
 }
 .input-btn input{
     width: 100%;
@@ -59,6 +60,9 @@
     position: absolute;
     width: calc(400px - 30px);
     min-height: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999 !important;
 }
 
 .close-reader {

@@ -168,6 +168,7 @@
         position: relative;
         width: 100%;
         max-width: 550px;
+        /* z-index: -1; */
     }
 
     .input-validation {
@@ -181,7 +182,6 @@
     .form-group p{
         margin: 20px 0;
     }
-
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
