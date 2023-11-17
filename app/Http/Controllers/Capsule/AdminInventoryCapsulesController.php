@@ -254,12 +254,6 @@
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
-			if ($column_index == 4 || $column_index == 5){
-				if ($column_value == null){
-					$column_value = '<span>0</span>';
-				}
-			}
-
 	    }
 
 	    /*
