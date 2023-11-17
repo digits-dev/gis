@@ -384,13 +384,18 @@ use App\Models\Submaster\CashFloatHistoryLine;
 			$data['page_title'] = 'Detail Cash Float History';
 			$data['locations'] = Locations::where('status', 'ACTIVE')->get();
 			$data['float_types'] = FloatType::where('status', 'ACTIVE')->get();
-			$data['mode_of_payments'] = DB::table('mode_of_payments')->where('status', 'ACTIVE')->get()->toArray();
+			$data['mode_of_payments'] = DB::table('cash_float_history_lines')->where('cash_float_histories_id', $id)
+			->leftJoin('mode_of_payments', 'mode_of_payments.id', 'cash_float_history_lines.mode_of_payments_id')
+			->select('cash_float_history_lines.*',
+				'mode_of_payments.payment_description')
+			->where('payment_description', '!=', null)
+			->get()
+			->toArray();
 			$data['mode_of_payments'] = array_map(function($obj) {
 				$obj->payment_custom_desc = preg_replace("/[^a-zA-Z]/", '_', $obj->payment_description);
 				return $obj;
 			}, $data['mode_of_payments']);
 			$data['float_entries'] = FloatEntry::where('status', 'ACTIVE')->orderBy('id', 'desc')->get();
-	
 			//Please use view method instead view method from laravel
 			return $this->view('submaster.cash-float-history.detail-cash-float',$data);
 		}

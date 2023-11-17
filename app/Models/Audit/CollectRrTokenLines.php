@@ -23,6 +23,7 @@ class CollectRrTokenLines extends Model
         return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
                      ->select('collect_rr_token_lines.id as id',
                               'collect_rr_token_lines.*',
+                              'collect_rr_token_lines.no_of_token as no_of_token_line',
                               'gasha_machines.*'
                               )
                      ->where('collect_rr_token_lines.collected_token_id',$id)

@@ -76,13 +76,33 @@ class CapsulesImport implements ToCollection, WithHeadingRow, WithValidation
 				'locations_id' => $locations_id,
 			]);
 
-            // creating history for the transaction
+           //getting the sublocations
+			$sub_locations_id = DB::table('sub_locations')
+			->where('location_id', $locations_id)
+			->pluck('id')
+			->first();
+
+			// creating history for the transaction
+			// ====> ledger type
 			HistoryCapsule::insert([
 				'reference_number' => $reference_number,
 				'item_code' => $item->digits_code2,
 				'capsule_action_types_id' => $action_type->id,
 				'locations_id' => $locations_id,
-				'gasha_machines_id' => $machine->id,
+				'from_sub_locations_id' => $sub_locations_id,
+				'to_machines_id' => $machine->id,
+				'qty' => "-$qty",
+				'created_at' => $time_stamp,
+				'created_by' => $action_by
+			]);
+
+			HistoryCapsule::insert([
+				'reference_number' => $reference_number,
+				'item_code' => $item->digits_code2,
+				'capsule_action_types_id' => $action_type->id,
+				'locations_id' => $locations_id,
+				'from_machines_id' => $machine->id,
+				'to_sub_locations_id' => $sub_locations_id,
 				'qty' => $qty,
 				'created_at' => $time_stamp,
 				'created_by' => $action_by

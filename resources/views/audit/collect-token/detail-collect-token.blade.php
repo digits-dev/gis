@@ -135,13 +135,13 @@
                                 <th width="10%" class="text-center">Current cash value</th>
                             </tr>      
                         @foreach($detail_body as $row)
-                            @if($row->qty % $row->no_of_token === 0)
+                            @if($row->qty % (isset($row->no_of_token_line) ? $row->no_of_token_line : 1) === 0)
                                 <tr>
                                     <td style="text-align:center" height="10">
                                         {{$row->serial_number}}                               
                                     </td>
                                     <td style="text-align:center" height="10">
-                                        {{$row->no_of_token}}                               
+                                        {{$row->no_of_token_line}}                               
                                     </td>
                                     <td style="text-align:center" height="10" class="qty">
                                         {{$row->qty}}                               
@@ -159,7 +159,7 @@
                                         {{$row->serial_number}}                               
                                     </td>
                                     <td style="text-align:center" height="10">
-                                        {{$row->no_of_token}}                               
+                                        {{$row->no_of_token_line}}                              
                                     </td>
                                     <td style="text-align:center" height="10" class="qty">
                                         {{$row->qty}}                               

@@ -21,12 +21,12 @@
                             <div class="store-logo-brand">
                                 <img src="{{ asset('img/gashapon_logo.png') }}" alt="">
                             </div>
-                            <div class="store-logo-link-to-frontend">
-                                <a href="/admin/login">Link to Backend</a>
-                            </div>
                             <div class="store-logo-description danger-color">
                                 <p class="fs-40 fw-bold">Inventory System</p>
                                 <p class="fs-30 fw-bold">Frontend</p>
+                            </div>
+                            <div class="store-logo-link-to-frontend">
+                                <a href="/admin/login">Link to Backend</a>
                             </div>
                             <div class="store-logo-official">
                                 <img src="{{ asset('img/gashapon_official.png') }}" alt="">

@@ -391,10 +391,10 @@ use Carbon\Carbon;
             return $this->view("audit.cycle-count.add-cycle-count-stock-room", $data);
         }
 
-        public function submitcycleCountFloor(Request $request){
+        public function submitCycleCountFloor(Request $request){
 
 			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			$capsuleSalesRef = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
+			// $capsuleSalesRef = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
             $qty = $request->qty;
 			foreach($request->item_code as $key_machine => $item_value){
                 foreach($item_value as $key_item => $value){
@@ -407,7 +407,7 @@ use Carbon\Carbon;
                     ];
 
                     $capsule = CycleCount::firstOrCreate($capsuleHeader,[
-                        'reference_number' =>$cycleCountFloorRef,
+                        'reference_number' => $cycleCountFloorRef,
                         'locations_id' => $request->location_id,
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
@@ -423,56 +423,58 @@ use Carbon\Carbon;
 
                     $capsuleLines->save();
 
+                    $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+                        ->where('locations_id',$request->location_id)->first();
+
+                    $capsuleInventoryLine = InventoryCapsuleLine::where([
+                        'inventory_capsules_id'=>$capsuleInventory->id,
+                        'gasha_machines_id'=> $machine_id,
+                        'sub_locations_id'=> null
+                    ])->first();
+
                     HistoryCapsule::insert([
                         'reference_number' => $capsule->reference_number,
                         'item_code' => $item->digits_code2,
                         'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
                         'gasha_machines_id' => $machine_id,
                         'locations_id' => $request->location_id,
-                        'qty' => $fqty,
+                        'from_machines_id' => $machine_id,
+                        'qty' => ($fqty - $capsuleInventoryLine->qty),
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
-                }
-                $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
-                    ->where('locations_id',$request->location_id)->first();
 
-                $capsuleInventoryLine = InventoryCapsuleLine::where([
-                    'inventory_capsules_id'=>$capsuleInventory->id,
-                    'gasha_machines_id'=> $machine_id,
-                    'sub_locations_id'=> null
-                ])->first();
+                    if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+                        InventoryCapsuleLine::where([
+                            'inventory_capsules_id' => $capsuleInventory->id,
+                            'gasha_machines_id'=> $machine_id
+                        ])->update([
+                            'qty' => $fqty,
+                            'updated_by' => CRUDBooster::myId(),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ]);
 
-                if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
-                    InventoryCapsuleLine::where([
-                        'inventory_capsules_id' => $capsuleInventory->id,
-                        'gasha_machines_id'=> $machine_id
-                    ])->update([
-                        'qty' => $fqty,
-                        'updated_by' => CRUDBooster::myId(),
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    //generate capsule sales
-                    CapsuleSales::insert([
-                        'reference_number' => $capsuleSalesRef,
-                        'item_code' => $value,
-                        'gasha_machines_id' => $machine_id,
-                        'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
-                        'locations_id' => $request->location_id,
-                        'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
-                }
-                else{
-                    InventoryCapsuleLine::insert([
-                        'inventory_capsules_id' => $capsuleInventory->id,
-                        'gasha_machines_id'=> $machine_id,
-                        'qty' => $fqty,
-                        'updated_by' => CRUDBooster::myId(),
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ]);
+                        //generate capsule sales
+                        CapsuleSales::insert([
+                            'reference_number' => $capsule->reference_number,
+                            'item_code' => $value,
+                            'gasha_machines_id' => $machine_id,
+                            'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+                            'locations_id' => $request->location_id,
+                            'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
+                            'created_by' => CRUDBooster::myId(),
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                    else{
+                        InventoryCapsuleLine::insert([
+                            'inventory_capsules_id' => $capsuleInventory->id,
+                            'gasha_machines_id'=> $machine_id,
+                            'qty' => $fqty,
+                            'updated_by' => CRUDBooster::myId(),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
                 }
 
 			}
@@ -508,17 +510,6 @@ use Carbon\Carbon;
 
                     $capsuleLines->save();
 
-                    HistoryCapsule::insert([
-                        'reference_number' => $capsule->reference_number,
-                        'item_code' => $item->digits_code2,
-                        'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                        'locations_id' => $request->location_id,
-                        'qty' => $fqty,
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
-
-
                 $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
                     ->where('locations_id',$request->location_id)->first();
 
@@ -527,6 +518,19 @@ use Carbon\Carbon;
                     'sub_locations_id'=> $sublocation_id->id,
                     'gasha_machines_id'=> null
                 ])->first();
+
+                HistoryCapsule::insert([
+                    'reference_number' => $capsule->reference_number,
+                    'item_code' => $item->digits_code2,
+                    'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                    'locations_id' => $request->location_id,
+                    'from_sub_locations_id' => $sublocation_id->id,
+                    'qty' => ($fqty - $capsuleInventoryLine->qty),
+                    'created_by' => CRUDBooster::myId(),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+
 
                 if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
                     InventoryCapsuleLine::where([

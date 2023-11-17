@@ -140,7 +140,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,11])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,11])){
 					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
 				}
 			}
@@ -288,7 +288,7 @@
 			if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
 				$query->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[11])){
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[6,11])){
 				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 					  ->where('collect_rr_tokens.statuses_id',$this->collected)
 					  ->whereNull('collect_rr_tokens.deleted_at')
@@ -398,6 +398,7 @@
 			for($x=0; $x < count((array)$gm_serials); $x++) {		
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gm_ids[$x];
+				$dataLines[$x]['no_of_token']        = $gm_tokens[$x];
 				$dataLines[$x]['qty']                = intval(str_replace(',', '', $qty[$x]));
 				$dataLines[$x]['variance']           = fmod(intval(str_replace(',', '', $qty[$x])),$gm_tokens[$x]);
 				$dataLines[$x]['location_id']        = $location_id;

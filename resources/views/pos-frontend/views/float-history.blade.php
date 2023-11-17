@@ -188,6 +188,7 @@
 
     $('#close_tab').click(function(e){
         e.preventDefault();
+        $('input[type="text"]').val('');
         $('#view_history_tab').attr('hidden', true);
     });
 

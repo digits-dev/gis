@@ -60,6 +60,18 @@ class POSFloatHistoryController extends Controller
     public function viewFloatHistory($id){
         $data =[];
 
+		$data['mode_of_payments'] = DB::table('cash_float_history_lines')->where('cash_float_histories_id', $id)
+			->leftJoin('mode_of_payments', 'mode_of_payments.id', 'cash_float_history_lines.mode_of_payments_id')
+			->select('cash_float_history_lines.*',
+				'mode_of_payments.payment_description')
+			->where('payment_description', '!=', null)
+			->get()
+			->toArray();
+        $data['mode_of_payments'] = array_map(function($obj) {
+            $obj->payment_custom_desc = preg_replace("/[^a-zA-Z]/", '_', $obj->payment_description);
+            return $obj;
+        }, $data['mode_of_payments']);
+
         $data['cash_float_history'] = DB::table('cash_float_histories')
             ->where('cash_float_histories.id', $id)
             ->leftJoin('float_history_view', 'float_history_view.cash_float_histories_id', 'cash_float_histories.id')
