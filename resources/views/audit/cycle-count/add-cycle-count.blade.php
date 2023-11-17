@@ -891,6 +891,7 @@
                 title: "Are you sure you want to cancel?",
                 icon: 'warning',
                 confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#dd3333',
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No',
                 showCancelButton: true,
