@@ -1,30 +1,9 @@
 @push('head')
-    <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style type="text/css">
-        .select2-selection__choice {
-            font-size: 14px !important;
-            color: black !important;
-        }
 
-        .select2-selection__rendered {
-            line-height: 31px !important;
-        }
-
-        .select2-container .select2-selection--single {
-            height: 35px !important;
-        }
-
-        .select2-selection__arrow {
-            height: 34px !important;
-        }
-
-        #collected-token th {
-            border: 1px solid rgba(000, 0, 0, .5);
-        }
-        #collected-token td {
-            border: 1px solid rgba(000, 0, 0, .5);
+        #collected-token th,  td {
+            border: 1px solid rgba(000, 0, 0, .5) !important;
         }
 
         @media (min-width:729px) {
