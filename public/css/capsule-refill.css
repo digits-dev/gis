@@ -48,7 +48,7 @@
 }
 .input-btn input{
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
 }
 
 #quantity {
@@ -79,4 +79,9 @@
 
 .select-item {
     width: 250px;
+}
+
+.btn-submit-size{
+    max-width: 120px;
+    width: 100%;
 }

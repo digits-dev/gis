@@ -239,7 +239,7 @@
             </div>
             <br>
             <div class='panel-footer'>
-                <button class="btn btn-primary" type="button" id="merge-btn">Merge</button> 
+                <button class="btn btn-primary btn-submit-size" type="button" id="merge-btn">Merge</button> 
             </div>
         </div>
     </div>
@@ -394,7 +394,6 @@
     })
     // Read Barcode => end
 
-
     $('#from_machine, #to_machine').on('input', function() {
         $(this).val($(this).val().toUpperCase());
     })
@@ -428,7 +427,11 @@
         $('#warning-label-to').text(data.missing_to ? 'Machine Not Found!' : '');
         if (data.missing_from || data.missing_to) return;
         else if (data.is_tally == false) {
-            // Swal.fire()
+            Swal.fire({
+                title: `Capsule Token value mismatch.`,
+                icon: 'error',
+                returnFocus: false,
+            });
         }
     }
 

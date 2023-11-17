@@ -93,7 +93,7 @@
                 </form>
             </div>
             <div class='panel-footer'>
-            <button class="btn btn-primary" id="save-btn" data-swal-toast-template="#my-template">Save</button>
+            <button class="btn btn-primary btn-submit-size" id="save-btn" data-swal-toast-template="#my-template">Save</button>
             </div>
         </div>
     </div>
