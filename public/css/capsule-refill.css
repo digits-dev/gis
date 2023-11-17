@@ -16,30 +16,16 @@
 }
 .panel-header{
     text-align:center;
-    /* margin-bottom: 10px; */
     font-size: 25px;
     padding-top: 23px;
 }
-
 .panel-body {
     position: relative;
 }
-
 .panel-footer{
     border-radius: 0px 0px 20px 20px;
     text-align: center;
 }
-.form-group{
-    /* display: flex; */
-    /* flex-direction: column;
-    align-items: center; */
-    /* width: 500px; */
-}
-/* .form-group input{
-    width: 250px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-} */
 .form-group p{
     margin-top: 10px;
     font-weight: bold;
@@ -51,7 +37,6 @@
 .panel-img img{
     width: 100%;
     max-width: 600px;
-    /* height: 350px; */
 }
 
 .flex {
@@ -59,18 +44,8 @@
 }
 
 .input-btn {
-    /* justify-content: center;
-    align-items:first baseline;
-    */
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* .form-group{
     width: 100%;
-} */
-
+}
 .input-btn input{
     width: 100%;
     max-width: 400px;
