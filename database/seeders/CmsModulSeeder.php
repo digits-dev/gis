@@ -360,6 +360,24 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Add Ons Action Type',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'add_on_action_types',
+                'table_name'   => 'add_on_action_types',
+                'controller'   => 'Submaster\AdminAddOnActionTypesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Add Ons Movement History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'add_on_movement_histories',
+                'table_name'   => 'add_on_movement_histories',
+                'controller'   => 'History\AdminAddOnMovementHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {

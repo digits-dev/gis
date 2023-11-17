@@ -18,7 +18,7 @@ class CmsMenuSeeder extends Seeder
         self::tokenMenu();
         // self::capsuleMenu();
         // self::auditMenu();
-        // self::historyMenu();
+        self::historyMenu();
         self::submasterMenu();
     }
 
@@ -622,7 +622,7 @@ class CmsMenuSeeder extends Seeder
                 'name'              => 'Sales Types',
             ],
             [
-                'name'              => 'Sales Types	',
+                'name'              => 'Sales Types',
                 'type'              => 'Route',
                 'path'              => 'Submaster\AdminSalesTypesControllerGetIndex',
                 'color'             => NULL,
@@ -668,6 +668,24 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 15
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Add Ons Action Type',
+            ],
+            [
+                'name'              => 'Add Ons Action Type',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminAddOnActionTypesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 16
             ]
         );
     }
@@ -814,6 +832,23 @@ class CmsMenuSeeder extends Seeder
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
                 'sorting'           => 8
+            ]
+        );
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Add Ons Movement History',
+            ],
+            [
+                'name'              => 'Add Ons Movement History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminAddOnMovementHistoriesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 5,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 9
             ]
         );
     }

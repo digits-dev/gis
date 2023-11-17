@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
 use App\Http\Controllers\Submaster\AdminImportController;
+use App\Http\Controllers\Submaster\AdminAddOnsController;
 use App\Http\Controllers\History\AdminSwapHistoriesController;
 
 /*
@@ -78,6 +79,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/token_adjustments/view',[AdminTokenAdjustmentsController::class,'viewAmount'])->name('viewAmount');
     Route::post('admin/token_adjustments/submit',[AdminTokenAdjustmentsController::class,'submitAmount'])->name('submitAmount');
     Route::post('admin/token_adjustments/getTokenInventory',[AdminTokenAdjustmentsController::class,'getTokenInventory'])->name('getTokenInventory');
+
+    //Submaster Add Ons
+    Route::post('admin/add_ons/get',[AdminAddOnsController::class,'getDescription'])->name('getDescription');
+    Route::post('admin/add_ons/submit',[AdminAddOnsController::class,'submitAddOns'])->name('submitAddOns');
 
     //Collected Tokens
     Route::post(config('crudbooster.ADMIN_PATH').'/add-collect-token/get-options-machines',[AdminCollectRrTokensController::class, 'getOptionMachines'])->name('get-options-machines');

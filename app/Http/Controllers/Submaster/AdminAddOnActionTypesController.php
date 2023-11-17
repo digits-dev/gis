@@ -1,16 +1,11 @@
 <?php namespace App\Http\Controllers\Submaster;
 
 	use Session;
-	use Illuminate\Http\Request;
+	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Token\TokenInventory;
-	use App\Models\Submaster\AddOns;
-	use Illuminate\Support\Facades\View;
 
-
-
-	class AdminAddOnsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminAddOnActionTypesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -23,41 +18,34 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = false;
-			$this->button_delete = false;
+			$this->button_edit = true;
+			$this->button_delete = true;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
-			$this->table = "add_ons";
+			$this->button_export = false;
+			$this->table = "add_on_action_types";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty","callback_php"=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
-
+			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Digits Code","name"=>"digits_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Qty","name"=>"qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
@@ -249,12 +237,7 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-			// $digits_code = 40000582;
-			// $code_description = DB::connection('aimfs')->table('digits_imfs')
-			// 	->where('digits_code', $digits_code)
-			// 	->pluck('item_description')
-			// 	->first();
-	        // dd(DB::connection('aimfs')->table('digits_imfs')->get());
+	            
 	    }
 
 	    /*
@@ -265,7 +248,6 @@
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 	    	//Your code here
-
 	    }
 
 	    /*
@@ -277,7 +259,6 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$postdata['created_by']= CRUDBooster::myId();
 
 	    }
 
@@ -290,8 +271,6 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			$postdata['updated_by']= CRUDBooster::myId();
-
 
 	    }
 
@@ -347,46 +326,6 @@
 
 
 	    //By the way, you can still create your own method in here... :) 
-		public function getAdd() {
 
-			return view('submaster.add-ons.add-ons');
-		}
-
-		public function getDescription(Request $request){
-			$user_request = $request->all();
-			$digits_code = $user_request['digits_code'];
-			$code_description = DB::connection('aimfs')->table('digits_imfs')
-				->where('digits_code', $digits_code)
-				->pluck('item_description')
-				->first();
-
-			return response()->json(['description'=> $code_description]);
-		}
-
-		public function submitAddOns(Request $request){
-			$data = $request->all();
-			$time_stamp = date('Y-m-d H:i:s');
-			$qtyRemoveComma = str_replace(',','',$data['int_qty']);
-			$existingRecord = AddOns::where('digits_code', $data['int_digits_code'])->first();
-
-			if($existingRecord){
-				$existingRecord->increment('qty', $qtyRemoveComma);
-				$existingRecord->updated_by = CRUDBooster::myId();
-				$existingRecord->updated_at = $time_stamp;
-				$existingRecord->save(); //for update_by
-				
-			} else{
-				AddOns::insert([
-					'digits_code' => $data['int_digits_code'],
-					'qty' => $qtyRemoveComma,
-					'description' => $data['int_description'],
-					'status' => 'ACTIVE',
-					'created_by' => CRUDBooster::myId(),
-					'created_at' => $time_stamp,
-				]);
-			}
-			// CRUDBooster::redirect(CRUDBooster::mainpath(), 'Your form submitted succesfully.',"success");
-            return redirect()->back()->with('success','Your form submitted succesfully.');
-		} 
 
 	}

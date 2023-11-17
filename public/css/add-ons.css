@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;1,300&display=swap');
+.panel-content {
+    /* height: 500px; */
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.panel-default {
+    border-radius: 5px;
+    width: 500px;
+    margin-top: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+        rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+.panel-header {
+    border-radius: 5px 5px 0px 0px;
+    font-size: 12px;
+    padding: 10px 15px;
+    background-color: #3C8DBC;
+}
+.panel-header label{
+    color: #FFFBFD;
+    font-family: "Poppins", sans-serif;
+}
+
+.panel-body {
+    position: relative;
+    padding: 25px;
+}
+.panel-body div {
+    margin-bottom: 15px;
+}
+
+/* .panel-body{
+    height: 400px;
+} */
+
+.panel-footer {
+    border-radius: 0px 0px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.select_store_div {
+    display: flex;
+    flex-direction: column;
+}
+.select_store_div label {
+    font-size: 15px;
+}
+.select_store_div select {
+    height: 30px;
+}
+.display_qty_div {
+    display: flex;
+    flex-direction: column;
+}
+.js-example-basic-single{
+    width: 300px;
+}
+
+
+.input_qty_div label,
+.display_qty_div label {
+    font-size: 15px;
+}
+.input_qty_div input,
+.display_qty_div input {
+    height: 30px;
+    text-align: center;
+    padding: 15px 0px;
+}
+.input_qty_div {
+    display: flex;
+    flex-direction: column;
+}
+
+.reason_input_div {
+    display: flex;
+    flex-direction: column;
+}
+.reason_input_div textarea {
+    resize: none;
+}
+.add_deduct_div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.add_token_btn,
+.deduct_token_btn {
+    text-decoration: none;
+    padding: 10px 40px;
+    background-color: #3c8dbc;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    min-width: 50px;
+    cursor: pointer;
+}
+.add_on_cancel{
+    text-decoration: none;
+    padding: 10px 40px;
+    background-color: #d4cece;
+    color: black;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    min-width: 50px;
+}
+.add_on_save {
+    text-decoration: none;
+    padding: 10px 40px;
+    background-color: #3c8dbc;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid #2c698d;
+    min-width: 50px;
+
+}
+.add_on_cancel:hover{
+    background-color: #DDDDDD;
+    cursor: pointer;
+}
+.add_on_save:hover {
+    background-color: #006faf;
+    cursor: pointer;
+
+}
+.active_button {
+    background-color: #035c93;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(0, 0, 0);
+}
+#new_token_add,
+#new_token_deduct,
+#add_token_input,
+#deduct_token_input,
+#current_token_amount {
+    text-align: center;
+}
+
+.token_adj_save:disabled {
+    background-color: #035c936a;
+}
+
+#textarea_add,
+#textarea_deduct {
+    padding: 10px;
+}
+
+.styled-table-swap {
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    width: 80%;
+    text-align: center;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.styled-table-swap td {
+    border: 1px solid rgb(75, 75, 75);
+    padding: 12px 15px;
+}
+
+/* .styled-table-swap tr td:nth-of-type(odd) {
+} */
+
+.new-token-cell,
+.new-token-amount-cell {
+    background-color: #3c8dbc;
+    font-weight: bold;
+    color: white;
+}
+
+.add_on_save:disabled {
+    background-color: #035c936a;
+}
+
+.save-icon{
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+#save-text{
+    margin-top: 20px;
+}
+
+#check-btn{
+    margin-left: 3px;
+    /* width: 100px; */
+    /* align-self: center; */
+}
+
+.search_div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-icon{
+    justify-self: center;
+    align-self: center;
+    font-size: 19px !important;
+    color: #ffffff;
+}
+.search-btn{
+    padding: 3.5px 9px;
+    border-radius: 0px 3px 3px 0px;
+}
+
+.custom-swal-div{
+    display: flex;
+    background-color: #00A65A;
+    padding: 10px;
+    border: 2px solid #025c33;
+    border-radius: 3px;
+}
+.spanContainer{
+    margin-left: 10px;
+}
+.custom-swal{
+    background-color: #00A65A;
+    color: white;
+    display:block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    
+}
+.swal-message{
+    font-size: 15px;
+}
+.notif-icon{
+    font-size: 50px !important;
+    color: white;
+}
+/* .table_summary{
+
+} */

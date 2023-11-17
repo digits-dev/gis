@@ -14,7 +14,7 @@ class CmsMenuPrivilegeSeeder extends Seeder
      */
     public function run()
     {
-        $last_menu_id = 50;
+        $last_menu_id = 100;
 
         for ($i=1; $i<=$last_menu_id; $i++) {
             DB::table('cms_menus_privileges')->updateOrInsert(['id_cms_menus' => $i], [
