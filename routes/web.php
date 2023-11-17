@@ -23,6 +23,7 @@ use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Capsule\AdminCapsuleMergesController;
+use App\Http\Controllers\Capsule\AdminInventoryCapsulesController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
 use App\Http\Controllers\Submaster\AdminImportController;
 use App\Http\Controllers\Submaster\AdminAddOnsController;
@@ -106,11 +107,14 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_refills/validate-gasha-machine', [AdminCapsuleReturnsController::class, 'validateGashaMachine'])->name('validate_gasha_machine');
     Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
     Route::post('admin/capsule_merges/check-machines', [AdminCapsuleMergesController::class, 'checkMachines'])->name('check_machines');
-    
+
     //CAPSULES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/capsules-upload', [AdminCapsuleRefillsController::class, 'uploadCapsules']);
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_refills/upload-capsules',[AdminCapsuleRefillsController::class, 'saveUploadCapsules'])->name('upload-capsules');
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/download-capsules-template',[AdminCapsuleRefillsController::class, 'downloadCapsulesTemplate']);
+
+    // CAPSULE INVENTORY EXPORT
+    Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
