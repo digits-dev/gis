@@ -76,29 +76,25 @@
                     <table class="table table-bordered" id="collected-token">
                         <thead>
                             <tr style="vertical-align: top;">
-                                <th width="20%" class="text-center">Machine</th>
-                                <th width="20%" class="text-center">Machine no of tokens</th>
-                                <th width="20%" class="text-center">Item Code</th>
-                                <th width="20%" class="text-center">Qty</th>
-                                <th width="20%" class="text-center">Variance</th>
+                                <th width="25%" class="text-center">Machine</th>
+                                <th width="25%" class="text-center">Item Code</th>
+                                <th width="25%" class="text-center">Qty</th>
+                                <th width="25%" class="text-center">Variance</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($detail_body as $row)
                                 <tr>
-                                    <td style="text-align:center" height="10">
+                                    <td style="text-align:center">
                                         {{ $row->serial_number }}
                                     </td>
-                                    <td style="text-align:center" height="10">
-                                        {{ $row->no_of_token }}
-                                    </td>
-                                    <td style="text-align:center" height="10">
+                                    <td style="text-align:center">
                                         {{ $row->digits_code }}
                                     </td>
-                                    <td style="text-align:center" height="10" class="qty">
+                                    <td style="text-align:center" class="qty">
                                         {{ $row->qty }}
                                     </td>
-                                    <td style="text-align:center" height="10" class="variance">
+                                    <td style="text-align:center" class="variance">
                                         {{ $row->variance }}
                                     </td>
                                 </tr>
@@ -106,7 +102,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" style="text-align: right;"><b>Total</b></td>
+                                <td colspan="2" style="text-align: right;"><b>Total</b></td>
                                 <td class="text-center"><span id="totalQty">0</span></td>
                                 <td class="text-center"><span id="totalVariance">0</span></td>
                             </tr>
@@ -147,6 +143,39 @@
             null;
         };
         setTimeout("preventBack()", 0);
+
+        $(document).ready(function() {
+            $('#totalQty').text(calculateTotalQuantity());
+            $('#totalVariance').text(calculateVarianceQuantity());
+        });
+
+
+        function calculateTotalQuantity() {
+            let totalQuantity = 0;
+            $('.qty').each(function() {
+                let qty = 0;
+                if($(this).text().trim()) {
+                    qty = parseInt($(this).text().replace(/,/g, ''));
+                }
+
+                totalQuantity += qty;
+            });
+            return totalQuantity;
+        }
+
+        function calculateVarianceQuantity() {
+            let varianceQuantity = 0;
+            $('.variance').each(function() {
+                let qty = 0;
+                if ($(this).text().trim()) {
+
+                    qty = parseInt($(this).text().replace(/,/g, ''));
+                }
+
+                varianceQuantity += qty;
+            });
+            return varianceQuantity;
+        }
 
     </script>
 @endpush
