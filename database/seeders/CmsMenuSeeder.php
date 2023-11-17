@@ -16,7 +16,7 @@ class CmsMenuSeeder extends Seeder
         // DB::table('cms_menus')->truncate();
         // self::indexMenu();
         self::tokenMenu();
-        // self::capsuleMenu();
+        self::capsuleMenu();
         // self::auditMenu();
         self::historyMenu();
         self::submasterMenu();
@@ -324,6 +324,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'Capsule Merge',
+            ],
+            [
+                'name'              => 'Capsule Merge',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleMergesControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 4
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Capsule Inventory',
             ],
             [
@@ -336,7 +354,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 3
+                'sorting'           => 5
             ]
         );
 
@@ -354,7 +372,7 @@ class CmsMenuSeeder extends Seeder
                 'is_active'         => 1,
                 'is_dashboard'      => 0,
                 'id_cms_privileges' => 1,
-                'sorting'           => 4
+                'sorting'           => 6
             ]
         );
 

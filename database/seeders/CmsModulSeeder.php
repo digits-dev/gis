@@ -378,6 +378,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Capsule Merge',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_merges',
+                'table_name'   => 'capsule_merges',
+                'controller'   => 'Capsule\AdminCapsuleMergesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
         ];
 
         foreach ($modules as $module) {
