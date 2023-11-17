@@ -16,9 +16,9 @@
 }
 .panel-header{
     text-align:center;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     font-size: 25px;
-    padding: 20px;
+    padding-top: 23px;
 }
 
 .panel-body {
