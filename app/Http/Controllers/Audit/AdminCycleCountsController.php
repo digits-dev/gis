@@ -406,9 +406,19 @@ use Carbon\Carbon;
                         'locations_id' => $request->location_id
                     ];
 
+                    $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+                        ->where('locations_id',$request->location_id)->first();
+
+                    $capsuleInventoryLine = InventoryCapsuleLine::where([
+                        'inventory_capsules_id'=>$capsuleInventory->id,
+                        'gasha_machines_id'=> $machine_id,
+                        'sub_locations_id'=> null
+                    ])->first();
+
                     $capsule = CycleCount::firstOrCreate($capsuleHeader,[
                         'reference_number' => $cycleCountFloorRef,
                         'locations_id' => $request->location_id,
+                        'total_qty' => $request->quantity_total,
                         'created_by' => CRUDBooster::myId(),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
@@ -418,19 +428,11 @@ use Carbon\Carbon;
                         'digits_code' => $value,
                         'gasha_machines_id' => $machine_id,
                         'qty' => $fqty,
+                        'variance' => ($fqty - $capsuleInventoryLine->qty),
                         'created_at' => date('Y-m-d H:i:s')
                     ]);
 
                     $capsuleLines->save();
-
-                    $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
-                        ->where('locations_id',$request->location_id)->first();
-
-                    $capsuleInventoryLine = InventoryCapsuleLine::where([
-                        'inventory_capsules_id'=>$capsuleInventory->id,
-                        'gasha_machines_id'=> $machine_id,
-                        'sub_locations_id'=> null
-                    ])->first();
 
                     HistoryCapsule::insert([
                         'reference_number' => $capsule->reference_number,
@@ -485,39 +487,41 @@ use Carbon\Carbon;
             $cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
             $qty = $request->qty;
 			foreach($request->item_code as $key_item => $item_value){
-                    $sublocation_id = SubLocations::where('location_id',$request->location_id)->where('description',self::STOCK_ROOM)->first();
-                    $item = Item::where('digits_code',$item_value)->first();
-                    $fqty = str_replace(',', '', $qty[$key_item]);
-                    $capsuleHeader = [
-                        'reference_number' => $cycleCountFloorRef,
-                        'locations_id' => $request->location_id
-                    ];
-
-                    $capsule = CycleCount::firstOrCreate($capsuleHeader,[
-                        'reference_number' =>$cycleCountFloorRef,
-                        'locations_id' => $request->location_id,
-                        'sub_locations_id' => $sublocation_id->id,
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $capsuleLines = new CycleCountLine([
-                        'cycle_counts_id' => $capsule->id,
-                        'digits_code' => $item_value,
-                        'qty' => $fqty,
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
-
-                    $capsuleLines->save();
+                $sublocation_id = SubLocations::where('location_id',$request->location_id)->where('description',self::STOCK_ROOM)->first();
+                $item = Item::where('digits_code',$item_value)->first();
+                $fqty = str_replace(',', '', $qty[$key_item]);
+                $capsuleHeader = [
+                    'reference_number' => $cycleCountFloorRef,
+                    'locations_id' => $request->location_id
+                ];
 
                 $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
-                    ->where('locations_id',$request->location_id)->first();
+                ->where('locations_id',$request->location_id)->first();
 
                 $capsuleInventoryLine = InventoryCapsuleLine::where([
                     'inventory_capsules_id'=>$capsuleInventory->id,
                     'sub_locations_id'=> $sublocation_id->id,
                     'gasha_machines_id'=> null
                 ])->first();
+
+                $capsule = CycleCount::firstOrCreate($capsuleHeader,[
+                    'reference_number' =>$cycleCountFloorRef,
+                    'locations_id' => $request->location_id,
+                    'sub_locations_id' => $sublocation_id->id,
+                    'total_qty' => $request->quantity_total,
+                    'created_by' => CRUDBooster::myId(),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $capsuleLines = new CycleCountLine([
+                    'cycle_counts_id' => $capsule->id,
+                    'digits_code' => $item_value,
+                    'qty' => $fqty,
+                    'variance' => ($fqty - $capsuleInventoryLine->qty),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $capsuleLines->save();
 
                 HistoryCapsule::insert([
                     'reference_number' => $capsule->reference_number,
@@ -529,8 +533,6 @@ use Carbon\Carbon;
                     'created_by' => CRUDBooster::myId(),
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
-
-
 
                 if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
                     InventoryCapsuleLine::where([
