@@ -3,9 +3,11 @@
     use App\Models\Capsule\InventoryCapsule;
     use App\Models\Capsule\InventoryCapsuleLine;
     use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Exports\CapsuleInventoryExport;
+	use Excel;
 
 	class AdminInventoryCapsulesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -26,7 +28,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "inventory_capsules";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -116,6 +118,13 @@
 	        |
 	        */
 	        $this->index_button = array();
+			$this->index_button[] = [
+				"title"=>"Export Capsule Inventory",
+				"label"=>"Export Data",
+				"icon"=>"fa fa-upload",
+				"color"=>"primary",
+				"url"=>"javascript:showInventoryExport()",
+			];
 
 
 
@@ -149,7 +158,11 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = "
+				function showInventoryExport() {
+					$('#modal-inventory-export').modal('show');
+				}
+			";
 
 
             /*
@@ -172,7 +185,34 @@
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
-	        $this->post_index_html = null;
+	        $this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-inventory-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Capsule Inventory</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('capsule_inventory_export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
 
 
 
@@ -254,12 +294,6 @@
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
-			if ($column_index == 4 || $column_index == 5){
-				if ($column_value == null){
-					$column_value = '<span>0</span>';
-				}
-			}
-
 	    }
 
 	    /*
@@ -343,6 +377,12 @@
 			$data['page_title'] = 'Detail Inventory Breakdown';
 
 			return $this->view('capsule.capsule-inventory-detail', $data);
+		}
+
+		public function exportData(Request $request) {
+			// Excel::export(new CapsuleInventoryExport);
+			$filename = $request->input('filename');
+			return Excel::download(new CapsuleInventoryExport, $filename.'.csv');
 		}
 
 	}

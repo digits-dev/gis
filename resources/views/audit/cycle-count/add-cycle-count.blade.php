@@ -250,8 +250,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type='button' id="add-cycle-count" class="btn btn-primary btn-sm" disabled><i
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float: left;">Cancel</button>
+                            <button type='button' id="add-cycle-count" class="btn btn-primary" disabled><i
                                     class="fa fa-save"></i> Add</button>
                         </div>
                     </div>
@@ -891,6 +891,7 @@
                 title: "Are you sure you want to cancel?",
                 icon: 'warning',
                 confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#dd3333',
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No',
                 showCancelButton: true,
