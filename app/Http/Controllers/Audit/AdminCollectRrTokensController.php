@@ -16,14 +16,14 @@
 
 	class AdminCollectRrTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $collected;
-		private $forChecking;
+		private $cancelled;
 		private $received;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 			$this->collected       =  5;    
-			$this->forChecking     =  6;
-			$this->received          =  8;      
+			$this->cancelled       =  6;
+			$this->received        =  8;      
 		}
 	    public function cbInit() {
 
@@ -305,13 +305,13 @@
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 	    	$collected       = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
-			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
+			$cancelled   = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
 			$received         = DB::table('statuses')->where('id', $this->received)->value('status_description');  
 			if($column_index == 2){
 				if($column_value == $collected){
 					$column_value = '<span class="label label-info">'.$collected.'</span>';
-				}else if($column_value == $forChecking){
-					$column_value = '<span class="label label-info">'.$forChecking.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}else if($column_value == $received){
 					$column_value = '<span class="label label-success">'.$received.'</span>';
 				}

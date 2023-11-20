@@ -28,6 +28,7 @@ use App\Http\Controllers\Submaster\AdminGashaMachinesController;
 use App\Http\Controllers\Submaster\AdminImportController;
 use App\Http\Controllers\Submaster\AdminAddOnsController;
 use App\Http\Controllers\History\AdminSwapHistoriesController;
+use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -138,4 +139,8 @@ Route::group(['middleware' => ['web']], function() {
 
     //SWAP HISTORY VOID BACKEND
     Route::get(config('crudbooster.ADMIN_PATH').'/swap_histories/requestVoid/{id}', [AdminSwapHistoriesController::class, 'requestVoid']);
+
+    //CAPSULE SWAP
+    Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/check-machine', [AdminCapsuleSwapHeadersController::class, 'checkMachine'])->name('check-machine');
+
 });
