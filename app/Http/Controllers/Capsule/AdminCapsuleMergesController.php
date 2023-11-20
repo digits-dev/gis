@@ -358,12 +358,32 @@ use Session;
 			// getting the machine for 'from'
 			$from_machine = GashaMachines::where('serial_number', $data['from_machine'])
 				->where('location_id', $user_location)
+				->where('status','ACTIVE')
 				->first();
 
 			// getting the machine for 'to'
 			$to_machine = GashaMachines::where('serial_number', $data['to_machine'])
 				->where('location_id', $user_location)
+				->where('status','ACTIVE')
 				->first();
+
+			// Getting Inventory Capsule Lines from the machine 'from'
+			$icl_from = InventoryCapsuleLine::where('gasha_machines_id', $from_machine->id)
+				->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('items', 'items.digits_code2', 'ic.item_code' )
+				->select('inventory_capsule_lines.*',
+					'ic.item_code as item_code',
+					'items.item_description')
+				->get();
+
+			// Getting Inventory Capsule Lines from the machine 'to'
+			$icl_to = InventoryCapsuleLine::where('gasha_machines_id', $to_machine->id)
+				->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('items', 'items.digits_code2', 'ic.item_code' )
+				->select('inventory_capsule_lines.*',
+					'ic.item_code as item_code',
+					'items.item_description')
+				->get();
 
 			if (!$from_machine || !$to_machine) {
 				return json_encode([
@@ -380,8 +400,12 @@ use Session;
 				]);
 			}
 
-
-			dd($from_machine, $to_machine);
+			return json_encode([
+				'gm_list_from' => $icl_from,
+				'gm_list_to' => $icl_to,
+				'from_machine' => $from_machine,
+				'to_machine' => $to_machine
+			]);
 		}
 
 

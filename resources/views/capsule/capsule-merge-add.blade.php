@@ -168,24 +168,26 @@
         position: relative;
         width: 100%;
         max-width: 550px;
-        /* z-index: -1; */
     }
 
     .input-validation {
         position: absolute;
         bottom: -24px;
         left: 0;
-        /* left: 50%;
-        transform: translateX(-50%) */
     }
 
     .form-group p{
         margin: 20px 0;
     }
+
+    table tr td{
+        border: 1px solid #bdbdbd !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
-
         <div class="swal-clone hide">
             <div class="swal2-container1">
                 <div class="warning">
@@ -200,9 +202,7 @@
                     <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
                 </div>
             </div>
-
         </div>
-
         <div class='panel panel-default'>
             <div class='panel-header'>
                 <label>CAPSULE MERGE</label>
@@ -245,8 +245,7 @@
     </div>
 
     <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
-
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header label-primary">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -255,38 +254,40 @@
                 <div class="row">
                     <div class="modal-body">
                         <div class="col-md-6">
-                            <p class="text-center" for="">PH0001</p>
-                            <table class="table table-responsive table-bordered" id="newItemModalTable">
+                            <p class="text-center text-bold" for="" id="label_from_machine">From Machine <span style="color:rgb(48, 133, 214)"></span></p>
+                            <table class="table table-responsive table-bordered gm_from" id="newItemModalTable">
                                 <thead>
                                     <tr>
-                                        <td class="text-center" width="50%"><b>Item Code</b></td>
-                                        <td class="text-center" width="50%"><b>Qty</b></td>
+                                        <td class="text-center" width="25%"><b>Item Code</b></td>
+                                        <td class="text-center" width="50%"><b>Item Description</b></td>
+                                        <td class="text-center" width="25%"><b>Qty</b></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td class="pull-right">Total</td>
+                                        <td class="" colspan="2">Total</td>
                                         <td class="text-center"><span id="total-item-qty">0</span></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-center" for="">PH0002</p>
-                            <table class="table table-responsive table-bordered" id="newItemModalTable">
+                            <p class="text-center text-bold" id="label_to_machine" for="">To Machine <span style="color: rgb(67, 136, 113)"></span></p>
+                            <table class="table table-responsive table-bordered gm_to" id="newItemModalTable">
                                 <thead>
                                     <tr>
-                                        <td class="text-center" width="50%"><b>Item Code</b></td>
-                                        <td class="text-center" width="50%"><b>Qty</b></td>
+                                        <td class="text-center" width="25%"><b>Item Code</b></td>
+                                        <td class="text-center" width="50%"><b>Item Description</b></td>
+                                        <td class="text-center" width="25%"><b>Qty</b></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td class="pull-right">Total</td>
+                                        <td class="" colspan="2">Total</td>
                                         <td class="text-center"><span id="total-item-qty">0</span></td>
                                     </tr>
                                 </tfoot>
@@ -296,8 +297,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type='button' id="add-cycle-count" class="btn btn-primary"><i
-                            class="fa fa-save"></i> Submit</button>
+                    <button type='button' id="add-cycle-count" class="btn btn-primary">
+                        <i class="fa fa-save"></i> 
+                        Submit
+                    </button>
                 </div>
             </div>
         </div>
@@ -305,8 +308,6 @@
 @endsection
 @push('bottom')
 <script>
-
-    // $('#addRowModal').modal('show');
 
     $('.content-header').hide();
     
@@ -413,7 +414,6 @@
                 to_machine: toMachine
             },
             success: function(res){
-                console.log(res);
                 handleMachineCheck(res);
             },
             error: function(err){
@@ -432,9 +432,36 @@
                 icon: 'error',
                 returnFocus: false,
             });
+        } else {
+            const gm_from = Object.values(data.gm_list_from);
+            const gm_to = Object.values(data.gm_list_to);
+
+            $('#label_from_machine span').text(data.from_machine.serial_number);
+            $('#label_to_machine span').text(data.to_machine.serial_number);
+
+            gm_from.forEach((ic, index) => {
+                const gm_item_code = $('<td>').text(ic.item_code);
+                const gm_description = $('<td>').text(ic.item_description);
+                const qtyInput = $('<input>').attr('qty', ic.qty).addClass('form-control');
+                const gm_qty = $('<td>').append(qtyInput);
+                
+                const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
+                $('.gm_from').append(tr);
+            });
+
+            gm_to.forEach((ic, index) => {
+                const gm_item_code = $('<td>').text(ic.item_code);
+                const gm_description = $('<td>').text(ic.item_description);
+                const gm_qty = $('<td>').text(ic.qty);
+                
+                const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
+                $('.gm_to').append(tr);
+            });
+
+
+            $('#addRowModal').modal('show');
         }
     }
-
 
 </script>
 @endpush
