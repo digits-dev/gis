@@ -121,13 +121,13 @@
             $('#int_description').val(res.description);
             $('#int_qty').focus();
         };
-        
+
     };
     function formatNumber(input) {
         input.value = input.value.replace(/\D/g, '').replace(/^0+/, '');
         input.value = input.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
-    
+
     function numberOnly(input) {
         input.value = input.value.replace(/\D/g, '');
     };
@@ -147,6 +147,7 @@
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
             returnFocus: false,
             reverseButtons: true,
         }).then((result) => {
@@ -192,7 +193,7 @@
 
 
     });
-    
+
     $('#addOnForm').on('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();

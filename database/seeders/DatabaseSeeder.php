@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             // FloatTypeSeeder::class,
             // LocationsSeeder::class,
             // ModeOfPaymentSeeder::class,
-            TokenActionTypeSeeder::class,
+            // TokenActionTypeSeeder::class,
             // StatusesSeeder::class,
             // CapsuleActionTypeSeeder::class,
             // CmsPrivilegeSeeder::class,
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             // TokenConversionSeeder::class,
             // CountersSeeder::class,
             // SalesTypeSeeder::class,
-            PresetSeeder::class,
+            // PresetSeeder::class,
         ]);
 
     }
