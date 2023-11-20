@@ -239,7 +239,7 @@
             </div>
             <br>
             <div class='panel-footer'>
-                <button class="btn btn-primary btn-submit-size" type="button" id="merge-btn">Merge</button> 
+                <button class="btn btn-primary btn-submit-size" type="button" id="merge-btn" disabled>Merge</button> 
             </div>
         </div>
     </div>
@@ -268,7 +268,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="" colspan="2">Total</td>
-                                        <td class="text-center"><span id="total-item-qty">0</span></td>
+                                        <td class="text-center"><span class="total-item-qty" id="from-machine-total">0</span></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -288,7 +288,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="" colspan="2">Total</td>
-                                        <td class="text-center"><span id="total-item-qty">0</span></td>
+                                        <td class="text-center"><span class="total-item-qty" id="to-machine-total">0</span></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -296,10 +296,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type='button' id="add-cycle-count" class="btn btn-primary">
+                    <button type="button" class="btn btn-secondary pull-left" data-dismiss="modal">Cancel</button>
+                    <button type='button' id="save-modal" class="btn btn-primary" disabled>
                         <i class="fa fa-save"></i> 
-                        Submit
+                        Save
                     </button>
                 </div>
             </div>
@@ -413,13 +413,18 @@
                 from_machine: fromMachine,
                 to_machine: toMachine
             },
-            success: function(res){
+            success: function(res) {
+                console.log(res);
                 handleMachineCheck(res);
             },
-            error: function(err){
+            error: function(err) {
                 console.log(err);
             }
         });
+    });
+
+    $(document).on('click', 'button[data-dismiss="modal"]', function() {
+        resetModal();
     });
 
     function handleMachineCheck(data) {
@@ -442,26 +447,85 @@
             gm_from.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
-                const qtyInput = $('<input>').attr('qty', ic.qty).addClass('form-control');
+                const qtyInput = $('<input>').attr('qty', ic.qty).addClass('form-control item-qty');
                 const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
                 $('.gm_from').append(tr);
             });
 
+            let toMachineTotal = 0;
+
             gm_to.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
-                const gm_qty = $('<td>').text(ic.qty);
+                const qtyInput = $('<input>')
+                    .attr('readonly', true)
+                    .addClass('form-control')
+                    .val(ic.qty.toLocaleString());
+                const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
+                toMachineTotal += ic.qty;
+                
                 $('.gm_to').append(tr);
             });
 
+            $('#to-machine-total').text(toMachineTotal.toLocaleString());
 
             $('#addRowModal').modal('show');
         }
     }
+
+    $(document).on('input', '.item-qty', function() {
+        const val = Number($(this).val().replace(/\D/g, ''));
+        $(this).val(val.toLocaleString());
+        sumQty();
+        validateInput();
+    });
+
+    function sumQty() {
+        let sum = 0;
+        const qtyInput = $('.gm_from .item-qty').get();
+        qtyInput.forEach(input => {
+            const value = Number($(input).val().replace(/\D/g, ''));
+            sum += value;
+        });
+
+        $('#from-machine-total').text(sum.toLocaleString());
+    }
+    
+    function validateInput() {
+        const qtyInput = $('.gm_from .item-qty').get();
+        let isValid = true;
+        qtyInput.forEach(input => {
+            const currentVal = $(input).val(); 
+            const value = Number(currentVal.replace(/\D/g, ''));
+            const maxValue = Number($(input).attr('qty'));
+            if (value > maxValue) {
+                $(input).css('border', '2px solid red');
+                isValid = false;
+            } else if (!currentVal) {
+                isValid = false;
+            } else {
+                $(input).css('border', '');
+            }
+        });
+
+        $('#save-modal').attr('disabled', !isValid);
+    }
+    
+    function resetModal() {
+        $('.gm_from tbody, .gm_to tbody').html('');
+        $('#from-machine-total').text('0')
+        $('#save-modal').attr('disabled', true);
+    }
+
+    $('#from_machine, #to_machine').on('input', function() {
+        const fromMachineVal = $('#from_machine').val().trim();
+        const toMachineVal = $('#to_machine').val().trim();
+        $('#merge-btn').attr('disabled', fromMachineVal == toMachineVal);
+    });
 
 </script>
 @endpush
