@@ -408,6 +408,11 @@ use Session;
 			]);
 		}
 
+		public function submitMerge(Request $request) {
+			
+			dd($request->all());
+		}
+
 
 
 	    //By the way, you can still create your own method in here... :) 

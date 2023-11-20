@@ -107,6 +107,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_refills/validate-gasha-machine', [AdminCapsuleReturnsController::class, 'validateGashaMachine'])->name('validate_gasha_machine');
     Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
     Route::post('admin/capsule_merges/check-machines', [AdminCapsuleMergesController::class, 'checkMachines'])->name('check_machines');
+    Route::post('admin/capsule_merges/submit-merge', [AdminCapsuleMergesController::class, 'submitMerge'])->name('submit_merge');
 
     //CAPSULES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/capsules-upload', [AdminCapsuleRefillsController::class, 'uploadCapsules']);

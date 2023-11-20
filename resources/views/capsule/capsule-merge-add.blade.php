@@ -447,7 +447,7 @@
             gm_from.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
-                const qtyInput = $('<input>').attr('qty', ic.qty).addClass('form-control item-qty');
+                const qtyInput = $('<input>').attr({'qty' : ic.qty, 'item_code' : ic.item_code, 'machine' : data.from_machine.serial_number}).addClass('form-control item-qty');
                 const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
@@ -526,6 +526,58 @@
         const toMachineVal = $('#to_machine').val().trim();
         $('#merge-btn').attr('disabled', fromMachineVal == toMachineVal);
     });
+
+    $('#save-modal').on('click', function(){
+
+        Swal.fire({
+            title: "Are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            reverseButtons: true,
+            returnFocus: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitModal();
+            }
+        });
+
+
+
+    })
+
+    function submitModal() {
+        const inputs = $('.item-qty').get();
+        let data = {
+            _token : "{{ csrf_token() }}",
+            machine_from : $('#from_machine').val(),
+            machine_to : $('#to_machine').val(),
+            items : [],
+        };
+        
+        inputs.forEach((input, index) => {
+            
+            data.items.push({
+                item_code : $(input).attr('item_code'),
+                qty : $(input).val().replace(/\D/g, '')
+            })
+        })
+
+        $.ajax({
+            url: "{{ route('submit_merge') }}",
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function(res){
+                console.log(res);
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
 
 </script>
 @endpush
