@@ -134,6 +134,21 @@
                         <td>Status</td>
                         <td>{{ $swap_histories->status}}</td>
                     </tr>
+                    @if (!empty($addons))
+                        <tr>
+                            <td colspan="2" style="background-color: #c02f2f; color: white;">Addons</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>Qty</td>
+                        </tr>
+                        @foreach ($addons as $addon)
+                            <tr>
+                                <td>{{ $addon->description}}</td>
+                                <td>{{ $addon->qty}}</td>
+                            </tr>
+                        @endforeach
+                     @endif
                 </tbody>
                 <tfoot>
                     <tr>

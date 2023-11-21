@@ -121,13 +121,14 @@
   .styled-table-swap {
     font-size: 0.9em;
     font-family: sans-serif;
-    min-width: 400px;
-    width: 60%;
+    width: 100%;
     text-align: center;
     border-collapse: collapse;
     margin: 0 auto;
     font-weight: bold;
 }
+
+
 
 .styled-table-swap td {
   border: 1px solid #838383;
@@ -137,6 +138,41 @@
 .styled-table-swap tr td:nth-of-type(odd) {
       color: #c02f2f;
 }
+
+.addons-table {
+  border: 1px solid #ffbfbf;
+  border-radius: 13px; 
+  border-spacing: 0;
+  width: 100%;
+  margin: 12px auto;
+  margin-bottom: 20px;
+ font-weight: normal;
+}
+.addons-table th , .addons-table td {
+  text-align: left;
+  text-align: center;
+  padding: 5px 10px; 
+  border: 1px solid #ffbfbf;
+}
+.addons-table td {
+font-size: 14px;
+}
+
+.addons-table th:nth-child(1) {
+  border-radius: 10px 0 0 0;
+}
+.addons-table th:nth-child(3) {
+  border-radius: 0 10px 0 0;
+}
+
+.addons-table th {
+  font-weight: normal;
+}
+
+.addons-table td input  {
+  text-align: center;
+}
+
 .swal2-confirm {
   width: 95px;
 }
@@ -215,7 +251,26 @@
  	width: 100%;
 	border-bottom: 1px solid rgb(189, 189, 189);
 }
-
+.addons-container {
+  margin: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+}
+.addons {
+    display: flex;
+    width: 100%;
+    border: 2px solid #ffbfbf;
+    height: 45px;
+    align-items: center;
+    border-radius: 10px;
+    padding: 0 20px;
+    margin: 16px 0;
+  }
+  .addons-selection {
+    width: 100%;
+  }
 /* CSS */
 .button-pushable {
   position: relative;
@@ -360,6 +415,33 @@
 .swal-footer {
   text-align: center; 
 }
+
+.parent{
+  position: relative;
+}
+.child{
+  position: absolute;
+}
+.lessQty {
+  color: #e60213;
+  cursor: pointer;
+}
+.lessQty:hover {
+  filter: brightness(110%);
+  -webkit-filter: brightness(110%);
+}
+.swal-table-container {
+  display: flex;
+  gap: 20px;
+}
+.swal-container {
+  width: 70%;
+}
+.swal-container2 {
+  width: 70%;
+}
+
+
 </style>
 @endsection
 
@@ -427,6 +509,34 @@
                     <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
                 </div>
             </div>
+            <div class="addons-container">
+              <Span>Addons</Span>
+              <input type="checkbox" name="" id="myCheckbox">
+              <div class="addons">
+                <select class="addons-selection parent" name="addons" id="addons">
+                    <option class="child" value="" disabled selected>Select Addons</option>
+                    @foreach ($addons as $addon )
+                    <option class="child" data-id="{{ $addon->digits_code ." - ". $addon->description  }}" value="{{ $addon->digits_code  }}">{{ $addon->digits_code ." - ". $addon->description  }} ({{ $addon->qty }})</option>                      
+                    @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="addon-table-wrapper" style="display: none;">
+              <table class="addons-table">
+                <thead>
+                  <tr>
+                    <th>
+                      Description
+                    </th>
+                    <th>Quantity</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="addons-body">
+                  <!-- Add rows dynamically here -->
+              </tbody>
+              </table>
+            </div>
             {{-- <button class="btn-swap" type="submit" >Swap</button> --}}
               <button class="button-pushable btn-swap" role="button">
           <span class="button-shadow"></span>
@@ -436,6 +546,7 @@
              Swap
           </span>
       </button>
+   
         </form>
     </div> 
     <div class="presets-container">
@@ -504,11 +615,9 @@
           $("#cash_value").focus();
           $('#payment_reference_div').hide();
           $('.paymaya').hide();
-     
+          $('.addons').hide();
       });
 
-
-    
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
     const amountReceivedInput = document.getElementById("amount_received");
@@ -625,8 +734,8 @@
             .replace(/\D/g, "")
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             ;
-     });
-});
+            });
+        });
 
     function onInput1(float1Input) {
       float1Input.value = Number(float1Input.value.replace(/[^0-9]/g,''));
@@ -683,7 +792,6 @@
 
           }
 
-    $(document).ready(function() {
     $("#mode_of_payment").on("change", function() {
       const float1Value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const selectedValue = $(this).val();
@@ -717,9 +825,8 @@
           $('#payment_reference').hide();  
           $('#amount_received').focus()
         }
-       
-    });
-});
+          
+        });
 
     let isSwapped = false;
     let cashValueHasFocus = true;
@@ -790,16 +897,171 @@
       }else {
         float1Input.value = total.toLocaleString();
       }
-      // amountReceivedInput.value = totalElement.value;
       amountReceivedInput.value = "";
     }
 
+      var arrayDigitsCode = []
+      var arrayDescription = [];
+
+      var addonsObject = @json($addons);
+
+      $("#addons").on("change", function () {
+        let addonDigitsCode = $(this).val();
+        let addonDescription = $("#addons option:selected").attr('data-id');
+        if (!arrayDescription.includes(addonDescription)) {
+          arrayDescription.push(addonDescription);
+        }
+        if (!arrayDigitsCode.includes(addonDigitsCode)) {
+          arrayDigitsCode.push(addonDigitsCode);
+        }
+
+        let selectedDigitalCode = $(this).val();
+        
+        var selectedAddon = addonsObject.find(function (addon) {
+          return addon.digits_code === selectedDigitalCode;
+        });
+
+        selectedAddon.qty -= 1;
+        if (selectedAddon.qty == 0) {
+          $(this).find('option[value="' + selectedDigitalCode + '"]').attr('disabled', true);
+        }
+
+        // var rowIdentifier = addonDescription.replace(/\s+/g, "-").toLowerCase(); // Create a unique identifier
+        if (addonDigitsCode) {
+            let existingRow = $("#addons-body tr[data-row='" + addonDigitsCode + "']");
+            if (existingRow.length) {
+                let quantityElement = existingRow.find("td:nth-last-child(2) input");
+                let quantity = parseInt(quantityElement.val());
+                console.log(quantity)
+                quantityElement.val(quantity + 1);
+            } else {
+                $("#addons-body").append('<tr data-row="' + addonDigitsCode + '">' + 
+                  '<td>'+
+                    '<input type="hidden" name="digits_code[]" value="' + addonDigitsCode + '">' +
+                    '<input type="hidden"  name="description[]" value="' + addonDescription + '">' +
+                    '<span>'+addonDescription+'</span>' +
+                    '</td>' +
+                    '<td>' +
+                     '<input style="width: 20%; font-size: 16px" type="text" name="quantity[]" id="qty_value'+addonDigitsCode+'" value="1" data-id="'+addonDigitsCode+'" readonly>' +
+                    '</td>' +
+                    '<td>' +
+                      '<i class="fas fa-minus-circle lessQty" id="lessQty'+addonDigitsCode+'" data-id="'+addonDigitsCode+'"></i>' +
+                    '</td>' +
+                  '</tr>');
+            }
+            $('.addon-table-wrapper').fadeIn();
+        }
+          else {
+              $("#addons-body").empty();
+          } 
+          setTimeout(() => {
+            $(this).val('');
+          }, 500);
+          reRenderQty();
+          formatTable();         
+      });
+        
+      $(document).on('click', '.lessQty', function(e){
+        const addonDigitsCode = $(this).attr('data-id');
+
+        const currentValue = parseInt($('#qty_value'+addonDigitsCode).val());
+        console.log(currentValue);
+        const newValue = currentValue - 1;
+
+        const item = addonsObject.find(e => e.digits_code === addonDigitsCode);
+        item.qty++;
+        console.log(addonsObject);
+
+        if (newValue == 0) {
+          $(this).parents('tr').remove();
+        }
+
+        const tableWrapper = $(this).parents('.addon-table-wrapper');
+        const selectedLength = $('.addon-table-wrapper #addons-body tr').get().length;
+        if (!selectedLength) {
+          $('.addon-table-wrapper').fadeOut();
+        }
+        
+        $('#qty_value'+addonDigitsCode).val(newValue);
+        reEnableOptions();
+        reRenderQty();
+        formatTable();
+
+      });
+
+    function reEnableOptions() {
+      addonsObject.forEach(addon => {
+        if (addon.qty) {
+          $(`option[value="${addon.digits_code}"]`).attr('disabled', false);
+        }
+      });
+    }
+
+    function reRenderQty() {
+      addonsObject.forEach(addon => {
+        $(`option[value="${addon.digits_code}"]`).text(`${addon.digits_code} - ${addon.description} (${addon.qty})`);
+      });
+    }
+
+    function formatTable() {
+      const tbody = $('.addons-table tbody');
+      const lastIndexTR = tbody.find('tr').get().length;
+      tbody.find('tr').get().forEach((tr, index) => {
+        $(tr).find('td').css('border-radius', '');
+
+      });
+
+      const thead = $('.addons-table thead');
+      thead.find('tr').first().find('th:first-child').css({
+        'width': '100%',
+      });
+
+      const lastTR = tbody.find('tr').eq(lastIndexTR - 1);
+      const lastIndexTD = lastTR.find('td').get().length;
+      lastTR.find('td').get().forEach((td, index) => {
+        if (index === 0) {
+          $(td).css('border-radius', '0 0 0 10px');
+        } else if (index == lastIndexTD - 1) {
+          $(td).css('border-radius', '0 0 10px 0');
+        }
+      })
+    }
+        
+    $("#myCheckbox").click(function () {
+      let isChecked = $(this).prop('checked');
+      if(isChecked) {
+        $('.addons').fadeIn();
+        $('#addons').val('');
+      }else {
+        $('.addons').fadeOut();
+        $("#addons-body").empty();
+        addonsObject = <?php echo json_encode($addons); ?>;
+        $('.addon-table-wrapper').fadeOut();
+        reEnableOptions();
+        reRenderQty();
+        formatTable();
+
+      }
+    })
+
+
+
     $(document).ready(function() {
     $('form').submit(function(e) {
-        e.preventDefault(); // Prevent the form from submitting the traditional way.
+        e.preventDefault(); 
         const formData = $('form').serialize();
+
         const cashValue = Number($('#cash_value').val().replace(/[.,]/g, ''));
         const amountReceived = Number($('#amount_received').val().replace(/[.,]/g, ''));
+        const addOns = [];
+        
+        $('.addons-table tbody tr').get().forEach(tr => {
+          const row = $(tr);
+          const obj = {};
+          obj.description = row.find('input[name="description[]"]').val();
+          obj.qty = row.find('input[name="quantity[]"]').val();
+          addOns.push(obj);
+        });
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
                 Swal.fire({
                     type: 'error',
@@ -849,77 +1111,96 @@
         else {
           $('.btn-swap').css({"background-color": "gray", "border-radius": "12px"});
           $('.btn-swap').attr('disabled', true);
-                      swal({
-                        title: 'Are you sure you want to continue?',
-                        icon: 'info',
-                        closeOnClickOutside: false,
-                        content: {
-                        element: "table",
-                        attributes: {
-                          className: "styled-table-swap",
-                          innerHTML: '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
-                          ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
-                          '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                          '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' 
-                        }
-                      },
-                        buttons: {
-                          cancel: {
-                              text: "Cancel",
-                              visible: true,
-                              closeModal: true,
-                          },
-                          confirm: {
-                              text: "Yes",
-                              closeModal: false,
-                          },
-                  },
-                    }).then(save => {
-                      if (save) {
-                        // setTimeout(() => {
-                          return $.ajax({
-                            type: 'POST',
-                            url: "{{ route('swap') }}",
-                            data: formData,
-                            success: function(res) {
-                                const data = JSON.parse(res);
-                                console.log(data)
-                              swal.stopLoading();
-                              swal.close();
-                              if (data.message === 'success') {
-                                Swal.fire({
-                                  icon: 'success',
-                                  title: 'Swap Successfully!',
-                                  allowOutsideClick: false,
-                                  html: '<table class="styled-table-swap">' +
-                                        '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
-                                        '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                                        '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
-                                        ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
-                                        '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                                        '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                                        '</table>',
-                                }).then((result) => {
-                                        history.go(0);
-                                })
-                            } 
-                          },
-                          error: function(err) {
-                              console.log(err);
-                          }
-                            });
-                        // }, 6000);
-                        
-                      } else {
-                        $('.btn-swap').css({"background-color": "#e60213", "border-radius": "12px"});
-                        $('.btn-swap').attr('disabled', false);
-                        }   
-                    
+          swal({
+            title: 'Are you sure you want to continue?',
+            icon: 'info',
+            closeOnClickOutside: false,
+            className: (addOns.length != 0 ? 'swal-container' : ''),
+            content: {
+            element: "div",
+            attributes: {
+              className: "swal-table-container",
+              innerHTML: '<table class="styled-table-swap"><tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+              '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
+              ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
+              '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+              '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+              '</table>'+
+              (addOns.length != 0 ? 
+                  '<table class="styled-table-swap">'+
+              '<tr><td colspan="2">Addons</td></tr>' +
+              '<tr><td>Description</td><td>Quantity</td> </tr>' +
+              addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                 '</table>' : '')
+                }
+          },
+            buttons: {
+              cancel: {
+                  text: "Cancel",
+                  visible: true,
+                  closeModal: true,
+              },
+              confirm: {
+                  text: "Yes",
+                  closeModal: false,
+              },
+        },
+        }).then(save => {
+          if (save) {
+            // setTimeout(() => {
+              return $.ajax({
+                type: 'POST',
+                url: "{{ route('swap') }}",
+                data: formData,
+                success: function(res) {
+                    const data = JSON.parse(res);
+                    console.log(data)
+                  swal.stopLoading();
+                  swal.close();
+                  if (data.message === 'success') {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Swap Successfully!',
+                      customClass: (addOns.length != 0 ? 'swal-container2' : ''),
+                      allowOutsideClick: false,
+                      html: 
+                      '<div class="swal-table-container">'+
+                        '<table class="styled-table-swap">' +
+                            '<tr><td>Reference Number</td><td>'+ data.reference_number +'</td></tr>' +
+                            '<tr><td>Number of Tokens</td><td>'+ $('#token_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                            '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
+                            ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
+                            '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                            '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
+                        '</table>' +
+                            (addOns.length != 0 ? 
+                            '<table class="styled-table-swap">'+
+                            '<tr><td colspan="2">Addons</td></tr>' +
+                            '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
+                            addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                        '</table>' : '') +
+                      '</div>'
+                                
+                    }).then((result) => {
+                            history.go(0);
                     })
+                } 
+              },
+              error: function(err) {
+                  console.log(err);
+              }
+                });
+            // }, 6000);
+            
+          } else {
+            $('.btn-swap').css({"background-color": "#e60213", "border-radius": "12px"});
+            $('.btn-swap').attr('disabled', false);
+            }   
+        
+              })
 
-        }
-    });
-});
+              }
+          });
+      });
   </script>
 @endsection

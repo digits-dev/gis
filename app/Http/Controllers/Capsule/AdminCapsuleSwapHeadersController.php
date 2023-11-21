@@ -4,9 +4,18 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-
+	use App\Models\Capsule\InventoryCapsule;
+	use App\Models\Capsule\InventoryCapsuleLine;
+	use App\Models\Capsule\CapsuleSwapHeader;
+	use App\Models\Capsule\CapsuleSwapLines;
+	use App\Models\Capsule\HistoryCapsule;
+	use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\CapsuleActionType;
+	use App\Models\Submaster\Item;
+	
 	class AdminCapsuleSwapHeadersController extends \crocodicstudio\crudbooster\controllers\CBController {
-
+		private const SWAP = 'SWAP';
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -219,7 +228,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -268,8 +277,34 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$fields                = Request::all();
+			$machine_one           = $fields['machine_no_one'];
+			$capsule_qty_one_total = $fields['capsule_qty_one_total'];
+			$no_of_token_one       = $fields['no_of_token_one'];
+			$machine_two           = $fields['machine_no_two'];
+			$capsule_qty_two_total = $fields['capsule_qty_two_total'];
+			$no_of_token_two       = $fields['no_of_token_two'];
 
+			$machine_one_data      = GashaMachines::where('serial_number',$machine_one)->first();
+			$machine_two_data      = GashaMachines::where('serial_number',$machine_two)->first();
+
+			if($machine_one_data->no_of_token != $machine_two_data->no_of_token){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"No match no of token!","danger");
+			}
+
+			if($capsule_qty_one_total == 0 || $capsule_qty_two_total == 0){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Not allow zero capsule quantity!","danger");
+			}
+
+			$postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			$postdata['machine_no_one']   = $machine_one;
+			$postdata['capsule_qty_one']  = intval(str_replace(',', '', $capsule_qty_one_total));
+			$postdata['no_of_token_one']  = $machine_one_data->no_of_token;
+			$postdata['machine_no_two']   = $machine_two;
+			$postdata['capsule_qty_two']  = intval(str_replace(',', '', $capsule_qty_two_total));
+			$postdata['no_of_token_two']  = $machine_two_data->no_of_token;
+			$postdata['location']      = CRUDBooster::myLocationId();
+			$postdata['created_by']       = CRUDBooster::myId();
 	    }
 
 	    /* 
@@ -280,7 +315,164 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
+	        $fields       = Request::all(); 
+
+			//Machine 1
+			$jan_no_one       = $fields['jan_no_one'];
+	        $machine_one      = $fields['machine_no_one'];
+			$capsule_qty_one  = $fields['capsule_qty_one'];
+			$no_of_token_one  = $fields['no_of_token_one'];
+
+			//Machine 2
+			$jan_no_two      = $fields['jan_no_two'];
+			$machine_two     = $fields['machine_no_two'];
+			$capsule_qty_two = $fields['capsule_qty_two'];
+			$no_of_token_two = $fields['no_of_token_two'];
+
+			$capsule_swap      = CapsuleSwapHeader::find($id);
+			$machine_one_data  = GashaMachines::where('serial_number',$machine_one)->first();
+			$machine_two_data  = GashaMachines::where('serial_number',$machine_two)->first();
+			$time_stamp        = date('Y-m-d H:i:s');
+			$action_by         = CRUDBooster::myId();
+
+			//FROM MACHINE 1 to MACHINE 2 SAVE TO CAPSULE SWAP LINES
+			$machineOneInsertLineOut = [];
+			$machineOneInsertLineIn = [];
+			foreach($jan_no_one as $key => $jan) {		
+				//OUT
+				$machineOneInsertLineOut[$key]['capsule_swap_id'] = $id;
+				$machineOneInsertLineOut[$key]['jan_no']          = (int)$jan;
+				$machineOneInsertLineOut[$key]['from_machine']    = $machine_one_data->id;
+				$machineOneInsertLineOut[$key]['to_machine']      = $machine_two_data->id;
+				$machineOneInsertLineOut[$key]['qty']             = -1 * abs($capsule_qty_one[$key]);
+				$machineOneInsertLineOut[$key]['location']     = CRUDBooster::myLocationId();
+				$machineOneInsertLineOut[$key]['created_at']      = date('Y-m-d H:i:s');
+				//IN
+				$machineOneInsertLineIn[$key]['capsule_swap_id'] = $id;
+				$machineOneInsertLineIn[$key]['jan_no']          = (int)$jan;
+				$machineOneInsertLineIn[$key]['from_machine']    = $machine_two_data->id;
+				$machineOneInsertLineIn[$key]['to_machine']      = $machine_one_data->id;
+				$machineOneInsertLineIn[$key]['qty']             = $capsule_qty_one[$key];
+				$machineOneInsertLineIn[$key]['location']     = CRUDBooster::myLocationId();
+				$machineOneInsertLineIn[$key]['created_at']      = date('Y-m-d H:i:s');
+			}
+			$machineOneMerge = array_merge($machineOneInsertLineOut, $machineOneInsertLineIn);
+			CapsuleSwapLines::insert($machineOneMerge);
+
+			//FROM MACHINE 2 to MACHINE 1 SAVE TO CAPSULE SWAP LINES
+			$machineTwoInsertLineOut = [];
+			$machineTwoInsertLineIn = [];
+			foreach($jan_no_two as $key => $jan_two) {	
+				//out		
+				$machineTwoInsertLineOut[$key]['capsule_swap_id'] = $id;
+				$machineTwoInsertLineOut[$key]['jan_no']          = (int)$jan_two;
+				$machineTwoInsertLineOut[$key]['from_machine']    = $machine_two_data->id;
+				$machineTwoInsertLineOut[$key]['to_machine']      = $machine_one_data->id;
+				$machineTwoInsertLineOut[$key]['qty']             = -1 * abs($capsule_qty_two[$key]);
+				$machineTwoInsertLineOut[$key]['location']     = CRUDBooster::myLocationId();
+				$machineTwoInsertLineOut[$key]['created_at']      = date('Y-m-d H:i:s');
+				//IN
+				$machineTwoInsertLineIn[$key]['capsule_swap_id'] = $id;
+				$machineTwoInsertLineIn[$key]['jan_no']          = (int)$jan_two;
+				$machineTwoInsertLineIn[$key]['from_machine']    = $machine_one_data->id;
+				$machineTwoInsertLineIn[$key]['to_machine']      = $machine_two_data->id;
+				$machineTwoInsertLineIn[$key]['qty']             = $capsule_qty_two[$key];
+				$machineTwoInsertLineIn[$key]['location']     = CRUDBooster::myLocationId();
+				$machineTwoInsertLineIn[$key]['created_at']      = date('Y-m-d H:i:s');
+			}
+			$machineTwoMerge = array_merge($machineTwoInsertLineOut, $machineTwoInsertLineIn);
+			CapsuleSwapLines::insert($machineTwoMerge);
+
+			// creating history for the transaction
+			// ====> ledger type
+			// MACHINE ONE INSERT TO MOVEMENT HISTORY
+			$action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', self::SWAP)->first();
+			$machineOneInsertLineOutToMH = [];
+			$machineOneInsertLineInToMH = [];
+			foreach($jan_no_one as $key => $jan) {	
+				$item_one = Item::where('digits_code', $jan)->first();
+				//OUT		
+				$machineOneInsertLineOutToMH[$key]['reference_number']        = $capsule_swap->reference_number;
+				$machineOneInsertLineOutToMH[$key]['item_code']               = $item_one->digits_code2;
+				$machineOneInsertLineOutToMH[$key]['capsule_action_types_id'] = $action_type->id;
+				$machineOneInsertLineOutToMH[$key]['locations_id']            = $machine_one_data->location_id;
+				$machineOneInsertLineOutToMH[$key]['from_machines_id']        = $machine_one_data->id;
+				$machineOneInsertLineOutToMH[$key]['to_machines_id']          = $machine_two_data->id;
+				$machineOneInsertLineOutToMH[$key]['qty']                     = -1 * abs($capsule_qty_one[$key]);
+				$machineOneInsertLineOutToMH[$key]['created_at']              = $time_stamp;
+				$machineOneInsertLineOutToMH[$key]['created_by']              = $action_by;
+				//IN
+				$machineOneInsertLineInToMH[$key]['reference_number']        = $capsule_swap->reference_number;
+				$machineOneInsertLineInToMH[$key]['item_code']               = $item_one->digits_code2;
+				$machineOneInsertLineInToMH[$key]['capsule_action_types_id'] = $action_type->id;
+				$machineOneInsertLineInToMH[$key]['locations_id']            = $machine_two_data->location_id;
+				$machineOneInsertLineInToMH[$key]['from_machines_id']        = $machine_two_data->id;
+				$machineOneInsertLineInToMH[$key]['to_machines_id']          = $machine_one_data->id;
+				$machineOneInsertLineInToMH[$key]['qty']                     = $capsule_qty_one[$key];
+				$machineOneInsertLineInToMH[$key]['created_at']              = $time_stamp;
+				$machineOneInsertLineInToMH[$key]['created_by']              = $action_by;
+			}
+			$machineOneMergeMovementHistory = array_merge($machineOneInsertLineOutToMH, $machineOneInsertLineInToMH);
+			HistoryCapsule::insert($machineOneMergeMovementHistory);
+
+			// MACHINE TWO INSERT TO MOVEMENT HISTORY
+			$action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', self::SWAP)->first();
+			$machineTwoInsertLineOutToMH = [];
+			$machineTwoInsertLineInToMH = [];
+			foreach($jan_no_two as $key => $jan_two) {	
+				$item_two = Item::where('digits_code', $jan_two)->first();
+				//OUT		
+				$machineTwoInsertLineOutToMH[$key]['reference_number']        = $capsule_swap->reference_number;
+				$machineTwoInsertLineOutToMH[$key]['item_code']               = $item_two->digits_code2;
+				$machineTwoInsertLineOutToMH[$key]['capsule_action_types_id'] = $action_type->id;
+				$machineTwoInsertLineOutToMH[$key]['locations_id']            = $machine_two_data->location_id;
+				$machineTwoInsertLineOutToMH[$key]['from_machines_id']        = $machine_two_data->id;
+				$machineTwoInsertLineOutToMH[$key]['to_machines_id']          = $machine_one_data->id;
+				$machineTwoInsertLineOutToMH[$key]['qty']                     = -1 * abs($capsule_qty_two[$key]);
+				$machineTwoInsertLineOutToMH[$key]['created_at']              = $time_stamp;
+				$machineTwoInsertLineOutToMH[$key]['created_by']              = $action_by;
+				//IN
+				$machineTwoInsertLineInToMH[$key]['reference_number']        = $capsule_swap->reference_number;
+				$machineTwoInsertLineInToMH[$key]['item_code']               = $item_two->digits_code2;
+				$machineTwoInsertLineInToMH[$key]['capsule_action_types_id'] = $action_type->id;
+				$machineTwoInsertLineInToMH[$key]['locations_id']            = $machine_one_data->location_id;
+				$machineTwoInsertLineInToMH[$key]['from_machines_id']        = $machine_one_data->id;
+				$machineTwoInsertLineInToMH[$key]['to_machines_id']          = $machine_two_data->id;
+				$machineTwoInsertLineInToMH[$key]['qty']                     = $capsule_qty_two[$key];
+				$machineTwoInsertLineInToMH[$key]['created_at']              = $time_stamp;
+				$machineTwoInsertLineInToMH[$key]['created_by']              = $action_by;
+			}
+			$machineTwoMergeMovementHistory = array_merge($machineTwoInsertLineOutToMH, $machineTwoInsertLineInToMH);
+			HistoryCapsule::insert($machineTwoMergeMovementHistory);
+
+		 	//machine 1 less the quantity of stock room inventory 
+			foreach($jan_no_one as $key => $jan_one_inv) {
+				$item_one = Item::where('digits_code', $jan_one_inv)->first();	
+				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
+				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				->where('sub_locations.location_id', $machine_one_data->location_id)
+				->where('inventory_capsules.item_code', $item_one->digits_code2)
+				->update([
+					'inventory_capsule_lines.updated_by' => $action_by,
+					'inventory_capsule_lines.gasha_machines_id' => $machine_two_data->id
+				]);
+			}
+
+			//machine 2 less the quantity of stock room inventory 
+			foreach($jan_no_two as $key => $jan_two_inv) {	
+				$item_two = Item::where('digits_code', $jan_two_inv)->first();
+				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
+				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				->where('sub_locations.location_id', $machine_two_data->location_id)
+				->where('inventory_capsules.item_code', $item_two->digits_code2)
+				->update([
+					'inventory_capsule_lines.updated_by' => $action_by,
+					'inventory_capsule_lines.gasha_machines_id' => $machine_one_data->id
+				]);
+			}
+
 
 	    }
 
@@ -333,15 +525,35 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
 		public function getAdd() {
-
-			$data = [];
-
-
+			$this->cbLoader();
+            if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE) {
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+			$data = array();
+			$data['page_title'] = 'Create Capsule Swap';
 			return view('capsule.capsule-swap');
+		}
+
+		public function checkMachine(Request $request){
+			$fields = Request::all();
+			$user_location = CRUDBooster::myLocationId();
+			
+			// getting the machine
+			$machine = GashaMachines::where('serial_number', $fields['machine_code'])->where('location_id', $user_location)->first();
+			if (!$machine) {
+				return json_encode(['status' => 'error','message' => 'Machine not found!']);
+			}
+			//get jan code
+			$jan_data = InventoryCapsuleLine::where('gasha_machines_id', $machine->id)
+			->leftjoin('inventory_capsules','inventory_capsule_lines.inventory_capsules_id','inventory_capsules.id')
+			->leftjoin('items','inventory_capsules.item_code','items.digits_code2')
+			->get();
+
+			return json_encode([
+				'machine_data'=> $machine,
+				'jan_data'    => $jan_data
+			]);
 		}
 
 	}

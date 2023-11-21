@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\TokenConversion;
 use App\Models\Submaster\Preset;
+use App\Models\Submaster\AddOnMovementHistory;
 use App\Models\Token\TokenInventory;
+use App\Models\PosFrontend\AddonsHistory;
 use App\Models\PosFrontend\POSTokenSwap;
 use App\Models\PosFrontend\SwapHistory;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +36,7 @@ class POSTokenSwapController extends Controller
         $data['tokens'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'token')->select('value')->get();
         $data['paymayas'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'paymaya')->select('value')->get();
         $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
+        $data['addons'] = DB::table('add_ons')->where('qty', '>', '0')->where('status', 'ACTIVE')->get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;
         $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
 
@@ -59,6 +62,7 @@ class POSTokenSwapController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $tokenSwapCount = DB::table('swap_histories')->max('id');
         $headerCount = str_pad($tokenSwapCount + 1, 8, "0", STR_PAD_LEFT);
         $refNumber = 'TS-'.$headerCount;
@@ -73,7 +77,7 @@ class POSTokenSwapController extends Controller
             $current_cash_value = DB::table('token_conversions')->value('current_cash_value');
             $typeId = DB::table('token_action_types')->select('id')->where('description', 'Swap')->first()->id;
             
-            DB::table('swap_histories')->insert([
+            $swapId = DB::table('swap_histories')->insertGetId([
                 'reference_number' =>  $refNumber,
                 'cash_value' => intval(str_replace(',', '',$request->cash_value)),
                 'token_value' => intval(str_replace(',', '',$request->token_value)),
@@ -87,6 +91,48 @@ class POSTokenSwapController extends Controller
                 'created_by' => Auth::user()->id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
+
+            $inserDataLines = [];
+            $inserDataLinesContainer = [];
+            if($request->description) {
+                foreach($request->description as $key => $val){
+                    $description = explode("-",$val)[1];
+                    $inserDataLinesContainer['token_swap_id'] = $swapId;
+                    $inserDataLinesContainer['digits_code'] = $request->digits_code[$key];
+                    $inserDataLinesContainer['qty'] = $request->quantity[$key];
+                    $inserDataLinesContainer['created_by'] = Auth::user()->id;
+                    $inserDataLinesContainer['created_at'] = date('Y-m-d H:i:s');
+                    $inserDataLines[] = $inserDataLinesContainer;
+                }
+                // dd($inserDataLines);
+                AddonsHistory::insert($inserDataLines);
+    
+                foreach($inserDataLines as $key => $data) {
+                    DB::table('add_ons')->where('digits_code', $data['digits_code'])->decrement('qty',(int)$data['qty']);
+                } 
+            }
+
+            $inserMovementHistories = [];
+            $inserMovementHistoriesContainer = [];
+            $addOnTypeId = DB::table('add_on_action_types')->select('id')->where('description', 'Swap')->first()->id;
+            if($request->description) {
+                foreach($request->description as $key => $val){
+                    $description = explode("-",$val)[1];
+                    $inserMovementHistoriesContainer['reference_number'] =  $refNumber;
+                    $inserMovementHistoriesContainer['digits_code'] = $request->digits_code[$key];
+                    $inserMovementHistoriesContainer['add_on_action_types_id'] = $addOnTypeId;
+                    $inserMovementHistoriesContainer['locations_id'] = Auth::user()->location_id;
+                    $inserMovementHistoriesContainer['qty'] = -$request->quantity[$key];
+                    $inserMovementHistoriesContainer['created_by'] = Auth::user()->id;
+                    $inserMovementHistoriesContainer['created_at'] = date('Y-m-d H:i:s');
+                    $inserMovementHistories[] = $inserMovementHistoriesContainer;
+                }
+                
+                AddOnMovementHistory::insert($inserMovementHistories);
+    
+            }
+
+
         }
 
             return json_encode(['message'=>'success', 'reference_number'=> $refNumber]);

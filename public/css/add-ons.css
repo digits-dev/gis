@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;1,300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;1,300&display=swap");
 .panel-content {
     /* height: 500px; */
     display: flex;
@@ -19,10 +19,10 @@
     border-radius: 5px 5px 0px 0px;
     font-size: 12px;
     padding: 10px 15px;
-    background-color: #3C8DBC;
+    background-color: #3c8dbc;
 }
-.panel-header label{
-    color: #FFFBFD;
+.panel-header label {
+    color: #fffbfd;
     font-family: "Poppins", sans-serif;
 }
 
@@ -57,10 +57,9 @@
     display: flex;
     flex-direction: column;
 }
-.js-example-basic-single{
+.js-example-basic-single {
     width: 300px;
 }
-
 
 .input_qty_div label,
 .display_qty_div label {
@@ -100,7 +99,7 @@
     min-width: 50px;
     cursor: pointer;
 }
-.add_on_cancel{
+.add_on_cancel {
     text-decoration: none;
     padding: 10px 40px;
     background-color: #d4cece;
@@ -117,16 +116,14 @@
     border-radius: 5px;
     border: 1px solid #2c698d;
     min-width: 50px;
-
 }
-.add_on_cancel:hover{
-    background-color: #DDDDDD;
+.add_on_cancel:hover {
+    background-color: #dddddd;
     cursor: pointer;
 }
 .add_on_save:hover {
     background-color: #006faf;
     cursor: pointer;
-
 }
 .active_button {
     background-color: #035c93;
@@ -180,62 +177,61 @@
     background-color: #035c936a;
 }
 
-.save-icon{
+.save-icon {
     display: inline-block;
     vertical-align: middle;
     margin-right: 5px;
 }
-#save-text{
+#save-text {
     margin-top: 20px;
 }
 
-#check-btn{
+#check-btn {
     margin-left: 3px;
     /* width: 100px; */
     /* align-self: center; */
 }
 
-.search_div{
+.search_div {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
 }
 
-.search-icon{
+.search-icon {
     justify-self: center;
     align-self: center;
     font-size: 19px !important;
     color: #ffffff;
 }
-.search-btn{
+.search-btn {
     padding: 3.5px 9px;
     border-radius: 0px 3px 3px 0px;
 }
 
-.custom-swal-div{
+.custom-swal-div {
     display: flex;
-    background-color: #00A65A;
+    background-color: #00a65a;
     padding: 10px;
     border: 2px solid #025c33;
     border-radius: 3px;
 }
-.spanContainer{
+.spanContainer {
     margin-left: 10px;
 }
-.custom-swal{
-    background-color: #00A65A;
+.custom-swal {
+    background-color: #00a65a;
     color: white;
-    display:block;
-    font-family: 'Poppins', sans-serif;
+    display: block;
+    font-family: "Poppins", sans-serif;
     font-size: 20px;
     font-weight: bold;
-    
 }
-.swal-message{
+.swal-message {
     font-size: 15px;
 }
-.notif-icon{
+.notif-icon {
     font-size: 50px !important;
     color: white;
 }
