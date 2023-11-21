@@ -22,7 +22,8 @@
             <table class=" table table-striped">
                 <thead>
                     <tr>
-                        <th>Item Code</th>
+                        <th>JAN Number</th>
+                        <th>Digits Code</th>
                         <th>Item Description</th>
                         <th>Location</th>
                         <th>From</th>
@@ -32,7 +33,8 @@
                 <tbody>
                     @foreach ($lines as $line)
                     <tr>
-                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->digits_code }}</td>
+                        <td>{{ $item->digits_code2 }}</td>
                         <td>{{ $item->item_description }}</td>
                         <td>{{ $item->location_name }}</td>
                         <td>{{ $line->sub_location ?? $line->serial_number }}</td>
@@ -40,7 +42,7 @@
                     </tr>
                     @endforeach
                     <tr>
-                        <td colspan="3"></td>
+                        <td colspan="4"></td>
                         <td class="text-bold">Total</td>
                         <td class="text-bold">{{ $item->onhand_qty }}</td>
                     </tr>

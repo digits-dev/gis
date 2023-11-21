@@ -41,10 +41,6 @@
 			$this->col[] = ["label"=>"Onhand","name"=>"id","join"=>"inventory_capsule_view,onhand_qty","join_id"=>"inventory_capsules_id"];
 			$this->col[] = ["label"=>"Stock Room","name"=>"id","join"=>"inventory_capsule_view,stockroom_capsule_qty","join_id"=>"inventory_capsules_id"];
 			$this->col[] = ["label"=>"Machine","name"=>"id","join"=>"inventory_capsule_view,machine_capsule_qty","join_id"=>"inventory_capsules_id"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -380,7 +376,6 @@
 		}
 
 		public function exportData(Request $request) {
-			// Excel::export(new CapsuleInventoryExport);
 			$filename = $request->input('filename');
 			return Excel::download(new CapsuleInventoryExport, $filename.'.csv');
 		}

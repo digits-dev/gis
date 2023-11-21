@@ -1,7 +1,8 @@
 <?php namespace App\Http\Controllers\Capsule;
 
 	use Session;
-	use Request;
+	//use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 	use App\Models\Capsule\InventoryCapsule;
@@ -278,6 +279,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 			$fields                = Request::all();
+			dd($fields);
 			$machine_one           = $fields['machine_no_one'];
 			$capsule_qty_one_total = $fields['capsule_qty_one_total'];
 			$no_of_token_one       = $fields['no_of_token_one'];
@@ -316,7 +318,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        $fields       = Request::all(); 
-
+		
 			//Machine 1
 			$jan_no_one       = $fields['jan_no_one'];
 	        $machine_one      = $fields['machine_no_one'];
@@ -555,5 +557,10 @@
 				'jan_data'    => $jan_data
 			]);
 		}
+
+		public function saveSwap(Request $request){
+			$fields = $request->all();
+			dd($fields);
+		} 
 
 	}

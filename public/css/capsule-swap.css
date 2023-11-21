@@ -30,9 +30,9 @@
 }
 .form-group{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 40px;
+    padding: 5px;
     padding: 5px 50px 0px 50px;
     width: 100%;
 }
@@ -150,7 +150,7 @@
 .machine-camera-label2 label,
 .machine-camera-label label{
     color: white;
-    font-size: 25px;
+    font-size: 20px;
 }
 .styled-table-swap {
     overflow: auto;
@@ -174,13 +174,16 @@
 #table-machine-one input,
 #table-machine-two input{
     width: 150px;
-    /* text-align: center; */
+    text-align: center;
 }
 .table-header-swap{
     color: white;
     background-color: #3C8DBC;
 }
 
+#machine_no_one{
+    width: 500px;
+}
 
 .styled-table-swap-one,
 .styled-table-swap-two {
@@ -188,6 +191,13 @@
 }
 .table-responsive {
     overflow-x: auto;
+}
+.swap-summary-div{
+    display: flex;
+    justify-content: center;
+}
+save-btn:disabled {
+    background-color: #035c936a;
 }
 
 @media only screen and (max-width: 769px) {
