@@ -380,7 +380,6 @@
 		}
 
 		public function exportData(Request $request) {
-			// Excel::export(new CapsuleInventoryExport);
 			$filename = $request->input('filename');
 			return Excel::download(new CapsuleInventoryExport, $filename.'.csv');
 		}
