@@ -27,13 +27,13 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_edit = false;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "capsule_merges";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -463,7 +463,7 @@
 				//inserting new entry for capsule merge line
 				CapsuleMergeLine::insert([
 					'capsule_merges_id' => $capsule_merges_id,
-					'item_code' => $item->item_code,
+					'item_code' => $item['item_code'],
 					'qty' => $inputted_qty,
 					'created_by' => $action_by,
 					'created_at' => $time_stamp,
@@ -583,6 +583,33 @@
 			$response['success'] = true;
 			$response['reference_number'] = $reference_number;
 			return json_encode($response);
+		}
+
+		public function getDetail($id) {
+			//Create an Auth
+			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_edit==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Capsule Merge';
+			$data['capsule_merge'] = CapsuleMerge::where('capsule_merges.id', $id)
+				->leftJoin('locations as loc', 'loc.id', 'capsule_merges.locations_id')
+				->leftJoin('cms_users as cms', 'cms.id', 'capsule_merges.created_by')
+				->leftJoin('gasha_machines as to_machine', 'to_machine.id', 'capsule_merges.to_machines_id')
+				->leftJoin('gasha_machines as from_machine', 'from_machine.id', 'capsule_merges.from_machines_id')
+				->leftJoin('capsule_merge_lines as cml', 'cml.capsule_merges_id', 'capsule_merges.id')
+				->select('capsule_merges.*',
+				'loc.location_name as location_name',
+				'cms.name as cms_name',
+				'to_machine.serial_number as to_machine_serial_number',
+				'from_machine.serial_number as from_machine_serial_number',
+				'cml.item_code as item_code',
+				'cml.qty as qty')
+				->first();
+
+			//Please use view method instead view method from laravel
+			return $this->view('capsule.capsule-merge-view',$data);
 		}
 
 	}
