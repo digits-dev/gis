@@ -464,7 +464,7 @@
 				CapsuleMergeLine::insert([
 					'capsule_merges_id' => $capsule_merges_id,
 					'item_code' => $item->item_code,
-					'qty' => $item->qty,
+					'qty' => $inputted_qty,
 					'created_by' => $action_by,
 					'created_at' => $time_stamp,
 				]);

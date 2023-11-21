@@ -451,7 +451,7 @@
     })
 
     function submitModal() {
-        const inputs = $('.item-qty').get();
+        const inputs = $('.modal-body .item-qty').get();
         let data = {
             _token: "{{ csrf_token() }}",
             machine_from: $('#from_machine').val(),
@@ -474,7 +474,11 @@
             data: data,
             success: function(res) {
                 console.log(res);
-                showMergeSuccess(res);
+                if (res.success) {
+                    showMergeSuccess(res);
+                } else {
+                    alert('Something went wrong...');
+                }
             },
             error: function(err) {
                 console.log(err);
