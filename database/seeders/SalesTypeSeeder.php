@@ -16,5 +16,6 @@ class SalesTypeSeeder extends Seeder
     {
         SalesType::updateOrInsert(['description' => 'RETURN'],['description' => 'RETURN', 'created_at'=>date('Y-m-d H:i:s')]);
         SalesType::updateOrInsert(['description' => 'CYCLEOUT'],['description' => 'CYCLEOUT', 'created_at'=>date('Y-m-d H:i:s')]);
+        SalesType::updateOrInsert(['description' => 'MERGE'],['description' => 'MERGE   ', 'created_at'=>date('Y-m-d H:i:s')]);
     }
 }
