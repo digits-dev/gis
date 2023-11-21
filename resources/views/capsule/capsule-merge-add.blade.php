@@ -258,7 +258,7 @@
                 <div class="row">
                     <div class="modal-body">
                         <div class="col-md-6">
-                            <p class="text-center text-bold" for="" id="label_from_machine">From Machine <span id="label_from_item_code" style="color:rgb(48, 133, 214)"></span></p>
+                            <p class="text-center text-bold" for="" id="label_from_machine" style="font-size: 16px;">From Machine <span id="label_from_item_code" style="color:rgb(48, 133, 214)"></span></p>
                             <table class="table table-responsive table-bordered gm_from" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -278,7 +278,7 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-center text-bold" id="label_to_machine" for="">To Machine <span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p>
+                            <p class="text-center text-bold" id="label_to_machine" for="" style="font-size: 16px;">To Machine <span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p>
                             <table class="table table-responsive table-bordered gm_to" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -596,7 +596,7 @@
         const to_header = $('#label_to_item_code').text();
 
         const wrapper = $('<div>')
-        wrapper.append(`<p style="font-weight: bold;">From Machine <span style="color:rgb(48, 133, 214)">${from_header}</span> to Machine <span style="color: rgb(67, 136, 113)">${to_header}</span></p>`);
+        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">From Machine <span style="color:rgb(48, 133, 214)">${from_header}</span> to Machine <span style="color: rgb(67, 136, 113)">${to_header}</span></p>`);
 
         const from_machine = $('.gm_from').clone();
         from_machine.find('input').css({'font-size':'20px', 'border':'1px solid white'});
@@ -625,7 +625,7 @@
     function showMergeSuccess(data){
 
         const wrapper = $('<div>')
-        wrapper.append(`<p style="font-weight: bold;">Machine </span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span> New Inventory</p>`);
+        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">Machine </span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span> New Inventory</p>`);
 
         const to_machine = $('.gm_to').clone();
         to_machine.find('tbody').html('');
