@@ -258,7 +258,7 @@
                 <div class="row">
                     <div class="modal-body">
                         <div class="col-md-6">
-                            <p class="text-center text-bold" for="" id="label_from_machine">From Machine <span style="color:rgb(48, 133, 214)"></span></p>
+                            <p class="text-center text-bold" for="" id="label_from_machine">From Machine <span id="label_from_item_code" style="color:rgb(48, 133, 214)"></span></p>
                             <table class="table table-responsive table-bordered gm_from" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -278,7 +278,7 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-center text-bold" id="label_to_machine" for="">To Machine <span style="color: rgb(67, 136, 113)"></span></p>
+                            <p class="text-center text-bold" id="label_to_machine" for="">To Machine <span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p>
                             <table class="table table-responsive table-bordered gm_to" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -447,23 +447,7 @@
 
     $('#save-modal').on('click', function() {
 
-        Swal.fire({
-            title: "Are you sure?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            reverseButtons: true,
-            returnFocus: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                submitModal();
-            }
-        });
-
-
-
+        showSummary();
     })
 
     function submitModal() {
@@ -490,6 +474,7 @@
             data: data,
             success: function(res) {
                 console.log(res);
+                showMergeSuccess(res);
             },
             error: function(err) {
                 console.log(err);
@@ -511,6 +496,7 @@
     function validateInput() {
         const qtyInput = $('.gm_from .item-qty').get();
         let isValid = true;
+        let found = false;
         qtyInput.forEach(input => {
             const currentVal = $(input).val(); 
             const value = Number(currentVal.replace(/\D/g, ''));
@@ -524,7 +510,15 @@
             } else {
                 $(input).css('border', '');
             }
+
+            if (!found && value) {
+                found = true;
+            } else if (found && value) {
+                isValid = false;
+            }
         });
+        isValid = isValid && !qtyInput.every(input => !Number($(input).val().replace(/\D/g, '')));
+
 
         $('#save-modal').attr('disabled', !isValid);
     }
@@ -563,7 +557,6 @@
                     qty: ic.qty,
                     item_code: ic.item_code, 
                     machine: data.from_machine.serial_number,
-                    placeholder: ic.qty,
                 }).addClass('form-control item-qty');
                 const gm_qty = $('<td>').append(qtyInput);
                 
@@ -594,5 +587,80 @@
         }
     }
 
+    function showSummary(){
+        const from_header = $('#label_from_item_code').text();
+        const to_header = $('#label_to_item_code').text();
+
+        const wrapper = $('<div>')
+        wrapper.append(`<p style="font-weight: bold;">From Machine <span style="color:rgb(48, 133, 214)">${from_header}</span> to Machine <span style="color: rgb(67, 136, 113)">${to_header}</span></p>`);
+
+        const from_machine = $('.gm_from').clone();
+        from_machine.find('input').css({'font-size':'20px', 'border':'1px solid white'});
+
+        wrapper.append(from_machine);
+
+        Swal.fire({
+            title: "Are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            reverseButtons: true,
+            returnFocus: false,
+            html: wrapper,
+            width: '600px',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitModal();
+            }
+        });
+    }
+
+    function showMergeSuccess(data){
+
+        const wrapper = $('<div>')
+        wrapper.append(`<p style="font-weight: bold;">Machine </span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span> New Inventory</p>`);
+
+        const to_machine = $('.gm_to').clone();
+        to_machine.find('tbody').html('');
+        to_machine.find('#to-machine-total').text('');
+
+        let total = 0;
+
+        data.inventory_after.forEach((item) => {
+            const tr = $('<tr>');
+            const item_code = $('<td>').text(item.item_code);
+            const item_description = $('<td>').text(item.item_description);
+            const qty = $('<td>').text(item.qty.toLocaleString());
+
+            tr.append(item_code, item_description, qty);
+            to_machine.find('tbody').append(tr);
+
+            total += item.qty;
+        })
+
+        to_machine.find('#to-machine-total').text(total.toLocaleString());
+        wrapper.append(to_machine);
+
+        Swal.fire({
+            title: "Merged successfully",
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            returnFocus: false,
+            html: wrapper,
+            width: '600px',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('button[data-dismiss="modal"]').eq(0).click();
+                $('#from_machine, #to_machine').val('');
+                $('#merge-btn').attr('disabled', true);
+            }
+        });;
+    }
 </script>
 @endpush
