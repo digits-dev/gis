@@ -144,5 +144,6 @@ Route::group(['middleware' => ['web']], function() {
 
     //CAPSULE SWAP
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/check-machine', [AdminCapsuleSwapHeadersController::class, 'checkMachine'])->name('check-machine');
+    Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/save-swap', [AdminCapsuleSwapHeadersController::class, 'saveSwap'])->name('submit_swap');
 
 });
