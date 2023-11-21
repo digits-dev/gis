@@ -39,7 +39,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
 			$this->col[] = ["label"=>"From Machine","name"=>"from_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"To Machine","name"=>"to_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
@@ -51,107 +51,96 @@
 			$this->form = [];
 			// $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			// $this->form[] = ['label'=>'Item Code','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			// $this->form[] = ['label'=>'To Machines Id','name'=>'to_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_machines,id'];
-			// $this->form[] = ['label'=>'From Machines Id','name'=>'from_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_machines,id'];
+			// $this->form[] = ['label'=>'To Machines','name'=>'to_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'to_machines,id'];
+			// $this->form[] = ['label'=>'From Machines','name'=>'from_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'from_machines,id'];
 			// $this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			// $this->form[] = ['label'=>'Locations Id','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			// $this->form[] = ['label'=>'Locations','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			// $this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Item Code","name"=>"item_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"To Machines Id","name"=>"to_machines_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"to_machines,id"];
-			//$this->form[] = ["label"=>"From Machines Id","name"=>"from_machines_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"from_machines,id"];
-			//$this->form[] = ["label"=>"Qty","name"=>"qty","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Locations Id","name"=>"locations_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"locations,location_name"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
-
-			/* 
-	        | ---------------------------------------------------------------------- 
+			/*
+	        | ----------------------------------------------------------------------
 	        | Sub Module
-	        | ----------------------------------------------------------------------     
-			| @label          = Label of action 
+	        | ----------------------------------------------------------------------
+			| @label          = Label of action
 			| @path           = Path of sub module
 			| @foreign_key 	  = foreign key of sub table/module
 			| @button_color   = Bootstrap Class (primary,success,warning,danger)
-			| @button_icon    = Font Awesome Class  
+			| @button_icon    = Font Awesome Class
 			| @parent_columns = Sparate with comma, e.g : name,created_at
-	        | 
+	        |
 	        */
 	        $this->sub_module = array();
 
 
-	        /* 
-	        | ---------------------------------------------------------------------- 
+	        /*
+	        | ----------------------------------------------------------------------
 	        | Add More Action Button / Menu
-	        | ----------------------------------------------------------------------     
-	        | @label       = Label of action 
+	        | ----------------------------------------------------------------------
+	        | @label       = Label of action
 	        | @url         = Target URL, you can use field alias. e.g : [id], [name], [title], etc
 	        | @icon        = Font awesome class icon. e.g : fa fa-bars
-	        | @color 	   = Default is primary. (primary, warning, succecss, info)     
+	        | @color 	   = Default is primary. (primary, warning, succecss, info)
 	        | @showIf 	   = If condition when action show. Use field alias. e.g : [id] == 1
-	        | 
+	        |
 	        */
 	        $this->addaction = array();
 
 
-	        /* 
-	        | ---------------------------------------------------------------------- 
+	        /*
+	        | ----------------------------------------------------------------------
 	        | Add More Button Selected
-	        | ----------------------------------------------------------------------     
-	        | @label       = Label of action 
+	        | ----------------------------------------------------------------------
+	        | @label       = Label of action
 	        | @icon 	   = Icon from fontawesome
-	        | @name 	   = Name of button 
-	        | Then about the action, you should code at actionButtonSelected method 
-	        | 
+	        | @name 	   = Name of button
+	        | Then about the action, you should code at actionButtonSelected method
+	        |
 	        */
 	        $this->button_selected = array();
 
-	                
-	        /* 
-	        | ---------------------------------------------------------------------- 
-	        | Add alert message to this module at overheader
-	        | ----------------------------------------------------------------------     
-	        | @message = Text of message 
-	        | @type    = warning,success,danger,info        
-	        | 
-	        */
-	        $this->alert        = array();
-	                
 
-	        
-	        /* 
-	        | ---------------------------------------------------------------------- 
-	        | Add more button to header button 
-	        | ----------------------------------------------------------------------     
-	        | @label = Name of button 
+	        /*
+	        | ----------------------------------------------------------------------
+	        | Add alert message to this module at overheader
+	        | ----------------------------------------------------------------------
+	        | @message = Text of message
+	        | @type    = warning,success,danger,info
+	        |
+	        */
+	        $this->alert = array();
+
+
+
+	        /*
+	        | ----------------------------------------------------------------------
+	        | Add more button to header button
+	        | ----------------------------------------------------------------------
+	        | @label = Name of button
 	        | @url   = URL Target
 	        | @icon  = Icon from Awesome.
-	        | 
+	        |
 	        */
 	        $this->index_button = array();
 
 
 
-	        /* 
-	        | ---------------------------------------------------------------------- 
-	        | Customize Table Row Color
-	        | ----------------------------------------------------------------------     
-	        | @condition = If condition. You may use field alias. E.g : [id] == 1
-	        | @color = Default is none. You can use bootstrap success,info,warning,danger,primary.        
-	        | 
-	        */
-	        $this->table_row_color = array();     	          
-
-	        
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | You may use this bellow array to add statistic at dashboard 
-	        | ---------------------------------------------------------------------- 
-	        | @label, @count, @icon, @color 
+	        | ----------------------------------------------------------------------
+	        | Customize Table Row Color
+	        | ----------------------------------------------------------------------
+	        | @condition = If condition. You may use field alias. E.g : [id] == 1
+	        | @color = Default is none. You can use bootstrap success,info,warning,danger,primary.
+	        |
+	        */
+	        $this->table_row_color = array();
+
+
+	        /*
+	        | ----------------------------------------------------------------------
+	        | You may use this bellow array to add statistic at dashboard
+	        | ----------------------------------------------------------------------
+	        | @label, @count, @icon, @color
 	        |
 	        */
 	        $this->index_statistic = array();
@@ -159,10 +148,10 @@
 
 
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | Add javascript at body 
-	        | ---------------------------------------------------------------------- 
-	        | javascript code in the variable 
+	        | ----------------------------------------------------------------------
+	        | Add javascript at body
+	        | ----------------------------------------------------------------------
+	        | javascript code in the variable
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
@@ -170,170 +159,170 @@
 
 
             /*
-	        | ---------------------------------------------------------------------- 
-	        | Include HTML Code before index table 
-	        | ---------------------------------------------------------------------- 
+	        | ----------------------------------------------------------------------
+	        | Include HTML Code before index table
+	        | ----------------------------------------------------------------------
 	        | html code to display it before index table
 	        | $this->pre_index_html = "<p>test</p>";
 	        |
 	        */
 	        $this->pre_index_html = null;
-	        
-	        
-	        
+
+
+
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | Include HTML Code after index table 
-	        | ---------------------------------------------------------------------- 
+	        | ----------------------------------------------------------------------
+	        | Include HTML Code after index table
+	        | ----------------------------------------------------------------------
 	        | html code to display it after index table
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
 	        $this->post_index_html = null;
-	        
-	        
-	        
+
+
+
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | Include Javascript File 
-	        | ---------------------------------------------------------------------- 
-	        | URL of your javascript each array 
+	        | ----------------------------------------------------------------------
+	        | Include Javascript File
+	        | ----------------------------------------------------------------------
+	        | URL of your javascript each array
 	        | $this->load_js[] = asset("myfile.js");
 	        |
 	        */
 	        $this->load_js = array();
-	        
-	        
-	        
+
+
+
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | Add css style at body 
-	        | ---------------------------------------------------------------------- 
-	        | css code in the variable 
+	        | ----------------------------------------------------------------------
+	        | Add css style at body
+	        | ----------------------------------------------------------------------
+	        | css code in the variable
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
 	        $this->style_css = NULL;
-	        
-	        
-	        
+
+
+
 	        /*
-	        | ---------------------------------------------------------------------- 
-	        | Include css File 
-	        | ---------------------------------------------------------------------- 
-	        | URL of your css each array 
+	        | ----------------------------------------------------------------------
+	        | Include css File
+	        | ----------------------------------------------------------------------
+	        | URL of your css each array
 	        | $this->load_css[] = asset("myfile.css");
 	        |
 	        */
 	        $this->load_css = array();
-	        
-	        
+
+
 	    }
 
 
 	    /*
-	    | ---------------------------------------------------------------------- 
+	    | ----------------------------------------------------------------------
 	    | Hook for button selected
-	    | ---------------------------------------------------------------------- 
+	    | ----------------------------------------------------------------------
 	    | @id_selected = the id selected
 	    | @button_name = the name of button
 	    |
 	    */
 	    public function actionButtonSelected($id_selected,$button_name) {
 	        //Your code here
-	            
+
 	    }
 
 
 	    /*
-	    | ---------------------------------------------------------------------- 
-	    | Hook for manipulate query of index result 
-	    | ---------------------------------------------------------------------- 
-	    | @query = current sql query 
+	    | ----------------------------------------------------------------------
+	    | Hook for manipulate query of index result
+	    | ----------------------------------------------------------------------
+	    | @query = current sql query
 	    |
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	            
+
 	    }
 
 	    /*
-	    | ---------------------------------------------------------------------- 
-	    | Hook for manipulate row of index table html 
-	    | ---------------------------------------------------------------------- 
+	    | ----------------------------------------------------------------------
+	    | Hook for manipulate row of index table html
+	    | ----------------------------------------------------------------------
 	    |
-	    */    
-	    public function hook_row_index($column_index,&$column_value) {	        
+	    */
+	    public function hook_row_index($column_index,&$column_value) {
 	    	//Your code here
 	    }
 
 	    /*
-	    | ---------------------------------------------------------------------- 
+	    | ----------------------------------------------------------------------
 	    | Hook for manipulate data input before add data is execute
-	    | ---------------------------------------------------------------------- 
+	    | ----------------------------------------------------------------------
 	    | @arr
 	    |
 	    */
-	    public function hook_before_add(&$postdata) {        
+	    public function hook_before_add(&$postdata) {
 	        //Your code here
 
 	    }
 
-	    /* 
-	    | ---------------------------------------------------------------------- 
-	    | Hook for execute command after add public static function called 
-	    | ---------------------------------------------------------------------- 
+	    /*
+	    | ----------------------------------------------------------------------
+	    | Hook for execute command after add public static function called
+	    | ----------------------------------------------------------------------
 	    | @id = last insert id
-	    | 
+	    |
 	    */
-	    public function hook_after_add($id) {        
+	    public function hook_after_add($id) {
 	        //Your code here
 
 	    }
 
-	    /* 
-	    | ---------------------------------------------------------------------- 
+	    /*
+	    | ----------------------------------------------------------------------
 	    | Hook for manipulate data input before update data is execute
-	    | ---------------------------------------------------------------------- 
-	    | @postdata = input post data 
-	    | @id       = current id 
-	    | 
+	    | ----------------------------------------------------------------------
+	    | @postdata = input post data
+	    | @id       = current id
+	    |
 	    */
-	    public function hook_before_edit(&$postdata,$id) {        
+	    public function hook_before_edit(&$postdata,$id) {
 	        //Your code here
 
 	    }
 
-	    /* 
-	    | ---------------------------------------------------------------------- 
+	    /*
+	    | ----------------------------------------------------------------------
 	    | Hook for execute command after edit public static function called
-	    | ----------------------------------------------------------------------     
-	    | @id       = current id 
-	    | 
+	    | ----------------------------------------------------------------------
+	    | @id       = current id
+	    |
 	    */
 	    public function hook_after_edit($id) {
-	        //Your code here 
+	        //Your code here
 
 	    }
 
-	    /* 
-	    | ---------------------------------------------------------------------- 
+	    /*
+	    | ----------------------------------------------------------------------
 	    | Hook for execute command before delete public static function called
-	    | ----------------------------------------------------------------------     
-	    | @id       = current id 
-	    | 
+	    | ----------------------------------------------------------------------
+	    | @id       = current id
+	    |
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
 
 	    }
 
-	    /* 
-	    | ---------------------------------------------------------------------- 
+	    /*
+	    | ----------------------------------------------------------------------
 	    | Hook for execute command after delete public static function called
-	    | ----------------------------------------------------------------------     
-	    | @id       = current id 
-	    | 
+	    | ----------------------------------------------------------------------
+	    | @id       = current id
+	    |
 	    */
 	    public function hook_after_delete($id) {
 	        //Your code here
@@ -358,38 +347,15 @@
 
 			$data = $request->all();
 			$user_location = CRUDBooster::myLocationId();
-			
-			// getting the machine for 'from'
-			$from_machine = GashaMachines::where('serial_number', $data['from_machine'])
-				->where('location_id', $user_location)
-				->where('status','ACTIVE')
-				->first();
 
-			// getting the machine for 'to'
-			$to_machine = GashaMachines::where('serial_number', $data['to_machine'])
-				->where('location_id', $user_location)
-				->where('status','ACTIVE')
-				->first();
+            $from_machine = GashaMachines::getMachineByLocation($data['from_machine'], $user_location);
+            $to_machine = GashaMachines::getMachineByLocation($data['to_machine'], $user_location);
 
 			// Getting Inventory Capsule Lines from the machine 'from'
-			$icl_from = InventoryCapsuleLine::where('gasha_machines_id', $from_machine->id)
-				->where('inventory_capsule_lines.qty', '>', '0')
-				->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
-				->leftJoin('items', 'items.digits_code2', 'ic.item_code' )
-				->select('inventory_capsule_lines.*',
-					'items.digits_code as item_code',
-					'items.item_description')
-				->get();
+			$icl_from = InventoryCapsuleLine::getInventoryByMachine($from_machine->id);
 
 			// Getting Inventory Capsule Lines from the machine 'to'
-			$icl_to = InventoryCapsuleLine::where('gasha_machines_id', $to_machine->id)
-				->where('inventory_capsule_lines.qty', '>', '0')
-				->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
-				->leftJoin('items', 'items.digits_code2', 'ic.item_code' )
-				->select('inventory_capsule_lines.*',
-					'items.digits_code as item_code',
-					'items.item_description')
-				->get();
+			$icl_to = InventoryCapsuleLine::getInventoryByMachine($to_machine->id);
 
 			if (!$from_machine || !$to_machine) {
 				return json_encode([
@@ -426,7 +392,7 @@
 				->where('status', 'ACTIVE')
 				->pluck('id')
 				->first();
-				
+
 			$sales_types_id = SalesType::where(DB::raw('UPPER(description)'), 'MERGE')
 				->where('status', 'ACTIVE')
 				->pluck('id')
@@ -444,10 +410,10 @@
 			// returning if no_of_token of machines mismatched
 			if (!$is_tally) {
 				return json_encode($response);
-			} 
+			}
 
 			// returning if machines location id is not equal to user's location
-			if ($machine_from->location_id != $my_locations_id || 
+			if ($machine_from->location_id != $my_locations_id ||
 				$machine_to->location_id != $my_locations_id) {
 				$response['wrong_location'] = true;
 				return json_encode($response);
@@ -474,7 +440,7 @@
 
 			// generating new ref number
 			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			
+
 			// inserting new entry for capsule merge
 			$capsule_merges_id = CapsuleMerge::insertGetId([
 				'reference_number' => $reference_number,
@@ -618,4 +584,5 @@
 			$response['reference_number'] = $reference_number;
 			return json_encode($response);
 		}
+
 	}

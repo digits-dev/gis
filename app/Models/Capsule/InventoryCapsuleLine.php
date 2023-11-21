@@ -32,13 +32,23 @@ class InventoryCapsuleLine extends Model
 
     public function scopeGetLineItems($query, $id) {
         return $query->select(
-            'inventory_capsule_lines.qty',
-            'gasha_machines.serial_number',
-            'sub_locations.description as sub_location'
-        )
-        ->where('inventory_capsules_id', $id)
-        ->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', '=','gasha_machines.id')
-        ->leftJoin('sub_locations', 'inventory_capsule_lines.sub_locations_id','=', 'sub_locations.id')
-        ->get();
+                'inventory_capsule_lines.qty',
+                'gasha_machines.serial_number',
+                'sub_locations.description as sub_location')
+            ->where('inventory_capsules_id', $id)
+            ->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', '=','gasha_machines.id')
+            ->leftJoin('sub_locations', 'inventory_capsule_lines.sub_locations_id','=', 'sub_locations.id')
+            ->get();
+    }
+
+    public function scopeGetInventoryByMachine($query, $machine_id){
+        return $query->where('gasha_machines_id', $machine_id)
+            ->where('inventory_capsule_lines.qty', '>', '0')
+            ->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
+            ->leftJoin('items', 'items.digits_code2', 'ic.item_code' )
+            ->select('inventory_capsule_lines.*',
+                'items.digits_code as item_code',
+                'items.item_description')
+            ->get();
     }
 }
