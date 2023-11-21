@@ -23,6 +23,10 @@ class CreateSwapHistoryView extends Migration
                     SUM(swap_histories.total_value),
                     0
                 ) AS total_value,
+                COALESCE(
+                    SUM(swap_histories.token_value),
+                    0
+                ) AS token_value,
                 swap_histories.created_by,
                 swap_histories.locations_id
             FROM (
