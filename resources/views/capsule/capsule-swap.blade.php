@@ -22,14 +22,6 @@
         padding: 10px;
     }
 
-    #table-machine-one th, td {
-        border: 1px solid rgba(000, 0, 0, .5);
-        padding: 8px;
-    }
-    #table-machine-two th, td {
-        border: 1px solid rgba(000, 0, 0, .5);
-        padding: 8px;
-    }
     </style>
 @endpush
 @section('content')
@@ -57,19 +49,19 @@
                                 <button type="button" btn-for="machine-one" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                             </div>
                             <div id="display_error_machine_one_not_found"></div>
-                            <div class="table_summary styled-table-swap-one" style="display: none">
+                            <div class=" table-responsive table_summary styled-table-swap-one" style="display: none">
                                 <table id="table-machine-one">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">JAN#</th>
-                                            <th class="text-center">QTY</th>
+                                            <th class="text-center table-header-swap">JAN#</th>
+                                            <th class="text-center table-header-swap">QTY</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="text-center">Total</td>
+                                            <td class="text-center"><strong>Total</strong></td>
                                             <td colspan="1">
                                                 <input type="text" name="capsule_qty_one_total" class="form-control" id="capsule_qty_one_total" readonly>
                                             </td>
@@ -89,19 +81,19 @@
                                 <button type="button" btn-for="machine-two" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                             </div>
                             <div id="display_error_machine_two_not_found"></div>
-                            <div class="table_summary styled-table-swap-two" style="display: none" >
+                            <div class=" table-responsive table_summary styled-table-swap-two" style="display: none" >
                                 <table id="table-machine-two">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">JAN#</th>
-                                            <th class="text-center">QTY</th>
+                                            <th class="text-center table-header-swap">JAN#</th>
+                                            <th class="text-center table-header-swap">QTY</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="text-center">Total</td>
+                                            <td class="text-center"><strong>Total</strong></td>
                                             <td colspan="1">
                                                 <input type="text" name="capsule_qty_two_total" class="form-control" id="capsule_qty_two_total" readonly>
                                             </td>
