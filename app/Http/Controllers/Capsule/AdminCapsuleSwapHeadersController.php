@@ -889,6 +889,18 @@
 				$digits_code = Item::where('digits_code', $jan['jan_no_one'])->pluck('digits_code2')->first();
 				$system_qty = $current_inv_machine_one[$jan['jan_no_one']];
 				$sales_qty = $system_qty - (int)intval(str_replace(',', '',$jan['capsule_qty_one']));
+
+				//updating inventory qty of from machine 1 to 0
+				InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
+				->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->where('ic.locations_id', $my_locations_id)
+				->where('ic.item_code', $digits_code)
+				->update([
+					'inventory_capsule_lines.qty' => 0,
+					'inventory_capsule_lines.updated_by' => $action_by,
+					'inventory_capsule_lines.updated_at' => $time_stamp
+				]);
+
 				$is_existing_Machine_one = InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
 					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->where('ic.locations_id', $my_locations_id)
@@ -906,16 +918,7 @@
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp
 						]);
-					//less machine 1 from
-					InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
-						->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
-						->where('ic.locations_id', $my_locations_id)
-						->where('ic.item_code', $digits_code)
-						->update([
-							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - '".(int)intval(str_replace(',', '',$jan['capsule_qty_one']))."'"),
-							'inventory_capsule_lines.updated_by' => $action_by,
-							'inventory_capsule_lines.updated_at' => $time_stamp
-						]);
+					
 				} else {
 					// inserting a new entry for inventory capsule if not existing
 					$inventory_capsules_id = InventoryCapsule::insertGetId([
@@ -1028,6 +1031,18 @@
 				$digits_code = Item::where('digits_code', $jan_two['jan_no_two'])->pluck('digits_code2')->first();
 				$system_qty = $current_inv_machine_two[$jan_two['jan_no_two']];
 				$sales_qty = $system_qty - (int)intval(str_replace(',', '',$jan_two['capsule_qty_two']));
+
+				//updating inventory qty of from machine 2 to 0
+				InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
+				->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->where('ic.locations_id', $my_locations_id)
+				->where('ic.item_code', $digits_code)
+				->update([
+					'inventory_capsule_lines.qty' => 0,
+					'inventory_capsule_lines.updated_by' => $action_by,
+					'inventory_capsule_lines.updated_at' => $time_stamp
+				]);
+
 				$is_existing_Machine_two = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
 					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->where('ic.locations_id', $my_locations_id)
@@ -1045,16 +1060,7 @@
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp
 						]);
-					//less machine 2 from
-					InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
-					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
-					->where('ic.locations_id', $my_locations_id)
-					->where('ic.item_code', $digits_code)
-					->update([
-						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - '".(int)intval(str_replace(',', '',$jan_two['capsule_qty_two']))."'"),
-						'inventory_capsule_lines.updated_by' => $action_by,
-						'inventory_capsule_lines.updated_at' => $time_stamp
-					]);
+					
 				} else {
 					// inserting a new entry for inventory capsule if not existing
 					$inventory_capsules_id = InventoryCapsule::insertGetId([
