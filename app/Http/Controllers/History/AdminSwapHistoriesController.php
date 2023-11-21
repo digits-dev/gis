@@ -25,7 +25,7 @@
 			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
@@ -108,6 +108,12 @@
 					'showIf' => '[status] != "VOID"'
 				];
 			}
+				$this->addaction[] = [
+					'title'=>'Detail Data',
+					'url' => CRUDBooster::mainpath('getDetails/[id]'),
+					'icon'=>'fa fa-eye',
+					'color' => 'primary',
+				];
 			
 
 	        /*
@@ -350,6 +356,12 @@
 			// $token_inventory_qty = $token_inventory->qty;
 			// $total_qty = $token_inventory_qty + $histories_id->token_value;
 			
+			$histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
+			$items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
+			foreach ($items as $key => $data) {
+				DB::table('add_ons')->where('digits_code', $data->digits_code)->increment('qty', $data->qty);
+			}
+			
 				DB::table('token_inventories')
 					->where('locations_id', $histories_id->locations_id)
 					->update([
@@ -385,7 +397,18 @@
 			$data = [];
 			$data['page_title'] = 'Void Token Swap History';
 			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
+			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
 			return view('history.token-swap-void', $data);
+		}
+
+		public function getDetails ($id) {
+			$data = [];
+			$data['page_title'] = 'Detail Token Swap History';
+			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
+			$data['mod_description'] = DB::table('mode_of_payments')->where('id', $data['swap_histories']->mode_of_payments_id)->select('payment_description')->first();
+			$data['location_name'] = DB::table('locations')->where('id', $data['swap_histories']->locations_id)->select('location_name')->first();
+			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			return view('history.token-swap-details', $data);
 		}
 
 	}

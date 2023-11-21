@@ -36,11 +36,9 @@ class POSSwapHistoryController extends Controller
         if (Auth::user()->id_cms_privileges != 1) {
             $swap_histories->where('swap_histories.locations_id', Auth::user()->location_id);
         }
+
         
-        // $data['swap_histories'] = $swap_histories->filter(request(['search']))->paginate(10);
-
         $searchTerm = request('search');
-
         $data['swap_histories'] = $swap_histories->filter(['search' => $searchTerm])->paginate(10);
         $data['swap_histories']->appends(['search' => $searchTerm]);
         return view('pos-frontend.views.swap-history', $data);
@@ -67,6 +65,15 @@ class POSSwapHistoryController extends Controller
         //
     }
 
+
+    public function getDetails($id) {
+        $data = [];
+        $data['swap_histories'] = SwapHistory::where('swap_histories.id', $id)->leftjoin('mode_of_payments', 'swap_histories.mode_of_payments_id','mode_of_payments.id')->first();
+        $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+
+        return json_encode($data);
+        
+    }
     /**
      * Display the specified resource.
      *
@@ -82,6 +89,7 @@ class POSSwapHistoryController extends Controller
         
         $data['mod_description'] = DB::table('mode_of_payments')->where('id', $swapData->mode_of_payments_id)->select('payment_description')->first();
         $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
+        $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
         $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
         $data['updated_by'] = DB::table('cms_users')->where('id', $swapData->updated_by)->select('name')->first();
         return view('pos-frontend.views.show-swap-history', $data);
@@ -107,13 +115,23 @@ class POSSwapHistoryController extends Controller
         if ($histories_status == 'VOID') {
             return json_encode(['message'=>'error' ]);
         }
+    
         
+        $histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
+        $items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
+        foreach ($items as $key => $data) {
+            DB::table('add_ons')->where('digits_code', $data->digits_code)->increment('qty', $data->qty);
+        }
+        
+    
         $token_inventory = DB::table('token_inventories')->where('locations_id', Auth::user()->location_id)->first();
         $token_inventory_qty = $token_inventory->qty;
         $total_qty = $token_inventory_qty + $histories_id;
         DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
         
-            TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+        TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+
+            
             return json_encode(['message'=>'success', 'swap_history' => SwapHistory::find($id), 'histories_id' => $histories_status ]);
         
     }

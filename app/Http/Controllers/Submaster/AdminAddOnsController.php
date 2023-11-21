@@ -5,6 +5,10 @@
 	use DB;
 	use CRUDBooster;
 	use App\Models\Submaster\AddOns;
+	use App\Models\Submaster\AddOnMovementHistory;
+	use Illuminate\Support\Facades\Auth;
+	use Illuminate\Support\Facades\View;
+
 
 
 	class AdminAddOnsController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -44,10 +48,16 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
+			if(in_array(CRUDBooster::getCurrentMethod(), ['getDetail'])){
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
+				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
+				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
+				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
+				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'datetime'];
+			}
 
 			# END FORM DO NOT REMOVE THIS LINE
 
@@ -344,6 +354,9 @@
 		}
 
 		public function getDescription(Request $request){
+			
+			// $user_request = $request->all();
+			// $digits_code = $user_request['digits_code'];
 			$code_description = DB::connection('aimfs')->table('digits_imfs')
 				->where('digits_code', $request->digits_code)
 				->pluck('item_description')
@@ -357,7 +370,8 @@
 			$time_stamp = date('Y-m-d H:i:s');
 			$qtyRemoveComma = str_replace(',','',$data['int_qty']);
 			$existingRecord = AddOns::where('digits_code', $data['int_digits_code'])->first();
-
+			$addOnTypeId = DB::table('add_on_action_types')->select('id')->where('description', 'DR')->first()->id;
+			
 			if($existingRecord){
 				$existingRecord->increment('qty', $qtyRemoveComma);
 				$existingRecord->updated_by = CRUDBooster::myId();
@@ -374,6 +388,15 @@
 					'created_at' => $time_stamp,
 				]);
 			}
+			AddOnMovementHistory::insert([
+				'reference_number' => $data['dr_number'],
+				'digits_code' => $data['int_digits_code'],
+				'add_on_action_types_id' => $addOnTypeId,
+				'locations_id'=> CRUDBooster::myLocationId(),
+				'qty' => $qtyRemoveComma,
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => date('Y-m-d H:i:s')
+			]);
 			// CRUDBooster::redirect(CRUDBooster::mainpath(), 'Your form submitted succesfully.',"success");
             return redirect()->back()->with('success','Your form submitted succesfully.');
 		}

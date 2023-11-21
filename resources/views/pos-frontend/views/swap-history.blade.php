@@ -66,6 +66,14 @@
     .search-btn:hover {
         filter: brightness(110%);
     }
+    .swal-table-container {
+    display: flex;
+    gap: 20px;
+    }
+    .swal-container2 {
+    width: 70%;
+    }
+
 </style>
 @endsection
 
@@ -214,17 +222,40 @@
         e.preventDefault(); // Prevent the default behavior of the link
         let current_id = $(this).attr('data-id');
         let swap_history_object = $.parseJSON(current_id);
-        Swal.fire({
+        $.ajax({
+                    type: 'GET', 
+                    url: 'pos_swap_history/getDetails/'+swap_history_object.id,
+                    data: { },
+                success: function (res) {
+                    const data = JSON.parse(res);
+                    console.log(data)
+                    Swal.fire({
                 title: "Are you sure you want to void this transaction? ",
                 icon: 'warning',
                 reverseButtons: true,
+                customClass: (data.addons.length != 0 ? 'swal-container2' : ''),
                 allowOutsideClick: false,
-                html: '<table class="styled-table-void">' +
-                          '<tr><td>Reference Number</td><td>'+ swap_history_object.reference_number +'</td></tr>' +
-                          '<tr><td>Value</td><td>'+ swap_history_object.total_value.toLocaleString()+'</td></tr>' +
-                          '<tr><td>Mode of Payments</td><td>'+ swap_history_object.mod_description+'</td></tr>' +
-                          '<tr><td>Token</td><td>'+ swap_history_object.token_value.toLocaleString()+'</td></tr>' +
-                          '</table>',
+                html: 
+                '<div class="swal-table-container">'+
+                '<table class="styled-table-void">' +
+                          '<tr><td>Reference Number</td><td>'+ data.swap_histories.reference_number +'</td></tr>' +
+                          '<tr><td>Value</td><td>'+ data.swap_histories.total_value+'</td></tr>' +
+                          '<tr><td>Mode of Payments</td><td>'+ data.swap_histories.payment_description+'</td></tr>' +
+                          '<tr><td>Token</td><td>'+ data.swap_histories.token_value+'</td></tr>' +
+                          '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
+                          '</table>' +
+                            (data.addons.length != 0 ? 
+                            '<table class="styled-table-void">'+
+                            '<tr><td colspan="2">Addons</td></tr>' +
+                            '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
+                            data.addons.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                        '</table>' : '') +
+                      '</div>',
+                          
+                          
+                          
+                        //   data.addons.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                        //   '</table>',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
                 denyButtonText: `Don't save`,
@@ -262,6 +293,14 @@
                     });
                 }
                 })
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    }
+                    });
+                    return;
+
+     
         
     });
 });

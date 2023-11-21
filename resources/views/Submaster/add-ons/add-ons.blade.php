@@ -10,6 +10,9 @@
         background-color: #dddd;
     }
 
+    .search-icon {
+        padding-top: 2px;
+    }
     </style>
 @endpush
 @section('content')
@@ -34,6 +37,10 @@
                 <label>Add</label>
             </div>
             <div class='panel-body'>
+                <div class="display_qty_div">
+                    <label><span style="color:red">*</span>DR Number:</label>
+                    <input type="text" class="form-control" name ="dr_number" id ="dr_number" required>
+                </div>
                 <div class="display_qty_div ">
                     <label><span style="color:red">*</span>Digits Code:</label>
                     <div class="search_div">
@@ -144,6 +151,7 @@
             title: "Are Sure You Want To Go Back?",
             icon: 'warning',
             showCancelButton: true,
+            cancelButtonText: "No",   
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes',

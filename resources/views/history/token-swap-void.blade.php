@@ -7,7 +7,20 @@
 .swal2-popup, .swal2-modal, .swal2-icon-warning .swal2-show {
     font-size: 1.6rem !important;
 }
-
+.style-table-void {
+    width: 100%;
+}
+.style-table-void th{
+ padding: 10px;
+ border:1px solid black;
+ background-color: #dd4b39;
+ color: white;
+}
+.style-table-void td{
+    border:1px solid black;
+    padding: 10px;
+    text-align: center;
+}
 </style>
 <div class='panel panel-default'>
     <div class='panel-heading' style="background-color:#dd4b39; color:#fff">
@@ -37,6 +50,28 @@
                     <label class="require control-label">Status:</label>
                     <input type="text" class="form-control" value="{{ $swap_histories->status}}" disabled>
                 </div>
+                @if (!empty($addons))
+                    <table class="style-table-void">
+                        <thead>
+                            <tr>
+                                <th colspan="2" style="text-align: center;">Addons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                            <tr>
+                                <td style="font-weight: bold;">Description</td>
+                                <td style="font-weight: bold;">Qty</td>
+                            </tr>
+                            @foreach ($addons as $addon)
+                                <tr>
+                                    <td>{{ $addon->description}}</td>
+                                    <td>{{ $addon->qty}}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
             </div>
         </div>
         <div class='panel-footer'>
