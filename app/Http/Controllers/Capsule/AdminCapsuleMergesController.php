@@ -1,17 +1,17 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-use App\Models\Capsule\CapsuleMerge;
-use App\Models\Capsule\CapsuleMergeLine;
-use App\Models\Capsule\CapsuleSales;
-use App\Models\Capsule\HistoryCapsule;
-use App\Models\Capsule\InventoryCapsule;
+	use App\Models\Capsule\CapsuleMerge;
+	use App\Models\Capsule\CapsuleMergeLine;
+	use App\Models\Capsule\CapsuleSales;
+	use App\Models\Capsule\HistoryCapsule;
+	use App\Models\Capsule\InventoryCapsule;
 	use App\Models\Capsule\InventoryCapsuleLine;
-use App\Models\Submaster\CapsuleActionType;
-use App\Models\Submaster\Counter;
-use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\CapsuleActionType;
+	use App\Models\Submaster\Counter;
+	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\Item;
-use App\Models\Submaster\SalesType;
-use Illuminate\Http\Request;
+	use App\Models\Submaster\SalesType;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 
@@ -39,13 +39,12 @@ use Illuminate\Http\Request;
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			// $this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			// $this->col[] = ["label"=>"Item Code","name"=>"item_code"];
-			// $this->col[] = ["label"=>"To Machines Id","name"=>"to_machines_id","join"=>"to_machines,id"];
-			// $this->col[] = ["label"=>"From Machines Id","name"=>"from_machines_id","join"=>"from_machines,id"];
-			// $this->col[] = ["label"=>"Qty","name"=>"qty"];
-			// $this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
-			// $this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"From Machine","name"=>"from_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"To Machine","name"=>"to_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -536,13 +535,20 @@ use Illuminate\Http\Request;
 							'inventory_capsule_lines.updated_at' => $time_stamp,
 						]);
 				} else {
-					// inserting a new entry for inventory capsule if not existing
-					$inventory_capsules_id = InventoryCapsule::insertGetId([
+					$inventory_capsules_id = InventoryCapsule::where([
 						'item_code' => $digits_code,
 						'locations_id' => $my_locations_id,
-						'created_by' => $action_by,
-						'created_at' => $time_stamp,
-					]);
+					])->pluck('id')->first();
+
+					if (!$inventory_capsules_id) {
+						// inserting a new entry for inventory capsule if not existing
+						$inventory_capsules_id = InventoryCapsule::insertGetId([
+							'item_code' => $digits_code,
+							'locations_id' => $my_locations_id,
+							'created_by' => $action_by,
+							'created_at' => $time_stamp,
+						]);
+					}
 
 					// inserting a new entry for inventory capsule lines
 					InventoryCapsuleLine::insert([

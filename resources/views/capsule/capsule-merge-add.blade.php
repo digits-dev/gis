@@ -225,7 +225,7 @@
                         <input input-for="from_machine" type='text' name='from_machine' id="from_machine" required class='form-control'/>
                         <label class="label label-danger input-validation" id="warning-label-from"></label>
                     </div>
-                    <button btn-for="from_machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                    <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
                 <p>To Gasha Machine</p>
                 <div class="flex input-btn">
@@ -233,7 +233,7 @@
                         <input input-for="to_machine" type='text' name='to_machine' id="to_machine" required class='form-control'/>
                         <label class="label label-danger input-validation" id="warning-label-to"></label>
                     </div>
-                    <button btn-for="to_machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                    <button btn-for="to_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
                 </div>
                 <div class='panel-img'>
@@ -431,6 +431,110 @@
         resetModal();
     });
 
+    $(document).on('input', '.item-qty', function() {
+        const currentVal = $(this).val();
+        const val = Number(currentVal.replace(/\D/g, ''));
+        $(this).val(currentVal ? val.toLocaleString() : '');
+        sumQty();
+        validateInput();
+    });
+
+    $('#from_machine, #to_machine').on('input', function() {
+        const fromMachineVal = $('#from_machine').val().trim();
+        const toMachineVal = $('#to_machine').val().trim();
+        $('#merge-btn').attr('disabled', fromMachineVal == toMachineVal);
+    });
+
+    $('#save-modal').on('click', function() {
+
+        Swal.fire({
+            title: "Are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            reverseButtons: true,
+            returnFocus: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitModal();
+            }
+        });
+
+
+
+    })
+
+    function submitModal() {
+        const inputs = $('.item-qty').get();
+        let data = {
+            _token: "{{ csrf_token() }}",
+            machine_from: $('#from_machine').val(),
+            machine_to: $('#to_machine').val(),
+            items: [],
+        };
+        
+        inputs.forEach((input, index) => {
+            
+            data.items.push({
+                item_code: $(input).attr('item_code'),
+                qty: $(input).val().replace(/\D/g, '')
+            });
+        });
+
+        $.ajax({
+            url: "{{ route('submit_merge') }}",
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function(res) {
+                console.log(res);
+            },
+            error: function(err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function sumQty() {
+        let sum = 0;
+        const qtyInput = $('.gm_from .item-qty').get();
+        qtyInput.forEach(input => {
+            const value = Number($(input).val().replace(/\D/g, ''));
+            sum += value;
+        });
+
+        $('#from-machine-total').text(sum.toLocaleString());
+    }
+
+    function validateInput() {
+        const qtyInput = $('.gm_from .item-qty').get();
+        let isValid = true;
+        qtyInput.forEach(input => {
+            const currentVal = $(input).val(); 
+            const value = Number(currentVal.replace(/\D/g, ''));
+            const maxValue = Number($(input).attr('qty'));
+            if (value > maxValue) {
+                $(input).css('border', '2px solid red');
+                isValid = false;
+            } else if (!currentVal) {
+                isValid = false;
+                $(input).css('border', '');
+            } else {
+                $(input).css('border', '');
+            }
+        });
+
+        $('#save-modal').attr('disabled', !isValid);
+    }
+
+    function resetModal() {
+        $('.gm_from tbody, .gm_to tbody').html('');
+        $('#from-machine-total').text('0')
+        $('#save-modal').attr('disabled', true);
+    }
+
     function handleMachineCheck(data) {
         $('#warning-label-from').text(data.missing_from ? 'Machine Not Found!' : '');
         $('#warning-label-to').text(data.missing_to ? 'Machine Not Found!' : '');
@@ -488,110 +592,6 @@
 
             $('#addRowModal').modal('show');
         }
-    }
-
-    $(document).on('input', '.item-qty', function() {
-        const currentVal = $(this).val();
-        const val = Number(currentVal.replace(/\D/g, ''));
-        $(this).val(currentVal ? val.toLocaleString() : '');
-        sumQty();
-        validateInput();
-    });
-
-    function sumQty() {
-        let sum = 0;
-        const qtyInput = $('.gm_from .item-qty').get();
-        qtyInput.forEach(input => {
-            const value = Number($(input).val().replace(/\D/g, ''));
-            sum += value;
-        });
-
-        $('#from-machine-total').text(sum.toLocaleString());
-    }
-    
-    function validateInput() {
-        const qtyInput = $('.gm_from .item-qty').get();
-        let isValid = true;
-        qtyInput.forEach(input => {
-            const currentVal = $(input).val(); 
-            const value = Number(currentVal.replace(/\D/g, ''));
-            const maxValue = Number($(input).attr('qty'));
-            if (value > maxValue) {
-                $(input).css('border', '2px solid red');
-                isValid = false;
-            } else if (!currentVal) {
-                isValid = false;
-                $(input).css('border', '');
-            } else {
-                $(input).css('border', '');
-            }
-        });
-
-        $('#save-modal').attr('disabled', !isValid);
-    }
-    
-    function resetModal() {
-        $('.gm_from tbody, .gm_to tbody').html('');
-        $('#from-machine-total').text('0')
-        $('#save-modal').attr('disabled', true);
-    }
-
-    $('#from_machine, #to_machine').on('input', function() {
-        const fromMachineVal = $('#from_machine').val().trim();
-        const toMachineVal = $('#to_machine').val().trim();
-        $('#merge-btn').attr('disabled', fromMachineVal == toMachineVal);
-    });
-
-    $('#save-modal').on('click', function(){
-
-        Swal.fire({
-            title: "Are you sure?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            reverseButtons: true,
-            returnFocus: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                submitModal();
-            }
-        });
-
-
-
-    })
-
-    function submitModal() {
-        const inputs = $('.item-qty').get();
-        let data = {
-            _token: "{{ csrf_token() }}",
-            machine_from: $('#from_machine').val(),
-            machine_to: $('#to_machine').val(),
-            items: [],
-        };
-        
-        inputs.forEach((input, index) => {
-            
-            data.items.push({
-                item_code: $(input).attr('item_code'),
-                qty: $(input).val().replace(/\D/g, '')
-            });
-        });
-
-        $.ajax({
-            url: "{{ route('submit_merge') }}",
-            type: 'POST',
-            dataType: 'json',
-            data: data,
-            success: function(res) {
-                console.log(res);
-            },
-            error: function(err) {
-                console.log(err);
-            }
-        });
     }
 
 </script>
