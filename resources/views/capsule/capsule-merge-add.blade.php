@@ -173,11 +173,16 @@
     .input-validation {
         position: absolute;
         bottom: -24px;
-        left: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .input-btn {
+        margin-bottom: 30px;
     }
 
     .form-group p{
-        margin: 20px 0;
+        margin: 7px 0 ;
     }
 
     table tr td{
@@ -222,7 +227,6 @@
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
                 </div>
-                <p></p>
                 <p>To Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
@@ -267,7 +271,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td class="" colspan="2">Total</td>
+                                        <td class="text-bold" colspan="2">Total</td>
                                         <td class="text-center"><span class="total-item-qty" id="from-machine-total">0</span></td>
                                     </tr>
                                 </tfoot>
@@ -287,7 +291,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td class="" colspan="2">Total</td>
+                                        <td class="text-bold" colspan="2">Total</td>
                                         <td class="text-center"><span class="total-item-qty" id="to-machine-total">0</span></td>
                                     </tr>
                                 </tfoot>
@@ -438,16 +442,25 @@
                 returnFocus: false,
             });
         } else {
-            const gm_from = Object.values(data.gm_list_from);
-            const gm_to = Object.values(data.gm_list_to);
-
+            const gm_from = data.gm_list_from;
+            const gm_to = data.gm_list_to;
+            const isEmpty = gm_from.every(item => item.qty == 0);
+            if (isEmpty) {
+                $('#warning-label-from').text('No current Inventory for this machine.');
+                return;
+            }
             $('#label_from_machine span').text(data.from_machine.serial_number);
             $('#label_to_machine span').text(data.to_machine.serial_number);
 
             gm_from.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
-                const qtyInput = $('<input>').attr({'qty' : ic.qty, 'item_code' : ic.item_code, 'machine' : data.from_machine.serial_number}).addClass('form-control item-qty');
+                const qtyInput = $('<input>').attr({
+                    qty: ic.qty,
+                    item_code: ic.item_code, 
+                    machine: data.from_machine.serial_number,
+                    placeholder: ic.qty,
+                }).addClass('form-control item-qty');
                 const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
@@ -478,8 +491,9 @@
     }
 
     $(document).on('input', '.item-qty', function() {
-        const val = Number($(this).val().replace(/\D/g, ''));
-        $(this).val(val.toLocaleString());
+        const currentVal = $(this).val();
+        const val = Number(currentVal.replace(/\D/g, ''));
+        $(this).val(currentVal ? val.toLocaleString() : '');
         sumQty();
         validateInput();
     });
@@ -507,6 +521,7 @@
                 isValid = false;
             } else if (!currentVal) {
                 isValid = false;
+                $(input).css('border', '');
             } else {
                 $(input).css('border', '');
             }
@@ -551,32 +566,32 @@
     function submitModal() {
         const inputs = $('.item-qty').get();
         let data = {
-            _token : "{{ csrf_token() }}",
-            machine_from : $('#from_machine').val(),
-            machine_to : $('#to_machine').val(),
-            items : [],
+            _token: "{{ csrf_token() }}",
+            machine_from: $('#from_machine').val(),
+            machine_to: $('#to_machine').val(),
+            items: [],
         };
         
         inputs.forEach((input, index) => {
             
             data.items.push({
-                item_code : $(input).attr('item_code'),
-                qty : $(input).val().replace(/\D/g, '')
-            })
-        })
+                item_code: $(input).attr('item_code'),
+                qty: $(input).val().replace(/\D/g, '')
+            });
+        });
 
         $.ajax({
             url: "{{ route('submit_merge') }}",
             type: 'POST',
             dataType: 'json',
             data: data,
-            success: function(res){
+            success: function(res) {
                 console.log(res);
             },
-            error: function(err){
+            error: function(err) {
                 console.log(err);
             }
-        })
+        });
     }
 
 </script>
