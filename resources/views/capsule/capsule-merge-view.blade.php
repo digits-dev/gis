@@ -1,4 +1,11 @@
-<!-- First, extends to the CRUDBooster Layout -->
+@push('head')
+<style>
+    .panel-body {
+        background-color: #fff;
+    }
+</style>
+@endpush
+
 @extends('crudbooster::admin_template')
 @section('content')
 <style>
@@ -14,48 +21,55 @@
 </style>
 <!-- Your html goes here -->
 <p class="noprint"><a title="Main Module" href="{{ CRUDBooster::mainpath() }}"><i class="fa fa-chevron-circle-left "></i> &nbsp; Back To Capsule Merge</a></p> 
-    <div class='panel panel-default'>
-        <div class='panel-heading'><i class="fa fa-circle-o"></i> Detail Capsule Merge</div>
-        <div class='panel-body'>      
-            <div class="table-responsive">
-                <table class="table table-strip">
-                    <tbody>
-                        <tr>
-                            <td>Reference #</td>
-                            <td>{{ $capsule_merge->reference_number }}</td>
-                        </tr>
-                        <tr>
-                            <td>JAN #</td>
-                            <td>{{ $capsule_merge->item_code }}</td>
-                        </tr>
-                        <tr>
-                            <td>Qty</td>
-                            <td>{{ $capsule_merge->qty }}</td>
-                        </tr>
-                        <tr>
-                            <td>Location</td>
-                            <td>{{ $capsule_merge->location_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>From</td>
-                            <td>{{ $capsule_merge->from_machine_serial_number }}</td>
-                        </tr>
-                        <tr>
-                            <td>To</td>
-                            <td>{{ $capsule_merge->to_machine_serial_number }}</td>
-                        </tr>
-                        <tr>
-                            <td>Created By</td>
-                            <td>{{ $capsule_merge->cms_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Created Date</td>
-                            <td>{{ $capsule_merge->created_at }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
+<div class="panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-eye"></i><strong> {{CRUDBooster::getCurrentModule()->name}}</strong>
+    </div>
+    <div class="panel-body">
+        <div class="table table-responsive">
+            <table class=" table table-striped">
+                <thead>
+                    <tr>
+                        {{-- <th>JAN Number</th> --}}
+                        <th>JAN Number</th>
+                        <th>Item Description</th>
+                        <th>Location</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($capsule_lines as $capsule_line)
+                    <tr>
+                        <td>{{ $capsule_line->item_code }}</td>
+                        <td>{{ $capsule_line->from_item_description }}</td>
+                        <td>{{ $capsule_line->location_name }}</td>
+                        <td>{{ $capsule_line->from_machine_serial_number }}</td>
+                        <td>{{ $capsule_line->to_machine_serial_number }}</td>
+                        <td>{{ $capsule_line->qty }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Reference #</td>
+                        <td colspan="5">{{ $capsule_merge->reference_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Created By</td>
+                        <td colspan="5">{{ $capsule_merge->cms_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Created At</td>
+                        <td colspan="5">{{ $capsule_merge->created_at }}</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
+    <div class="panel-footer">
+        <a href='{{ CRUDBooster::mainpath() }}' class='btn btn-default'>Back</a>
+    </div>
+</div>
 @endsection
