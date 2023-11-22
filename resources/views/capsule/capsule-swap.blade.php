@@ -194,15 +194,15 @@
             <form method='POST' action="{{CRUDBooster::mainpath('add-save')}}" autocomplete="off" id="capsuleSwapForm">
                 @csrf
                 <div class='form-group'>
-                <p>Gasha Machine One</p>
-                <div class="flex input-btn">
+                    <p style="font-size: 16px;"><span style="color: red;">* </span>Gasha Machine One</p>
+                    <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="from_machine" type='text' id="machine_no_one" name="machine_no_one" required class='form-control'/>
                         <label class="label label-danger input-validation" id="warning-label-from"></label>
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
-                <p>Gasha Machine Two</p>
+                <p style="font-size: 16px;"><span style="color: red;">* </span>Gasha Machine One</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="to_machine" type='text'id="machine_no_two" name="machine_no_two" required class='form-control'/>
@@ -234,7 +234,7 @@
                 <div class="row swap-table-summary">
                     <div class="modal-body">
                         <div class="col-md-6">
-                            <p class="text-center text-bold" for="" id="label_from_machine">Gasha Machine One: <span style="color:rgb(48, 133, 214)"></span></p>
+                            <p class="text-center text-bold" for="" id="label_from_machine" style="font-size: 16px;">Gasha Machine One: <span style="color:rgb(48, 133, 214)"></span></p>
                             <table class="table table-bordered gm_from" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -254,7 +254,7 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-center text-bold" id="label_to_machine" for="">Gasha Machine Two: <span style="color: rgb(67, 136, 113)"></span></p>
+                            <p class="text-center text-bold" id="label_to_machine" for="" style="font-size: 16px;">Gasha Machine Two: <span style="color: rgb(67, 136, 113)"></span></p>
                             <table class="table table-bordered gm_to" id="newItemModalTable">
                                 <thead>
                                     <tr>
@@ -445,7 +445,7 @@
             capsule_qty_one_total: $('#capsule_qty_one_total').val(),
             machine_no_two: $('#machine_no_two').val(),
             capsule_qty_two_total: $('#capsule_qty_two_total').val(),
-           
+        
             machine_no_two: $('#machine_no_two').val(),
             jan_no_one: [],
             jan_no_two: [],
@@ -587,23 +587,31 @@
             const gm_from = data.gm_list_from;
             const gm_to = data.gm_list_to;
             const isEmpty = gm_from.every(item => item.qty == 0);
-            if (isEmpty) {
-                $('#warning-label-from').text('No current Inventory for this machine.');
+            const isEmpty2 = gm_to.every(item => item.qty == 0);
+            if (isEmpty || isEmpty2){
+                if (isEmpty) {
+                    $('#warning-label-from').text('No current Inventory for this machine.');
+                }
+                if (isEmpty2) {
+                    $('#warning-label-to').text('No current Inventory for this machine.');
+                }
                 return;
             }
+
             $('#label_from_machine span').text(data.from_machine.serial_number);
             $('#label_to_machine span').text(data.to_machine.serial_number);
 
             gm_from.forEach((ic, index) => {
-                const jan_no_one = $('<input>').attr({
-                    type: 'text',
-                    item_code: ic.item_code, 
-                    machine: data.from_machine.serial_number,
-                    name: 'jan_no_one[]',
-                    value: ic.item_code,
-                    readonly: 'readonly',
-                }).addClass('form-control');
-                const gm_item_code = $('<td>').append(jan_no_one);
+                // const jan_no_one = $('<input>').attr({
+                //     type: 'text',
+                //     item_code: ic.item_code, 
+                //     machine: data.from_machine.serial_number,
+                //     name: 'jan_no_one[]',
+                //     value: ic.item_code,
+                //     readonly: 'readonly',
+                // }).addClass('form-control');
+                const gm_item_code = $('<td>').text(ic.item_code);
+                // const gm_item_code = $('<td>').append(jan_no_one);
                 const gm_description = $('<td>').text(ic.item_description);
                 const qtyInput = $('<input>').attr({
                     type: 'text',
@@ -620,15 +628,16 @@
             });
             $('#from-machine-total').append('<input type="text" class="form-control" name="capsule_qty_one_total[]" id="capsule_qty_one_total" readonly>');
             gm_to.forEach((ic, index) => {
-                const jan_no_two = $('<input>').attr({
-                    type: 'text',
-                    item_code: ic.item_code, 
-                    machine: data.from_machine.serial_number,
-                    name: 'jan_no_two[]',
-                    value: ic.item_code,
-                    readonly: 'readonly',
-                }).addClass('form-control');
-                const gm_item_code = $('<td>').append(jan_no_two);
+                // const jan_no_two = $('<input>').attr({
+                //     type: 'text',
+                //     item_code: ic.item_code, 
+                //     machine: data.from_machine.serial_number,
+                //     name: 'jan_no_two[]',
+                //     value: ic.item_code,
+                //     readonly: 'readonly',
+                // }).addClass('form-control');
+                const gm_item_code = $('<td>').text(ic.item_code);
+                // const gm_item_code = $('<td>').append(jan_no_two);
                 const gm_description = $('<td>').text(ic.item_description);
                 const qtyInput = $('<input>')
                     .attr('name','capsule_qty_two[]')
@@ -669,6 +678,7 @@
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#save-modal, button[data-dismiss="modal"]').attr('disabled', true);
                 submitModal();
             }
         });
