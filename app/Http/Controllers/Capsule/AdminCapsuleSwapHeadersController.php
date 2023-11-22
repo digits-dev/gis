@@ -455,17 +455,17 @@
 				$machineOneInsertLineOut[$key]['jan_no']          = $jan['jan_no_one'];
 				$machineOneInsertLineOut[$key]['from_machine']    = $machine_one_data->id;
 				$machineOneInsertLineOut[$key]['to_machine']      = $machine_two_data->id;
-				$machineOneInsertLineOut[$key]['qty']             = -1 * abs(intval(str_replace(',', '', $jan['capsule_qty_one'])));
+				$machineOneInsertLineOut[$key]['qty']             = intval(str_replace(',', '', $jan['capsule_qty_one']));
 				$machineOneInsertLineOut[$key]['location']        = $my_locations_id;
 				$machineOneInsertLineOut[$key]['created_at']      = $time_stamp;
-				//IN
-				$machineOneInsertLineIn[$key]['capsule_swap_id'] = $capsule_swap_id;
-				$machineOneInsertLineIn[$key]['jan_no']          = $jan['jan_no_one'];
-				$machineOneInsertLineIn[$key]['from_machine']    = $machine_two_data->id;
-				$machineOneInsertLineIn[$key]['to_machine']      = $machine_one_data->id;
-				$machineOneInsertLineIn[$key]['qty']             = intval(str_replace(',', '', $jan['capsule_qty_one']));
-				$machineOneInsertLineIn[$key]['location']        = $my_locations_id;
-				$machineOneInsertLineIn[$key]['created_at']      = $time_stamp;
+				// //IN
+				// $machineOneInsertLineIn[$key]['capsule_swap_id'] = $capsule_swap_id;
+				// $machineOneInsertLineIn[$key]['jan_no']          = $jan['jan_no_one'];
+				// $machineOneInsertLineIn[$key]['from_machine']    = $machine_two_data->id;
+				// $machineOneInsertLineIn[$key]['to_machine']      = $machine_one_data->id;
+				// $machineOneInsertLineIn[$key]['qty']             = intval(str_replace(',', '', $jan['capsule_qty_one']));
+				// $machineOneInsertLineIn[$key]['location']        = $my_locations_id;
+				// $machineOneInsertLineIn[$key]['created_at']      = $time_stamp;
 
 				//HISTORY INSERT
 				$item_one = Item::where('digits_code', $jan['jan_no_one'])->first();
@@ -606,19 +606,19 @@
 				$machineTwoInsertLineOut[$key]['jan_no']          = $jan_two['jan_no_two'];
 				$machineTwoInsertLineOut[$key]['from_machine']    = $machine_two_data->id;
 				$machineTwoInsertLineOut[$key]['to_machine']      = $machine_one_data->id;
-				$machineTwoInsertLineOut[$key]['qty']             = -1 * abs(intval(str_replace(',', '',$jan_two['capsule_qty_two'])));
+				$machineTwoInsertLineOut[$key]['qty']             = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
 				$machineTwoInsertLineOut[$key]['location']        = $my_locations_id;
 				$machineTwoInsertLineOut[$key]['created_at']      = $time_stamp;
-				//IN
-				$machineTwoInsertLineIn[$key]['capsule_swap_id']  = $capsule_swap_id;
-				$machineTwoInsertLineIn[$key]['jan_no']           = $jan_two['jan_no_two'];
-				$machineTwoInsertLineIn[$key]['from_machine']     = $machine_one_data->id;
-				$machineTwoInsertLineIn[$key]['to_machine']       = $machine_two_data->id;
-				$machineTwoInsertLineIn[$key]['qty']              = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
-				$machineTwoInsertLineIn[$key]['location']         = $my_locations_id;
-				$machineTwoInsertLineIn[$key]['created_at']       = $time_stamp;
-
-				//HISTORY
+				// //IN
+				// $machineTwoInsertLineIn[$key]['capsule_swap_id']  = $capsule_swap_id;
+				// $machineTwoInsertLineIn[$key]['jan_no']           = $jan_two['jan_no_two'];
+				// $machineTwoInsertLineIn[$key]['from_machine']     = $machine_one_data->id;
+				// $machineTwoInsertLineIn[$key]['to_machine']       = $machine_two_data->id;
+				// $machineTwoInsertLineIn[$key]['qty']              = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
+				// $machineTwoInsertLineIn[$key]['location']         = $my_locations_id;
+				// $machineTwoInsertLineIn[$key]['created_at']       = $time_stamp;
+				
+				//HISTORY 
 				$item_two = Item::where('digits_code', $jan_two['jan_no_two'])->first();
 				if(intval(str_replace(',', '', $jan_two['capsule_qty_two']))){
 					//OUT
