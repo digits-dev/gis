@@ -8,6 +8,7 @@ use App\Models\PosFrontend\SwapHistory;
 use App\Models\Token\TokenInventory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Submaster\AddOnMovementHistory;
 use App\Http\Controllers\Pos\POSDashboardController;
 
 
@@ -122,8 +123,24 @@ class POSSwapHistoryController extends Controller
         foreach ($items as $key => $data) {
             DB::table('add_ons')->where('digits_code', $data->digits_code)->increment('qty', $data->qty);
         }
-        
-    
+        DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
+        // dd($items);
+        // $inserMovementHistories = [];
+        // $inserMovementHistoriesContainer = [];
+        // $addOnTypeId = DB::table('add_on_action_types')->select('id')->where('description', 'DR')->first()->id;
+
+        // foreach($items as $key => $val){
+        //         $inserMovementHistoriesContainer['reference_number'] =  $histories_ref_number;
+        //         $inserMovementHistoriesContainer['digits_code'] = $val->digits_code;
+        //         $inserMovementHistoriesContainer['add_on_action_types_id'] = $addOnTypeId;
+        //         $inserMovementHistoriesContainer['locations_id'] = Auth::user()->location_id;
+        //         $inserMovementHistoriesContainer['qty'] = $val->qty;
+        //         $inserMovementHistoriesContainer['created_by'] = Auth::user()->id;
+        //         $inserMovementHistoriesContainer['created_at'] = date('Y-m-d H:i:s');
+        //         $inserMovementHistories[] = $inserMovementHistoriesContainer;
+        //     }
+        //     AddOnMovementHistory::insert($inserMovementHistories);
+                
         $token_inventory = DB::table('token_inventories')->where('locations_id', Auth::user()->location_id)->first();
         $token_inventory_qty = $token_inventory->qty;
         $total_qty = $token_inventory_qty + $histories_id;

@@ -20,7 +20,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -361,12 +361,14 @@
 			foreach ($items as $key => $data) {
 				DB::table('add_ons')->where('digits_code', $data->digits_code)->increment('qty', $data->qty);
 			}
+
+			DB::table('add_on_movement_histories')->where('reference_number',$histories_ref_number)->update(['status' => 'VOID', 'updated_by' => CRUDBooster::myId(),'updated_at' => date('Y-m-d H:i:s')]);
 			
-				DB::table('token_inventories')
-					->where('locations_id', $histories_id->locations_id)
-					->update([
-						'qty' =>  DB::raw("qty + $histories_id->token_value"),
-					]);
+			DB::table('token_inventories')
+			->where('locations_id', $histories_id->locations_id)
+			->update([
+				'qty' =>  DB::raw("qty + $histories_id->token_value"),
+			]);
 	    }
 
 	    /*
