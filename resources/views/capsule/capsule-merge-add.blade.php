@@ -618,6 +618,7 @@
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#save-modal, button[data-dismiss="modal"]').attr('disabled', true);
                 submitModal();
             }
         });
@@ -661,6 +662,7 @@
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#save-modal, button[data-dismiss="modal"]').attr('disabled', false);
                 $('button[data-dismiss="modal"]').eq(0).click();
                 $('#from_machine, #to_machine').val('');
                 $('#merge-btn').attr('disabled', true);

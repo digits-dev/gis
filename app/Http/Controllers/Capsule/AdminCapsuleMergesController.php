@@ -609,24 +609,16 @@
 				->first();
 			$data['capsule_lines'] = CapsuleMergeLine::where('capsule_merges_id', $id)
 				->leftJoin('capsule_merges as cmg', 'cmg.id', 'capsule_merge_lines.capsule_merges_id')
-				->leftJoin('locations as loc', 'loc.id', 'cmg.locations_id')
-				->leftJoin('gasha_machines as from_machine', 'from_machine.id', 'cmg.from_machines_id')
-				->leftJoin('gasha_machines as to_machine', 'to_machine.id', 'cmg.to_machines_id')
-				->leftJoin('items as from', 'from.id', 'cmg.from_machines_id')
-				->leftJoin('items as to', 'to.id', 'cmg.to_machines_id')
+				->leftJoin('items as from', 'from.digits_code', 'capsule_merge_lines.item_code')
 				->leftJoin('cms_users as cms', 'cms.id', 'cmg.created_by')
 				->select('capsule_merge_lines.qty',
 					'capsule_merge_lines.item_code',
-					'loc.location_name as location_name',
-					'from_machine.serial_number as from_machine_serial_number',
-					'to_machine.serial_number as to_machine_serial_number',
 					'from.item_description as from_item_description',
-					'from.digits_code as jan_number',
 					'cms.name as cms_name',
 					'cmg.created_at'
 				)
 				->get();
-
+			
 			//Please use view method instead view method from laravel
 			return $this->view('capsule.capsule-merge-view',$data);
 		}

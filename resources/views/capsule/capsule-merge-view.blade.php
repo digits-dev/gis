@@ -60,9 +60,9 @@
                     <tr>
                         <td>{{ $capsule_line->item_code }}</td>
                         <td>{{ $capsule_line->from_item_description }}</td>
-                        <td>{{ $capsule_line->location_name }}</td>
-                        <td>{{ $capsule_line->from_machine_serial_number }}</td>
-                        <td>{{ $capsule_line->to_machine_serial_number }}</td>
+                        <td>{{ $capsule_merge->location_name }}</td>
+                        <td>{{ $capsule_merge->from_machine_serial_number }}</td>
+                        <td>{{ $capsule_merge->to_machine_serial_number }}</td>
                         <td>{{ $capsule_line->qty }}</td>
                     </tr>
                     @endforeach
