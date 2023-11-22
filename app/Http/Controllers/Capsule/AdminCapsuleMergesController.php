@@ -351,18 +351,20 @@
             $from_machine = GashaMachines::getMachineByLocation($data['from_machine'], $user_location);
             $to_machine = GashaMachines::getMachineByLocation($data['to_machine'], $user_location);
 
+			$is_existing = $from_machine->exists() && $to_machine->exists();
+
+			if (!$is_existing) {
+				return json_encode([
+					'missing_from' => !$from_machine->exists(),
+					'missing_to' => !$to_machine->exists(),
+				]);
+			}
+
 			// Getting Inventory Capsule Lines from the machine 'from'
 			$icl_from = InventoryCapsuleLine::getInventoryByMachine($from_machine->id);
 
 			// Getting Inventory Capsule Lines from the machine 'to'
 			$icl_to = InventoryCapsuleLine::getInventoryByMachine($to_machine->id);
-
-			if (!$from_machine || !$to_machine) {
-				return json_encode([
-					'missing_from' => !$from_machine,
-					'missing_to' => !$to_machine,
-				]);
-			}
 
 			if ($from_machine->no_of_token != $to_machine->no_of_token) {
 				return json_encode([

@@ -443,7 +443,8 @@
     $('#from_machine, #to_machine').on('input', function() {
         const fromMachineVal = $('#from_machine').val().trim();
         const toMachineVal = $('#to_machine').val().trim();
-        $('#merge-btn').attr('disabled', fromMachineVal == toMachineVal);
+        const isDisabled = (fromMachineVal == toMachineVal) || !(fromMachineVal && toMachineVal);
+        $('#merge-btn').attr('disabled', isDisabled);
     });
 
     $('#save-modal').on('click', function() {
