@@ -421,15 +421,17 @@
 				return json_encode($response);
 			}
 
-			foreach ($data['items'] as $item) {
+			foreach ($data['items'] as $key => $item) {
 				// getting the current inventory
 				$system_inv = InventoryCapsuleLine::where('gasha_machines_id', $machine_from->id)
-					->select('inventory_capsule_lines.qty', 'items.digits_code')
+					->select('inventory_capsule_lines.qty', 'items.digits_code', 'items.item_description')
 					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->leftJoin('items', 'items.digits_code2', 'ic.item_code')
 					->where('ic.locations_id', $my_locations_id)
 					->where('items.digits_code', $item['item_code'])
 					->first();
+
+				$data['items'][$key]['item_description'] = $system_inv['item_description'];
 
 				// returning if inputted qty is greater than inventory qty
 				if ($item['qty'] > $system_inv->qty) {
@@ -570,18 +572,7 @@
 				}
 			}
 
-			$inventory_after = InventoryCapsuleLine::where('gasha_machines_id', $machine_to->id)
-				->where('inventory_capsule_lines.qty', '>', '0')
-				->leftJoin('inventory_capsules as ic', 'ic.id' , 'inventory_capsule_lines.inventory_capsules_id')
-				->leftJoin('items', 'items.digits_code2', 'ic.item_code')
-				->select(
-					'inventory_capsule_lines.*',
-					'items.digits_code as item_code',
-					'items.item_description'
-				)
-				->get();
-
-			$response['inventory_after'] = $inventory_after;
+			$response['items'] = $data['items'];
 			$response['success'] = true;
 			$response['reference_number'] = $reference_number;
 			return json_encode($response);
