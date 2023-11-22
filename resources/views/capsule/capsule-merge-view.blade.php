@@ -125,47 +125,43 @@
                 </div>
 
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="overflow">
-                    <table class="table" id="collected-token">
-                        <tbody id="bodyTable">    
-                                <tr>
-                                    <th width="10%" class="text-center">JAN Number</th>
-                                    <th width="10%" class="text-center">Item Description</th>
-                                    <th width="10%" class="text-center">Location</th>
-                                    <th width="10%" class="text-center">From</th>
-                                    <th width="10%" class="text-center">To</th>
-                                    <th width="10%" class="text-center">Qty</th>
-                                </tr>      
-                            @foreach($capsule_lines as $capsule_line)
-                                <tr>
-                                    <td style="text-align:center" height="10">{{ $capsule_line->item_code }}</td>
-                                    <td style="text-align:center" height="10">{{ $capsule_line->from_item_description }}</td>
-                                    <td style="text-align:center" height="10">{{ $capsule_merge->location_name }}</td>
-                                    <td style="text-align:center" height="10">{{ $capsule_merge->from_machine_serial_number }}</td>
-                                    <td style="text-align:center" height="10">{{ $capsule_merge->to_machine_serial_number }}</td>
-                                    <td style="text-align:center" height="10">{{ $capsule_line->qty }}</td>
-                                </tr>
-                            @endforeach                                            
-                        </tbody>
-                    </table>
-                </div>
-            </div>   
-        </div>
+        <div class="col-md-12">
+            <div class="overflow">
+                <table class="table" id="collected-token">
+                    <tbody id="bodyTable">    
+                            <tr>
+                                <th width="10%" class="text-center">JAN Number</th>
+                                <th width="10%" class="text-center">Item Description</th>
+                                <th width="10%" class="text-center">Location</th>
+                                <th width="10%" class="text-center">From</th>
+                                <th width="10%" class="text-center">To</th>
+                                <th width="10%" class="text-center">Qty</th>
+                            </tr>      
+                        @foreach($capsule_lines as $capsule_line)
+                            <tr>
+                                <td style="text-align:center" height="10">{{ $capsule_line->item_code }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_line->from_item_description }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_merge->location_name }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_merge->from_machine_serial_number }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_merge->to_machine_serial_number }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_line->qty }}</td>
+                            </tr>
+                        @endforeach                                            
+                    </tbody>
+                </table>
+            </div>
+        </div>   
 
         @if( $detail_header->received_by != null )
-            <div class="row">
-                <div class="col-md-12">
-                    <table style="width:100%">
-                        <tbody id="footer">
-                            <tr>
-                                <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                <td class="col-md-4">{{$detail_header->receiver_name}} / {{$detail_header->received_at}}</td> 
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="col-md-12">
+                <table style="width:100%">
+                    <tbody id="footer">
+                        <tr>
+                            <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
+                            <td class="col-md-4">{{$detail_header->receiver_name}} / {{$detail_header->received_at}}</td> 
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         @endif
     </div>
