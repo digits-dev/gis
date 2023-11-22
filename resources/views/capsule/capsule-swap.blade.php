@@ -108,21 +108,6 @@
     }
 
 
-    .swal2-container1 {
-        position: relative;
-        width: 37em;
-        padding: 30px 0 !important;
-        background: #fff;
-        border-radius: 5px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
 
     .warning{
         color: #f8bb86;
@@ -185,6 +170,10 @@
         margin: 7px 0 ;
     }
 
+    .swal2-html-container{
+        overflow: unset !important;
+    }
+
     table tr td{
         border: 1px solid #bdbdbd !important;
         text-align: center !important;
@@ -193,21 +182,6 @@
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
-        <div class="swal-clone hide">
-            <div class="swal2-container1">
-                <div class="warning">
-                    <span>!</span>
-                </div>
-                <div class="warning-content">
-                    <p id="warning-title">Are you sure?</p>
-                    <p id="warning-message">You Won't be able to revert this!</p>
-                </div>
-                <div class="swal-buttons">
-                    <button type="button" class="swal-btn btn-red swal-btn-cancel">Cancel</button>
-                    <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
-                </div>
-            </div>
-        </div>
         <div class='panel panel-default'>
             <div class='panel-header'>
                 <label>CAPSULE SWAP</label>
@@ -220,7 +194,7 @@
             <form method='POST' action="{{CRUDBooster::mainpath('add-save')}}" autocomplete="off" id="capsuleSwapForm">
                 @csrf
                 <div class='form-group'>
-                <p>Machine One</p>
+                <p>Gasha Machine One</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="from_machine" type='text' id="machine_no_one" name="machine_no_one" required class='form-control'/>
@@ -228,7 +202,7 @@
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
-                <p>Machine Two</p>
+                <p>Gasha Machine Two</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="to_machine" type='text'id="machine_no_two" name="machine_no_two" required class='form-control'/>
@@ -237,6 +211,7 @@
                     <button btn-for="to_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
                 </div>
+                <p style="color: red; font-weight: bold; text-align: center; font-size: 16px;">* Must be same number of tokens *</p>
                 <div class='panel-img'>
                     <img src="{{ asset('img/capsule-swap.png') }}">
                 </div>
@@ -256,11 +231,11 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title text-center"><strong>Capsule Swap</strong></h4>
                 </div>
-                <div class="row">
+                <div class="row swap-table-summary">
                     <div class="modal-body">
                         <div class="col-md-6">
-                            <p class="text-center text-bold" for="" id="label_from_machine">Machine One <span style="color:rgb(48, 133, 214)"></span></p>
-                            <table class="table table-responsive table-bordered gm_from" id="newItemModalTable">
+                            <p class="text-center text-bold" for="" id="label_from_machine">Gasha Machine One: <span style="color:rgb(48, 133, 214)"></span></p>
+                            <table class="table table-bordered gm_from" id="newItemModalTable">
                                 <thead>
                                     <tr>
                                         <td class="text-center" width="25%"><b>Item Code</b></td>
@@ -279,8 +254,8 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-center text-bold" id="label_to_machine" for="">Machine Two <span style="color: rgb(67, 136, 113)"></span></p>
-                            <table class="table table-responsive table-bordered gm_to" id="newItemModalTable">
+                            <p class="text-center text-bold" id="label_to_machine" for="">Gasha Machine Two: <span style="color: rgb(67, 136, 113)"></span></p>
+                            <table class="table table-bordered gm_to" id="newItemModalTable">
                                 <thead>
                                     <tr>
                                         <td class="text-center" width="25%"><b>Item Code</b></td>
@@ -455,22 +430,9 @@
     });
 
     $('#save-modal').on('click', function() {
-    //$('#save-modal').click(function(event) {
-        Swal.fire({
-            title: "Are you sure?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes',
-            reverseButtons: true,
-            returnFocus: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                submitModal();
-            }
-        });
-    })
+    
+        swapTableSummary();
+    });
 
     function submitModal() {
         const inputs = $('.item-qty').get();
@@ -507,7 +469,11 @@
             dataType: 'json',
             data: data,
             success: function(res) {
-                console.log(res);
+                if (res.success) {
+                    showSwapSuccess(res);
+                } else {
+                    alert('Something went wrong...');
+                }
             },
             error: function(err) {
                 console.log(err);
@@ -544,6 +510,7 @@
     function validateInput() {
         const qtyInput = $('.gm_from .item-qty').get();
         let isValid = true;
+        let found = false;
         qtyInput.forEach(input => {
             const currentVal = $(input).val(); 
             const value = Number(currentVal.replace(/\D/g, ''));
@@ -557,9 +524,17 @@
             } else {
                 $(input).css('border', '');
             }
+
+            if (!found && value) {
+                found = true;
+            } else if (found && value) {
+                isValid = false;
+            }
         });
 
         const qtyInput2 = $('.gm_to .item-qty2').get();
+        let isValid2 = true;
+        let found2 = false;
         qtyInput2.forEach(input => {
             const currentVal2 = $(input).val(); 
             const value2 = Number(currentVal2.replace(/\D/g, ''));
@@ -573,14 +548,26 @@
             } else {
                 $(input).css('border', '');
             }
+
+            if (!found2 && value2) {
+                found2 = true;
+            } else if (found2 && value2) {
+                isValid2 = false;
+            }
         });
 
-        $('#save-modal').attr('disabled', !isValid);
+
+        isValid = isValid && !qtyInput.every(input => !Number($(input).val().replace(/\D/g, '')));
+        isValid2 = isValid2 && !qtyInput2.every(input => !Number($(input).val().replace(/\D/g, '')));
+
+
+        $('#save-modal').attr('disabled', !(isValid && isValid2));
     }
 
     function resetModal() {
         $('.gm_from tbody, .gm_to tbody').html('');
-        //$('#from-machine-total').text('0')
+        $('#capsule_qty_one_total').remove();
+        $('#capsule_qty_two_total').remove();
         $('#save-modal').attr('disabled', true);
     }
 
@@ -627,7 +614,6 @@
                 const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
-   
                 $('.gm_from').append(tr);
             });
             $('#from-machine-total').append('<input type="text" class="form-control" name="capsule_qty_one_total[]" id="capsule_qty_one_total" readonly>');
@@ -651,12 +637,103 @@
                 const gm_qty = $('<td>').append(qtyInput);
                 
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
-         
                 $('.gm_to').append(tr);
             });
             $('#to-machine-total').append('<input type="text" class="form-control" name="capsule_qty_two_total[]" id="capsule_qty_two_total" readonly>');
             $('#addRowModal').modal('show');
         }
+
+    }
+    function swapTableSummary(){
+        const summaryTable = $('.swap-table-summary').clone();
+        summaryTable.find('input').get().forEach(input => {
+            const value = $(input).val();
+            $(input).parents('td').text(value);
+            $(input).remove();
+
+        })
+        summaryTable.find('td').css('font-size', '14px')
+        Swal.fire({
+            title: "Are you sure?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            reverseButtons: true,
+            returnFocus: false,
+            html: summaryTable,
+            width: '900px',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitModal();
+            }
+        });
+    }
+    function showSwapSuccess(data){
+        console.log(data);
+        const summaryTable = $('.swap-table-summary').clone();
+        summaryTable.prepend(`<label class="label label-success text-center" style="display: inline-block; font-size: 100%; margin-bottom: 18px;">Reference #: ${data.reference_number}</label>`);
+        summaryTable.find('input').get().forEach(input => {
+            const value = $(input).val();
+            $(input).parents('td').text(value);
+            $(input).remove();
+            
+        })
+        summaryTable.find('tbody').html('');
+        summaryTable.find('#from-machine-total').text('');
+        summaryTable.find('#to-machine-total').text('');
+
+        let total = 0;
+        let total2 = 0;
+
+        data.machine_one_after.forEach((item) => {
+            const tr = $('<tr>');
+            const item_code = $('<td>').text(item.item_code);
+            const item_description = $('<td>').text(item.item_description);
+            const qty = $('<td>').text(item.qty.toLocaleString());
+
+            tr.append(item_code, item_description, qty);
+            summaryTable.find('.gm_from tbody').append(tr);
+
+            total += item.qty;
+        })
+
+        data.machine_two_after.forEach((item) => {
+            const tr = $('<tr>');
+            const item_code2 = $('<td>').text(item.item_code);
+            const item_description2 = $('<td>').text(item.item_description);
+            const qty2 = $('<td>').text(item.qty.toLocaleString());
+
+            tr.append(item_code2, item_description2, qty2);
+            summaryTable.find('.gm_to tbody').append(tr);
+
+            total2 += item.qty;
+        })
+
+        summaryTable.find('#from-machine-total').text(total.toLocaleString());
+        summaryTable.find('#to-machine-total').text(total2.toLocaleString());
+
+        Swal.fire({
+            title: "Swapped successfully",
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            returnFocus: false,
+            html: summaryTable,
+            width: '900px',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#save-modal, button[data-dismiss="modal"]').attr('disabled', false);
+                $('button[data-dismiss="modal"]').eq(0).click();
+                $('#from_machine, #to_machine').val('');
+                $('#merge-btn').attr('disabled', true);
+                location.assign("{{ CRUDBooster::mainPath() }}");
+            }
+        });
     }
 
 </script>
