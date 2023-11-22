@@ -219,7 +219,7 @@
             </div>
             <form method='post' action='{{CRUDBooster::mainpath('add-save')}}'>
                 <div class='form-group'>
-                <p>From Gasha Machine</p>
+                <p style="font-size: 16px;"><span style="color: red;">* </span>From Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="from_machine" type='text' name='from_machine' id="from_machine" required class='form-control'/>
@@ -227,7 +227,7 @@
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
-                <p>To Gasha Machine</p>
+                <p style="font-size: 16px;"><span style="color: red;">* </span>To Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="to_machine" type='text' name='to_machine' id="to_machine" required class='form-control'/>
@@ -236,6 +236,7 @@
                     <button btn-for="to_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
                 </div>
+                <p style="color: red; font-weight: bold; text-align: center; font-size: 16px;">* Must be same number of tokens *</p>
                 <div class='panel-img'>
                     <img src="{{ asset('img/capsule-merge.jpg') }}">
                 </div>
