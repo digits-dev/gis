@@ -27,7 +27,23 @@
     </div>
     <div class="panel-body">
         <div class="table table-responsive">
-            <table class=" table table-striped">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>Reference #</td>
+                        <td colspan="5">{{ $capsule_merge->reference_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Created By</td>
+                        <td colspan="5">{{ $capsule_merge->cms_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Created Date</td>
+                        <td colspan="5">{{ $capsule_merge->created_at }}</td>
+                    </tr>
+                </thead>
+            </table>
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         {{-- <th>JAN Number</th> --}}
@@ -51,20 +67,6 @@
                     </tr>
                     @endforeach
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Reference #</td>
-                        <td colspan="5">{{ $capsule_merge->reference_number }}</td>
-                    </tr>
-                    <tr>
-                        <td>Created By</td>
-                        <td colspan="5">{{ $capsule_merge->cms_name }}</td>
-                    </tr>
-                    <tr>
-                        <td>Created At</td>
-                        <td colspan="5">{{ $capsule_merge->created_at }}</td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>
