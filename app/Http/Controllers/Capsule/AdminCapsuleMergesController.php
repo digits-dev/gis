@@ -215,7 +215,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-
+	        $this->load_css[] = asset("css/font-family.css");
 
 	    }
 
