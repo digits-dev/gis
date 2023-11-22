@@ -332,8 +332,10 @@
             showCancelButton: true,
             returnFocus: false,
             inputValidator: (value) => {
-                selectedCameraId = value;
-                openVideo(selectedCameraId);
+                if (value) {
+                    selectedCameraId = value;
+                    openVideo(selectedCameraId);
+                }
             }
         });
 
