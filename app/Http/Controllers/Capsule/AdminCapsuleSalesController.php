@@ -30,8 +30,10 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
+			$this->col[] = ["label"=>"id","name"=>"id"];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_code","join"=>"items,item_description","join_id"=>"digits_code"];
 			$this->col[] = ["label"=>"Gasha Machine Serial Number","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
@@ -44,10 +46,11 @@
 			$this->form = [];
 			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'JAN #','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Item Description','name'=>'item_code','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'items,item_description'];
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Gasha Machine Serial Number','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines,serial_number'];
-			$this->form[] = ['label'=>'Capsule Action Type','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'sales_types,description'];
+			$this->form[] = ['label'=>'Capsule Action Type','name'=>'sales_type_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'sales_types,description'];
 			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
