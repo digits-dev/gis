@@ -79,7 +79,7 @@
 
         @media (min-width:729px){
            .panel-default{
-                width:40% !important; 
+                width:60% !important; 
                 margin:auto !important;
            }
         }
@@ -95,9 +95,7 @@
 @endif
 
 <div class='panel panel-default'>
-<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
-    Capsule Swap Detail
-</div>
+<div class='panel-heading' style="background-color:#3c8dbc; color:#fff">Capsule Swap Detail</div>
 
     <div class='panel-body'>
         <div class="col-md-12">
@@ -120,19 +118,26 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <table class="table" id="collected-token">
+                <table class="table" id="collected-token" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th width="5%" class="text-center">Digits Code</th> 
+                            <th width="25%" class="text-center">Item Description</th> 
+                            <th width="5%" class="text-center">Jan#</th> 
+                            <th width="5%" class="text-center">From Machine</th> 
+                            <th width="5%" class="text-center">To Machine</th>
+                            <th width="5%" class="text-center">Qty</th>
+                        </tr>  
+                    </thead>
+                               
                     <tbody id="bodyTable">    
-                            <tr>
-                                <th width="10%" class="text-center">Digits Code</th> 
-                                <th width="10%" class="text-center">Jan#</th> 
-                                <th width="10%" class="text-center">From Machine</th> 
-                                <th width="10%" class="text-center">To Machine</th>
-                                <th width="10%" class="text-center">Qty</th>
-                            </tr>      
                         @foreach($detail_body as $row)
                             <tr>
                                 <td style="text-align:center" height="10">
                                     {{$row->digits_code2}}                               
+                                </td>
+                                <td style="text-align:center" height="10">
+                                    {{$row->item_description}}                               
                                 </td>
                                 <td style="text-align:center" height="10">
                                     {{$row->jan_no}}                               
@@ -153,24 +158,9 @@
             </div>   
         </div>
 
-        @if( $detail_header->received_by != null )
-            <div class="row">
-                <div class="col-md-12">
-                    <table style="width:100%">
-                        <tbody id="footer">
-                            <tr>
-                                <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                <td class="col-md-4">{{$detail_header->receiver_name}} / {{$detail_header->received_at}}</td> 
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
     </div>
     <div class='panel-footer'>
         <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-     
     </div>
 
 </div>
