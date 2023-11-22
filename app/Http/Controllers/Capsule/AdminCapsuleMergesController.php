@@ -588,40 +588,16 @@
 		}
 
 		public function getDetail($id) {
-			//Create an Auth
-			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_edit==FALSE) {    
+
+			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}
-			
+
 			$data = [];
 			$data['page_title'] = 'Capsule Merge';
-			$data['capsule_merge'] = CapsuleMerge::where('capsule_merges.id', $id)
-				->leftJoin('locations as loc', 'loc.id', 'capsule_merges.locations_id')
-				->leftJoin('cms_users as cms', 'cms.id', 'capsule_merges.created_by')
-				->leftJoin('gasha_machines as to_machine', 'to_machine.id', 'capsule_merges.to_machines_id')
-				->leftJoin('gasha_machines as from_machine', 'from_machine.id', 'capsule_merges.from_machines_id')
-				->leftJoin('capsule_merge_lines as cml', 'cml.capsule_merges_id', 'capsule_merges.id')
-				->select('capsule_merges.*',
-				'loc.location_name as location_name',
-				'cms.name as cms_name',
-				'to_machine.serial_number as to_machine_serial_number',
-				'from_machine.serial_number as from_machine_serial_number',
-				'cml.item_code as item_code',
-				'cml.qty as qty')
-				->first();
-			$data['capsule_lines'] = CapsuleMergeLine::where('capsule_merges_id', $id)
-				->leftJoin('capsule_merges as cmg', 'cmg.id', 'capsule_merge_lines.capsule_merges_id')
-				->leftJoin('items as from', 'from.digits_code', 'capsule_merge_lines.item_code')
-				->leftJoin('cms_users as cms', 'cms.id', 'cmg.created_by')
-				->select('capsule_merge_lines.qty',
-					'capsule_merge_lines.item_code',
-					'from.item_description as from_item_description',
-					'cms.name as cms_name',
-					'cmg.created_at'
-				)
-				->get();
-			
-			//Please use view method instead view method from laravel
+			$data['capsule_merge'] = CapsuleMerge::details($id)->first();
+			$data['capsule_lines'] = CapsuleMergeLine::details($id)->get();
+
 			return $this->view('capsule.capsule-merge-view',$data);
 		}
 
