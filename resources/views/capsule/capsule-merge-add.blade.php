@@ -637,7 +637,7 @@
     function showMergeSuccess(data){
 
         const wrapper = $('<div>')
-        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">Machine <span style="color: rgb(48, 133, 214)">${data.machine_from.serial_number}</span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span></p>`);
+        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">From Machine <span style="color: rgb(48, 133, 214)">${data.machine_from.serial_number}</span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span></p>`);
         wrapper.append(`<label class="label label-success text-center" style="display: inline-block; font-size: 100%; margin-bottom: 18px;">Reference #: ${data.reference_number}</label>`);
         const to_machine = $('.gm_to').clone();
         to_machine.find('tbody').html('');
@@ -645,7 +645,7 @@
 
         let total = 0;
 
-        data.inventory_after.forEach((item) => {
+        data.items.filter(item => !!Number(item.qty)).forEach((item) => {
             const tr = $('<tr>');
             const item_code = $('<td>').text(item.item_code);
             const item_description = $('<td>').text(item.item_description);
