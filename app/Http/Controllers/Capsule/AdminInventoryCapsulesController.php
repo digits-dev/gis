@@ -114,13 +114,15 @@
 	        |
 	        */
 	        $this->index_button = array();
-			$this->index_button[] = [
-				"title"=>"Export Capsule Inventory",
-				"label"=>"Export Data",
-				"icon"=>"fa fa-upload",
-				"color"=>"primary",
-				"url"=>"javascript:showInventoryExport()",
-			];
+			if (CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = [
+					"title"=>"Export Capsule Inventory",
+					"label"=>"Export Data",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showInventoryExport()",
+				];
+			}
 
 
 

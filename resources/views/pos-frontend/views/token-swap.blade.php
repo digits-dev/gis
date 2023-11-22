@@ -694,6 +694,17 @@ font-size: 14px;
             $('#mode_of_payment').attr('disabled', true);
             $('#payment_reference_div').fadeOut();
             $('.paymaya').fadeOut(500);
+            
+            // ADDONS
+            addonsObject = <?php echo json_encode($addons); ?>;
+            $("#myCheckbox").prop("checked", false);
+            $('.addons').fadeOut();
+            $("#addons-body").empty();
+            $('.addon-table-wrapper').fadeOut();
+            reEnableOptions();
+            reRenderQty();
+            formatTable();
+
 
             if(float1Input.readOnly) {
               $("#token_value").focus();  
