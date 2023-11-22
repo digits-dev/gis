@@ -26,7 +26,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = false;
@@ -48,10 +48,8 @@
 			$this->col[] = ["label"=>"Machine No Two","name"=>"machine_no_two"];
 			$this->col[] = ["label"=>"Capsule Qty Two","name"=>"capsule_qty_two"];
 			$this->col[] = ["label"=>"No Of Token Two","name"=>"no_of_token_two"];
-			$this->col[] = ["label"=>"Created  By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
-			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE

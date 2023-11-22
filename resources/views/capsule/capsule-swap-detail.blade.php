@@ -121,9 +121,8 @@
                 <table class="table" id="collected-token" style="width: 100%">
                     <thead>
                         <tr>
-                            <th width="5%" class="text-center">Digits Code</th> 
-                            <th width="25%" class="text-center">Item Description</th> 
                             <th width="5%" class="text-center">Jan#</th> 
+                            <th width="25%" class="text-center">Item Description</th> 
                             <th width="5%" class="text-center">From Machine</th> 
                             <th width="5%" class="text-center">To Machine</th>
                             <th width="5%" class="text-center">Qty</th>
@@ -134,13 +133,10 @@
                         @foreach($detail_body as $row)
                             <tr>
                                 <td style="text-align:center" height="10">
-                                    {{$row->digits_code2}}                               
+                                    {{$row->jan_no}}                               
                                 </td>
                                 <td style="text-align:center" height="10">
                                     {{$row->item_description}}                               
-                                </td>
-                                <td style="text-align:center" height="10">
-                                    {{$row->jan_no}}                               
                                 </td>
                                 <td style="text-align:center" height="10">
                                     {{$row->from_machine_serial}}                               
