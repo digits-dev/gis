@@ -285,18 +285,19 @@
                                     <tr>
                                         <td class="text-center" width="25%"><b>Item Code</b></td>
                                         <td class="text-center" width="50%"><b>Item Description</b></td>
-                                        <td class="text-center" width="25%"><b>Qty</b></td>
+                                        <td class="text-center hide" width="25%"><b>Qty</b></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
-                                    <tr>
+                                    <tr style="display: none;">
                                         <td class="text-bold" colspan="2">Total</td>
                                         <td class="text-center"><span class="total-item-qty" id="to-machine-total">0</span></td>
                                     </tr>
                                 </tfoot>
                             </table>
+                            <p class="no-inventory" style="display: none; color: red; font-weight: bold; text-align: center;">No current inventory for this machine</p>
                         </div>
                     </div>
                 </div>
@@ -572,24 +573,30 @@
                 $('.gm_from').append(tr);
             });
 
-            let toMachineTotal = 0;
+            if (!data.gm_list_to.length) {
+                $('.no-inventory').show();
+            } else {
+                $('.no-inventory').hide();
 
-            gm_to.forEach((ic, index) => {
-                const gm_item_code = $('<td>').text(ic.item_code);
-                const gm_description = $('<td>').text(ic.item_description);
-                const qtyInput = $('<input>')
-                    .attr('readonly', true)
-                    .addClass('form-control')
-                    .val(ic.qty.toLocaleString());
-                const gm_qty = $('<td>').append(qtyInput);
-                
-                const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
-                toMachineTotal += ic.qty;
-                
-                $('.gm_to').append(tr);
-            });
+                let toMachineTotal = 0;
 
-            $('#to-machine-total').text(toMachineTotal.toLocaleString());
+                gm_to.forEach((ic, index) => {
+                    const gm_item_code = $('<td>').text(ic.item_code);
+                    const gm_description = $('<td>').text(ic.item_description);
+                    const qtyInput = $('<input>')
+                        .attr('readonly', true)
+                        .addClass('form-control')
+                        .val(ic.qty.toLocaleString());
+                    const gm_qty = $('<td style="display: none;">').append(qtyInput);
+                    
+                    const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
+                    toMachineTotal += ic.qty;
+                    
+                    $('.gm_to').append(tr);
+                });
+
+                $('#to-machine-total').text(toMachineTotal.toLocaleString());
+            }
 
             $('#addRowModal').modal('show');
         }
@@ -630,7 +637,7 @@
     function showMergeSuccess(data){
 
         const wrapper = $('<div>')
-        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">Machine </span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span> New Inventory</p>`);
+        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">Machine <span style="color: rgb(48, 133, 214)">${data.machine_from.serial_number}</span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span></p>`);
         wrapper.append(`<label class="label label-success text-center" style="display: inline-block; font-size: 100%; margin-bottom: 18px;">Reference #: ${data.reference_number}</label>`);
         const to_machine = $('.gm_to').clone();
         to_machine.find('tbody').html('');
@@ -652,6 +659,7 @@
 
         to_machine.find('#to-machine-total').text(total.toLocaleString());
         wrapper.append(to_machine);
+        wrapper.find('.hide').removeClass('hide');
 
         Swal.fire({
             title: "Merged successfully",
