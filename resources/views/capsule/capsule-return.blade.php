@@ -396,6 +396,8 @@
         let timeout;
 
         inputElement.on('input', function () {
+            
+            $(this).val($(this).val().toUpperCase());
 
             $('#gm_serial_number').text('Machine: ' + $('#gasha_machine').val());
 
