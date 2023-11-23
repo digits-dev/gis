@@ -344,10 +344,11 @@
     $(document).on('click', '#save-btn', function(){
         $('.swal-clone').removeClass('hide');
     });
-
+    
     $(document).on('click', '.swal-btn-save', function(){
         $('.swal-clone').addClass('hide');
         $('#save_gm').click();
+        Swal.close();
     });
 
     $(document).on('click', '.swal-btn-cancel', function(){
