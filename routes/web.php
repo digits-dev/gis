@@ -29,6 +29,7 @@ use App\Http\Controllers\Submaster\AdminImportController;
 use App\Http\Controllers\Submaster\AdminAddOnsController;
 use App\Http\Controllers\History\AdminSwapHistoriesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
+use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +119,9 @@ Route::group(['middleware' => ['web']], function() {
 
     // CAPSULE INVENTORY EXPORT
     Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
+    
+    // CAPSULE MOVEMENT HISTORY EXPORT
+    Route::post('admin/history_capsules/export', [AdminHistoryCapsulesController::class, 'exportData'])->name('history_capsule_export');
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
