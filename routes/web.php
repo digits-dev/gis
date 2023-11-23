@@ -23,6 +23,7 @@ use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Capsule\AdminCapsuleMergesController;
+use App\Http\Controllers\Capsule\AdminCapsuleSplitController;
 use App\Http\Controllers\Capsule\AdminInventoryCapsulesController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
 use App\Http\Controllers\Submaster\AdminImportController;
@@ -110,6 +111,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_refills/validate-gasha-machine', [AdminCapsuleReturnsController::class, 'validateGashaMachine'])->name('validate_gasha_machine');
     Route::post('admin/capsule_refills/get-partner-machine', [AdminCapsuleRefillsController::class, 'getPartnerMachine'])->name('get_partner_machine');
     Route::post('admin/capsule_merges/check-machines', [AdminCapsuleMergesController::class, 'checkMachines'])->name('check_machines');
+    Route::post('admin/capsule_split/check-machines', [AdminCapsuleSplitController::class, 'checkMachines'])->name('check_split_machines');
     Route::post('admin/capsule_merges/submit-merge', [AdminCapsuleMergesController::class, 'submitMerge'])->name('submit_merge');
 
     //CAPSULES IMPORT
