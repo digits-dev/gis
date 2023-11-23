@@ -46,7 +46,7 @@
 			$this->form = [];
 			$this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'JAN #','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Item Description','name'=>'item_code','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'items,item_description'];
+			// $this->form[] = ['label'=>'Item Description','name'=>'item_code','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'items,item_description',"join_id"=>"digits_code"];
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Gasha Machine Serial Number','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines,serial_number'];

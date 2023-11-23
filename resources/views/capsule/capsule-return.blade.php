@@ -165,7 +165,21 @@
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
-
+        <div class="swal-clone hide">
+            <div class="swal2-container1">
+                <div class="warning">
+                    <span>!</span>
+                </div>
+                <div class="warning-content">
+                    <p id="warning-title">Are you sure?</p>
+                    <p id="warning-message">You Won't be able to revert this!</p>
+                </div>
+                <div class="swal-buttons">
+                    <button type="button" class="swal-btn btn-red swal-btn-cancel">Cancel</button>
+                    <button type="button" class="swal-btn btn-blue swal-btn-save">Yes, save it</button>
+                </div>
+            </div>
+        </div>
         <div class='panel panel-default'>
             <div class='panel-header'>
                 <label>CAPSULE RETURN</label>
@@ -330,10 +344,11 @@
     $(document).on('click', '#save-btn', function(){
         $('.swal-clone').removeClass('hide');
     });
-
+    
     $(document).on('click', '.swal-btn-save', function(){
         $('.swal-clone').addClass('hide');
         $('#save_gm').click();
+        Swal.close();
     });
 
     $(document).on('click', '.swal-btn-cancel', function(){
@@ -382,6 +397,8 @@
         let timeout;
 
         inputElement.on('input', function () {
+            
+            $(this).val($(this).val().toUpperCase());
 
             $('#gm_serial_number').text('Machine: ' + $('#gasha_machine').val());
 
