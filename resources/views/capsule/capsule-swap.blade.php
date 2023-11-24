@@ -202,7 +202,7 @@
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                 </div>
-                <p style="font-size: 16px;"><span style="color: red;">* </span>Gasha Machine One</p>
+                <p style="font-size: 16px;"><span style="color: red;">* </span>Gasha Machine Two</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
                         <input input-for="to_machine" type='text'id="machine_no_two" name="machine_no_two" required class='form-control'/>

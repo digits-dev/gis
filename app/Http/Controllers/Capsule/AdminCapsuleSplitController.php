@@ -223,6 +223,7 @@ use CRUDBooster;
 	        |
 	        */
 	        $this->load_css = array();
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	        
 	    }
@@ -520,7 +521,7 @@ use CRUDBooster;
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp,
 						]);
-				} else {
+				} else if ($transfer_qty) {
 					$inventory_capsules_id = InventoryCapsule::where([
 						'item_code' => $digits_code,
 						'locations_id' => $my_locations_id,
@@ -592,6 +593,22 @@ use CRUDBooster;
 			$response['success'] = true;
 			$response['reference_number'] = $reference_number;
 			return json_encode($response);
+		}
+
+
+
+		public function getDetail($id) {
+
+			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+
+			$data = [];
+			$data['page_title'] = 'Capsule Split';
+			$data['capsule_split'] = CapsuleSplit::details($id)->first();
+			$data['capsule_lines'] = CapsuleSplitLine::details($id)->get();
+
+			return $this->view('capsule.capsule-split-view',$data);
 		}
 	
 }
