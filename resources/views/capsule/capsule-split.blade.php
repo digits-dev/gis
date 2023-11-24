@@ -257,7 +257,7 @@
             </div>
             <br>
             <div class='panel-footer'>
-                <button class="btn btn-primary btn-submit-size" type="button" id="merge-btn" >Split</button> 
+                <button class="btn btn-primary btn-submit-size" type="button" id="merge-btn" disabled>Split</button> 
             </div>
         </div>
     </div>
