@@ -103,7 +103,7 @@
 
 <div class='panel panel-default'>
 <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
-    Capsule Merge Detail
+    Capsule Split Detail
 </div>
 
     <div class='panel-body'>
@@ -111,17 +111,17 @@
         
                 <div class="form-group">
                     <label class="control-label"> Reference Number</label>
-                    <input type="text" class="form-control finput" value="{{ $capsule_merge->reference_number }}" readonly>
+                    <input type="text" class="form-control finput" value="{{ $capsule_split->reference_number }}" readonly>
                 </div>
             
                 <div class="form-group">
                     <label class="control-label"> Created By</label>
-                    <input type="text" class="form-control finput" value="{{ $capsule_merge->cms_name }}" readonly>
+                    <input type="text" class="form-control finput" value="{{ $capsule_split->cms_name }}" readonly>
                 </div>
 
                 <div class="form-group">
                     <label class="require control-label"> Created Date</label>
-                    <input type="text" class="form-control finput" value="{{ $capsule_merge->created_at }}" readonly>
+                    <input type="text" class="form-control finput" value="{{ $capsule_split->created_at }}" readonly>
                 </div>
 
         </div>
@@ -135,16 +135,20 @@
                                 <th width="10%" class="text-center">Location</th>
                                 <th width="10%" class="text-center">From</th>
                                 <th width="10%" class="text-center">To</th>
-                                <th width="10%" class="text-center">Qty</th>
+                                <th width="10%" class="text-center">Actual Qty</th>
+                                <th width="10%" class="text-center">Remaining Qty</th>
+                                <th width="10%" class="text-center">Transfer Qty</th>
                             </tr>      
                         @foreach($capsule_lines as $capsule_line)
                             <tr>
                                 <td style="text-align:center" height="10">{{ $capsule_line->item_code }}</td>
                                 <td style="text-align:center" height="10">{{ $capsule_line->from_item_description }}</td>
-                                <td style="text-align:center" height="10">{{ $capsule_merge->location_name }}</td>
-                                <td style="text-align:center" height="10">{{ $capsule_merge->from_machine_serial_number }}</td>
-                                <td style="text-align:center" height="10">{{ $capsule_merge->to_machine_serial_number }}</td>
-                                <td style="text-align:center" height="10">{{ $capsule_line->qty }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_split->location_name }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_split->from_machine_serial_number }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_split->to_machine_serial_number }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_line->actual_qty }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_line->remaining_qty }}</td>
+                                <td style="text-align:center" height="10">{{ $capsule_line->transfer_qty}}</td>
                             </tr>
                         @endforeach                                            
                     </tbody>
