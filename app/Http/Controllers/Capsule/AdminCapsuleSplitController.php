@@ -521,7 +521,7 @@ use CRUDBooster;
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp,
 						]);
-				} else {
+				} else if ($transfer_qty) {
 					$inventory_capsules_id = InventoryCapsule::where([
 						'item_code' => $digits_code,
 						'locations_id' => $my_locations_id,
