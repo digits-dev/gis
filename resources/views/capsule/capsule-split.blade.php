@@ -251,7 +251,7 @@
                 </div>
                 <p style="color: red; font-weight: bold; text-align: center; font-size: 16px;">* Must be same number of tokens *</p>
                 <div class='panel-img'>
-                    <img src="{{ asset('img/capsule-merge.jpg') }}">
+                    <img src="{{ asset('img/capsule-split.jpg') }}">
                 </div>
             </form>
             </div>
