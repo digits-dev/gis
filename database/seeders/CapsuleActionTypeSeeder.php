@@ -14,7 +14,7 @@ class CapsuleActionTypeSeeder extends Seeder
      */
     public function run()
     {
-        $capsule_descriptions = ['DR', 'Refill', 'Return', 'Swap', 'Merge'];
+        $capsule_descriptions = ['DR', 'Refill', 'Return', 'Swap', 'Merge', 'Split'];
         
         foreach($capsule_descriptions as $capsule_description){
             CapsuleActionType::updateOrInsert(['description' => $capsule_description], [
