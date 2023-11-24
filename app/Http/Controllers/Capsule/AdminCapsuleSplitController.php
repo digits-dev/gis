@@ -1,8 +1,8 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-use App\Models\Capsule\CapsuleMerge;
-use App\Models\Capsule\CapsuleMergeLine;
 use App\Models\Capsule\CapsuleSales;
+use App\Models\Capsule\CapsuleSplit;
+use App\Models\Capsule\CapsuleSplitLine;
 use App\Models\Capsule\HistoryCapsule;
 use App\Models\Capsule\InventoryCapsule;
 use App\Models\Capsule\InventoryCapsuleLine;
@@ -388,6 +388,210 @@ use CRUDBooster;
 				'from_machine' => $from_machine,
 				'to_machine' => $to_machine
 			]);
+		}
+
+		public function submitSplit(Request $request) {
+			$data = $request->all();
+			$time_stamp = date('Y-m-d H:i:s');
+			$action_by = CRUDBooster::myId();
+			$my_locations_id = CRUDBooster::myLocationId();
+			$machine_from = GashaMachines::where('serial_number', $data['machine_from'])->first();
+			$machine_to = GashaMachines::where('serial_number', $data['machine_to'])->first();
+
+			$capsule_action_types_id = CapsuleActionType::where(DB::raw('UPPER(description)'), 'SPLIT')
+				->where('status', 'ACTIVE')
+				->pluck('id')
+				->first();
+
+			$sales_types_id = SalesType::where(DB::raw('UPPER(description)'), 'SPLIT')
+				->where('status', 'ACTIVE')
+				->pluck('id')
+				->first();
+
+			$is_tally = $machine_from->no_of_token == $machine_to->no_of_token;
+			$response = [
+				'machine_from' => $machine_from,
+				'machine_to' => $machine_to,
+				'is_tally' => $is_tally,
+			];
+
+			$current_inv = [];
+
+			// returning if no_of_token of machines mismatched
+			if (!$is_tally) {
+				return json_encode($response);
+			}
+
+			// returning if machines location id is not equal to user's location
+			if ($machine_from->location_id != $my_locations_id ||
+				$machine_to->location_id != $my_locations_id) {
+				$response['wrong_location'] = true;
+				return json_encode($response);
+			}
+
+			foreach ($data['items'] as $key => $item) {
+				$actual_qty = (integer) $item['actual_qty'];
+				$transfer_qty = (integer) $item['transfer_qty'];
+				$remaining_qty = (integer) $item['remaining_qty'];
+
+				// getting the current inventory
+				$system_inv = InventoryCapsuleLine::where('gasha_machines_id', $machine_from->id)
+					->select('inventory_capsule_lines.qty', 'items.digits_code', 'items.item_description')
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('items', 'items.digits_code2', 'ic.item_code')
+					->where('ic.locations_id', $my_locations_id)
+					->where('items.digits_code', $item['item_code'])
+					->first();
+
+				$data['items'][$key]['item_description'] = $system_inv['item_description'];
+
+				// returning if inputted qty is greater than inventory qty
+				if ($actual_qty > $system_inv->qty ||
+					$transfer_qty + $remaining_qty != $actual_qty) {
+					$response['invalid_qty'] = true;
+					return json_encode($response);
+				}
+
+				$current_inv[$system_inv->digits_code] = $system_inv->qty;
+			}
+
+			// generating reference number
+			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+
+			$capsule_split_id = CapsuleSplit::insertGetId([
+				'reference_number' => $reference_number,
+				'from_machines_id' => $machine_from->id,
+				'to_machines_id' => $machine_to->id,
+				'locations_id' => $my_locations_id,
+				'created_by' => $action_by,
+				'created_at' => $time_stamp
+			]);
+
+			// looping through nested items from request
+			foreach ($data['items'] as $item) {
+				$digits_code = Item::where('digits_code', $item['item_code'])
+					->pluck('digits_code2')
+					->first();
+				$actual_qty = (integer) $item['actual_qty'];
+				$transfer_qty = (integer) $item['transfer_qty'];
+				$remaining_qty = (integer) $item['remaining_qty'];
+				$system_qty = $current_inv[$item['item_code']];
+				$sales_qty = $system_qty - $actual_qty;
+
+				//inserting new entry for capsule merge line
+				CapsuleSplitLine::insert([
+					'capsule_split_id' => $capsule_split_id,
+					'item_code' => $item['item_code'],
+					'actual_qty' => $actual_qty,
+					'transfer_qty' => $transfer_qty,
+					'remaining_qty' => $remaining_qty,
+					'created_by' => $action_by,
+					'created_at' => $time_stamp,
+				]);
+
+				// updating inventory qty of 'from machine'
+				InventoryCapsuleLine::where('gasha_machines_id', $machine_from->id)
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $my_locations_id)
+					->where('ic.item_code', $digits_code)
+					->update([
+						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $transfer_qty"),
+						'inventory_capsule_lines.updated_at' => $time_stamp,
+						'inventory_capsule_lines.updated_by' => $action_by,
+						'ic.updated_at' => $time_stamp,
+						'ic.updated_by' => $action_by,
+					]);
+
+				// checking if current inventory for the 'to machine' exists
+				$is_existing = InventoryCapsuleLine::where('gasha_machines_id', $machine_to->id)
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $my_locations_id)
+					->where('ic.item_code', $digits_code)
+					->exists();
+
+				if ($is_existing) {
+					// updating the qty if existing
+					InventoryCapsuleLine::where('gasha_machines_id', $machine_to->id)
+						->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+						->where('ic.locations_id', $my_locations_id)
+						->where('ic.item_code', $digits_code)
+						->update([
+							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $transfer_qty"),
+							'inventory_capsule_lines.updated_by' => $action_by,
+							'inventory_capsule_lines.updated_at' => $time_stamp,
+						]);
+				} else {
+					$inventory_capsules_id = InventoryCapsule::where([
+						'item_code' => $digits_code,
+						'locations_id' => $my_locations_id,
+					])->pluck('id')->first();
+
+					if (!$inventory_capsules_id) {
+						// inserting a new entry for inventory capsule if not existing
+						$inventory_capsules_id = InventoryCapsule::insertGetId([
+							'item_code' => $digits_code,
+							'locations_id' => $my_locations_id,
+							'created_by' => $action_by,
+							'created_at' => $time_stamp,
+						]);
+					}
+
+					// inserting a new entry for inventory capsule lines
+					InventoryCapsuleLine::insert([
+						'inventory_capsules_id' => $inventory_capsules_id,
+						'gasha_machines_id' => $machine_to->id,
+						'qty' => $transfer_qty,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp,
+					]);
+				}
+
+				if ($transfer_qty) {
+					HistoryCapsule::insert([
+						'reference_number' => $reference_number,
+						'item_code' => $digits_code,
+						'capsule_action_types_id' => $capsule_action_types_id,
+						'qty' => "-$transfer_qty",
+						'locations_id' => $my_locations_id,
+						'gasha_machines_id' => $machine_from->id,
+						'from_machines_id' => $machine_from->id,
+						'to_machines_id' => $machine_to->id,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp,
+					]);
+
+					HistoryCapsule::insert([
+						'reference_number' => $reference_number,
+						'item_code' => $digits_code,
+						'capsule_action_types_id' => $capsule_action_types_id,
+						'qty' => "$transfer_qty",
+						'locations_id' => $my_locations_id,
+						'gasha_machines_id' => $machine_from->id,
+						'to_machines_id' => $machine_from->id,
+						'from_machines_id' => $machine_to->id,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp,
+					]);
+				}
+
+				if ($sales_qty) {
+					CapsuleSales::insert([
+						'reference_number' => $reference_number,
+						'item_code' => $item['item_code'],
+						'gasha_machines_id' => $machine_from->id,
+						'locations_id' => $my_locations_id,
+						'qty' => $sales_qty,
+						'sales_type_id' => $sales_types_id,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp
+					]);
+				}
+			}
+
+			$response['items'] = $data['items'];
+			$response['success'] = true;
+			$response['reference_number'] = $reference_number;
+			return json_encode($response);
 		}
 	
 }

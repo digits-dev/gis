@@ -113,6 +113,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_merges/check-machines', [AdminCapsuleMergesController::class, 'checkMachines'])->name('check_machines');
     Route::post('admin/capsule_split/check-machines', [AdminCapsuleSplitController::class, 'checkMachines'])->name('check_split_machines');
     Route::post('admin/capsule_merges/submit-merge', [AdminCapsuleMergesController::class, 'submitMerge'])->name('submit_merge');
+    Route::post('admin/capsule_split/submit-split', [AdminCapsuleSplitController::class, 'submitSplit'])->name('submit_split');
 
     //CAPSULES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/capsules-upload', [AdminCapsuleRefillsController::class, 'uploadCapsules']);

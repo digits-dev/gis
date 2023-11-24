@@ -9,6 +9,15 @@
 @section('content')
 <style>
 
+    .swal-table {
+        min-width: 600px;
+        overflow-x: auto;
+    }
+
+    .swal-table table * {
+        font-size: 16px !important;
+    }
+
     .btn-blue{
         background-color: rgb(48, 133, 214);
     }
@@ -226,7 +235,7 @@
                 <p style="font-size: 16px;"><span style="color: red;">* </span>From Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
-                        <input value="PH00024" input-for="from_machine" type='text' name='from_machine' id="from_machine" required class='form-control'/>
+                        <input input-for="from_machine" type='text' name='from_machine' id="from_machine" required class='form-control'/>
                         <label class="label label-danger input-validation" id="warning-label-from"></label>
                     </div>
                     <button btn-for="from_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
@@ -234,7 +243,7 @@
                 <p style="font-size: 16px;"><span style="color: red;">* </span>To Gasha Machine</p>
                 <div class="flex input-btn">
                     <div class="machine-group">
-                        <input value="PH00296"  input-for="to_machine" type='text' name='to_machine' id="to_machine" required class='form-control'/>
+                        <input  input-for="to_machine" type='text' name='to_machine' id="to_machine" required class='form-control'/>
                         <label class="label label-danger input-validation" id="warning-label-to"></label>
                     </div>
                     <button btn-for="to_machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
@@ -268,7 +277,7 @@
                                     <thead>
                                         <tr>
                                             <td colspan="4" class="text-center"><p class="text-center text-bold" for="" id="label_from_machine" style="font-size: 18px;"><span id="label_from_item_code" style="color:rgb(48, 133, 214)"></span></p></td>
-                                            <td class="text-center"  style="padding: 0 30px;"> <p class="text-center text-bold" id="label_to_machine" for="" style="font-size: 18px;"><span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p></td>
+                                            <td class="text-center"> <p class="text-center text-bold" id="label_to_machine" for="" style="font-size: 18px;"><span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p></td>
                                         </tr>
                                         <tr>
                                             <td class="text-center"><b>Item Code</b></td>
@@ -281,45 +290,7 @@
                                     <tbody></tbody>
                                 </table>   
                             </div>
-                            {{-- <p class="text-center text-bold" for="" id="label_from_machine" style="font-size: 18px;">From Machine <span id="label_from_item_code" style="color:rgb(48, 133, 214)"></span></p>
-                            <table class="table table-responsive table-bordered gm_from" id="newItemModalTable">
-                                <thead>
-                                    <tr>
-                                        <td class="text-center" width="25%"><b>Item Code</b></td>
-                                        <td class="text-center" width="50%"><b>Item Description</b></td>
-                                        <td class="text-center" width="25%"><b>Qty</b></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="text-bold" colspan="2">Total</td>
-                                        <td class="text-center"><span class="total-item-qty" id="from-machine-total">0</span></td>
-                                    </tr>
-                                </tfoot>
-                            </table> --}}
                         </div>
-                        {{-- <div class="col-md-6">
-                            <p class="text-center text-bold" id="label_to_machine" for="" style="font-size: 18px;">To Machine <span id="label_to_item_code" style="color: rgb(67, 136, 113)"></span></p>
-                            <table class="table table-responsive table-bordered gm_to" id="newItemModalTable">
-                                <thead>
-                                    <tr>
-                                        <td class="text-center" width="25%"><b>Item Code</b></td>
-                                        <td class="text-center" width="50%"><b>Item Description</b></td>
-                                        <td class="text-center" width="25%"><b>Qty</b></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="text-bold" colspan="2">Total</td>
-                                        <td class="text-center"><span class="total-item-qty" id="to-machine-total">0</span></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -509,16 +480,15 @@
                 remaining_qty: remaining_qty,
             });
         });
-        console.log(data);return;
         $.ajax({
-            url: "{{ route('submit_merge') }}",
+            url: "{{ route('submit_split') }}",
             type: 'POST',
             dataType: 'json',
             data: data,
             success: function(res) {
                 console.log(res);
                 if (res.success) {
-                    showMergeSuccess(res);
+                    showSplitSuccess(res);
                 } else {
                     alert('Something went wrong...');
                 }
@@ -541,7 +511,6 @@
     }
 
     function validateInput() {
-       
         let isValidActual = true;
         let isFoundActual = false;
         const actualQtyInputs = $('.actualQty').get();
@@ -604,9 +573,6 @@
         $('#save-modal').attr('disabled', true);
     }
 
-
-
-
     function handleMachineCheck(data) {
         $('#warning-label-from').text(data.missing_from ? 'Machine Not Found!' : '');
         $('#warning-label-to').text(data.missing_to ? 'Machine Not Found!' : '');
@@ -627,7 +593,6 @@
             }
             $('#label_from_machine span').text(data.from_machine.serial_number);
             $('#label_to_machine span').text(data.to_machine.serial_number);
-            // console.log( $('.gm_from tbody'))
             gm_from.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
@@ -656,16 +621,22 @@
         const from_header = $('#label_from_item_code').text();
         const to_header = $('#label_to_item_code').text();
 
-        const wrapper = $('<div style="overflow-x: auto; min-width: 600px;">')
+        const wrapper = $('<div class="swal-table">');
         wrapper.append(`<p style="font-weight: bold; font-size: 20px;">From Machine <span style="color:rgb(48, 133, 214)">${from_header}</span> to Machine <span style="color: rgb(67, 136, 113)">${to_header}</span></p>`);
 
         const from_machine = $('.gm_from').clone();
-        from_machine.find('input').css({'font-size':'20px', 'border':'1px solid white'});
+        from_machine.find('input').get().forEach(input => {
+            const td = $(input).parents('td');
+            const val = $(input).val();
+            td.text(val);
+            $(input).remove();
+        });
 
         wrapper.append(from_machine);
 
         Swal.fire({
             title: "Are you sure?",
+            html: `<p style="font-weight: bold; font-size: 20px;">From Machine <span style="color:rgb(48, 133, 214)">${from_header}</span> to Machine <span style="color: rgb(67, 136, 113)">${to_header}</span></p>`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -674,7 +645,7 @@
             reverseButtons: true,
             returnFocus: false,
             html: wrapper,
-            width: '900px',
+            width: '800px',
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
@@ -684,41 +655,37 @@
         });
     }
 
-    function showMergeSuccess(data){
+    function showSplitSuccess(data){
 
-        const wrapper = $('<div>')
-        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">Machine </span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span> New Inventory</p>`);
+        const wrapper = $('<div class="swal-table" style="overflow-x: auto; min-width: 600px;">')
+        wrapper.append(`<p style="font-weight: bold; font-size: 20px;">From Machine <span style="color: rgb(48, 133, 214)">${data.machine_from.serial_number}</span> to Machine <span style="color: rgb(67, 136, 113)">${data.machine_to.serial_number}</span></p>`);
         wrapper.append(`<label class="label label-success text-center" style="display: inline-block; font-size: 100%; margin-bottom: 18px;">Reference #: ${data.reference_number}</label>`);
-        const to_machine = $('.gm_to').clone();
-        to_machine.find('tbody').html('');
-        to_machine.find('#to-machine-total').text('');
+        const from_machine = $('.gm_from').clone();
+        from_machine.find('tbody').html('');
 
-        let total = 0;
-
-        data.inventory_after.forEach((item) => {
+        data.items.filter(item => !!Number(item.actual_qty)).forEach((item) => {
             const tr = $('<tr>');
             const item_code = $('<td>').text(item.item_code);
             const item_description = $('<td>').text(item.item_description);
-            const qty = $('<td>').text(item.qty.toLocaleString());
+            const actual_qty = $('<td>').text(item.actual_qty.toLocaleString());
+            const remaining_qty = $('<td>').text(item.remaining_qty.toLocaleString());
+            const transfer_qty = $('<td>').text(item.transfer_qty.toLocaleString());
 
-            tr.append(item_code, item_description, qty);
-            to_machine.find('tbody').append(tr);
+            tr.append(item_code, item_description, actual_qty, remaining_qty, transfer_qty);
+            from_machine.find('tbody').append(tr);
+        });
 
-            total += item.qty;
-        })
-
-        to_machine.find('#to-machine-total').text(total.toLocaleString());
-        wrapper.append(to_machine);
-
+        wrapper.append(from_machine);
+        
         Swal.fire({
-            title: "Merged successfully",
+            title: "Split successful!",
             icon: 'success',
             showCancelButton: false,
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Ok',
             returnFocus: false,
             html: wrapper,
-            width: '600px',
+            width: '800px',
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
