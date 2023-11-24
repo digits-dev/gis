@@ -495,7 +495,7 @@ use CRUDBooster;
 					->where('ic.locations_id', $my_locations_id)
 					->where('ic.item_code', $digits_code)
 					->update([
-						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $transfer_qty"),
+						'inventory_capsule_lines.qty' => $actual_qty && $transfer_qty ? DB::raw("inventory_capsule_lines.qty - $transfer_qty") : 0,
 						'inventory_capsule_lines.updated_at' => $time_stamp,
 						'inventory_capsule_lines.updated_by' => $action_by,
 						'ic.updated_at' => $time_stamp,
