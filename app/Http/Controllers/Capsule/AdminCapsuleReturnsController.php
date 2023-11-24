@@ -53,10 +53,13 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
+			$this->form[] = ['label'=>'Reference #','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'JAN #','name'=>'item_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			$this->form[] = ['label'=>'Sub Location','name'=>'sub_locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Machine','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'gasha_machines,location_name'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|min:1|max:255','width'=>'col-sm-5','datatable'=>'cms_users,name'];
+			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/*
