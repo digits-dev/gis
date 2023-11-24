@@ -380,17 +380,22 @@ use App\Models\Submaster\CashFloatHistoryLine;
 			}
 
 			$data = [];
-			$data['row'] = CashFloatHistory::find($id);
+			$data['row'] = CashFloatHistory::where('cash_float_histories.id',$id)
+				->leftJoin('cms_users', 'cms_users.id', 'cash_float_histories.created_by')
+				->select('cash_float_histories.*',
+					'cms_users.name as cms_created_by'
+				)
+				->first();
 			$data['page_title'] = 'Detail Cash Float History';
 			$data['locations'] = Locations::where('status', 'ACTIVE')->get();
 			$data['float_types'] = FloatType::where('status', 'ACTIVE')->get();
 			$data['mode_of_payments'] = DB::table('cash_float_history_lines')->where('cash_float_histories_id', $id)
-			->leftJoin('mode_of_payments', 'mode_of_payments.id', 'cash_float_history_lines.mode_of_payments_id')
-			->select('cash_float_history_lines.*',
-				'mode_of_payments.payment_description')
-			->where('payment_description', '!=', null)
-			->get()
-			->toArray();
+				->leftJoin('mode_of_payments', 'mode_of_payments.id', 'cash_float_history_lines.mode_of_payments_id')
+				->select('cash_float_history_lines.*',
+					'mode_of_payments.payment_description')
+				->where('payment_description', '!=', null)
+				->get()
+				->toArray();
 			$data['mode_of_payments'] = array_map(function($obj) {
 				$obj->payment_custom_desc = preg_replace("/[^a-zA-Z]/", '_', $obj->payment_description);
 				return $obj;

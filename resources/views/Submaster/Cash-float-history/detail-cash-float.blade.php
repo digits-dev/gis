@@ -261,9 +261,12 @@
 }
 
 input:disabled{
-    background-color: #dddcdc;
-    height: 100%;
+    background-color: #eee;
+    height: 34.9px;
     width: 100%;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 0 20px;
 }
 
 .input-design{
@@ -302,6 +305,14 @@ input:disabled{
                                 <option value="{{ $float_type->id }}" {{ $row->float_types_id == $location->id ? 'selected':'' }}>{{ $float_type->description }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="">Created By</label>
+                        <input value="{{ $row->cms_created_by }}"></input>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="">Created Date</label>
+                        <input value="{{ $row->created_at }}"></input>
                     </div>
                 </div>
 
@@ -421,7 +432,7 @@ input:disabled{
 
                 });
                 const float_type_description = response.cash_float_history.description;
-                $('#float_type_description').text(float_type_description + ' OF THE DAY');
+                $('#float_type_description').text(float_type_description + ' OF THE DAY' + ' ({{ "$row->entry_date" }})');
                 $('.total_value').val(response.cash_float_history.cash_value);
                 $('#view_history_tab').attr('hidden', false);
 
