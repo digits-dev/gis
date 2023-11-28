@@ -367,7 +367,7 @@
 				->get()
 				->toArray();
 
-			return view('capsule.capsule-refill',$data);
+			return $this->view('capsule.capsule-refill',$data);
 		}
 
 		public function submitCapsuleRefill(Request $request) {
