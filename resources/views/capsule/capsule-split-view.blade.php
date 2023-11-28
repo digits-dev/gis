@@ -77,11 +77,9 @@
             }
         }
 
-        @media (min-width:729px){
-           .panel-default{
-                width:70% !important; 
-                margin:auto !important;
-           }
+        .panel-default{
+            max-width: 900px !important; 
+            margin:auto !important;
         }
 
         .overflow{
