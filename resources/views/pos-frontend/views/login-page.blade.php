@@ -11,7 +11,7 @@
         {{-- SWEET ALERT --}}
         <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     </head>
-    <body>
+    <body style="height: 100% !important">
         <section class="login">
             <form action="{{ route('login') }}" method="POST" enctype="multipart/form-data">
                 @csrf
