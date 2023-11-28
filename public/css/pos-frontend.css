@@ -52,56 +52,47 @@
     cursor: pointer;
 }
 
-body{
+body, html{
+    height: 100%;
     background-color: aliceblue;
+    width: 100%;
 }
 
-/* .login{
-    height: 100vh;
-    position: relative;
-    width: 100%;
-    padding: 20px;
-} */
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .login{
-    /* height: 100vh; */
-    position: absolute;
-    /* margin: auto;   */
-    max-width: 1400px;
-    width: 100%;
+    width: 1400px;
     padding: 20px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
+    margin: auto;
 }
 
 
-.login-box{
+.login-box {
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     display: flex;
     max-width: 1400px;
-    min-height: 670px;
-    
+    min-height: 70vh; 
 }
 
+
 .store-logo-box{
-    /* flex: 1; */
     width: 100%;
     max-width: 700px;
     position: relative;
     background-color: #fff;
-    /* padding: 10px; */
 }
 
 .store-login-box{
-    /* flex: 1; */
     width: 100%;
     max-width: 700px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 35px 35px;
 }
 
 .store-login-box-bgc-f{
@@ -250,14 +241,22 @@ body{
 
     .store-logo-box-content{
         height: 100%;
+        /* padding: 40px 0; */
         padding-bottom: 120px;
     }
-
 
     .login-box{
         flex-wrap: wrap;
         justify-content: center;
         box-shadow: none;
+    }
+
+    .login{
+        position: relative;
+        width: 100%;
+        left: 0;
+        top: 0;
+        transform: translate(0, 0);
     }
 
 }
@@ -271,13 +270,13 @@ body{
         min-width: 260px;
     }
 
-    .login{
+    /* .login{
         position: relative;
         width: 100%;
         left: 0;
         top: 0;
         transform: translate(0, 0);
-    }
+    } */
 
     .store-logo-box-content{
         height: 100%;
@@ -299,5 +298,14 @@ body{
     .store-logo-official img{
         height: 70px;
     }
+
+    body{
+        display: block;
+        /* align-items: center;
+        justify-content: center; */
+    }
+}
+
+@media only screen and (max-width: 445px) {
 }
 
