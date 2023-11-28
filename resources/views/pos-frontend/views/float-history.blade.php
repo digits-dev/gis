@@ -13,6 +13,35 @@
     #myTable td{
         text-align: center;
     }
+    .search-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 8px;
+        position: relative;
+    }
+    .search-bar {
+        padding: 10px 8px;
+        border: 1px solid gray;
+        border-radius: 10px;
+        width: 400px;
+        align-self: flex-end;
+    }
+    .search-btn-container {
+        position: absolute;
+        top: 5px;
+        right: 4px;
+    }
+    .search-btn {
+        padding: 6px 10px;
+        background-color: #dd2a40;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+    .search-btn:hover {
+        filter: brightness(110%);
+    }
 </style>
 @endsection
 
@@ -88,6 +117,25 @@
 @section('content')
 
 <div class="responsive_table">
+    <form action="/pos_float_history">
+        <div class="search-container">
+            <input
+                class="search-bar"
+                autofocus
+                type="text"
+                name="search"
+                placeholder="Search"
+            />
+            <div class="search-btn-container">
+                <button
+                class="search-btn"
+                    type="submit"
+                >
+                    Search
+                </button>
+            </div>
+        </div>
+    </form>
     <table id="myTable" class="display" style="width:100%">
         <thead>
             <tr>
@@ -136,6 +184,7 @@
             </tr>
         </tfoot>
     </table>
+    {{ $entries->links() }}
 </div>
 @endsection
 
@@ -145,7 +194,9 @@
     
     $(document).ready(function() {
         $('#myTable').DataTable({
-            "searching": true
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
         });
     });
 

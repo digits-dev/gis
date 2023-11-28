@@ -38,19 +38,22 @@ class POSFloatHistoryController extends Controller
             return $obj;
         }, $data['mode_of_payments']);
 
+
         $cash_floats_histories_id = CashFloatHistory::pluck('id');
-        $data['entries'] = DB::table('float_history_view')
+
+        $entries = CashFloatHistory::leftJoin('float_history_view', 'float_history_view.cash_float_histories_id', 'cash_float_histories.id')
             ->leftJoin('float_types', 'float_types.id', 'float_history_view.float_types_id')
-            ->leftJoin('cash_float_histories','cash_float_histories.id','float_history_view.cash_float_histories_id')
             ->leftJoin('cms_users','cms_users.id','cash_float_histories.created_by')
             ->leftJoin('cash_float_history_lines', 'cash_float_history_lines.cash_float_histories_id', 'float_history_view.cash_float_histories_id')
             ->leftJoin('locations', 'locations.id','cash_float_histories.locations_id')
             ->select('*','cash_float_histories.created_at', 'cash_float_history_lines.qty as token_qty', 'float_history_view.entry_date')
             ->where('cash_float_history_lines.float_entries_id', $token_id)
             ->where('cash_float_histories.locations_id', $account_location_id)
-            ->orderBy('float_history_view.reference_number','desc')
-            ->get()
-            ->toArray();
+            ->orderBy('float_history_view.reference_number','desc');
+
+            $searchTerm = request('search');
+            $data['entries'] = $entries->filter(['search' => $searchTerm])->paginate(10);
+            $data['entries']->appends(['search' => $searchTerm]);
 
             // dd($data['entries']);
         
