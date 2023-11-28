@@ -450,13 +450,22 @@
 
     function onRemainingQty(currentRow) {
 
-        var actualQty = currentRow.find(".actualQty").val().replace(/\D/g, '');
-        var transferQty = currentRow.find(".transferQty").val().replace(/\D/g, '');
+        const actualQty = currentRow.find(".actualQty").val().replace(/\D/g, '');
+        const transferQty = currentRow.find(".transferQty").val().replace(/\D/g, '');
 
-        var remainingQty = actualQty - transferQty;
+        const remainingQty = actualQty - transferQty;
         currentRow.find(".remainingQty").val(remainingQty.toLocaleString());
 
-        $(".actualQty, .transferQty, .remainingQty").not(currentRow.find(".actualQty, .transferQty, .remainingQty")).val(0);
+        $(".actualQty, .transferQty, .remainingQty")
+            .not(currentRow.find(".actualQty, .transferQty, .remainingQty"))
+            .get()
+            .forEach(input => {
+                const currentVal = $(input).val();
+                if (!currentVal) {
+                    $(input).val(0);
+                }
+            });
+
 
     }
 
@@ -511,6 +520,30 @@
     }
 
     function validateInput() {
+        // const rows = $('.modal-body table tbody tr').get();
+        // let isValid = true;
+        // rows.forEach(row => {
+        //     const actualQTyInput = $(row).find('.actualQty');
+        //     const transferQtyInput = $(row).find('.transferQty');
+        //     const remainingQtyInput = $(row).find('.remainingQty');
+        //     const maxQty = Number(actualQTyInput.attr('qty') || 0);
+        //     const actualQTyValue = Number(actualQTyInput.val().replace(/\D/g, '') || 0);
+        //     const transferQtyValue = Number(transferQtyInput.val().replace(/\D/g, '') || 0);
+        //     if (actualQTyValue > maxQty) {
+        //         isValid = false;
+        //         actualQTyInput.css('border', '2px solid red');
+        //     } else {
+        //         actualQTyInput.css('border', '');
+        //     }
+
+        //     if (transferQtyValue >= actualQTyValue && actualQTyInput) {
+        //         transferQtyInput.css('border', '2px solid red');
+        //         isValid = false;
+        //     } else {
+        //         transferQtyInput.css('border', '');
+        //     }
+        // });
+        // $('#save-modal').attr('disabled', !isValidActual);
         let isValidActual = true;
         let isFoundActual = false;
         const actualQtyInputs = $('.actualQty').get();
@@ -533,6 +566,7 @@
                 isFoundActual = true;
             } else if (isFoundActual && value) {
                 isValidActual = false;
+                $('.actualQty').css('border', '2px solid red');
             }
         });
 
@@ -544,7 +578,7 @@
             const value = Number(currentVal);
             const row = $(input).parents('tr');
             const actualQty = Number((row.find('.actualQty').val()).replace(/\D/g, ''));
-            if (value >= actualQty && actualQty) {
+            if (value >= actualQty && value) {
                 $(input).css('border', '2px solid red');
                 isValidTransfer = false;
             } else if (!currentVal) {
