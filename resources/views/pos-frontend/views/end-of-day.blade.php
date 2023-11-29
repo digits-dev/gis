@@ -74,12 +74,12 @@
                     </table>
                 </div>
                 <div class="eod-v-q">
-                    <div class="d-flex-al-c">
+                    <div class="d-flex-al-c flex-wrap">
                         <p class="max-w-75">Total Value</p>
                         <input type="text" class="input-design total_value" name="total_value" style="width:165px;" placeholder="Total value">
                         {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
                     </div>
-                    <div class="d-flex-al-c m-top-10">
+                    <div class="d-flex-al-c flex-wrap m-top-10">
                         <p class="max-w-75">Token qty</p>
                         <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" onkeypress="withoutLeadingZeros()" required>
                         {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
@@ -91,7 +91,7 @@
                     <button class="hide" type="submit" id="real-submit-btn"></button>
                     <input type="text" class="end_day" name="end_day" value="END" readonly hidden>               
                     <input type="text" class="hide" name="entry_date" value="{{ $entry_date }}">
-                    <p class="m-top-5 c-danger t-center">*You may not login to the system after end of day</p>
+                    <p class="m-top-5 c-danger t-center m-bottom-15">*You may not login to the system after end of day</p>
                 </div>
             </form>
         </div>

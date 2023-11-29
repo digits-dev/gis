@@ -193,6 +193,10 @@ body {
     align-items: center;
 }
 
+.flex-wrap{
+    flex-wrap: wrap;
+}
+
 .sidebar_section {
     min-height: 100vh;
     background: linear-gradient(to top right, #fe3e3e, #8a2121);
@@ -531,17 +535,15 @@ table.dataTable tfoot tr th {
     text-align: center;
 }
 
-/* Cash Float EOD */
-.cash-float-section {
+.fh-cash-float-section{
     position: fixed;
     height: 100%;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.679);
     z-index: 1;
-    /* transition: 5s ease-in; */
 }
 
-.cash-float {
+.fh-cash-float{
     position: absolute;
     top: 100px;
     left: 50%;
@@ -556,6 +558,61 @@ table.dataTable tfoot tr th {
     border-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-left-radius: 10px;
+}
+
+/* Cash Float EOD */
+.cash-float-section {
+    /* position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.679);
+    z-index: 1; */
+    /* transition: 5s ease-in; */
+
+    position: absolute;
+    min-height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.679);
+    z-index: 1;
+    top: 0;
+    left: 0;
+    /* transition: translate(-50%, -50%); */
+    /* display: grid; */
+    /* display: grid;
+    place-content: center; */
+    padding: 70px 20px;
+}
+
+.cash-float {
+        /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+    width: 100%;
+    max-width: 1200px;
+    min-width: 200px;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    border-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    margin: auto;
+    
+    /* position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 100%;
+    max-width: 1200px;
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    border-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-left-radius: 10px; */
 }
 
 .cash-float-header {
