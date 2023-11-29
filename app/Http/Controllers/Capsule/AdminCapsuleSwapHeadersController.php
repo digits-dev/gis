@@ -434,7 +434,7 @@
 					->first();
 
 				// returning if inputted qty is greater than inventory qty
-				if ((int)intval(str_replace(',', '',$item['capsule_qty_one'])) > $system_inv->qty) {
+				if ($item['capsule_qty_one'] > $system_inv->qty) {
 					$response['invalid_qty'] = true;
 					return json_encode($response);
 				}
@@ -448,26 +448,19 @@
 			$machineOneInsertLineOutToMH = [];
 			$machineOneInsertLineInToMH = [];
 			foreach($jan_no_one as $key => $jan) {
+				$inputted_qty_one = $jan['capsule_qty_one'];
 				//OUT
 				$machineOneInsertLineOut[$key]['capsule_swap_id'] = $capsule_swap_id;
 				$machineOneInsertLineOut[$key]['jan_no']          = $jan['jan_no_one'];
 				$machineOneInsertLineOut[$key]['from_machine']    = $machine_one_data->id;
 				$machineOneInsertLineOut[$key]['to_machine']      = $machine_two_data->id;
-				$machineOneInsertLineOut[$key]['qty']             = intval(str_replace(',', '', $jan['capsule_qty_one']));
+				$machineOneInsertLineOut[$key]['qty']             = $inputted_qty_one;
 				$machineOneInsertLineOut[$key]['location']        = $my_locations_id;
 				$machineOneInsertLineOut[$key]['created_at']      = $time_stamp;
-				// //IN
-				// $machineOneInsertLineIn[$key]['capsule_swap_id'] = $capsule_swap_id;
-				// $machineOneInsertLineIn[$key]['jan_no']          = $jan['jan_no_one'];
-				// $machineOneInsertLineIn[$key]['from_machine']    = $machine_two_data->id;
-				// $machineOneInsertLineIn[$key]['to_machine']      = $machine_one_data->id;
-				// $machineOneInsertLineIn[$key]['qty']             = intval(str_replace(',', '', $jan['capsule_qty_one']));
-				// $machineOneInsertLineIn[$key]['location']        = $my_locations_id;
-				// $machineOneInsertLineIn[$key]['created_at']      = $time_stamp;
 
 				//HISTORY INSERT
 				$item_one = Item::where('digits_code', $jan['jan_no_one'])->first();
-				if(intval(str_replace(',', '', $jan['capsule_qty_one']))){
+				if($inputted_qty_one){
 					//OUT
 					$machineOneInsertLineOutToMH[$key]['reference_number']        = $reference_number;
 					$machineOneInsertLineOutToMH[$key]['item_code']               = $item_one->digits_code2;
@@ -475,7 +468,7 @@
 					$machineOneInsertLineOutToMH[$key]['locations_id']            = $machine_one_data->location_id;
 					$machineOneInsertLineOutToMH[$key]['from_machines_id']        = $machine_one_data->id;
 					$machineOneInsertLineOutToMH[$key]['to_machines_id']          = $machine_two_data->id;
-					$machineOneInsertLineOutToMH[$key]['qty']                     = -1 * abs(intval(str_replace(',', '', $jan['capsule_qty_one'])));
+					$machineOneInsertLineOutToMH[$key]['qty']                     = -1 * abs($inputted_qty_one);
 					$machineOneInsertLineOutToMH[$key]['created_at']              = $time_stamp;
 					$machineOneInsertLineOutToMH[$key]['created_by']              = $action_by;
 					//IN
@@ -485,16 +478,130 @@
 					$machineOneInsertLineInToMH[$key]['locations_id']            = $machine_two_data->location_id;
 					$machineOneInsertLineInToMH[$key]['from_machines_id']        = $machine_two_data->id;
 					$machineOneInsertLineInToMH[$key]['to_machines_id']          = $machine_one_data->id;
-					$machineOneInsertLineInToMH[$key]['qty']                     = intval(str_replace(',', '', $jan['capsule_qty_one']));
+					$machineOneInsertLineInToMH[$key]['qty']                     = $inputted_qty_one;
 					$machineOneInsertLineInToMH[$key]['created_at']              = $time_stamp;
 					$machineOneInsertLineInToMH[$key]['created_by']              = $action_by;
 				}
 
-				//UPDATE OR INSERT IN INVENTORY
-				$digits_code = Item::where('digits_code', $jan['jan_no_one'])->pluck('digits_code2')->first();
+		
 				$system_qty = $current_inv_machine_one[$jan['jan_no_one']];
-				$sales_qty = $system_qty - (int)intval(str_replace(',', '',$jan['capsule_qty_one']));
+				$sales_qty = $system_qty - $inputted_qty_one;
 
+				//INSERT SALES
+				if ($sales_qty) {
+					CapsuleSales::insert([
+						'reference_number'  => $reference_number,
+						'item_code'         => $jan['jan_no_one'],
+						'gasha_machines_id' => $machine_one_data->id,
+						'locations_id'      => $my_locations_id,
+						'qty'               => $sales_qty,
+						'sales_type_id'     => $sales_types_id,
+						'created_by'        => $action_by,
+						'created_at'        => $time_stamp
+					]);
+				}
+			}
+
+			//insert machine one body
+			$machineOneMerge = array_merge($machineOneInsertLineOut, $machineOneInsertLineIn);
+			CapsuleSwapLines::insert($machineOneMerge);
+			//insert history
+			$machineOneMergeMovementHistory = array_merge($machineOneInsertLineOutToMH, $machineOneInsertLineInToMH);
+			HistoryCapsule::insert($machineOneMergeMovementHistory);
+
+			//FROM MACHINE 2 to MACHINE 1 SAVE TO CAPSULE SWAP LINES
+			$machineTwoInsertLineOut = [];
+			$machineTwoInsertLineIn = [];
+			$machineTwoInsertLineOutToMH = [];
+			$machineTwoInsertLineInToMH = [];
+
+			//MACHINE 2 EXISTING INVENTORY
+			$current_inv_machine_two = [];
+			 foreach ($jan_no_two as $key => $item_two) {
+				// getting the current inventory
+				$system_inv_two = InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
+					->select('inventory_capsule_lines.qty', 'items.digits_code')
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('items', 'items.digits_code2', 'ic.item_code')
+					->where('ic.locations_id', $my_locations_id)
+					->where('items.digits_code', $item_two['jan_no_two'])
+					->first();
+
+				// returning if inputted qty is greater than inventory qty
+				if ($item_two['capsule_qty_two'] > $system_inv_two->qty) {
+					$response['invalid_qty'] = true;
+					return json_encode($response);
+				}
+
+				$current_inv_machine_two[$system_inv_two->digits_code] = $system_inv_two->qty;
+			}
+
+			foreach($jan_no_two as $key => $jan_two) {
+				$inputted_qty_two = $jan_two['capsule_qty_two'];
+				//out
+				$machineTwoInsertLineOut[$key]['capsule_swap_id'] = $capsule_swap_id;
+				$machineTwoInsertLineOut[$key]['jan_no']          = $jan_two['jan_no_two'];
+				$machineTwoInsertLineOut[$key]['from_machine']    = $machine_two_data->id;
+				$machineTwoInsertLineOut[$key]['to_machine']      = $machine_one_data->id;
+				$machineTwoInsertLineOut[$key]['qty']             = $inputted_qty_two;
+				$machineTwoInsertLineOut[$key]['location']        = $my_locations_id;
+				$machineTwoInsertLineOut[$key]['created_at']      = $time_stamp;
+				
+				//HISTORY 
+				$item_two = Item::where('digits_code', $jan_two['jan_no_two'])->first();
+				if($inputted_qty_two){
+					//OUT
+					$machineTwoInsertLineOutToMH[$key]['reference_number']        = $reference_number;
+					$machineTwoInsertLineOutToMH[$key]['item_code']               = $item_two->digits_code2;
+					$machineTwoInsertLineOutToMH[$key]['capsule_action_types_id'] = $capsule_action_types_id;
+					$machineTwoInsertLineOutToMH[$key]['locations_id']            = $machine_two_data->location_id;
+					$machineTwoInsertLineOutToMH[$key]['from_machines_id']        = $machine_two_data->id;
+					$machineTwoInsertLineOutToMH[$key]['to_machines_id']          = $machine_one_data->id;
+					$machineTwoInsertLineOutToMH[$key]['qty']                     = -1 * abs($inputted_qty_two);
+					$machineTwoInsertLineOutToMH[$key]['created_at']              = $time_stamp;
+					$machineTwoInsertLineOutToMH[$key]['created_by']              = $action_by;
+					//IN
+					$machineTwoInsertLineInToMH[$key]['reference_number']        = $reference_number;
+					$machineTwoInsertLineInToMH[$key]['item_code']               = $item_two->digits_code2;
+					$machineTwoInsertLineInToMH[$key]['capsule_action_types_id'] = $capsule_action_types_id;
+					$machineTwoInsertLineInToMH[$key]['locations_id']            = $machine_one_data->location_id;
+					$machineTwoInsertLineInToMH[$key]['from_machines_id']        = $machine_one_data->id;
+					$machineTwoInsertLineInToMH[$key]['to_machines_id']          = $machine_two_data->id;
+					$machineTwoInsertLineInToMH[$key]['qty']                     = $inputted_qty_two;
+					$machineTwoInsertLineInToMH[$key]['created_at']              = $time_stamp;
+					$machineTwoInsertLineInToMH[$key]['created_by']              = $action_by;
+				}
+				
+				$system_qty_two = $current_inv_machine_two[$jan_two['jan_no_two']];
+				$sales_qty_two = $system_qty_two - $inputted_qty_two;
+
+				if ($sales_qty_two) {
+					CapsuleSales::insert([
+						'reference_number'  => $reference_number,
+						'item_code'         => $jan_two['jan_no_two'],
+						'gasha_machines_id' => $machine_two_data->id,
+						'locations_id'      => $my_locations_id,
+						'qty'               => $sales_qty_two,
+						'sales_type_id'     => $sales_types_id,
+						'created_by'        => $action_by,
+						'created_at'        => $time_stamp
+					]);
+				}
+
+			}
+
+			//insert body machine 2
+			$machineTwoMerge = array_merge($machineTwoInsertLineOut, $machineTwoInsertLineIn);
+			CapsuleSwapLines::insert($machineTwoMerge);
+			//insert history machine 2
+			$machineTwoMergeMovementHistory = array_merge($machineTwoInsertLineOutToMH, $machineTwoInsertLineInToMH);
+			HistoryCapsule::insert($machineTwoMergeMovementHistory);
+
+			//MACHINE ONE INVENTORY PROCESS
+			foreach($jan_no_one as $key => $jan){
+				//UPDATE OR INSERT IN INVENTORY
+				$inputted_qty_one = $jan['capsule_qty_one'];
+				$digits_code = Item::where('digits_code', $jan['jan_no_one'])->pluck('digits_code2')->first();
 				//updating inventory qty of from machine 1 to 0
 				InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
 				->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
@@ -519,7 +626,7 @@
 						->where('ic.locations_id', $my_locations_id)
 						->where('ic.item_code', $digits_code)
 						->update([
-							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + '".(int)intval(str_replace(',', '',$jan['capsule_qty_one']))."'"),
+							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $inputted_qty_one"),
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp
 						]);
@@ -544,118 +651,57 @@
 					InventoryCapsuleLine::insert([
 						'inventory_capsules_id' => $inventory_capsules_id,
 						'gasha_machines_id'     => $machine_two_data->id,
-						'qty'                   => intval(str_replace(',', '',$jan['capsule_qty_one'])),
+						'qty'                   => $inputted_qty_one,
 						'created_by'            => $action_by,
 						'created_at'            => $time_stamp,
 					]);
 				}
-
-				//INSERT SALES
-				if ($sales_qty) {
-					CapsuleSales::insert([
-						'reference_number'  => $reference_number,
-						'item_code'         => $jan['jan_no_one'],
-						'gasha_machines_id' => $machine_one_data->id,
-						'locations_id'      => $my_locations_id,
-						'qty'               => $sales_qty,
-						'sales_type_id'     => $sales_types_id,
-						'created_by'        => $action_by,
-						'created_at'        => $time_stamp
-					]);
-				}
-			}
-			//insert body
-			$machineOneMerge = array_merge($machineOneInsertLineOut, $machineOneInsertLineIn);
-			CapsuleSwapLines::insert($machineOneMerge);
-			//insert history
-			$machineOneMergeMovementHistory = array_merge($machineOneInsertLineOutToMH, $machineOneInsertLineInToMH);
-			HistoryCapsule::insert($machineOneMergeMovementHistory);
-
-			//FROM MACHINE 2 to MACHINE 1 SAVE TO CAPSULE SWAP LINES
-			$machineTwoInsertLineOut = [];
-			$machineTwoInsertLineIn = [];
-			$machineTwoInsertLineOutToMH = [];
-			$machineTwoInsertLineInToMH = [];
-
-			//MACHINE 2 EXISTING INVENTORY
-			$current_inv_machine_two = [];
-			 foreach ($jan_no_two as $key => $item['jan_no_two']) {
-				// getting the current inventory
-				$system_inv = InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
-					->select('inventory_capsule_lines.qty', 'items.digits_code')
-					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
-					->leftJoin('items', 'items.digits_code2', 'ic.item_code')
-					->where('ic.locations_id', $my_locations_id)
-					->where('items.digits_code', $item['jan_no_two'])
-					->first();
-
-				// returning if inputted qty is greater than inventory qty
-				if ((int)intval(str_replace(',', '',$item['capsule_qty_two'])) > $system_inv->qty) {
-					$response['invalid_qty'] = true;
-					return json_encode($response);
-				}
-
-				$current_inv_machine_two[$system_inv->digits_code] = $system_inv->qty;
 			}
 
+			//GET SAME JAN NO IN MACHINE 1
+			$sameJanNo = [];
+			foreach ($jan_no_one as $key => $item) {
+				if($item['capsule_qty_one']){
+					$sameJanNo[] = $item;
+				}
+			}
+
+			$checkJanColumn = array_column($sameJanNo, 'jan_no_one');
+			//MACHINE TWO INVENTORY PROCESS
 			foreach($jan_no_two as $key => $jan_two) {
-				//out
-				$machineTwoInsertLineOut[$key]['capsule_swap_id'] = $capsule_swap_id;
-				$machineTwoInsertLineOut[$key]['jan_no']          = $jan_two['jan_no_two'];
-				$machineTwoInsertLineOut[$key]['from_machine']    = $machine_two_data->id;
-				$machineTwoInsertLineOut[$key]['to_machine']      = $machine_one_data->id;
-				$machineTwoInsertLineOut[$key]['qty']             = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
-				$machineTwoInsertLineOut[$key]['location']        = $my_locations_id;
-				$machineTwoInsertLineOut[$key]['created_at']      = $time_stamp;
-				// //IN
-				// $machineTwoInsertLineIn[$key]['capsule_swap_id']  = $capsule_swap_id;
-				// $machineTwoInsertLineIn[$key]['jan_no']           = $jan_two['jan_no_two'];
-				// $machineTwoInsertLineIn[$key]['from_machine']     = $machine_one_data->id;
-				// $machineTwoInsertLineIn[$key]['to_machine']       = $machine_two_data->id;
-				// $machineTwoInsertLineIn[$key]['qty']              = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
-				// $machineTwoInsertLineIn[$key]['location']         = $my_locations_id;
-				// $machineTwoInsertLineIn[$key]['created_at']       = $time_stamp;
-				
-				//HISTORY 
-				$item_two = Item::where('digits_code', $jan_two['jan_no_two'])->first();
-				if(intval(str_replace(',', '', $jan_two['capsule_qty_two']))){
-					//OUT
-					$machineTwoInsertLineOutToMH[$key]['reference_number']        = $reference_number;
-					$machineTwoInsertLineOutToMH[$key]['item_code']               = $item_two->digits_code2;
-					$machineTwoInsertLineOutToMH[$key]['capsule_action_types_id'] = $capsule_action_types_id;
-					$machineTwoInsertLineOutToMH[$key]['locations_id']            = $machine_two_data->location_id;
-					$machineTwoInsertLineOutToMH[$key]['from_machines_id']        = $machine_two_data->id;
-					$machineTwoInsertLineOutToMH[$key]['to_machines_id']          = $machine_one_data->id;
-					$machineTwoInsertLineOutToMH[$key]['qty']                     = -1 * abs(intval(str_replace(',', '',$jan_two['capsule_qty_two'])));
-					$machineTwoInsertLineOutToMH[$key]['created_at']              = $time_stamp;
-					$machineTwoInsertLineOutToMH[$key]['created_by']              = $action_by;
-					//IN
-					$machineTwoInsertLineInToMH[$key]['reference_number']        = $reference_number;
-					$machineTwoInsertLineInToMH[$key]['item_code']               = $item_two->digits_code2;
-					$machineTwoInsertLineInToMH[$key]['capsule_action_types_id'] = $capsule_action_types_id;
-					$machineTwoInsertLineInToMH[$key]['locations_id']            = $machine_one_data->location_id;
-					$machineTwoInsertLineInToMH[$key]['from_machines_id']        = $machine_one_data->id;
-					$machineTwoInsertLineInToMH[$key]['to_machines_id']          = $machine_two_data->id;
-					$machineTwoInsertLineInToMH[$key]['qty']                     = intval(str_replace(',', '',$jan_two['capsule_qty_two']));
-					$machineTwoInsertLineInToMH[$key]['created_at']              = $time_stamp;
-					$machineTwoInsertLineInToMH[$key]['created_by']              = $action_by;
-				}
 				//UPDATE OR CREATE INVENTORY
 				$digits_code_two = Item::where('digits_code', $jan_two['jan_no_two'])->pluck('digits_code2')->first();
-				$system_qty = $current_inv_machine_two[$jan_two['jan_no_two']];
-				$sales_qty_two = $system_qty - (int)intval(str_replace(',', '',$jan_two['capsule_qty_two']));
-
+				$inputted_qty_two = $jan_two['capsule_qty_two'];
+				$saveSalesQty = CapsuleSales::where('item_code', $jan_two['jan_no_two'])
+											->where('gasha_machines_id', $machine_two_data->id)
+											->where('reference_number', $reference_number)
+											->where('locations_id', $my_locations_id)
+											->pluck('qty')->first();
+				$existingQty = $inputted_qty_two + $saveSalesQty;
 				//updating inventory qty of from machine 2 to 0
-				InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
-				->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
-				->where('ic.locations_id', $my_locations_id)
-				->where('ic.item_code', $digits_code_two)
-				->update([
-					'inventory_capsule_lines.qty' => 0,
-					'inventory_capsule_lines.updated_by' => $action_by,
-					'inventory_capsule_lines.updated_at' => $time_stamp
-				]);
 
+				if(in_array($jan_two['jan_no_two'], $checkJanColumn)){
+					InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $my_locations_id)
+					->where('ic.item_code', $digits_code_two)
+					->update([
+						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty - $existingQty"),
+						'inventory_capsule_lines.updated_by' => $action_by,
+						'inventory_capsule_lines.updated_at' => $time_stamp
+					]);
+				}else{
+					InventoryCapsuleLine::where('gasha_machines_id', $machine_two_data->id)
+					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $my_locations_id)
+					->where('ic.item_code', $digits_code_two)
+					->update([
+						'inventory_capsule_lines.qty' => 0,
+						'inventory_capsule_lines.updated_by' => $action_by,
+						'inventory_capsule_lines.updated_at' => $time_stamp
+					]);
+				}
+				
 				$is_existing_Machine_two = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
 					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->where('ic.locations_id', $my_locations_id)
@@ -669,7 +715,7 @@
 						->where('ic.locations_id', $my_locations_id)
 						->where('ic.item_code', $digits_code_two)
 						->update([
-							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + '".(int)intval(str_replace(',', '',$jan_two['capsule_qty_two']))."'"),
+							'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $inputted_qty_two"),
 							'inventory_capsule_lines.updated_by' => $action_by,
 							'inventory_capsule_lines.updated_at' => $time_stamp
 						]);
@@ -694,33 +740,12 @@
 					InventoryCapsuleLine::insert([
 						'inventory_capsules_id' => $inventory_capsules_id,
 						'gasha_machines_id'     => $machine_one_data->id,
-						'qty'                   => intval(str_replace(',', '',$jan_two['capsule_qty_two'])),
+						'qty'                   => $inputted_qty_two,
 						'created_by'            => $action_by,
 						'created_at'            => $time_stamp,
 					]);
 				}
-
-				if ($sales_qty_two) {
-					CapsuleSales::insert([
-						'reference_number'  => $reference_number,
-						'item_code'         => $jan_two['jan_no_two'],
-						'gasha_machines_id' => $machine_two_data->id,
-						'locations_id'      => $my_locations_id,
-						'qty'               => $sales_qty_two,
-						'sales_type_id'     => $sales_types_id,
-						'created_by'        => $action_by,
-						'created_at'        => $time_stamp
-					]);
-				}
-
 			}
-
-			//insert body machine 2
-			$machineTwoMerge = array_merge($machineTwoInsertLineOut, $machineTwoInsertLineIn);
-			CapsuleSwapLines::insert($machineTwoMerge);
-			//insert history machine 2
-			$machineTwoMergeMovementHistory = array_merge($machineTwoInsertLineOutToMH, $machineTwoInsertLineInToMH);
-			HistoryCapsule::insert($machineTwoMergeMovementHistory);
 
 			$machine_one_after = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
 				->where('inventory_capsule_lines.qty', '>', '0')
