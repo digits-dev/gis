@@ -600,7 +600,7 @@
 
             $('#label_from_machine span').text(data.from_machine.serial_number);
             $('#label_to_machine span').text(data.to_machine.serial_number);
-
+            $('.gm_from tbody').html('');
             gm_from.forEach((ic, index) => {
                 // const jan_no_one = $('<input>').attr({
                 //     type: 'text',
@@ -626,7 +626,9 @@
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
                 $('.gm_from').append(tr);
             });
+            $('#from-machine-total').html('');
             $('#from-machine-total').append('<input type="text" class="form-control" name="capsule_qty_one_total[]" id="capsule_qty_one_total" readonly>');
+            $('.gm_to tbody').html('');
             gm_to.forEach((ic, index) => {
                 // const jan_no_two = $('<input>').attr({
                 //     type: 'text',
@@ -650,6 +652,7 @@
                 const tr = $('<tr>').append(gm_item_code, gm_description, gm_qty);
                 $('.gm_to').append(tr);
             });
+            $('#to-machine-total').html('');
             $('#to-machine-total').append('<input type="text" class="form-control" name="capsule_qty_two_total[]" id="capsule_qty_two_total" readonly>');
             $('#addRowModal').modal('show');
         }

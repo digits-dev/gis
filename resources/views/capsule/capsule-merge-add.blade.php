@@ -558,7 +558,7 @@
             }
             $('#label_from_machine span').text(data.from_machine.serial_number);
             $('#label_to_machine span').text(data.to_machine.serial_number);
-
+            $('.gm_from tbody').html('');
             gm_from.forEach((ic, index) => {
                 const gm_item_code = $('<td>').text(ic.item_code);
                 const gm_description = $('<td>').text(ic.item_description);
@@ -579,7 +579,7 @@
                 $('.no-inventory').hide();
 
                 let toMachineTotal = 0;
-
+                $('.gm_to tbody').html('');
                 gm_to.forEach((ic, index) => {
                     const gm_item_code = $('<td>').text(ic.item_code);
                     const gm_description = $('<td>').text(ic.item_description);
