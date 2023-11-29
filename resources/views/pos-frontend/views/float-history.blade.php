@@ -47,10 +47,10 @@
 
 @section('cash-float')
 
-<div class="cash-float-section" id="view_history_tab" hidden>
+<div class="fh-cash-float-section" id="view_history_tab" hidden style="display: none;">
     <form method="POST">
         @csrf
-        <div class="cash-float">
+        <div class="fh-cash-float">
             <div class="cash-float-content">
                 <form method="POST">
                     @csrf
@@ -94,11 +94,11 @@
                     </div>
                     <div class="eod-v-q">
                         <div class="d-flex-al-c">
-                            <p class="max-w-75">Total Value</p>
+                            <p class="max-w-75 flex-wrap">Total Value</p>
                             <input type="text" class="input-design total_value" name="total_value" style="height: 35px; width:165px;" placeholder="Total value" readonly>
                             {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
                         </div>
-                        <div class="d-flex-al-c m-top-10">
+                        <div class="d-flex-al-c flex-wrap m-top-10">
                             <p class="max-w-75">Token qty</p>
                             <input type="text" class="input-design total_token" name="total_token" style="height: 35px; width:165px;" placeholder="Token qty" oninput="numberOnly(this);" readonly>
                             {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
@@ -202,6 +202,7 @@
 
     $('.history_btn_view').click(function(e){
         e.preventDefault();
+        $('#view_history_tab').css('display','block');
         const entryId = $(this).data('entry-id');
         const url = $(this).attr('href');
         $.ajax({
@@ -240,7 +241,7 @@
     $('#close_tab').click(function(e){
         e.preventDefault();
         $('input[type="text"]').val('');
-        $('#view_history_tab').attr('hidden', true);
+        $('#view_history_tab').css('display', 'none');
     });
 
 </script>
