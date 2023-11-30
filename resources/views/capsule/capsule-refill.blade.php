@@ -74,12 +74,12 @@
                         <p>Capsule Barcode <span style="color: red">*</span></p>
                         <div class="flex input-btn">
                             <input input-for="capsule" type='number' id="item_code" name='item_code' required class='form-control text-center'/>
-                            <button btn-for="capsule" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="capsule" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                         </div>
                         <p>To Gasha Machine <span style="color: red">*</span> </p>
                         <div class="flex input-btn">
                             <input input-for="machine" type='text' id="machine_code" name='machine_code' oninput="this.value = this.value.toUpperCase()" required class='form-control text-center'/>
-                            <button btn-for="machine" type="button" class="btn btn-primary open-camera"><i class="fa fa-camera"></i></button>
+                            <button btn-for="machine" type="button" class="btn btn-primary open-camera" tabindex="-1"><i class="fa fa-camera"></i></button>
                         </div>
                         <p>Quantity <span style="color: red">*</span></p>
                         <div class="flex input-btn">
@@ -350,6 +350,7 @@
             return;
         }
         const formData = $('form').serialize();
+        $('#save-btn').attr('disabled', true);
         $.ajax({
             type: 'POST',
             url: "{{ route('submit_capsule_refill') }}",
@@ -357,6 +358,7 @@
             success: function(res) {
                 const data = JSON.parse(res);
                 processResult(data);
+                $('#save-btn').attr('disabled', false);
             },
             error: function(err) {
                 Swal.fire({
