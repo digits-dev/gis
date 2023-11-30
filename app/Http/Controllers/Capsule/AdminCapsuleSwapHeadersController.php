@@ -745,6 +745,7 @@
 						'created_at'            => $time_stamp,
 					]);
 				}
+				
 			}
 
 			$machine_one_after = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
