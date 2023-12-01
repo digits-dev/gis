@@ -39,6 +39,7 @@
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
 			$this->col[] = ["label"=>"Bay","name"=>"bay"];
 			$this->col[] = ["label"=>"Layer","name"=>"layer"];
+			$this->col[] = ["label"=>"Column","name"=>"column"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];

@@ -25,9 +25,9 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
     public function collection(Collection $rows){
         foreach ($rows->toArray() as $key => $row){
             $location_name      = DB::table('locations')->where('id',CRUDBooster::myLocationId())->first();
-            if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
-            }
+            // if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
+            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
+            // }
             // if($row['no_of_token'] == 0){
             //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
             // }
@@ -39,9 +39,9 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
             }
             GashaMachines::where('serial_number',$row['serial_number'])
             ->update([
-                    'no_of_token'    => $row['no_of_token'],
                     'bay'            => $row['bay'],
                     'layer'          => $row['layer'],
+                    'column'         => $row['column'],
                     'updated_by'	 => CRUDBooster::myId(),
                     'updated_at'     => date('Y-m-d H:i:s')
             ]);	

@@ -347,7 +347,7 @@
             }
 			$data = array();
 			$data['page_title'] = 'Create Capsule Swap';
-			return view('capsule.capsule-swap');
+			return view('capsule.capsule-swap', $data);
 		}
 
 		public function checkMachine(Request $request){
@@ -483,7 +483,7 @@
 					$machineOneInsertLineInToMH[$key]['created_by']              = $action_by;
 				}
 
-		
+
 				$system_qty = $current_inv_machine_one[$jan['jan_no_one']];
 				$sales_qty = $system_qty - $inputted_qty_one;
 
@@ -546,8 +546,8 @@
 				$machineTwoInsertLineOut[$key]['qty']             = $inputted_qty_two;
 				$machineTwoInsertLineOut[$key]['location']        = $my_locations_id;
 				$machineTwoInsertLineOut[$key]['created_at']      = $time_stamp;
-				
-				//HISTORY 
+
+				//HISTORY
 				$item_two = Item::where('digits_code', $jan_two['jan_no_two'])->first();
 				if($inputted_qty_two){
 					//OUT
@@ -571,7 +571,7 @@
 					$machineTwoInsertLineInToMH[$key]['created_at']              = $time_stamp;
 					$machineTwoInsertLineInToMH[$key]['created_by']              = $action_by;
 				}
-				
+
 				$system_qty_two = $current_inv_machine_two[$jan_two['jan_no_two']];
 				$sales_qty_two = $system_qty_two - $inputted_qty_two;
 
@@ -701,7 +701,7 @@
 						'inventory_capsule_lines.updated_at' => $time_stamp
 					]);
 				}
-				
+
 				$is_existing_Machine_two = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)
 					->leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->where('ic.locations_id', $my_locations_id)
@@ -745,6 +745,7 @@
 						'created_at'            => $time_stamp,
 					]);
 				}
+				
 			}
 
 			$machine_one_after = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)

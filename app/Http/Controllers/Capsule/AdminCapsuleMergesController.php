@@ -336,11 +336,8 @@
 			}
 
 			$data = [];
-			// $data['user_location_id'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['page_title'] = 'Add Data';
-			// $data['stockroom'] = Locations::find(CRUDBooster::myLocationId());
-			//Please use view method instead view method from laravel
-			return $this->view('capsule.capsule-merge-add',$data);
+			$data['page_title'] = 'Create Capsule Merge';
+			return view('capsule.capsule-merge-add', $data);
 		}
 
 		public function checkMachines(Request $request) {
