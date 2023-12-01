@@ -396,7 +396,7 @@
                     } else if (!data.items.length) {
                         Swal.fire({
                             title: "Oops.",
-                            html: 'No current inventory for this machine!',
+                            html: 'No inventory for this machine!',
                             icon: 'error',
                             confirmButtonColor: '#3085d6',
                             confirmButtonText: 'Ok',
