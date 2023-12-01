@@ -380,7 +380,7 @@
                 success: function(res) {
                     $('.machine-form-group .machine-warning').remove();
                     const data = JSON.parse(res);
-                    console.log(data);
+                    console.log('heeeey',data);
                     const existingMachines = $('#cycle-count .existing-machines').get().map(e => $(e).attr('machine'));
                     const alreadyExists = existingMachines.includes(machine_code);
                     const isInvalidMachine = $.isEmptyObject(data.machines);
@@ -393,6 +393,15 @@
 
                     } else if (!machine_code) {
                         $('.machine-form-group .machine-warning').remove();
+                    } else if (!data.items.length) {
+                        Swal.fire({
+                            title: "Oops.",
+                            html: 'No current inventory for this machine!',
+                            icon: 'error',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Ok',
+                            returnFocus: false,
+                        });
                     } else if (!isInvalidMachine) {
                         $('.machine-form-group .machine-warning').remove();
                         data.items.forEach(item => {

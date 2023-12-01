@@ -566,6 +566,7 @@ use Carbon\Carbon;
 				->select('items.*', 'inventory_capsule_lines.qty')
 				->where('inventory_capsules.locations_id', $request->get('location_id'))
 				->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
+				->where('inventory_capsule_lines.qty', '>', 0)
 				->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
 				->get();
 			return json_encode([
