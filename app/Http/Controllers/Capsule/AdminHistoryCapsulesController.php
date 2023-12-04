@@ -280,6 +280,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
+			$query->where('history_capsules.status', 'ACTIVE');
 	        if (in_array(CRUDBooster::myPrivilegeId(), [1, 2, 4, 6, 7, 8])) {
 				$query->whereNull('history_capsules.deleted_at')
 					->orderBy('history_capsules.created_at', 'desc');

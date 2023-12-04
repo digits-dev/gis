@@ -54,6 +54,7 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping
         $my_locations_id = CRUDBooster::myLocationId();
 
         $history_capsules = HistoryCapsule::leftJoin('items', 'items.digits_code2', 'history_capsules.item_code')
+            ->where('history_capsules.status', 'ACTIVE')
             ->select(
                 'history_capsules.reference_number',
                 'items.digits_code',
