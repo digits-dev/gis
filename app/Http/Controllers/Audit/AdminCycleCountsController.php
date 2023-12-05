@@ -671,8 +671,6 @@
 
 		//Store File
 		public function storeFile(Request $request){
-		
-			
 			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 			$reader->setReadDataOnly(true);
 			$spreadsheet = $reader->load($request->file('cycle-count-file'));
@@ -689,7 +687,7 @@
 				$newArray[] = $contArray;
 			}
 			foreach($request->files as $file){
-				$name = time().rand(1,50) . '.' . $file->getClientOriginalExtension();
+				$name = time().rand(1,50) .'-'. $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
 				$filename = $name;
 				$file->move('cycle-count-files',$filename);
 			}
@@ -711,5 +709,11 @@
 			$data['quantity_total'] = $request->quantity_total;
 			dispatch(new CycleCountImportJob($data));
 			return back()->withStatus(__('Operations successfully queued and will be imported soon.'));
+		}
+
+		//Delete File
+		public function deleteFile(Request $request){
+			unlink(public_path('cycle-count-files/'.$request->filename));
+			return json_encode(['status'=>'success','message'=>'Reset successfully!']);
 		}
 	}

@@ -127,8 +127,9 @@
     @endif
 
     <div class='panel panel-default'>
-        <span><button class="btn btn-info btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0">Upload file</button></span>
-        <span><a class="btn btn-info btn-sm" id="btnExport" style="float:right; margin: 5px 5px 0 0">Download template</a></span>
+        <span><a class="btn btn-warning btn-sm" id="btnRefreshPage" style="float:right; margin: 5px 5px 0 0"><i class="fa fa-refresh"></i> Reset</a></span>
+        <span><a class="btn btn-default btn-sm" id="btnExport" style="float:right; margin: 5px 5px 0 0"><i class="fa fa-download"></i> Download template</a></span>
+        <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Upload file</button></span>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
             <span>Cycle Count (Capsule) Form</span>
         </div>
@@ -212,7 +213,7 @@
             </div>
 
             <div class='panel-footer'>
-                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default" id="btn-cancel">{{ trans('message.form.cancel') }}</a>
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save"></i>
                     {{ trans('message.form.new') }}</button>
             </div>
@@ -299,7 +300,7 @@
 
             $('#quantity_total').val(calculateTotalQuantity());
         });
-
+        const fileLength = [];
         $(document).ready(function() {
             $('#btnSubmit').click(function(event) {
                 event.preventDefault();
@@ -401,7 +402,7 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" autocomplete="off" required>
+                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" autocomplete="off" required readonly>
                         </td>
 
                         <td class="td-style exclude">
@@ -435,7 +436,12 @@
             $('#addRowModal').modal('show');
         });
 
+        $('#addRowModal').on('hidden.bs.modal', function (e) {
+            $(this).find("input,textarea").val('').end();
+        });
+
         //Upload file
+      
         $('#upload-cycle-count').on('click', function(event) {
             event.preventDefault();
             if($('#cycle-count-file').val() === ''){
@@ -481,7 +487,9 @@
                                         }
                                         $('#quantity_total').val(calculateTotalQuantity());
                                     });
+                                    fileLength.push(response.files);
                                     $('#filename').val(response.filename);
+                                    $('#btnUpload').attr('disabled', true);
                                 }
                             });  
                         }
@@ -493,6 +501,80 @@
             }
         });
 
-       
+        $("#btn-cancel").click(function(event) {
+            event.preventDefault();
+            Swal.fire({
+                    title: 'Are you sure you want to cancel?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: "No",
+                    returnFocus: false,
+                    reverseButtons: true,
+            }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.history.back();    
+                    }
+            });
+        });
+
+        //PAGE RESET DELETE FILE
+        $("#btnRefreshPage").click(function(event) {
+            event.preventDefault();
+            const filename = $('#filename').val();
+            if(!filename){
+                swal({
+                    type: 'error',
+                    title: 'Nothing to reset!',
+                    icon: 'error',
+                    confirmButtonColor: "#3c8dbc",
+                });
+                event.preventDefault();
+                return false;
+            }else{
+                Swal.fire({
+                        title: 'Are you sure you want to reset?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: "No",
+                        returnFocus: false,
+                        reverseButtons: true,
+                }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajaxSetup({
+                                headers: {
+                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                        }
+                            });
+                            $.ajax({
+                                type: 'POST',
+                                url: '{{ route("delete-file") }}',
+                                dataType: 'json',
+                                data: {
+                                    'filename': filename
+                                },
+                                success: (response) => {
+                                    Swal.fire({
+                                        title: response.message,
+                                        icon: response.status,
+                                        confirmButtonColor: '#3085d6',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });   
+                                    
+                                }
+                            });  
+                        }
+                });
+            }
+        });
     </script>
 @endpush

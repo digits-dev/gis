@@ -43,6 +43,5 @@ class CycleCountImportJob implements ShouldQueue
         $data['quantity_total'] = $this->quantity_total;
         Excel::import(new CycleCountImport($data), $this->file);
         CRUDBooster::redirect(CRUDBooster::adminpath('cycle_counts'),'Success! Cycle count has been created','success ')->send();
-        // unlink(public_path('cycle-count-files/'.basename($this->file)));
     }
 }
