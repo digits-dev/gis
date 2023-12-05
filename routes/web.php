@@ -136,9 +136,11 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-flr', [AdminCycleCountsController::class, 'submitCycleCountFloor'])->name('submit-cycle-count-floor');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-sr', [AdminCycleCountsController::class, 'submitCycleCountStockRoom'])->name('submit-cycle-count-sr');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-sr-file-upload', [AdminCycleCountsController::class, 'importCycleCount'])->name('submit-cycle-count-sr-file-upload');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/validate-machine-items', [AdminCycleCountsController::class, 'validateMachineItems'])->name('validate-machine-items');
     Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/add-cycle-count-sr', [AdminCycleCountsController::class, 'getAddCycleCountStockRoom'])->name('get-add-cycle-count-stock-room');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-item-code', [AdminCycleCountsController::class, 'checkItem'])->name('check-item-code');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/store-file', [AdminCycleCountsController::class, 'storeFile'])->name('cycle-count-file-store');
 
     //GASHA MACHINES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);

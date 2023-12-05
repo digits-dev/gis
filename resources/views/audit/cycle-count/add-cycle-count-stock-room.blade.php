@@ -127,13 +127,15 @@
     @endif
 
     <div class='panel panel-default'>
+        <span><button class="btn btn-info btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0">Upload file</button></span>
+        <span><a class="btn btn-info btn-sm" id="btnExport" style="float:right; margin: 5px 5px 0 0">Download template</a></span>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
-            Cycle Count (Capsule) Form
+            <span>Cycle Count (Capsule) Form</span>
         </div>
 
-        <form action="{{ route('submit-cycle-count-sr') }}" method="POST" id="cycleCount" enctype="multipart/form-data">
+        <form action="{{ route('submit-cycle-count-sr-file-upload') }}" method="POST" id="cycleCount" enctype="multipart/form-data">
             <input type="hidden" value="{{ csrf_token() }}" name="_token" id="token">
-
+            <input type="hidden" name="filename" id="filename">
             <div class='panel-body'>
                 <div class="row">
                     <div class="col-md-12">
@@ -155,13 +157,15 @@
 
                     <div class="col-md-12">
                         <table class="table table-responsive" id="cycle-count">
-                            <tbody id="bodyTable">
+                            <thead>
                                 <tr>
                                     <th width="15%" class="text-center">Item Code</th>
                                     <th width="30%" class="text-center">Item Description</th>
                                     <th width="15%" class="text-center">Quantity</th>
-                                    <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
+                                    <th width="3%" class="text-center exclude"><i class="fa fa-trash"></i></th>
                                 </tr>
+                            </thead>
+                            <tbody id="bodyTable">
                             </tbody>
                             <tfoot>
                                 <tr id="tr-table1" class="bottom">
@@ -176,6 +180,33 @@
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal upload file --}}
+            <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title text-center"><strong>Cycle Count (Upload File)</strong></h4>
+                        </div>
+                        <div class="row">
+                            <div class="modal-body">
+                                <div class="col-md-12">
+                                    <div class="form-group" >
+                                     <input type="file" name="cycle-count-file" class="form-control" id="cycle-count-file">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float: left;">Cancel</button>
+                            <button type='button' id="upload-cycle-count" class="btn btn-primary"><i class="fa fa-upload"></i> Upload</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,6 +228,9 @@
         //     null;
         // };
         // setTimeout("preventBack()", 0);
+        $('#addRowModal').modal('hide');
+        $('#btnExport').attr('disabled', true);
+        $('#btnUpload').attr('disabled', true);
         $('#location_id').select2();
 
         var tableRow = 1;
@@ -210,8 +244,11 @@
         let itemTokenNo = 0;
 
         $('#location_id').change(function() {
+            const url_download = '{{CRUDBooster::adminpath("cycle_counts/download/")}}';
+            $('#btnExport').attr('href', url_download+'/'+$(this).val());
             $(this).attr('disabled', true);
-
+            $('#btnExport').attr('disabled', false);
+            $('#btnUpload').attr('disabled', false);
             $.ajax({
                 type: 'POST',
                 url: "{{ route('check-sr-inventory-qty') }}",
@@ -289,21 +326,20 @@
                 }
 
 
-                let qty = $('input[name^="qty[]"]').length;
-                let qty_value = $('input[name^="qty[]"]');
-                for (i = 0; i < qty; i++) {
-                    if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null) {
-                        swal({
-                            type: 'error',
-                            title: 'Qty cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: '#3c8dbc',
-                        });
-                        event.preventDefault();
-                        return false;
-                    }
-
-                }
+                // let qty = $('input[name^="qty[]"]').length;
+                // let qty_value = $('input[name^="qty[]"]');
+                // for (i = 0; i < qty; i++) {
+                //     if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null) {
+                //         swal({
+                //             type: 'error',
+                //             title: 'Qty cannot be empty!',
+                //             icon: 'error',
+                //             confirmButtonColor: '#3c8dbc',
+                //         });
+                //         event.preventDefault();
+                //         return false;
+                //     }
+                // }
 
                 Swal.fire({
                     title: 'Are you sure ?',
@@ -365,10 +401,10 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" value="" autocomplete="off" required>
+                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" autocomplete="off" required>
                         </td>
 
-                        <td class="td-style">
+                        <td class="td-style exclude">
                             ${index+1}
                         </td>
 
@@ -393,5 +429,70 @@
                 });
             });
         });
+
+        //Show Modal upload file
+        $("#btnUpload").click(function () {
+            $('#addRowModal').modal('show');
+        });
+
+        //Upload file
+        $('#upload-cycle-count').on('click', function(event) {
+            event.preventDefault();
+            if($('#cycle-count-file').val() === ''){
+                swal({
+                    type: 'error',
+                    title: 'Please choose file!',
+                    icon: 'error',
+                    confirmButtonColor: '#3c8dbc',
+                });
+                event.preventDefault();
+                return false;
+            }else{
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+             
+                let formData = new FormData();
+                formData.append('cycle-count-file', $('#cycle-count-file')[0].files[0]);
+                $.ajax({
+                    type:'POST',
+                    url: "{{ route('cycle-count-file-store') }}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: (response) => {
+                        console.log(response.files);
+                        if (response) {
+                            Swal.fire({
+                                title: response.msg,
+                                icon: response.status,
+                                confirmButtonColor: '#3085d6',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#addRowModal').modal('hide');
+                                    response.files.forEach(file=>{
+                                        const tr = $('#cycle-count tbody').find('tr');
+                                        const qty = tr.find('input[item="'+parseInt(file.digits_code)+'"]');
+                                        const newQty = parseInt(file.quantity) ? parseInt(file.quantity) : 0;
+                                        if(qty){
+                                            qty.val(newQty);
+                                        }
+                                        $('#quantity_total').val(calculateTotalQuantity());
+                                    });
+                                    $('#filename').val(response.filename);
+                                }
+                            });  
+                        }
+                    },
+                    error: function(response){
+                        $('#file-input-error').text(response.responseJSON.message);
+                    }
+                });
+            }
+        });
+
+       
     </script>
 @endpush

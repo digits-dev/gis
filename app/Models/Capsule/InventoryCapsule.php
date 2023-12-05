@@ -25,7 +25,7 @@ class InventoryCapsule extends Model
         ->leftJoin('items', 'inventory_capsules.item_code', 'items.digits_code2')
         ->leftJoin('locations', 'locations.id', '=','inventory_capsules.locations_id')
         ->select('items.digits_code','items.digits_code2','items.item_description','stockroom_capsule_qty','location_name')
-        ->where('stockroom_capsule_qty','>',0)
+        //->where('stockroom_capsule_qty','>',0)
         ->get();
     }
 

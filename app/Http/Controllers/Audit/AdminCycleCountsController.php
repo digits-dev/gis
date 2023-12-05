@@ -13,12 +13,20 @@
     use App\Models\Submaster\Item;
     use App\Models\Submaster\Locations;
     use App\Models\Submaster\SalesType;
-use App\Models\Submaster\SubLocations;
-use Carbon\Carbon;
+	use App\Models\Submaster\SubLocations;
+	use Carbon\Carbon;
+	use Illuminate\Support\Facades\File;
+	use Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
     use Session;
     use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Jobs\CycleCountImportJob;
+	use Illuminate\Http\UploadedFile;
 
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -617,5 +625,91 @@ use Carbon\Carbon;
         public function checkStockRoomInventoryQty(Request $request){
             $capsuleInventory = InventoryCapsule::getInventoryByLocation($request->location_id);
             return json_encode(['capsuleInventory' => $capsuleInventory]);
+		}
+
+		public function getDownload($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$capsuleInventoryData = InventoryCapsule::getInventoryByLocation($id);
+			
+			$data_array [] = array(
+				"Item Code",
+				"Item Description",
+				"Quantity",
+			);
+
+			foreach($capsuleInventoryData as $data_item){
+				$data_array[] = array(
+					'Item Code' => $data_item->digits_code,
+					'Item Description' => $data_item->item_description,
+					'Quantity' => '',
+					
+				);
+			}
+			$this->ExportExcel($data_array);
+			
+		}
+
+		public function ExportExcel($data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="cycle-count.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+
+		//Store File
+		public function storeFile(Request $request){
+		
+			
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$reader->setReadDataOnly(true);
+			$spreadsheet = $reader->load($request->file('cycle-count-file'));
+			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+			$data = $sheet->toArray();
+			unset($data[0]);
+
+			$newArray = [];
+			$contArray = [];
+			foreach($data as $val){
+				$contArray['digits_code'] = $val[0];
+				$contArray['item_description'] = $val[1];
+				$contArray['quantity'] = $val[2];
+				$newArray[] = $contArray;
+			}
+			foreach($request->files as $file){
+				$name = time().rand(1,50) . '.' . $file->getClientOriginalExtension();
+				$filename = $name;
+				$file->move('cycle-count-files',$filename);
+			}
+			return response()->json([
+				'status'=>'success', 
+				'msg'=>'File uploaded successfully!',
+				'files'=>$newArray,
+				'filename'=>$filename
+			]);
+		}
+
+		//Import Cycle Count using JOB
+		public function importCycleCount(Request $request){
+			$file = $request->filename;
+			$path = public_path('cycle-count-files/'.$file);
+			$data = [];
+			$data['file'] = $path;
+			$data['location_id'] = $request->location_id;
+			$data['quantity_total'] = $request->quantity_total;
+			dispatch(new CycleCountImportJob($data));
+			return back()->withStatus(__('Operations successfully queued and will be imported soon.'));
 		}
 	}
