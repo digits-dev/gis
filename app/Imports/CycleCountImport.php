@@ -25,8 +25,9 @@ use App\Models\Submaster\Item;
 use App\Models\Submaster\Locations;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\SubLocations;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 
-class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading{
+class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading, WithStrictNullComparison {
     protected $filename;
     protected $location_id;
     protected $quantity_total;
@@ -42,9 +43,12 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading
     }
 
     public function collection(Collection $rows){
-       
         $cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
         foreach ($rows->toArray() as $key_item => $item_value){
+            if($item_value['quantity'] === '' || $item_value['quantity'] === NULL){
+                unlink(public_path('cycle-count-files/'.basename($this->filename)));
+                return CRUDBooster::redirect(CRUDBooster::adminpath('cycle_counts'),"Quantity required! Please put zero if N/A! at row: ".($key_item+2),"danger");
+            }
             $sublocation_id = SubLocations::where('location_id',$this->location_id)->where('description',self::STOCK_ROOM)->first();
             $item = Item::where('digits_code',$item_value['item_code'])->first();
             $fqty = str_replace(',', '', $item_value['quantity']);
