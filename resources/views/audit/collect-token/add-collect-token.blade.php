@@ -250,6 +250,7 @@
         });
     });
 
+    $('#add-Row').attr('disabled',true);
 
     $('#location_id').change(function(){
         $('#location_id').attr('disabled',true);
@@ -328,6 +329,9 @@
         if (selectedInput == 'machine') checkMachinePartner(text);
     }
 
+    $('#gasha_machines_id_inputed').on('input', function() {
+        $(this).val($(this).val().toUpperCase());
+    })
     
     function checkMachinePartner(item_code) {
         $.ajax({
@@ -712,10 +716,19 @@
                 confirmButtonText: 'Save',
                 returnFocus: false,
                 reverseButtons: true,
+                showLoaderOnConfirm: true,
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Swal.fire({
+                    //     allowEscapeKey: false,
+                    //     allowOutsideClick: false,
+                    //     showConfirmButton: false,
+                    //     title: "Please while saving...",
+                    //     didOpen: () => Swal.showLoading();
+                    // });
                     $('#location_id').attr('disabled',false);
                     $('#collectToken').submit();
+                    $('#btnSubmit').attr('disabled', true);
                 }
             });
            

@@ -129,7 +129,7 @@
     <div class='panel panel-default'>
         <span><a class="btn btn-warning btn-sm" id="btnRefreshPage" style="float:right; margin: 5px 5px 0 0"><i class="fa fa-refresh"></i> Reset</a></span>
         <span><a class="btn btn-default btn-sm" id="btnExport" style="float:right; margin: 5px 5px 0 0"><i class="fa fa-download"></i> Download template</a></span>
-        <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Upload file</button></span>
+        <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Fill quantity via upload file</button></span>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
             <span>Cycle Count (Capsule) Form</span>
         </div>
@@ -300,10 +300,13 @@
 
             $('#quantity_total').val(calculateTotalQuantity());
         });
+
         const fileLength = [];
         $(document).ready(function() {
             $('#btnSubmit').click(function(event) {
                 event.preventDefault();
+                const tbody = $('#cycle-count tbody').find('tr');;
+                const items_table = tbody.find('input[name="qty[]"]').length;
                 var rowCount = $('#cycle-count tr').length - 2;
                 // console.log(rowCount);
                 if (rowCount === 0) {
@@ -324,23 +327,31 @@
                     });
                     event.preventDefault();
                     return false;
+                }else if(items_table != fileLength.length){
+                    swal({
+                        type: 'error',
+                        title: 'File data not match in the system!',
+                        icon: 'error',
+                        confirmButtonColor: '#3c8dbc',
+                    });
+                    event.preventDefault();
+                    return false;
                 }
 
-
-                // let qty = $('input[name^="qty[]"]').length;
-                // let qty_value = $('input[name^="qty[]"]');
-                // for (i = 0; i < qty; i++) {
-                //     if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null) {
-                //         swal({
-                //             type: 'error',
-                //             title: 'Qty cannot be empty!',
-                //             icon: 'error',
-                //             confirmButtonColor: '#3c8dbc',
-                //         });
-                //         event.preventDefault();
-                //         return false;
-                //     }
-                // }
+                let qty = $('input[name^="qty[]"]').length;
+                let qty_value = $('input[name^="qty[]"]');
+                for (i = 0; i < qty; i++) {
+                    if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null) {
+                        swal({
+                            type: 'error',
+                            title: 'Qty cannot be empty!',
+                            icon: 'error',
+                            confirmButtonColor: '#3c8dbc',
+                        });
+                        event.preventDefault();
+                        return false;
+                    }
+                }
 
                 Swal.fire({
                     title: 'Are you sure ?',
@@ -390,7 +401,6 @@
         });
 
         function populateOutsideTable(data){
-
             data.forEach((item, index) => {
                 const newrow =`
                     <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${item.digits_code2}">
@@ -398,21 +408,15 @@
                         <td class="td-style">${item.digits_code}
                             <input type="hidden" name="item_code[]" value="${item.digits_code}">
                         </td>
-
                         <td class="td-style existing-item-description">${item.item_description}</td>
-
                         <td class="td-style">
                             <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" autocomplete="off" required readonly>
                         </td>
-
                         <td class="td-style exclude">
                             ${index+1}
                         </td>
-
                     </tr>
-
                 `;
-
                 $('#cycle-count tbody').append(newrow);
             });
         }
@@ -441,7 +445,6 @@
         });
 
         //Upload file
-      
         $('#upload-cycle-count').on('click', function(event) {
             event.preventDefault();
             if($('#cycle-count-file').val() === ''){
@@ -486,8 +489,9 @@
                                             qty.val(newQty);
                                         }
                                         $('#quantity_total').val(calculateTotalQuantity());
+                                        fileLength.push(file);
                                     });
-                                    fileLength.push(response.files);
+                                    validateInput();
                                     $('#filename').val(response.filename);
                                     $('#btnUpload').attr('disabled', true);
                                 }
@@ -500,6 +504,18 @@
                 });
             }
         });
+
+        function validateInput() {
+            const qtyInput = $('.item-details').get();
+            qtyInput.forEach(input => {
+                const currentVal = $(input).val(); 
+                if(!currentVal) {
+                    $(input).css('border', '2px solid red');
+                } else {
+                    $(input).css('border', '');
+                }
+            });
+        }
 
         $("#btn-cancel").click(function(event) {
             event.preventDefault();
@@ -535,44 +551,44 @@
                 return false;
             }else{
                 Swal.fire({
-                        title: 'Are you sure you want to reset?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes',
-                        cancelButtonText: "No",
-                        returnFocus: false,
-                        reverseButtons: true,
+                    title: 'Are you sure you want to reset?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: "No",
+                    returnFocus: false,
+                    reverseButtons: true,
                 }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajaxSetup({
-                                headers: {
-                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                        }
-                            });
-                            $.ajax({
-                                type: 'POST',
-                                url: '{{ route("delete-file") }}',
-                                dataType: 'json',
-                                data: {
-                                    'filename': filename
-                                },
-                                success: (response) => {
-                                    Swal.fire({
-                                        title: response.message,
-                                        icon: response.status,
-                                        confirmButtonColor: '#3085d6',
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            location.reload();
-                                        }
-                                    });   
-                                    
-                                }
-                            });  
-                        }
+                    if (result.isConfirmed) {
+                        $.ajaxSetup({
+                            headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    }
+                        });
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ route("delete-file") }}',
+                            dataType: 'json',
+                            data: {
+                                'filename': filename
+                            },
+                            success: (response) => {
+                                Swal.fire({
+                                    title: response.message,
+                                    icon: response.status,
+                                    confirmButtonColor: '#3085d6',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.reload();
+                                    }
+                                });   
+                                
+                            }
+                        });  
+                    }
                 });
             }
         });
