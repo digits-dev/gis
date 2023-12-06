@@ -43,8 +43,11 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading
     }
 
     public function collection(Collection $rows){
+        $excelFile = [];
         $cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
         foreach ($rows->toArray() as $key_item => $item_value){
+            array_push($excelFile, $item_value['item_code']);
+         
             if($item_value['quantity'] === '' || $item_value['quantity'] === NULL){
                 unlink(public_path('cycle-count-files/'.basename($this->filename)));
                 return CRUDBooster::redirect(CRUDBooster::adminpath('cycle_counts'),"Quantity required! Please put zero if N/A! at row: ".($key_item+2),"danger");
@@ -116,6 +119,78 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading
                 ]);
             }
         }
+
+        //PROCESS NOT INCLUDED IN FILE
+        $notIncludedInExcel = InventoryCapsule::leftJoin('items', 'inventory_capsules.item_code', 'items.digits_code2')
+                                                ->leftJoin('inventory_capsule_view', 'inventory_capsules.id', 'inventory_capsule_view.inventory_capsules_id')
+                                                ->whereNotIn('items.digits_code', $excelFile)
+                                                ->where('stockroom_capsule_qty','>',0)
+                                                ->where('inventory_capsules.locations_id', $this->location_id)
+                                                ->select('items.digits_code','items.digits_code2','items.item_description','stockroom_capsule_qty')
+                                                ->get();
+    
+        if($notIncludedInExcel){
+            foreach($notIncludedInExcel->toArray() as $key_item => $item_value){
+            
+                $sublocation_id = SubLocations::where('location_id',$this->location_id)->where('description',self::STOCK_ROOM)->first();
+            
+                $fqty = $item_value['stockroom_capsule_qty'];
+                $capsuleHeader = [
+                    'reference_number' => $cycleCountFloorRef,
+                    'locations_id' => $this->location_id
+                ];    
+
+                $capsuleInventory = InventoryCapsule::where('item_code',$item_value['digits_code2'])
+                ->where('locations_id',$this->location_id)->first();
+
+                $capsuleInventoryLine = InventoryCapsuleLine::where([
+                    'inventory_capsules_id'=>$capsuleInventory->id,
+                    'sub_locations_id'=> $sublocation_id->id,
+                    'gasha_machines_id'=> null
+                ])->first();
+
+                $capsule = CycleCount::firstOrCreate($capsuleHeader,[
+                    'reference_number' =>$cycleCountFloorRef,
+                    'locations_id' => $this->location_id,
+                    'sub_locations_id' => $sublocation_id->id,
+                    'total_qty' => $this->quantity_total,
+                    'created_by' => CRUDBooster::myId(),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $capsuleLines = new CycleCountLine([
+                    'cycle_counts_id' => $capsule->id,
+                    'digits_code' => $item_value['digits_code'],
+                    'qty' => 0,
+                    'variance' => -1 * abs($fqty),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $capsuleLines->save();
+
+                HistoryCapsule::insert([
+                    'reference_number' => $capsule->reference_number,
+                    'item_code' => $item_value['digits_code2'],
+                    'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                    'locations_id' => $this->location_id,
+                    'from_sub_locations_id' => $sublocation_id->id,
+                    'qty' => -1 * abs($fqty),
+                    'created_by' => CRUDBooster::myId(),
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                InventoryCapsuleLine::where([
+                    'inventory_capsules_id' => $capsuleInventory->id,
+                    'sub_locations_id'=> $sublocation_id->id
+                ])->update([
+                    'qty' => 0,
+                    'updated_by' => CRUDBooster::myId(),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            
+            }
+        }
+
     }
 
     public function batchSize(): int

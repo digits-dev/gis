@@ -686,6 +686,29 @@
 				$contArray['quantity'] = $val[2];
 				$newArray[] = $contArray;
 			}
+			$allJanNo = $item = Item::get()->toArray();
+
+			$getQtyData = [];
+			foreach($allJanNo as $key => $val){
+				$i = array_search($val['digits_code'], array_column($newArray,'digits_code'));
+				if($i !== false){
+					$val['quantity'] = $newArray[$i];
+					$getQtyData[] = $val;
+				}else{
+					$val['quantity'] = 0;
+					$getQtyData[] = $val;
+				}
+			}
+			$finalConData = [];
+			$finalData = [];
+			foreach($getQtyData as $fData => $fVal){
+				$finalConData['digits_code'] = $fVal['digits_code'];
+				$finalConData['digits_code2'] = $fVal['digits_code2'];
+				$finalConData['item_description'] = $fVal['item_description'];
+				$finalConData['quantity'] = $fVal['quantity'] ? $fVal['quantity']['quantity'] : $fVal['quantity'];
+				$finalData[] = $finalConData;
+			}
+
 			foreach($request->files as $file){
 				$name = time().rand(1,50) .'-'. $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
 				$filename = $name;
@@ -694,7 +717,7 @@
 			return response()->json([
 				'status'=>'success', 
 				'msg'=>'File uploaded successfully!',
-				'files'=>$newArray,
+				'files'=>$finalData,
 				'filename'=>$filename
 			]);
 		}

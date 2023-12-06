@@ -351,7 +351,7 @@
 			
 			$postdata['statuses_id']      = $this->forPrint;
 			$postdata['created_by']       = CRUDBooster::myId();
-			$location_id                  = $postdata['locations_id'];
+			$location_id                  = CRUDBooster::myLocationId();
 			$token_inventory              = TokenInventory::where('locations_id', $location_id);
 			$token_inventory_qty          = $token_inventory->first()->qty;
 			$postdata['qty']              = intval(str_replace(',', '', $postdata['qty']));

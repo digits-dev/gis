@@ -719,16 +719,17 @@
                 showLoaderOnConfirm: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Swal.fire({
-                    //     allowEscapeKey: false,
-                    //     allowOutsideClick: false,
-                    //     showConfirmButton: false,
-                    //     title: "Please while saving...",
-                    //     didOpen: () => Swal.showLoading();
-                    // });
                     $('#location_id').attr('disabled',false);
                     $('#collectToken').submit();
                     $('#btnSubmit').attr('disabled', true);
+                    $('#add-Row').attr('disabled', true);
+                    Swal.fire({
+                        allowEscapeKey: false,
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        title: "Please wait while saving...",
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
             });
            
@@ -749,7 +750,7 @@
         return totalQuantity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     }
 
-    $("#btn-cancel").click(function(event) {
+    $("#btn-cancel").on('click', function(event) {
        event.preventDefault();
        Swal.fire({
             title: 'Are you sure you want to cancel?',

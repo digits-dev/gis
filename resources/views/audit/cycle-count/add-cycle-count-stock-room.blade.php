@@ -232,6 +232,7 @@
         $('#addRowModal').modal('hide');
         $('#btnExport').attr('disabled', true);
         $('#btnUpload').attr('disabled', true);
+        $('#btnRefreshPage').attr('disabled', true);
         $('#location_id').select2();
 
         var tableRow = 1;
@@ -250,24 +251,25 @@
             $(this).attr('disabled', true);
             $('#btnExport').attr('disabled', false);
             $('#btnUpload').attr('disabled', false);
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('check-sr-inventory-qty') }}",
-                data: {
-                    "location_id": $(this).val()
-                },
-                success: function(res) {
-                    const data = JSON.parse(res);
-                    if ($.isEmptyObject(data.capsuleInventory)) {
-                        $('#location_error').text('No available inventory');
-                    } else {
-                        $('#location_error').text('');
-                        populateOutsideTable(data.capsuleInventory);
-                        $('#quantity_total').val(calculateTotalQuantity());
-                    }
-                    // console.log(res);
-                }
-            });
+            $('#btnRefreshPage').attr('disabled', false);
+            // $.ajax({
+            //     type: 'POST',
+            //     url: "{{ route('check-sr-inventory-qty') }}",
+            //     data: {
+            //         "location_id": $(this).val()
+            //     },
+            //     success: function(res) {
+            //         const data = JSON.parse(res);
+            //         if ($.isEmptyObject(data.capsuleInventory)) {
+            //             $('#location_error').text('No available inventory');
+            //         } else {
+            //             $('#location_error').text('');
+            //             populateOutsideTable(data.capsuleInventory);
+            //             $('#quantity_total').val(calculateTotalQuantity());
+            //         }
+            //         // console.log(res);
+            //     }
+            // });
         });
 
         $(document).on('keyup', '.qty', function(e) {
@@ -327,16 +329,17 @@
                     });
                     event.preventDefault();
                     return false;
-                }else if(items_table != fileLength.length){
-                    swal({
-                        type: 'error',
-                        title: 'File data not match in the system!',
-                        icon: 'error',
-                        confirmButtonColor: '#3c8dbc',
-                    });
-                    event.preventDefault();
-                    return false;
                 }
+                // else if(items_table != fileLength.length){
+                //     swal({
+                //         type: 'error',
+                //         title: 'File data not match in the system!',
+                //         icon: 'error',
+                //         confirmButtonColor: '#3c8dbc',
+                //     });
+                //     event.preventDefault();
+                //     return false;
+                // }
 
                 let qty = $('input[name^="qty[]"]').length;
                 let qty_value = $('input[name^="qty[]"]');
@@ -410,7 +413,7 @@
                         </td>
                         <td class="td-style existing-item-description">${item.item_description}</td>
                         <td class="td-style">
-                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[]" style="width:100%" autocomplete="off" required readonly>
+                            <input machine="${item.digits_code2}" item="${item.digits_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" value=${item.quantity} type="text" name="qty[]" style="width:100%" autocomplete="off" required readonly>
                         </td>
                         <td class="td-style exclude">
                             ${index+1}
@@ -481,17 +484,18 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     $('#addRowModal').modal('hide');
-                                    response.files.forEach(file=>{
-                                        const tr = $('#cycle-count tbody').find('tr');
-                                        const qty = tr.find('input[item="'+parseInt(file.digits_code)+'"]');
-                                        const newQty = parseInt(file.quantity) ? parseInt(file.quantity) : 0;
-                                        if(qty){
-                                            qty.val(newQty);
-                                        }
-                                        $('#quantity_total').val(calculateTotalQuantity());
-                                        fileLength.push(file);
-                                    });
-                                    validateInput();
+                                    // response.files.forEach(file=>{
+                                    //     const tr = $('#cycle-count tbody').find('tr');
+                                    //     const qty = tr.find('input[item="'+parseInt(file.digits_code)+'"]');
+                                    //     const newQty = parseInt(file.quantity) ? parseInt(file.quantity) : 0;
+                                    //     if(qty){
+                                    //         qty.val(newQty);
+                                    //     }
+                                    //     $('#quantity_total').val(calculateTotalQuantity());
+                                    //     fileLength.push(file);
+                                    // });
+                                    populateOutsideTable(response.files);
+                                    $('#quantity_total').val(calculateTotalQuantity());
                                     $('#filename').val(response.filename);
                                     $('#btnUpload').attr('disabled', true);
                                 }
