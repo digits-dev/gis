@@ -638,14 +638,14 @@
 				"Quantity",
 			);
 
-			foreach($capsuleInventoryData as $data_item){
+			//foreach($capsuleInventoryData as $data_item){
 				$data_array[] = array(
-					'Item Code' => $data_item->digits_code,
-					'Item Description' => $data_item->item_description,
+					'Item Code' => '',
+					'Item Description' => '',
 					'Quantity' => '',
 					
 				);
-			}
+			//}
 			$this->ExportExcel($data_array);
 			
 		}
