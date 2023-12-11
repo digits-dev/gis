@@ -23,6 +23,7 @@ use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
 use App\Http\Controllers\Capsule\AdminCapsuleMergesController;
+use App\Http\Controllers\Capsule\AdminCapsuleSalesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSplitController;
 use App\Http\Controllers\Capsule\AdminInventoryCapsulesController;
 use App\Http\Controllers\Submaster\AdminGashaMachinesController;
@@ -125,6 +126,10 @@ Route::group(['middleware' => ['web']], function() {
     
     // CAPSULE MOVEMENT HISTORY EXPORT
     Route::post('admin/history_capsules/export', [AdminHistoryCapsulesController::class, 'exportData'])->name('history_capsule_export');
+    
+    //CAPSULE SALES EXPORT
+    Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
+
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);

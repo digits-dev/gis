@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use Session;
-	use Request;
-	use DB;
-	use CRUDBooster;
+use Session;
+use Illuminate\Http\Request;
+use DB;
+use CRUDBooster;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CapsuleSalesExport;
 
 	class AdminCapsuleSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -24,7 +26,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "capsule_sales";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -37,7 +39,7 @@
 			$this->col[] = ["label"=>"Gasha Machine Serial Number","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
-			$this->col[] = ["label"=>"Capsule Action Type","name"=>"sales_type_id","join"=>"sales_types,description"];
+			$this->col[] = ["label"=>"Sales Type","name"=>"sales_type_id","join"=>"sales_types,description"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -50,7 +52,7 @@
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'Gasha Machine Serial Number','name'=>'gasha_machines_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines,serial_number'];
-			$this->form[] = ['label'=>'Capsule Action Type','name'=>'sales_type_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'sales_types,description'];
+			$this->form[] = ['label'=>'Sales Type','name'=>'sales_type_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'sales_types,description'];
 			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_users,name'];
 			$this->form[] = ['label'=>'Created Date','name'=>'created_at','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -131,6 +133,15 @@
 	        | 
 	        */
 	        $this->index_button = array();
+			if (CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = [
+					"title"=>"Export Capsule Sales",
+					"label"=>"Export Data",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showSalesExport()",
+				];
+			}
 
 
 
@@ -164,7 +175,11 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = "
+				function showSalesExport() {
+					$('#modal-sales-export').modal('show');
+				}
+			";
 
 
             /*
@@ -187,7 +202,34 @@
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
-	        $this->post_index_html = null;
+	        $this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-sales-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Capsule Sales</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('capsule_sales_export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
 	        
 	        
 	        
@@ -344,9 +386,9 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
-
+		public function exportData(Request $request) {
+			$filename = $request->input('filename');
+			return Excel::download(new CapsuleSalesExport, $filename.'.csv');
+		}
 
 	}
