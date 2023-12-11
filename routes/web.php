@@ -153,6 +153,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/download-machines-template',[AdminImportController::class, 'downloadMachinesTemplate']);
 
+    // GASHA MACHINE EXPORT
+    Route::post('admin/gasha_machines/export', [AdminGashaMachinesController::class, 'exportData'])->name('gasha_machines_export');
+
+
     //SWAP HISTORY VOID BACKEND
     Route::get(config('crudbooster.ADMIN_PATH').'/swap_histories/requestVoid/{id}', [AdminSwapHistoriesController::class, 'requestVoid']);
     Route::get(config('crudbooster.ADMIN_PATH').'/swap_histories/getDetails/{id}', [AdminSwapHistoriesController::class, 'getDetails']);

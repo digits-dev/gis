@@ -1,13 +1,16 @@
 <?php namespace App\Http\Controllers\Submaster;
 
+	use App\Exports\GashaMachineExport;
 	use Session;
 	use Request;
+	use Illuminate\Http\Request as ExportRequest;
 	use DB;
 	use CRUDBooster;
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\Counter;
 	use Excel;
+
 	class AdminGashaMachinesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -128,6 +131,13 @@
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Upload Machines","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('machines-upload'),'color'=>'primary'];
+				$this->index_button[] = [
+					"title"=>"Export Data",
+					"label"=>"Export Data",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showExport()",
+				];
 			}
 
 
@@ -181,6 +191,9 @@
 						}
 					});
 				});
+				function showExport() {
+					$('#modal-export').modal('show');
+				}
 			";
 
 
@@ -204,7 +217,34 @@
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
-	        $this->post_index_html = null;
+	        $this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Capsule Sales</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('gasha_machines_export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
 
 
 
@@ -413,6 +453,12 @@
 		public function UploadMachines() {
 			$data['page_title']= 'Machines Upload';
 			return view('import.gasha-machine-import.gasha-machine-import', $data)->render();
+		}
+
+		//EXPORT
+		public function exportData(ExportRequest $request) {
+			$filename = $request->input('filename');
+			return Excel::download(new GashaMachineExport, $filename.'.csv');
 		}
 
 	}
