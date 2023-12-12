@@ -27,7 +27,7 @@ use App\Models\Submaster\SalesType;
 use App\Models\Submaster\SubLocations;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 
-class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading, WithStrictNullComparison {
+class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullComparison {
     protected $filename;
     protected $location_id;
     protected $quantity_total;
@@ -193,13 +193,13 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithChunkReading
 
     }
 
-    public function batchSize(): int
-    {
-        return 1000;
-    }
+    // public function batchSize(): int
+    // {
+    //     return 1000;
+    // }
 
-    public function chunkSize(): int
-    {
-        return 1000;
-    }
+    // public function chunkSize(): int
+    // {
+    //     return 1000;
+    // }
 }
