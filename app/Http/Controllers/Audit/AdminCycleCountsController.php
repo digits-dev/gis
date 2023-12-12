@@ -710,7 +710,7 @@
 			}
 
 			foreach($request->files as $file){
-				$name = time().rand(1,50) .'-'. $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+				$name = time().rand(1,50) .'-'. $file->getClientOriginalName();
 				$filename = $name;
 				$file->move('cycle-count-files',$filename);
 			}
