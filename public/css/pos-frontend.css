@@ -309,6 +309,18 @@ body{
     }
 }
 
-@media only screen and (max-width: 445px) {
+@media only screen and (max-width: 489px) {
+    .store-login-content{
+        padding: 5px;
+    }
+
+    .store-login-inputs input, .login-btn{
+        min-width: 260px;
+        
+    }
+
+    .store-login-inputs input{
+        padding: 10px 50px 10px 10px;
+    }
 }
 
