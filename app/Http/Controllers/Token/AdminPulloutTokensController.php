@@ -18,9 +18,9 @@
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forPrint         =  2;    
+			$this->forPrint         =  2;
 			$this->forReceiving     =  3;
-			$this->closed           =  4;      
+			$this->closed           =  4;
 		}
 	    public function cbInit() {
 
@@ -45,7 +45,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Status","name"=>"statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty",'callback_php'=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
@@ -54,8 +54,6 @@
 			$this->col[] = ["label"=>"Received Date","name"=>"received_at"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			// $this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			// $this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -63,9 +61,9 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
             if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
-			    $this->form[] = ['label'=>'Reference Number','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
+			    $this->form[] = ['label'=>'Reference #','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-5'];
             }
-	
+
 			$this->form[] = ['label'=>'Qty','name'=>'qty','type'=>'text','validation'=>'required|min:0','width'=>'col-sm-5'];
 			if(CRUDBooster::isSuperAdmin()){
 				$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'locations,location_name','datatable_where'=>'status = "ACTIVE"'];
@@ -222,7 +220,7 @@
 	        */
 	        $this->load_js = array();
 			$this->load_js[] = asset('jsHelper\isNumber.js');
-	        
+
 
 
 
@@ -258,7 +256,7 @@
 				}
 				@media (min-width:729px){
 					.panel-default{
-							width:40%; 
+							width:40%;
 							margin:auto;
 					}
 				}
@@ -323,9 +321,9 @@
 	    |
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
-	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');     
-			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');   
-			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+	    	$forPrint       = DB::table('statuses')->where('id', $this->forPrint)->value('status_description');
+			$forReceiving   = DB::table('statuses')->where('id', $this->forReceiving)->value('status_description');
+			$closed         = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			if($column_index == 2){
 				if($column_value == $forPrint){
 					$column_value = '<span class="label label-info">'.$forPrint.'</span>';
@@ -348,7 +346,7 @@
 	        //Your code here
 			$checkTokenInventory = DB::table('token_inventories')->where('id',1)->first();
 			$postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-			
+
 			$postdata['statuses_id']      = $this->forPrint;
 			$postdata['created_by']       = CRUDBooster::myId();
 			$location_id                  = CRUDBooster::myLocationId();
@@ -356,7 +354,7 @@
 			$token_inventory_qty          = $token_inventory->first()->qty;
 			$postdata['qty']              = intval(str_replace(',', '', $postdata['qty']));
 			$postdata['to_locations_id']  = $checkTokenInventory->id;
-			
+
 
 			$qtyToDeduct = $postdata['qty'];
 			if($token_inventory_qty === null){
@@ -364,7 +362,7 @@
 			}else if($qtyToDeduct > $token_inventory_qty){
 				return CRUDBooster::redirect(CRUDBooster::mainpath(),"The quantity you're trying to pull out exceeds the available quantity in the Token Inventory!","danger");
 			}
-			
+
 	    }
 
 	    /*
@@ -384,7 +382,7 @@
 			// ]);
 
 			// $typeId = DB::table('token_action_types')->select('id')->where('description', 'Deduct')->first()->id;
-			
+
 			// $tokenInfo = PulloutToken::where('id', $id)->first();
 			// $location_id = $tokenInfo->locations_id;
 			// $token_inventory = TokenInventory::where('locations_id', $location_id);
@@ -478,9 +476,9 @@
 
 		public function getPulloutForPrint($id){
 			$this->cbLoader();
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-			}  
+			}
 
 			$data = array();
 			$data['page_title'] = 'Pullout Print';
@@ -492,14 +490,14 @@
 		public function forPrintPulloutUpdate(){
 			$data = Request::all();
 			$header_id = $data['header_id'];
-			$checkPrinted = PulloutToken::where('id', $header_id)->first();   
+			$checkPrinted = PulloutToken::where('id', $header_id)->first();
 			if($checkPrinted->statuses_id === $this->forPrint){
 				PulloutToken::where('id',$header_id)
 				->update([
 					'statuses_id'=> $this->forReceiving,
 				]);
 
-				$pullout_token = PulloutToken::find($header_id);   
+				$pullout_token = PulloutToken::find($header_id);
 				$qty = -1 * abs($pullout_token->qty);
 				$location_id = $pullout_token->locations_id;
 				$tat_add_token = TokenActionType::where('id', 4)->first();
