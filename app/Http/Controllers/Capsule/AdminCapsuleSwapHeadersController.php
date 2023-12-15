@@ -41,7 +41,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Machine No One","name"=>"machine_no_one"];
 			$this->col[] = ["label"=>"Capsule Qty One","name"=>"capsule_qty_one"];
 			$this->col[] = ["label"=>"No Of Token One","name"=>"no_of_token_one"];
@@ -56,20 +56,6 @@
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Machine No One","name"=>"machine_no_one","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Capsule Qty One","name"=>"capsule_qty_one","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"No Of Token One","name"=>"no_of_token_one","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Machine No Two","name"=>"machine_no_two","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Capsule Qty Two","name"=>"capsule_qty_two","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"No Of Token Two","name"=>"no_of_token_two","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Location","name"=>"location","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
 
 			/*
 	        | ----------------------------------------------------------------------
@@ -745,7 +731,7 @@
 						'created_at'            => $time_stamp,
 					]);
 				}
-				
+
 			}
 
 			$machine_one_after = InventoryCapsuleLine::where('gasha_machines_id', $machine_one_data->id)

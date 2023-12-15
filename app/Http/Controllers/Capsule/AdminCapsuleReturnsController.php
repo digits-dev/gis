@@ -42,7 +42,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
 			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Sub Location","name"=>"sub_locations_id","join"=>"locations,location_name"];
@@ -255,7 +255,7 @@
 					->where('capsule_returns.created_by', CRUDBooster::myId())
 					->where('gm.location_id', CRUDBooster::myLocationId())
 					->orderBy('capsule_returns.id', 'desc');
-			} 
+			}
 	    }
 
 	    /*
@@ -364,7 +364,7 @@
 			$sub_location_id = SubLocations::where('location_id', $gasha_machines->location_id)->first()->id;
 
 			$filteredData = [];
-			
+
 			foreach ($return_inputs as $key => $value) {
 				if (strpos($key, 'qty_') === 0) {
 					$newKey = substr($key, 4); // Remove "qty_" prefix
@@ -373,16 +373,16 @@
 					$filteredData[$jan_no] = $value;
 				}
 			}
-			
+
 			$capsule_return_rn = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// $sales_rn = Counter::getNextReference(DB::table('cms_moduls')->where('name', 'Capsule Sales')->first()->id);
-			
+
 			foreach($filteredData as $key=>$value){
 				$inventory_capsule = InventoryCapsule::leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
 					->where('locations_id', CRUDBooster::myLocationId());
 
 				$inventory_capsule_id = $inventory_capsule->where('items.digits_code', $key)->select('inventory_capsules.id')->first()->id;
-				
+
 				$capsule = new CapsuleReturn([
 					'reference_number' =>$capsule_return_rn,
 					'item_code' => $key,

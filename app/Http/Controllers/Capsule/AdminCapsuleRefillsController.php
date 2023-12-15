@@ -45,7 +45,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-            $this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+            $this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
             $this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
             $this->col[] = ["label"=>"Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
 			$this->col[] = ["label"=>"JAN #","name"=>"item_code"];
@@ -256,7 +256,7 @@
 			} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5, 12])) {
 				$query->where('capsule_refills.locations_id', CRUDBooster::myLocationId())
 					->orderBy('capsule_refills.id', 'desc');
-			} 
+			}
 	    }
 
 	    /*
@@ -543,14 +543,14 @@
 				"location"           => "Location",
 				"qty"                => "Qty",
 			];
-	
+
 			$arrData = [
 				"jan_no"             => "4570118023759",
 				"machine_serial"     => "PH00001",
 				"location"           => "GASHAPON.MITSUKOSHI.BGC.RTL",
 				"qty"                => "1",
 			];
-	
+
 			$spreadsheet = new Spreadsheet();
 			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
 			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
@@ -566,18 +566,18 @@
 			$path_excel = $request->file('import_file')->store('temp');
 			$path = storage_path('app').'/'.$path_excel;
 			$headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
-	
+
 			if (count($headings) !== 4) {
 			    CRUDBooster::redirect(CRUDBooster::mainpath(), 'Template column not match, please refer to downloaded template.', 'danger');
 			} else {
 				try {
-					
-					Excel::import(new CapsulesImport, $path);	
+
+					Excel::import(new CapsulesImport, $path);
 					CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Upload Successfully!"), 'success');
-	
+
 				} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
 				    $failures = $e->failures();
-	
+
 				    $error = [];
 				    foreach ($failures as $failure) {
 				        $line = $failure->row();
@@ -585,13 +585,13 @@
 				            $error[] = $err . " on line: " . $line;
 				        }
 				    }
-	
+
 				    $errors = collect($error)->unique()->toArray();
-	
+
 				}
 				CRUDBooster::redirect(CRUDBooster::mainpath(), $errors[0], 'danger');
-	
+
 			}
-	
+
 		}
 	}
