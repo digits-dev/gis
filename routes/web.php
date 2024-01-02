@@ -121,6 +121,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_refills/upload-capsules',[AdminCapsuleRefillsController::class, 'saveUploadCapsules'])->name('upload-capsules');
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/download-capsules-template',[AdminCapsuleRefillsController::class, 'downloadCapsulesTemplate']);
 
+    //CAPSULE EXPORT
+    Route::post('admin/capsule_swap_headers/export', [AdminCapsuleSwapHeadersController::class, 'exportData'])->name('capsule_swap_export');
+
     // CAPSULE INVENTORY EXPORT
     Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
     
