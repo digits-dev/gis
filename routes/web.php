@@ -124,6 +124,7 @@ Route::group(['middleware' => ['web']], function() {
     //CAPSULE EXPORT
     Route::post('admin/capsule_swap_headers/export', [AdminCapsuleSwapHeadersController::class, 'exportData'])->name('capsule_swap_export');
     Route::post('admin/capsule_merges/export', [AdminCapsuleMergesController::class, 'exportData'])->name('capsule_merge_export');
+    Route::post('admin/capsule_split/export', [AdminCapsuleSplitController::class, 'exportData'])->name('capsule_split_export');
 
     // CAPSULE INVENTORY EXPORT
     Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
