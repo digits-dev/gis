@@ -52,6 +52,7 @@ class CapsuleSalesExport implements FromQuery, WithHeadings, WithMapping
         $my_locations_id = CRUDBooster::myLocationId();
 
         $capsule_sales = CapsuleSales::leftJoin('items', 'items.digits_code', 'capsule_sales.item_code')
+            ->where('capsule_sales.status', 'ACTIVE')
             ->select(
                 'capsule_sales.reference_number',
                 'items.digits_code',
