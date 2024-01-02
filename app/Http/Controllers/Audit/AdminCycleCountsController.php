@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Audit;
 
-    use App\Models\Audit\CycleCount;
+	use App\Exports\CycleCountExport;
+	use App\Models\Audit\CycleCount;
     use App\Models\Audit\CycleCountLine;
     use App\Models\Capsule\CapsuleSales;
     use App\Models\Capsule\HistoryCapsule;
@@ -51,7 +52,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "cycle_counts";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -137,6 +138,13 @@
 				if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
 					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
                     $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
+					$this->index_button[] = [
+						"title"=>"Export Data",
+						"label"=>"Export Data",
+						"icon"=>"fa fa-upload",
+						"color"=>"primary",
+						"url"=>"javascript:showExport()",
+					];
 				}
 			}
 
@@ -180,6 +188,10 @@
 						return false;
 					});
 				});
+
+				function showExport() {
+					$('#modal-export').modal('show');
+				}
 			";
 
 
@@ -203,7 +215,34 @@
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
-	        $this->post_index_html = null;
+	        $this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export ".CRUDBooster::getCurrentModule()->name."</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('cycle_count_export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
 
 
 
@@ -738,5 +777,10 @@
 		public function deleteFile(Request $request){
 			unlink(public_path('cycle-count-files/'.$request->filename));
 			return json_encode(['status'=>'success','message'=>'Reset successfully!']);
+		}
+
+		public function exportData(Request $request) {
+			$filename = $request->input('filename');
+			return Excel::download(new CycleCountExport, $filename.'.csv');
 		}
 	}

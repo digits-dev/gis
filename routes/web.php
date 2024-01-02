@@ -135,6 +135,9 @@ Route::group(['middleware' => ['web']], function() {
     //CAPSULE SALES EXPORT
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
 
+    //CYCLE COUNT EXPORT
+    Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
+
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
