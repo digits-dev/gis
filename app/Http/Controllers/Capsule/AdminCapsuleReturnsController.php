@@ -373,11 +373,32 @@
 					$filteredData[$jan_no] = $value;
 				}
 			}
-
+			
 			$capsule_return_rn = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// $sales_rn = Counter::getNextReference(DB::table('cms_moduls')->where('name', 'Capsule Sales')->first()->id);
 
+			// Backend Validation
 			foreach($filteredData as $key=>$value){
+				$inv_c = InventoryCapsule::leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
+					->where('locations_id', CRUDBooster::myLocationId());
+
+				$inv_c_id = $inv_c->where('items.digits_code', $key)->select('inventory_capsules.id')->first()->id;
+
+				$validate_backend = InventoryCapsuleLine::where('inventory_capsule_lines.inventory_capsules_id', $inv_c_id)
+				->leftJoin('gasha_machines as gm', 'gm.id', 'inventory_capsule_lines.gasha_machines_id')
+				->where('gm.serial_number', $gasha_machines->serial_number)
+				->where('inventory_capsule_lines.gasha_machines_id', '!=', null)
+				->select('inventory_capsule_lines.*')
+				->first();
+
+				if((int) $value > $validate_backend->qty){
+					return response()->json(['fail'=>true]);
+				}
+
+			}
+
+			foreach($filteredData as $key=>$value){
+				
 				$inventory_capsule = InventoryCapsule::leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
 					->where('locations_id', CRUDBooster::myLocationId());
 

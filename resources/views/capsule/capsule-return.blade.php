@@ -226,6 +226,12 @@
 @push('bottom')
 <script>
 
+    $(document).keypress(function(event){
+        if (event.which == '13') {
+            event.preventDefault();
+        }
+    });
+
     $('.content-header').hide();
     let selectedCameraId = null;
     let selectedInput = null;
@@ -372,15 +378,25 @@
             url: "{{ route('submit_capsule_return') }}",
             data: formData,
             success: function(res) {
-                console.log(res);
-                Swal.fire({
-                    title: 'Capsule successfully returned.',
-                    icon: 'success',
-                    html: `<strong>Ref #: ${res.reference_number} </strong>`,
-                    returnFocus: false,
-                }).then(() => {
-                    $('#gasha_machine, #quantity').val('');
-                });
+                console.log(res.fail);
+
+                if(res.fail){
+                    Swal.fire({
+                        title: 'Something went wrong!',
+                        icon: 'error',
+                        returnFocus: false,
+                    })
+                }else{
+                    Swal.fire({
+                        title: 'Capsule successfully returned.',
+                        icon: 'success',
+                        html: `<strong>Ref #: ${res.reference_number} </strong>`,
+                        returnFocus: false,
+                    }).then(() => {
+                        $('#gasha_machine, #quantity').val('');
+                    });
+                }
+
             },
             error: function(err) {
                 console.log(err);
