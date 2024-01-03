@@ -121,6 +121,11 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_refills/upload-capsules',[AdminCapsuleRefillsController::class, 'saveUploadCapsules'])->name('upload-capsules');
     Route::get(config('crudbooster.ADMIN_PATH').'/capsule_refills/download-capsules-template',[AdminCapsuleRefillsController::class, 'downloadCapsulesTemplate']);
 
+    //CAPSULE EXPORT
+    Route::post('admin/capsule_swap_headers/export', [AdminCapsuleSwapHeadersController::class, 'exportData'])->name('capsule_swap_export');
+    Route::post('admin/capsule_merges/export', [AdminCapsuleMergesController::class, 'exportData'])->name('capsule_merge_export');
+    Route::post('admin/capsule_split/export', [AdminCapsuleSplitController::class, 'exportData'])->name('capsule_split_export');
+
     // CAPSULE INVENTORY EXPORT
     Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
     
@@ -129,6 +134,9 @@ Route::group(['middleware' => ['web']], function() {
     
     //CAPSULE SALES EXPORT
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
+
+    //CYCLE COUNT EXPORT
+    Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
 
 
     //Restricted Route

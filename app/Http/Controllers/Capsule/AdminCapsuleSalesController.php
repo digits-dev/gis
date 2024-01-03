@@ -279,6 +279,7 @@ use App\Exports\CapsuleSalesExport;
 	    |
 	    */
 	    public function hook_query_index(&$query) {
+			$query->where('capsule_sales.status', 'ACTIVE');
 	        if (in_array(CRUDBooster::myPrivilegeId(), [1, 2, 4, 6, 7, 8])) {
 				$query->whereNull('capsule_sales.deleted_at')
 					->orderBy('capsule_sales.id', 'desc');
