@@ -1,17 +1,21 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-    use App\Models\Capsule\InventoryCapsule;
+	use App\Exports\CapsuleInventoryBackupExport;
+	use App\Models\Capsule\InventoryCapsule;
     use App\Models\Capsule\InventoryCapsuleLine;
     use Session;
 	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 	use App\Exports\CapsuleInventoryExport;
+	use App\Models\Capsule\CapsuleInventoryBackup;
+	use DateTime;
 	use Excel;
 
 	class AdminInventoryCapsulesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
+			self::createBackup();
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
 			$this->title_field = "id";
@@ -122,6 +126,13 @@
 					"color"=>"primary",
 					"url"=>"javascript:showInventoryExport()",
 				];
+				$this->index_button[] = [
+					"title"=>"Export Capsule Inventory History",
+					"label"=>"Export Inventory History",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showInventoryExportWithDate()",
+				];
 			}
 
 
@@ -159,6 +170,9 @@
 	        $this->script_js = "
 				function showInventoryExport() {
 					$('#modal-inventory-export').modal('show');
+				}
+				function showInventoryExportWithDate() {
+					$('#modal-inventory-export-with-date').modal('show');
 				}
 			";
 
@@ -200,6 +214,35 @@
                             <div class='form-group'>
                                 <label>File Name</label>
                                 <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-inventory-export-with-date'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Inventory History</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('capsule_inventory_export_with_date').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export Inventory History'/>
+								<br/>
+								<label>Select Date</label>
+								<input type='date' name='date' class='form-control' required/>
                             </div>
 						</div>
 						<div class='modal-footer' align='right'>
@@ -380,6 +423,44 @@
 		public function exportData(Request $request) {
 			$filename = $request->input('filename');
 			return Excel::download(new CapsuleInventoryExport, $filename.'.csv');
+		}
+
+		public function exportDatawWithDate(Request $request) {
+			$filename = $request->input('filename');
+			$date = $request->input('date');
+			$filename = $filename.'-'.$date;
+			return Excel::download(new CapsuleInventoryBackupExport($date), $filename.'.csv');
+		}
+
+		public function createBackup() {
+			$inventory_lines = DB::table('inventory_capsule_lines')
+				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('inventory_capsule_view', 'inventory_capsule_view.inventory_capsules_id', 'inventory_capsules.id')
+				->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
+				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
+				->leftJoin('gasha_machines', 'gasha_machines.id', 'inventory_capsule_lines.gasha_machines_id')
+				->select(
+					'items.digits_code2 as digits_code',
+					'items.digits_code as jan_no',
+					'items.item_description',
+					'locations.location_name',
+					DB::raw('COALESCE(sub_locations.description, gasha_machines.serial_number) AS from_description'),
+					'inventory_capsule_lines.qty'
+				)
+				->get()
+				->toArray();
+
+			$today = new DateTime();
+			$yesterday = $today->modify('-1 day');
+			$yesterday = $yesterday->format('Y-m-d');
+
+			$backup = new CapsuleInventoryBackup([
+				'backup_date' => $yesterday,
+				'inventory_data' => json_encode($inventory_lines ?: [])
+			]);
+
+			$backup->save();
 		}
 
 	}
