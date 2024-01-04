@@ -135,6 +135,7 @@ Route::group(['middleware' => ['web']], function() {
     
     //CAPSULE SALES EXPORT
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
+    Route::post('admin/capsule_sales/export-with-date', [AdminCapsuleSalesController::class, 'exportDataWithDate'])->name('capsule_sales_export_with_date');
 
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
