@@ -232,7 +232,7 @@ use DateTime;
 						<div class='modal-header'>
 							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
 								<span aria-hidden='true'>×</span></button>
-							<h4 class='modal-title'><i class='fa fa-download'></i> Export Sales History</h4>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Sales By Date</h4>
 						</div>
 
 						<form method='post' target='_blank' action=".route('capsule_sales_export').">
@@ -241,7 +241,7 @@ use DateTime;
                         <div class='modal-body'>
                             <div class='form-group'>
                                 <label>File Name</label>
-                                <input type='text' name='filename' class='form-control' required value='Export Sales History'/>
+                                <input type='text' name='filename' class='form-control' required value='Export Sales By Date'/>
 								<br/>
 								<div class='row'>
 									<div class='col-sm-6'>
