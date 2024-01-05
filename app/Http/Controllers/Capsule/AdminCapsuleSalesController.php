@@ -1,13 +1,11 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-use App\Exports\CapsuleSalesBackupExport;
 use Session;
 use Illuminate\Http\Request;
 use DB;
 use CRUDBooster;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CapsuleSalesExport;
-use App\Models\Capsule\CapsuleSalesBackUp;
 use DateTime;
 
 	class AdminCapsuleSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -131,8 +129,8 @@ use DateTime;
 					"url"=>"javascript:showSalesExport()",
 				];
 				$this->index_button[] = [
-					"title"=>"Export Capsule Sales History",
-					"label"=>"Export Sales History",
+					"title"=>"Export Sales By Date",
+					"label"=>"Export Sales By Date",
 					"icon"=>"fa fa-upload",
 					"color"=>"primary",
 					"url"=>"javascript:showSalesExportWithDate()",
@@ -237,7 +235,7 @@ use DateTime;
 							<h4 class='modal-title'><i class='fa fa-download'></i> Export Sales History</h4>
 						</div>
 
-						<form method='post' target='_blank' action=".route('capsule_sales_export_with_date').">
+						<form method='post' target='_blank' action=".route('capsule_sales_export').">
                         <input type='hidden' name='_token' value=".csrf_token().">
                         ".CRUDBooster::getUrlParameters()."
                         <div class='modal-body'>
@@ -245,8 +243,16 @@ use DateTime;
                                 <label>File Name</label>
                                 <input type='text' name='filename' class='form-control' required value='Export Sales History'/>
 								<br/>
-								<label>Select Date</label>
-								<input type='date' name='date' class='form-control' required/>
+								<div class='row'>
+									<div class='col-sm-6'>
+										<label>Date From</label>
+										<input type='date' name='date_from' class='form-control' required/>
+									</div>
+									<div class='col-sm-6'>
+										<label>Date To</label>
+										<input type='date' name='date_to' class='form-control' required/>
+									</div>
+								</div>
                             </div>
 						</div>
 						<div class='modal-footer' align='right'>
@@ -417,51 +423,11 @@ use DateTime;
 
 		public function exportData(Request $request) {
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleSalesExport, $filename.'.csv');
-		}
-
-		public function exportDataWithDate(Request $request) {
-			$filename = $request->input('filename');
-			$date = $request->input('date');
-			$filename = $filename.'-'.$date;
-			return Excel::download(new CapsuleSalesBackupExport($date), $filename.'.csv');
-		}
-
-		public function createBackUp() {
-			$today = new DateTime();
-			$yesterday = $today->modify('-1 day');
-			$yesterday = $yesterday->format('Y-m-d');
-
-			$capsule_sales = DB::table('capsule_sales')
-				->leftJoin('items', 'items.digits_code', 'capsule_sales.item_code')
-				->where('capsule_sales.status', 'ACTIVE')
-				->where('capsule_sales.created_at', 'like', "$yesterday%")
-				->select(
-					'capsule_sales.reference_number',
-					'items.digits_code as jan_no',
-					'items.digits_code2 as digits_code',
-					'items.item_description',
-					'gasha_machines.serial_number',
-					'locations.location_name',
-					'capsule_sales.qty',
-					'sales_types.description as sales_type',
-					'cms_users.name',
-					'capsule_sales.created_at',
-				)
-				->leftJoin('gasha_machines', 'gasha_machines.id', 'capsule_sales.gasha_machines_id')
-				->leftJoin('sales_types', 'sales_types.id', 'capsule_sales.sales_type_id')
-				->leftJoin('locations', 'locations.id', 'capsule_sales.locations_id')
-				->leftJoin('cms_users', 'cms_users.id', 'capsule_sales.created_by')
-				->get()
-				->toArray();
-
-			$backup = new CapsuleSalesBackUp([
-				'backup_date' => $yesterday,
-				'sales_data' => json_encode($capsule_sales ?: [])
-			]);
-
-			$backup->save();
-
+			$date_from = $request->input('date_from');
+			$date_to = $request->input('date_to');
+			$filename = "$filename---$date_from - $date_to";
+			$date_to = date('Y-m-d', strtotime($date_to.'+ 1 days'));
+			return Excel::download(new CapsuleSalesExport($date_from, $date_to), $filename.'.csv');
 		}
 
 	}

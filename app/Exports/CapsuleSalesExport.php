@@ -15,6 +15,11 @@ class CapsuleSalesExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
 
+    public function __construct($date_from = null, $date_to = null) {
+        $this->date_from = $date_from;
+        $this->date_to = $date_to;
+    }
+
     public function headings(): array {
         return [
             'REFERENCE #',
@@ -69,6 +74,10 @@ class CapsuleSalesExport implements FromQuery, WithHeadings, WithMapping
             ->leftJoin('sales_types', 'sales_types.id', 'capsule_sales.sales_type_id')
             ->leftJoin('locations', 'locations.id', 'capsule_sales.locations_id')
             ->leftJoin('cms_users', 'cms_users.id', 'capsule_sales.created_by');
+
+        if ($this->date_from && $this->date_to) {
+            $capsule_sales = $capsule_sales->whereBetween('capsule_sales.created_at', [$this->date_from, $this->date_to]);
+        }
 
         if ($my_locations_id) {
             $capsule_sales = $capsule_sales->where('capsule_sales.locations_id', $my_locations_id);

@@ -32,8 +32,6 @@ class Kernel extends ConsoleKernel
 
         // backup for capsule inventory
         $schedule->call('\App\Http\Controllers\Capsule\AdminInventoryCapsulesController@createBackUp')->daily()->at('01:00');
-        // backup for capsule sales
-        $schedule->call('\App\Http\Controllers\Capsule\AdminCapsuleSalesController@createBackUp')->daily()->at('01:00');
     }
 
     /**
