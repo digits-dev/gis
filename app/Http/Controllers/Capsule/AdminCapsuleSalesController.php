@@ -6,6 +6,7 @@ use DB;
 use CRUDBooster;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CapsuleSalesExport;
+use DateTime;
 
 	class AdminCapsuleSalesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -127,6 +128,13 @@ use App\Exports\CapsuleSalesExport;
 					"color"=>"primary",
 					"url"=>"javascript:showSalesExport()",
 				];
+				$this->index_button[] = [
+					"title"=>"Export Sales By Date",
+					"label"=>"Export Sales By Date",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showSalesExportWithDate()",
+				];
 			}
 
 
@@ -164,6 +172,9 @@ use App\Exports\CapsuleSalesExport;
 	        $this->script_js = "
 				function showSalesExport() {
 					$('#modal-sales-export').modal('show');
+				}
+				function showSalesExportWithDate() {
+					$('#modal-sales-export-with-date').modal('show');
 				}
 			";
 
@@ -205,6 +216,43 @@ use App\Exports\CapsuleSalesExport;
                             <div class='form-group'>
                                 <label>File Name</label>
                                 <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-sales-export-with-date'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Sales By Date</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('capsule_sales_export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export Sales By Date'/>
+								<br/>
+								<div class='row'>
+									<div class='col-sm-6'>
+										<label>Date From</label>
+										<input type='date' name='date_from' class='form-control' required/>
+									</div>
+									<div class='col-sm-6'>
+										<label>Date To</label>
+										<input type='date' name='date_to' class='form-control' required/>
+									</div>
+								</div>
                             </div>
 						</div>
 						<div class='modal-footer' align='right'>
@@ -375,7 +423,11 @@ use App\Exports\CapsuleSalesExport;
 
 		public function exportData(Request $request) {
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleSalesExport, $filename.'.csv');
+			$date_from = $request->input('date_from');
+			$date_to = $request->input('date_to');
+			$filename = "$filename---$date_from - $date_to";
+			$date_to = date('Y-m-d', strtotime($date_to.'+ 1 days'));
+			return Excel::download(new CapsuleSalesExport($date_from, $date_to), $filename.'.csv');
 		}
 
 	}

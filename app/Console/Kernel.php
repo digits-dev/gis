@@ -29,6 +29,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:backup')->daily()->at('04:00');
         $schedule->call('\App\Http\Controllers\Submaster\AdminItemsController@getItemsUpdatedAPI')->hourly()->between('9:00', '23:00');
         $schedule->call('\App\Http\Controllers\Submaster\AdminItemsController@getItemsCreatedAPI')->hourly()->between('9:00', '23:00');
+
+        // backup for capsule inventory
+        $schedule->call('\App\Http\Controllers\Capsule\AdminInventoryCapsulesController@createBackUp')->daily()->at('01:00');
     }
 
     /**

@@ -128,12 +128,14 @@ Route::group(['middleware' => ['web']], function() {
 
     // CAPSULE INVENTORY EXPORT
     Route::post('admin/inventory_capsules/export', [AdminInventoryCapsulesController::class, 'exportData'])->name('capsule_inventory_export');
+    Route::post('admin/inventory_capsules/export-with-date', [AdminInventoryCapsulesController::class, 'exportDatawWithDate'])->name('capsule_inventory_export_with_date');
     
     // CAPSULE MOVEMENT HISTORY EXPORT
     Route::post('admin/history_capsules/export', [AdminHistoryCapsulesController::class, 'exportData'])->name('history_capsule_export');
     
     //CAPSULE SALES EXPORT
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
+    Route::post('admin/capsule_sales/export-with-date', [AdminCapsuleSalesController::class, 'exportDataWithDate'])->name('capsule_sales_export_with_date');
 
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
