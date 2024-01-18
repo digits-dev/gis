@@ -10,13 +10,15 @@ class CycleCountLine extends Model
     use HasFactory;
     protected $table = 'cycle_count_lines';
     protected $fillable = [
+        "status",
         "cycle_counts_id",
         "gasha_machines_id",
         "digits_code",
         "qty",
         "variance",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "cycle_count_type"
     ];
 
     public function scopeDetailBody($query, $id){

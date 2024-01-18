@@ -30,10 +30,15 @@
 	use Illuminate\Http\UploadedFile;
 
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
-
+		private $forApproval;
         private const CYCLE_COUNT_ACTION = 'Cycle Count';
         private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
         private const STOCK_ROOM = 'STOCK ROOM';
+
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forApproval       =  9;
+		}
 
 	    public function cbInit() {
 
@@ -439,7 +444,6 @@
         }
 
         public function submitCycleCountFloor(Request $request){
-
 			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// $capsuleSalesRef = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
             $qty = $request->qty;
@@ -471,59 +475,60 @@
                     ]);
 
                     $capsuleLines = new CycleCountLine([
+						'status'          => $this->forApproval,
                         'cycle_counts_id' => $capsule->id,
                         'digits_code' => $value,
                         'gasha_machines_id' => $machine_id,
                         'qty' => $fqty,
                         'variance' => ($fqty - $capsuleInventoryLine->qty),
-                        'created_at' => date('Y-m-d H:i:s')
+                        'created_at' => date('Y-m-d H:i:s'),
+						'cycle_count_type' => "FLOOR"
                     ]);
 
                     $capsuleLines->save();
 
-                    HistoryCapsule::insert([
-                        'reference_number' => $capsule->reference_number,
-                        'item_code' => $item->digits_code2,
-                        'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                        'gasha_machines_id' => $machine_id,
-                        'locations_id' => $request->location_id,
-                        'from_machines_id' => $machine_id,
-                        'qty' => ($fqty - $capsuleInventoryLine->qty),
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
+                    // HistoryCapsule::insert([
+                    //     'reference_number' => $capsule->reference_number,
+                    //     'item_code' => $item->digits_code2,
+                    //     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                    //     'gasha_machines_id' => $machine_id,
+                    //     'locations_id' => $request->location_id,
+                    //     'from_machines_id' => $machine_id,
+                    //     'qty' => ($fqty - $capsuleInventoryLine->qty),
+                    //     'created_by' => CRUDBooster::myId(),
+                    //     'created_at' => date('Y-m-d H:i:s')
+                    // ]);
 
-                    if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
-                        InventoryCapsuleLine::where([
-                            'inventory_capsules_id' => $capsuleInventory->id,
-                            'gasha_machines_id'=> $machine_id
-                        ])->update([
-                            'qty' => $fqty,
-                            'updated_by' => CRUDBooster::myId(),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
+                    // if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+                    //     InventoryCapsuleLine::where([
+                    //         'inventory_capsules_id' => $capsuleInventory->id,
+                    //         'gasha_machines_id'=> $machine_id
+                    //     ])->update([
+                    //         'qty' => $fqty,
+                    //         'updated_by' => CRUDBooster::myId(),
+                    //         'updated_at' => date('Y-m-d H:i:s')
+                    //     ]);
 
-                        //generate capsule sales
-                        CapsuleSales::insert([
-                            'reference_number' => $capsule->reference_number,
-                            'item_code' => $value,
-                            'gasha_machines_id' => $machine_id,
-                            'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
-                            'locations_id' => $request->location_id,
-                            'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
-                            'created_by' => CRUDBooster::myId(),
-                            'created_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
-                    else{
-                        InventoryCapsuleLine::insert([
-                            'inventory_capsules_id' => $capsuleInventory->id,
-                            'gasha_machines_id'=> $machine_id,
-                            'qty' => $fqty,
-                            'updated_by' => CRUDBooster::myId(),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
+                    //     //generate capsule sales
+                    //     CapsuleSales::insert([
+                    //         'reference_number' => $capsule->reference_number,
+                    //         'item_code' => $value,
+                    //         'gasha_machines_id' => $machine_id,
+                    //         'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+                    //         'locations_id' => $request->location_id,
+                    //         'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
+                    //         'created_by' => CRUDBooster::myId(),
+                    //         'created_at' => date('Y-m-d H:i:s')
+                    //     ]);
+                    // }else{
+                    //     InventoryCapsuleLine::insert([
+                    //         'inventory_capsules_id' => $capsuleInventory->id,
+                    //         'gasha_machines_id'=> $machine_id,
+                    //         'qty' => $fqty,
+                    //         'updated_by' => CRUDBooster::myId(),
+                    //         'updated_at' => date('Y-m-d H:i:s')
+                    //     ]);
+                    // }
                 }
 
 			}
@@ -782,5 +787,51 @@
 		public function exportData(Request $request) {
 			$filename = $request->input('filename');
 			return Excel::download(new CycleCountExport, $filename.'.csv');
+		}
+
+		//CYCLE COUNT FLOOR FILE PROCESS
+		public function storeFileFloor(Request $request){
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$reader->setReadDataOnly(true);
+			$spreadsheet = $reader->load($request->file('cycle-count-file'));
+			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+			$data = $sheet->toArray();
+			unset($data[0]);
+			
+			$newArray = [];
+			$contArray = [];
+			
+			foreach($data as $key => $val){
+				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->location_id)->count();
+				$allJanNo = Item::where('digits_code',$val[1])->count();
+				
+				if($machines == 0){
+					return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
+				}
+				
+				if($allJanNo == 0){
+					return response()->json(['status'=>'error', 'msg'=>'Jan No not found! At line:'.($key+1)]);
+				}
+
+				$contArray['machine'] = $val[0];
+				$contArray['item_code'] = $val[1];
+				$contArray['item_description'] = $val[2];
+				$contArray['qty'] = $val[3];
+				$newArray[] = $contArray;
+				
+			}
+			
+			// foreach($request->files as $file){
+			// 	$name = time().rand(1,50) .'-'. $file->getClientOriginalName();
+			// 	$filename = $name;
+			// 	$file->move('cycle-count-files',$filename);
+			// }
+
+			return response()->json([
+				'status'=>'success', 
+				'msg'=>'File uploaded successfully!',
+				'items'=>$newArray,
+				'filename'=>$filename
+			]);
 		}
 	}

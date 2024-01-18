@@ -28,18 +28,21 @@ use App\Models\Submaster\SubLocations;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 
 class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullComparison {
+    
     protected $filename;
     protected $location_id;
     protected $quantity_total;
 
+    private $forApproval;
     private const CYCLE_COUNT_ACTION = 'Cycle Count';
     private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
     private const STOCK_ROOM = 'STOCK ROOM';
     
     function __construct($datas) {
-        $this->filename = $datas['filename'];
-        $this->location_id = $datas['location_id'];
-        $this->quantity_total = $datas['quantity_total'];
+        $this->filename        = $datas['filename'];
+        $this->location_id     = $datas['location_id'];
+        $this->quantity_total  = $datas['quantity_total'];
+        $this->forApproval     =  9;
     }
 
     public function collection(Collection $rows){
@@ -79,45 +82,47 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullCo
             ]);
 
             $capsuleLines = new CycleCountLine([
+                'status'          => $this->forApproval,
                 'cycle_counts_id' => $capsule->id,
                 'digits_code' => $item_value['item_code'],
                 'qty' => $fqty,
                 'variance' => ($fqty - $capsuleInventoryLine->qty),
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'cycle_count_type' => "STOCK ROOM"
             ]);
 
             $capsuleLines->save();
 
-            HistoryCapsule::insert([
-                'reference_number' => $capsule->reference_number,
-                'item_code' => $item->digits_code2,
-                'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                'locations_id' => $this->location_id,
-                'from_sub_locations_id' => $sublocation_id->id,
-                'qty' => ($fqty - $capsuleInventoryLine->qty),
-                'created_by' => CRUDBooster::myId(),
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+            // HistoryCapsule::insert([
+            //     'reference_number' => $capsule->reference_number,
+            //     'item_code' => $item->digits_code2,
+            //     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+            //     'locations_id' => $this->location_id,
+            //     'from_sub_locations_id' => $sublocation_id->id,
+            //     'qty' => ($fqty - $capsuleInventoryLine->qty),
+            //     'created_by' => CRUDBooster::myId(),
+            //     'created_at' => date('Y-m-d H:i:s')
+            // ]);
 
-            if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
-                InventoryCapsuleLine::where([
-                    'inventory_capsules_id' => $capsuleInventory->id,
-                    'sub_locations_id'=> $sublocation_id->id
-                ])->update([
-                    'qty' => $fqty,
-                    'updated_by' => CRUDBooster::myId(),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-            }
-            else{
-                InventoryCapsuleLine::insert([
-                    'inventory_capsules_id' => $capsuleInventory->id,
-                    'sub_locations_id'=> $sublocation_id->id,
-                    'qty' => $fqty,
-                    'updated_by' => CRUDBooster::myId(),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
-            }
+            // if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+            //     InventoryCapsuleLine::where([
+            //         'inventory_capsules_id' => $capsuleInventory->id,
+            //         'sub_locations_id'=> $sublocation_id->id
+            //     ])->update([
+            //         'qty' => $fqty,
+            //         'updated_by' => CRUDBooster::myId(),
+            //         'updated_at' => date('Y-m-d H:i:s')
+            //     ]);
+            // }
+            // else{
+            //     InventoryCapsuleLine::insert([
+            //         'inventory_capsules_id' => $capsuleInventory->id,
+            //         'sub_locations_id'=> $sublocation_id->id,
+            //         'qty' => $fqty,
+            //         'updated_by' => CRUDBooster::myId(),
+            //         'updated_at' => date('Y-m-d H:i:s')
+            //     ]);
+            // }
         }
 
         //PROCESS NOT INCLUDED IN FILE
@@ -159,34 +164,36 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullCo
                 ]);
 
                 $capsuleLines = new CycleCountLine([
+                    'status'          => $this->forApproval,
                     'cycle_counts_id' => $capsule->id,
                     'digits_code' => $item_value['digits_code'],
                     'qty' => 0,
                     'variance' => -1 * abs($fqty),
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'cycle_count_type' => "STOCK ROOM"
                 ]);
 
                 $capsuleLines->save();
 
-                HistoryCapsule::insert([
-                    'reference_number' => $capsule->reference_number,
-                    'item_code' => $item_value['digits_code2'],
-                    'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                    'locations_id' => $this->location_id,
-                    'from_sub_locations_id' => $sublocation_id->id,
-                    'qty' => -1 * abs($fqty),
-                    'created_by' => CRUDBooster::myId(),
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
+                // HistoryCapsule::insert([
+                //     'reference_number' => $capsule->reference_number,
+                //     'item_code' => $item_value['digits_code2'],
+                //     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                //     'locations_id' => $this->location_id,
+                //     'from_sub_locations_id' => $sublocation_id->id,
+                //     'qty' => -1 * abs($fqty),
+                //     'created_by' => CRUDBooster::myId(),
+                //     'created_at' => date('Y-m-d H:i:s')
+                // ]);
 
-                InventoryCapsuleLine::where([
-                    'inventory_capsules_id' => $capsuleInventory->id,
-                    'sub_locations_id'=> $sublocation_id->id
-                ])->update([
-                    'qty' => 0,
-                    'updated_by' => CRUDBooster::myId(),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
+                // InventoryCapsuleLine::where([
+                //     'inventory_capsules_id' => $capsuleInventory->id,
+                //     'sub_locations_id'=> $sublocation_id->id
+                // ])->update([
+                //     'qty' => 0,
+                //     'updated_by' => CRUDBooster::myId(),
+                //     'updated_at' => date('Y-m-d H:i:s')
+                // ]);
             
             }
         }

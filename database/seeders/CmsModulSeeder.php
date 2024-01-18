@@ -405,6 +405,15 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Cycle Count Approval',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'cycle_count_approval',
+                'table_name'   => 'cycle_count_lines',
+                'controller'   => 'Audit\AdminCapsuleSplitController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
         ];
 
         foreach ($modules as $module) {
