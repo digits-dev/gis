@@ -25,7 +25,7 @@
                     @foreach($items as $val)
                         <tr>
                             <td style="text-align:center">   
-                                <a data-toggle="tooltip" data-placement="right" title="Edit" class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("view-approval/".$val->status_id)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
+                                <a data-toggle="tooltip" data-placement="right" title="Edit" class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("view-approval/".$val->location_id)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
                             </td>  
                             <td style="text-align:center">
                                 <label class="label label-success" style="align:center; font-size:10px">{{$val->status}}</label>

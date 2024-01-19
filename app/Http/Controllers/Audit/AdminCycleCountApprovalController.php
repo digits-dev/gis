@@ -4,6 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Audit\CycleCountLine;
 
 	class AdminCycleCountApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -342,8 +343,8 @@
             }
 
 			$data = array();
-			$data['page_title'] = 'Edit Applicant Status';
-			
+			$data['page_title'] = 'View for approval';
+			$data['forApproval'] = CycleCountLine::detailApprovalBody($id);
 			return $this->view("audit.cycle-count-approval.view_approval", $data);
 		}
 
