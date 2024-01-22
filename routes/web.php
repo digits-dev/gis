@@ -22,6 +22,7 @@ use App\Http\Controllers\Token\AdminCollectRrTokenSalesController;
 use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
+use App\Http\Controllers\Audit\AdminCycleCountApprovalController;
 use App\Http\Controllers\Capsule\AdminCapsuleMergesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSalesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSplitController;
@@ -158,6 +159,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/store-file', [AdminCycleCountsController::class, 'storeFile'])->name('cycle-count-file-store');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/store-file-floor', [AdminCycleCountsController::class, 'storeFileFloor'])->name('cycle-count-floor-file-store');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/delete-file',[AdminCycleCountsController::class, 'deleteFile'])->name('delete-file'); 
+
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/approval-cycle-count',[AdminCycleCountApprovalController::class, 'submitApprovalCc'])->name('submit_approval_cc'); 
+    
 
     //GASHA MACHINES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);

@@ -1,12 +1,29 @@
 <?php namespace App\Http\Controllers\Audit;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\Audit\CycleCountLine;
+	use App\Exports\CycleCountExport;
+	use App\Models\Audit\CycleCount;
+    use App\Models\Audit\CycleCountLine;
+    use App\Models\Capsule\CapsuleSales;
+    use App\Models\Capsule\HistoryCapsule;
+    use App\Models\Capsule\InventoryCapsule;
+    use App\Models\Capsule\InventoryCapsuleLine;
+    use App\Models\CmsModels\CmsModule;
+    use App\Models\Submaster\CapsuleActionType;
+    use App\Models\Submaster\Counter;
+    use App\Models\Submaster\GashaMachines;
+    use App\Models\Submaster\Item;
+    use App\Models\Submaster\Locations;
+    use App\Models\Submaster\SalesType;
+	use App\Models\Submaster\SubLocations;
 
 	class AdminCycleCountApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private const CYCLE_COUNT_ACTION = 'Cycle Count';
+        private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
+        private const STOCK_ROOM = 'STOCK ROOM';
 
 	    public function cbInit() {
 
@@ -260,7 +277,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+	       
 
 	    }
 
@@ -285,7 +302,8 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$fields = Request::all();
+			dd($fields);
 
 	    }
 
@@ -344,9 +362,188 @@
 
 			$data = array();
 			$data['page_title'] = 'View for approval';
-			$data['forApproval'] = CycleCountLine::detailApprovalBody($id);
+			$data['location_id'] = $id;
+			$data['items'] = CycleCountLine::detailApprovalBody($id);
+			
+			$forApproval = [];
+			foreach($data['items'] as $val){
+				$machine_id = GashaMachines::where('id',$val['gasha_machines_id'])->where('location_id',$id)->first()->id;
+				$item = Item::where('digits_code',$val['st_digits_code'])->first();
+				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+				->where('locations_id',$id)->first();
+
+				$capsuleInventoryLine = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'gasha_machines_id'=> $machine_id,
+					'sub_locations_id'=> null
+				])->first();
+				if($capsuleInventoryLine->qty != NULL && $val['gasha_machines_id'] != NULL){
+					$val['system_qty'] = $capsuleInventoryLine->qty;
+				}else{
+					$val['system_qty'] = 0;
+				}
+				
+				$forApproval[] = $val;
+			}
+			$data['forApproval'] = $forApproval;
 			return $this->view("audit.cycle-count-approval.view_approval", $data);
 		}
 
+		public function submitApprovalCc(Request $request){
+			$location_id = $request->st_location_id;
+			$typeMachine = 'FLOOR';
+			$stockRoomType = 'STOCK ROOM';
+
+			//MACHINE FLOOR PROCESS
+			$machineItems = CycleCountLine::getApprovalLinesForProcess($location_id,$typeMachine);
+			//REMOVE MORE THAN SYSTEM QTY ITEMS IN MACHINE FLOOR
+			$machineFloorData = [];
+			foreach($machineItems as $key => $val){
+				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
+				$item = Item::where('digits_code',$val->digits_code)->first();
+
+				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+				->where('locations_id',$location_id)->first();
+
+				$capsuleInventoryLine = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'gasha_machines_id'=> $machine_id,
+					'sub_locations_id'=> null
+				])->first();
+
+				if($val->qty < $capsuleInventoryLine->qty){
+					$item = $val;
+					$machineFloorData[] = $item;
+				}
+			}
+
+			foreach($machineFloorData as $mKey => $mValue){
+				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
+				$item = Item::where('digits_code',$val->digits_code)->first();
+
+				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+				->where('locations_id',$location_id)->first();
+
+				$capsuleInventoryLine = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'gasha_machines_id'=> $machine_id,
+					'sub_locations_id'=> null
+				])->first();
+
+				HistoryCapsule::insert([
+					'reference_number' => $mValue->reference_number,
+					'item_code' => $item->digits_code2,
+					'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+					'gasha_machines_id' => $machine_id,
+					'locations_id' => $location_id,
+					'from_machines_id' => $machine_id,
+					'qty' => ($mValue->qty - $capsuleInventoryLine->qty),
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+
+				if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+					InventoryCapsuleLine::where([
+						'inventory_capsules_id' => $capsuleInventory->id,
+						'gasha_machines_id'=> $machine_id
+					])->update([
+						'qty' => $mValue->qty,
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => date('Y-m-d H:i:s')
+					]);
+
+					//generate capsule sales
+					CapsuleSales::insert([
+						'reference_number' => $mValue->reference_number,
+						'item_code' => $mValue->digits_code,
+						'gasha_machines_id' => $machine_id,
+						'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+						'locations_id' => $location_id,
+						'qty' =>  abs($mValue->qty - $capsuleInventoryLine->qty),
+						'created_by' => CRUDBooster::myId(),
+						'created_at' => date('Y-m-d H:i:s')
+					]);
+				}else{
+					InventoryCapsuleLine::insert([
+						'inventory_capsules_id' => $capsuleInventory->id,
+						'gasha_machines_id'=> $machine_id,
+						'qty' => $mValue->qty,
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => date('Y-m-d H:i:s')
+					]);
+				}
+			}
+			
+			//STOCK ROOM PROCESS
+			$stockRoomItems = CycleCountLine::getApprovalLinesForProcess($location_id,$stockRoomType);
+			//REMOVE MORE THAN SYSTEM QTY ITEMS STOCK ROOM
+			$stockRoomData = [];
+			foreach($stockRoomItems as $key => $val){
+				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
+				$item = Item::where('digits_code',$val->digits_code)->first();
+
+				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+				->where('locations_id',$location_id)->first();
+
+				$capsuleInventoryLine = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'gasha_machines_id'=> $machine_id,
+					'sub_locations_id'=> null
+				])->first();
+
+				if($val->qty < $capsuleInventoryLine->qty){
+					$item = $val;
+					$stockRoomData[] = $item;
+				}
+				
+			}
+
+			foreach($stockRoomData as $stKey => $stVal){
+				$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
+				$item = Item::where('digits_code',$stVal->item_code)->first();
+				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+				->where('locations_id',$location_id)->first();
+
+				$capsuleInventoryLine = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'sub_locations_id'=> $sublocation_id->id,
+					'gasha_machines_id'=> null
+				])->first();
+
+				 HistoryCapsule::insert([
+					'reference_number' => $stVal->reference_number,
+					'item_code' => $item->digits_code2,
+					'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+					'locations_id' => $location_id,
+					'from_sub_locations_id' => $sublocation_id->id,
+					'qty' => ($stVal->qty - $capsuleInventoryLine->qty),
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s')
+				]);
+
+				if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+					InventoryCapsuleLine::where([
+						'inventory_capsules_id' => $capsuleInventory->id,
+						'sub_locations_id'=> $sublocation_id->id
+					])->update([
+						'qty' => $stVal->qty,
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => date('Y-m-d H:i:s')
+					]);
+				}
+				else{
+					InventoryCapsuleLine::insert([
+						'inventory_capsules_id' => $capsuleInventory->id,
+						'sub_locations_id'=> $sublocation_id->id,
+						'qty' => $stVal->qty,
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => date('Y-m-d H:i:s')
+					]);
+				}
+			}
+			
+			$data = ['status'=>'success','msg'=>'Successfully approved!'];
+			return json_encode($data);
+		}
 
 	}

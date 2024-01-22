@@ -1,12 +1,13 @@
 @extends('crudbooster::admin_template')
     @push('head')
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style type="text/css">   
            #table_dashboards th, td {
                 border: 1px solid rgba(000, 0, 0, .4);
                 padding: 8px;
             }
             table {
-            border-collapse: collapse;
+                border-collapse: collapse;
             }
         </style>
     @endpush
@@ -19,7 +20,8 @@
                 <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                     <span>Export Data</span>
                 </button>
-                <form action="#" method="POST" id="cycleCountForApproval" enctype="multipart/form-data">
+                <form action="{{ CRUDBooster::mainpath('edit-save/'.$location_id) }}" method="POST" id="cycleCountForApproval" enctype="multipart/form-data">
+                    <input type="hidden" name="st_location_id" value="{{$location_id}}">
                     <table id="table_dashboards"> 
                         <thead style="background-color: #F5F5F5; color:#3c8dbc;">
                             <tr>
@@ -42,15 +44,15 @@
                         <tbody>
                             @foreach($forApproval as $res)
                                 <tr style="text-align: center" >
-                                    <td data-merge="{{$res->st_digits_code}}">{{$res->st_digits_code}}</td>
-                                    <td data-merge="{{$res->st_digits_code}}">{{$res->st_ref_number}}</td>
-                                    <td data-merge="{{$res->st_digits_code}}">{{$res->st_system_qty}}</td>
-                                    <td data-merge="{{$res->st_digits_code}}">{{$res->st_actual_qty}}</td>
+                                    <td>{{$res->st_digits_code}}</td>
+                                    <td>{{$res->st_ref_number}}</td>
+                                    <td>{{$res->system_qty}}</td>
+                                    <td st-actual-qty="{{$res->st_actual_qty}}" st-system-qty="{{$res->system_qty}}" class="st_actual_qty">{{$res->st_actual_qty}}</td>
                                     <td></td>
                                     <td>{{$res->floor_ref}}</td>
                                     <td>{{$res->floor_machine}}</td>
-                                    <td>{{$res->floor_system_qty}}</td>
-                                    <td>{{$res->floor_actual_qty}}</td>
+                                    <td>{{$res->system_qty}}</td>
+                                    <td floor-actual-qty="{{$res->floor_actual_qty}}" floor-system-qty="{{$res->system_qty}}" class="floor_actual_qty">{{$res->floor_actual_qty}}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -88,6 +90,7 @@
                 bFilter: false,
                 bInfo: true,
                 bAutoWidth: false,
+                ordering:false,
                 buttons: [
                     {
                         extend: "excel",
@@ -100,6 +103,7 @@
             });
 
             formatTableRowSpan();
+            validateInput();
         });
 
         function formatTableRowSpan(){
@@ -108,6 +112,7 @@
             let header2Cell = null;
             let header3Cell = null;
             let header4Cell = null;
+ 
             for (let row of table.rows) {
                 const firstCell = row.cells[0];
                 const secondCell = row.cells[1];
@@ -127,9 +132,92 @@
                     thirdCell.remove();
                     header4Cell.rowSpan++;
                     fourthCell.remove();
-                }
-
+                }         
             }
+        }
+
+        function validateInput() {
+            const qtyInput = $('.st_actual_qty').get();
+            qtyInput.forEach(stInput => {
+                const stCurrentVal = $(stInput).attr('st-actual-qty'); 
+                const stValue = Number(stCurrentVal.replace(/\D/g, ''));
+                const stMaxValue = Number($(stInput).attr('st-system-qty'));
+                if (stValue > stMaxValue) {
+                    $(stInput).css('border', '2px solid red');
+                } else if (!stCurrentVal) {
+                    $(stInput).css('border', '');
+                } else {
+                    $(stInput).css('border', '');
+                }
+            });
+
+            const floorQtyInput = $('.floor_actual_qty').get();
+            floorQtyInput.forEach(input => {
+                const currentVal = $(input).attr('floor-actual-qty'); 
+                const value = Number(currentVal.replace(/\D/g, ''));
+                const maxValue = Number($(input).attr('floor-system-qty'));
+                if (value > maxValue) {
+                    $(input).css('border', '2px solid red');
+                } else if (!currentVal) {
+                    $(input).css('border', '');
+                } else {
+                    $(input).css('border', '');
+                }
+            });
+    
+            $('#btnSubmit').click(function(event) {
+                Swal.fire({
+                    title: 'Are you sure ?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Save',
+                    returnFocus: false,
+                    reverseButtons: true,
+                    showLoaderOnConfirm: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        
+                        const formData = $('form').serialize();
+                        $.ajax({
+                            type: 'POST',
+                            url: "{{ route('submit_approval_cc') }}",
+                            data: formData,
+                            success: function(res) {
+                                const response = JSON.parse(res);
+                                if(response.status == 'success'){
+                                    Swal.fire({
+                                        type: response.status,
+                                        title: response.msg,
+                                        icon: response.status,
+                                        confirmButtonColor: "#3c8dbc",
+                                    }); 
+                                }
+                                $('#save-btn').attr('disabled', false);
+                            },
+                            error: function(err) {
+                                Swal.fire({
+                                    title: "Oops.",
+                                    html:  'Something went wrong!',
+                                    icon: 'error',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Ok',
+                                    returnFocus: false,
+                                    reverseButtons: true,
+                                });
+                            }
+                        });
+                        Swal.fire({
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            title: "Please wait while saving...",
+                            didOpen: () => Swal.showLoading()
+                        });
+                    }
+                });
+            });
         }
     </script>
 @endpush
