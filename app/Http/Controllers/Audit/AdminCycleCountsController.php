@@ -31,13 +31,15 @@
 
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
+		private $closed;
         private const CYCLE_COUNT_ACTION = 'Cycle Count';
         private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
         private const STOCK_ROOM = 'STOCK ROOM';
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval       =  9;
+			$this->forApproval =  9;
+			$this->closed      =  4;
 		}
 
 	    public function cbInit() {
@@ -48,7 +50,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -67,6 +69,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
             $this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Status","name"=>"header_status","join"=>"statuses,status_description"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -102,7 +105,9 @@
 	        |
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('get-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[header_status] == "'.$this->forApproval.'"','color'=>'success'];	
+			}
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -322,7 +327,16 @@
 	    |
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
-	    	//Your code here
+	    	$forApproval = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$closed      = DB::table('statuses')->where('id', $this->closed)->value('status_description');   
+			  
+			if($column_index == 5){
+				if($column_value == $forApproval){
+					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -429,6 +443,22 @@
 			return $this->view("audit.cycle-count.detail-cycle-count", $data);
 		}
 
+		public function getEdit($id){
+
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Edit Cycle Count(Capsule)';
+
+			$data['detail_header'] = CycleCount::detail($id);
+			$data['detail_body']   = CycleCountLine::detailBody($id);
+
+			return $this->view("audit.cycle-count.edit-cycle-count", $data);
+		}
+
         public function getAddCycleCountStockRoom() {
             $this->cbLoader();
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
@@ -454,7 +484,7 @@
                     $fqty = str_replace(',', '', $qty[$key_machine][$key_item]);
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
-                        'locations_id' => $request->location_id
+                        'locations_id'     => $request->location_id
                     ];
 
                     $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
@@ -462,27 +492,28 @@
 
                     $capsuleInventoryLine = InventoryCapsuleLine::where([
                         'inventory_capsules_id'=>$capsuleInventory->id,
-                        'gasha_machines_id'=> $machine_id,
-                        'sub_locations_id'=> null
+                        'gasha_machines_id'    => $machine_id,
+                        'sub_locations_id'     => null
                     ])->first();
 
                     $capsule = CycleCount::firstOrCreate($capsuleHeader,[
                         'reference_number' => $cycleCountFloorRef,
-                        'locations_id' => $request->location_id,
-                        'total_qty' => $request->quantity_total,
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
+						'header_status'    => $this->forApproval,
+                        'locations_id'     => $request->location_id,
+                        'total_qty'        => $request->quantity_total,
+                        'created_by'       => CRUDBooster::myId(),
+                        'created_at'       => date('Y-m-d H:i:s')
                     ]);
 
                     $capsuleLines = new CycleCountLine([
-						'status'          => $this->forApproval,
-                        'cycle_counts_id' => $capsule->id,
-                        'digits_code' => $value,
+						'status'            => $this->forApproval,
+                        'cycle_counts_id'   => $capsule->id,
+                        'digits_code'       => $value,
                         'gasha_machines_id' => $machine_id,
-                        'qty' => $fqty,
-                        'variance' => ($fqty - $capsuleInventoryLine->qty),
-                        'created_at' => date('Y-m-d H:i:s'),
-						'cycle_count_type' => "FLOOR"
+                        'qty'               => $fqty,
+                        'variance'          => ($fqty - $capsuleInventoryLine->qty),
+                        'created_at'        => date('Y-m-d H:i:s'),
+						'cycle_count_type'  => "FLOOR"
                     ]);
 
                     $capsuleLines->save();

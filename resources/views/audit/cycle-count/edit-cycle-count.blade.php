@@ -27,7 +27,7 @@
 
     <div class='panel panel-default'>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
-            Cycle Count (Capsule) Detail
+            Edit Cycle Count (Capsule) Form
         </div>
 
         <div class='panel-body'>

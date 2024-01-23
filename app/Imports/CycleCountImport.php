@@ -60,34 +60,35 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullCo
             $fqty = str_replace(',', '', $item_value['quantity']);
             $capsuleHeader = [
                 'reference_number' => $cycleCountFloorRef,
-                'locations_id' => $this->location_id
+                'locations_id'     => $this->location_id
             ];
 
             $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
             ->where('locations_id',$this->location_id)->first();
 
             $capsuleInventoryLine = InventoryCapsuleLine::where([
-                'inventory_capsules_id'=>$capsuleInventory->id,
-                'sub_locations_id'=> $sublocation_id->id,
-                'gasha_machines_id'=> null
+                'inventory_capsules_id' => $capsuleInventory->id,
+                'sub_locations_id'      => $sublocation_id->id,
+                'gasha_machines_id'     => null
             ])->first();
 
             $capsule = CycleCount::firstOrCreate($capsuleHeader,[
-                'reference_number' =>$cycleCountFloorRef,
-                'locations_id' => $this->location_id,
+                'reference_number' => $cycleCountFloorRef,
+                'header_status'    => $this->forApproval,
+                'locations_id'     => $this->location_id,
                 'sub_locations_id' => $sublocation_id->id,
-                'total_qty' => $this->quantity_total,
-                'created_by' => CRUDBooster::myId(),
-                'created_at' => date('Y-m-d H:i:s')
+                'total_qty'        => $this->quantity_total,
+                'created_by'       => CRUDBooster::myId(),
+                'created_at'       => date('Y-m-d H:i:s')
             ]);
 
             $capsuleLines = new CycleCountLine([
-                'status'          => $this->forApproval,
-                'cycle_counts_id' => $capsule->id,
-                'digits_code' => $item_value['item_code'],
-                'qty' => $fqty,
-                'variance' => ($fqty - $capsuleInventoryLine->qty),
-                'created_at' => date('Y-m-d H:i:s'),
+                'status'           => $this->forApproval,
+                'cycle_counts_id'  => $capsule->id,
+                'digits_code'      => $item_value['item_code'],
+                'qty'              => $fqty,
+                'variance'         => ($fqty - $capsuleInventoryLine->qty),
+                'created_at'       => date('Y-m-d H:i:s'),
                 'cycle_count_type' => "STOCK ROOM"
             ]);
 
@@ -149,27 +150,28 @@ class CycleCountImport implements ToCollection, WithHeadingRow, WithStrictNullCo
                 ->where('locations_id',$this->location_id)->first();
 
                 $capsuleInventoryLine = InventoryCapsuleLine::where([
-                    'inventory_capsules_id'=>$capsuleInventory->id,
-                    'sub_locations_id'=> $sublocation_id->id,
-                    'gasha_machines_id'=> null
+                    'inventory_capsules_id' => $capsuleInventory->id,
+                    'sub_locations_id'      => $sublocation_id->id,
+                    'gasha_machines_id'     => null
                 ])->first();
 
                 $capsule = CycleCount::firstOrCreate($capsuleHeader,[
-                    'reference_number' =>$cycleCountFloorRef,
-                    'locations_id' => $this->location_id,
+                    'reference_number' => $cycleCountFloorRef,
+                    'header_status'    => $this->forApproval,
+                    'locations_id'     => $this->location_id,
                     'sub_locations_id' => $sublocation_id->id,
-                    'total_qty' => $this->quantity_total,
-                    'created_by' => CRUDBooster::myId(),
-                    'created_at' => date('Y-m-d H:i:s')
+                    'total_qty'        => $this->quantity_total,
+                    'created_by'       => CRUDBooster::myId(),
+                    'created_at'       => date('Y-m-d H:i:s')
                 ]);
 
                 $capsuleLines = new CycleCountLine([
-                    'status'          => $this->forApproval,
-                    'cycle_counts_id' => $capsule->id,
-                    'digits_code' => $item_value['digits_code'],
-                    'qty' => 0,
-                    'variance' => -1 * abs($fqty),
-                    'created_at' => date('Y-m-d H:i:s'),
+                    'status'           => $this->forApproval,
+                    'cycle_counts_id'  => $capsule->id,
+                    'digits_code'      => $item_value['digits_code'],
+                    'qty'              => 0,
+                    'variance'         => -1 * abs($fqty),
+                    'created_at'       => date('Y-m-d H:i:s'),
                     'cycle_count_type' => "STOCK ROOM"
                 ]);
 

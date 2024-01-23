@@ -21,9 +21,15 @@
 	use App\Models\Submaster\SubLocations;
 
 	class AdminCycleCountApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $closed;
 		private const CYCLE_COUNT_ACTION = 'Cycle Count';
         private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
         private const STOCK_ROOM = 'STOCK ROOM';
+
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->closed = 4;
+		}
 
 	    public function cbInit() {
 
@@ -228,7 +234,8 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
+			$this->load_css[] = asset('css/gasha-style.css');
 	        
 	    }
 
@@ -266,7 +273,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	
 	    }
 
 	    /*
@@ -368,20 +375,30 @@
 			$forApproval = [];
 			foreach($data['items'] as $val){
 				$machine_id = GashaMachines::where('id',$val['gasha_machines_id'])->where('location_id',$id)->first()->id;
+                $sublocation_id = SubLocations::where('location_id',$id)->where('description',self::STOCK_ROOM)->first();
 				$item = Item::where('digits_code',$val['st_digits_code'])->first();
 				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
 				->where('locations_id',$id)->first();
 
-				$capsuleInventoryLine = InventoryCapsuleLine::where([
+				$capsuleInventoryLineMfloor = InventoryCapsuleLine::where([
 					'inventory_capsules_id'=>$capsuleInventory->id,
 					'gasha_machines_id'=> $machine_id,
 					'sub_locations_id'=> null
 				])->first();
-				if($capsuleInventoryLine->qty != NULL && $val['gasha_machines_id'] != NULL){
-					$val['system_qty'] = $capsuleInventoryLine->qty;
+
+				if($capsuleInventoryLineMfloor->qty != NULL && $val['gasha_machines_id'] != NULL){
+					$val['floor_system_qty'] = $capsuleInventoryLineMfloor->qty;
 				}else{
-					$val['system_qty'] = 0;
+					$val['floor_system_qty'] = 0;
 				}
+
+				$capsuleInventoryLineMSt = InventoryCapsuleLine::where([
+					'inventory_capsules_id'=>$capsuleInventory->id,
+					'sub_locations_id'=> $sublocation_id->id,
+					'gasha_machines_id'=> null
+				])->first();
+
+				$val['st_system_qty'] = $capsuleInventoryLineMSt->qty ? $capsuleInventoryLineMSt->qty : 0;
 				
 				$forApproval[] = $val;
 			}
@@ -410,16 +427,15 @@
 					'gasha_machines_id'=> $machine_id,
 					'sub_locations_id'=> null
 				])->first();
-
-				if($val->qty < $capsuleInventoryLine->qty){
-					$item = $val;
-					$machineFloorData[] = $item;
+				//dd($machine_id,$capsuleInventory->id,$capsuleInventoryLine->qty);
+				if($val->qty <= $capsuleInventoryLine->qty){
+					$machineFloorData[] = $val;
 				}
 			}
-
+			//PROCESS DATA MACHINES
 			foreach($machineFloorData as $mKey => $mValue){
-				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
-				$item = Item::where('digits_code',$val->digits_code)->first();
+				$machine_id = GashaMachines::where('id',$mValue->gasha_machines_id)->where('location_id',$location_id)->first()->id;
+				$item = Item::where('digits_code',$mValue->digits_code)->first();
 
 				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
 				->where('locations_id',$location_id)->first();
@@ -472,6 +488,27 @@
 						'updated_at' => date('Y-m-d H:i:s')
 					]);
 				}
+				CycleCountLine::where([
+					'id' => $mValue->ccl_id,
+				])->update([
+					'status' => $this->closed
+				]);
+			}
+			//UPDATE HEADER STATUS IF THERE IS NON FOR APPROVAL MACHINE
+			$HeaderMachine = CycleCount::leftjoin('cycle_count_lines','cycle_counts.id','=','cycle_count_lines.cycle_counts_id')
+										->where('cycle_count_lines.cycle_count_type',$typeMachine)
+										->select('cycle_counts.id AS cc_id',
+												 'cycle_counts.*',
+												 'cycle_count_lines.*')
+										->first();
+			$checkHeaderLinesMachine = CycleCountLine::where('status',9)->where('cycle_count_type',$typeMachine)->count();
+			
+			if($checkHeaderLinesMachine == 0){
+				CycleCount::where([
+					'id' => $HeaderMachine->cc_id,
+				])->update([
+					'header_status' => $this->closed
+				]);
 			}
 			
 			//STOCK ROOM PROCESS
@@ -479,28 +516,28 @@
 			//REMOVE MORE THAN SYSTEM QTY ITEMS STOCK ROOM
 			$stockRoomData = [];
 			foreach($stockRoomItems as $key => $val){
+				$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
 				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
 				$item = Item::where('digits_code',$val->digits_code)->first();
 
 				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
 				->where('locations_id',$location_id)->first();
 
-				$capsuleInventoryLine = InventoryCapsuleLine::where([
+				$capsuleInventoryLine =  InventoryCapsuleLine::where([
 					'inventory_capsules_id'=>$capsuleInventory->id,
-					'gasha_machines_id'=> $machine_id,
-					'sub_locations_id'=> null
+					'sub_locations_id'=> $sublocation_id->id,
+					'gasha_machines_id'=> null
 				])->first();
 
-				if($val->qty < $capsuleInventoryLine->qty){
-					$item = $val;
-					$stockRoomData[] = $item;
+				if($val->qty <= $capsuleInventoryLine->qty){
+					$stockRoomData[] = $val;
 				}
 				
 			}
-
+			//PROCESS DATA STOCKROOM
 			foreach($stockRoomData as $stKey => $stVal){
 				$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
-				$item = Item::where('digits_code',$stVal->item_code)->first();
+				$item = Item::where('digits_code',$stVal->digits_code)->first();
 				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
 				->where('locations_id',$location_id)->first();
 
@@ -540,9 +577,31 @@
 						'updated_at' => date('Y-m-d H:i:s')
 					]);
 				}
+				CycleCountLine::where([
+					'id' => $stVal->ccl_id,
+				])->update([
+					'status' => $this->closed
+				]);
+			}
+
+			//UPDATE HEADER STATUS IF THERE IS NON FOR APPROVAL STOCKROOM
+			$HeaderStockRoom = CycleCount::leftjoin('cycle_count_lines','cycle_counts.id','=','cycle_count_lines.cycle_counts_id')
+										->where('cycle_count_lines.cycle_count_type',$stockRoomType)
+										->select('cycle_counts.id AS cc_id',
+												 'cycle_counts.*',
+												 'cycle_count_lines.*')
+										->first();
+			$checkHeaderLinesStockRoom = CycleCountLine::where('status',9)->where('cycle_count_type',$stockRoomType)->count();
+			
+			if($checkHeaderLinesStockRoom == 0){
+				CycleCount::where([
+					'id' => $HeaderStockRoom->cc_id,
+				])->update([
+					'header_status' => $this->closed
+				]);
 			}
 			
-			$data = ['status'=>'success','msg'=>'Successfully approved!'];
+			$data = ['status'=>'success','msg'=>'Successfully approved!','redirect_url'=>CRUDBooster::adminpath('cycle_count_approval')];
 			return json_encode($data);
 		}
 

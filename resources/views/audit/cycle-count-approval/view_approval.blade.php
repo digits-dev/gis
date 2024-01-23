@@ -46,13 +46,13 @@
                                 <tr style="text-align: center" >
                                     <td>{{$res->st_digits_code}}</td>
                                     <td>{{$res->st_ref_number}}</td>
-                                    <td>{{$res->system_qty}}</td>
-                                    <td st-actual-qty="{{$res->st_actual_qty}}" st-system-qty="{{$res->system_qty}}" class="st_actual_qty">{{$res->st_actual_qty}}</td>
+                                    <td>{{$res->st_system_qty && $res->st_actual_qty ? $res->st_system_qty : 0}}</td>
+                                    <td st-actual-qty="{{$res->st_actual_qty}}" st-system-qty="{{$res->st_system_qty}}" class="st_actual_qty">{{$res->st_actual_qty ? $res->st_actual_qty : 0}}</td>
                                     <td></td>
-                                    <td>{{$res->floor_ref}}</td>
-                                    <td>{{$res->floor_machine}}</td>
-                                    <td>{{$res->system_qty}}</td>
-                                    <td floor-actual-qty="{{$res->floor_actual_qty}}" floor-system-qty="{{$res->system_qty}}" class="floor_actual_qty">{{$res->floor_actual_qty}}</td>
+                                    <td>{{$res->floor_ref ? $res->floor_ref : 0}}</td>
+                                    <td>{{$res->floor_machine ? $res->floor_machine : 0}}</td>
+                                    <td>{{$res->floor_system_qty}}</td>
+                                    <td floor-actual-qty="{{$res->floor_actual_qty}}" floor-system-qty="{{$res->floor_system_qty}}" class="floor_actual_qty">{{$res->floor_actual_qty ? $res->floor_actual_qty : 0}}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -192,7 +192,12 @@
                                         title: response.msg,
                                         icon: response.status,
                                         confirmButtonColor: "#3c8dbc",
-                                    }); 
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.replace(response.redirect_url);
+                                        }
+                                    });; 
+
                                 }
                                 $('#save-btn').attr('disabled', false);
                             },
