@@ -455,7 +455,7 @@
 
 			$data['detail_header'] = CycleCount::detail($id);
 			$data['detail_body']   = CycleCountLine::detailBody($id);
-
+			$data['cycle_count_type'] = CycleCountLine::where('cycle_counts_id',$id)->first()->cycle_count_type;
 			return $this->view("audit.cycle-count.edit-cycle-count", $data);
 		}
 
@@ -857,6 +857,47 @@
 			// 	$filename = $name;
 			// 	$file->move('cycle-count-files',$filename);
 			// }
+
+			return response()->json([
+				'status'=>'success', 
+				'msg'=>'File uploaded successfully!',
+				'items'=>$newArray,
+				'filename'=>$filename
+			]);
+		}
+
+		//CYCLE COUNT FLOOR FILE PROCESS
+		public function storeFileEdit(Request $request){
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$reader->setReadDataOnly(true);
+			$spreadsheet = $reader->load($request->file('cycle-count-file'));
+			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+			$data = $sheet->toArray();
+			unset($data[0]);
+			
+			$newArray = [];
+			$contArray = [];
+			
+			foreach($data as $key => $val){
+				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->locations_id)->count();
+				$allJanNo = Item::where('digits_code',$val[1])->count();
+
+				if($request->cycle_count_type == "FLOOR"){
+					if($machines == 0){
+						return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
+					}
+					
+					if($allJanNo == 0){
+						return response()->json(['status'=>'error', 'msg'=>'Jan No not found! At line:'.($key+1)]);
+					}
+				}
+
+				$contArray['machine'] = $val[0];
+				$contArray['item_code'] = $val[1];
+				$contArray['qty'] = $val[2];
+				$newArray[] = $contArray;
+				
+			}
 
 			return response()->json([
 				'status'=>'success', 

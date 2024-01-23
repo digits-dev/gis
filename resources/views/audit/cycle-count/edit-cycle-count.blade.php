@@ -1,9 +1,10 @@
 @push('head')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style type="text/css">
 
-        #collected-token th,  td {
-            border: 1px solid rgba(000, 0, 0, .5) !important;
+        #edit-cycle-count th,  td {
+            border: 1px solid rgba(000, 0, 0, .5);
         }
 
         @media (min-width:729px) {
@@ -26,13 +27,16 @@
     @endif
 
     <div class='panel panel-default'>
+        <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Edit via upload file</button></span>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
-            Edit Cycle Count (Capsule) Form
+            Edit Cycle Count Form
         </div>
 
         <div class='panel-body'>
             <div class="col-md-12">
-
+                <input type="hidden" name="cycle_count_type" id="cycle_count_type" value="{{$cycle_count_type}}">
+                <input type="hidden" name="locations_id" id="locations_id" value="{{$detail_header->locations_id}}">
+                
                 <div class="form-group">
                     <label class="control-label"> Reference Number</label>
                     <input type="text" class="form-control finput" value="{{ $detail_header->reference_number }}"
@@ -52,42 +56,36 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <table class="table table-bordered" id="collected-token">
+                    <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+                        <span>download template</span>
+                    </button>
+                    <table class="table" id="edit-cycle-count">
                         <thead>
                             <tr style="vertical-align: top;">
-                                <th width="20%" class="text-center">Line Status</th>
                                 <th width="20%" class="text-center">Machine</th>
                                 <th width="20%" class="text-center">Item Code</th>
                                 <th width="20%" class="text-center">Qty</th>
-                                <th width="20%" class="text-center">Variance</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($detail_body as $row)
                                 <tr>
                                     <td style="text-align:center">
-                                        {{ $row->ccl_status }}
-                                    </td>
-                                    <td style="text-align:center">
                                         {{ $row->serial_number }}
                                     </td>
                                     <td style="text-align:center">
                                         {{ $row->digits_code }}
                                     </td>
-                                    <td style="text-align:center" class="qty">
-                                        {{ $row->qty }}
-                                    </td>
-                                    <td style="text-align:center" class="variance">
-                                        {{ $row->variance }}
+                                    <td class="qty">
+                                        <input class="qty" style="text-align:center; border:none" type="text" value="{{ $row->qty }}" item="{{ $row->digits_code }}" readonly>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" style="text-align: right;"><b>Total</b></td>
+                                <td colspan="2" style="text-align: center;"><b>Total</b></td>
                                 <td class="text-center"><span id="totalQty">0</span></td>
-                                <td class="text-center"><span id="totalVariance">0</span></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -110,6 +108,34 @@
                 </div>
             @endif
         </div>
+
+        {{-- Modal upload file --}}
+        <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title text-center"><strong>Edit Cycle Count (Upload File)</strong></h4>
+                    </div>
+                    <div class="row">
+                        <div class="modal-body">
+                            <div class="col-md-12">
+                                <div class="form-group" >
+                                 <input type="file" name="cycle-count-file" class="form-control" id="cycle-count-file">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float: left;">Cancel</button>
+                        <button type='button' id="upload-cycle-count" class="btn btn-primary"><i class="fa fa-upload"></i> Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
 
@@ -118,6 +144,15 @@
     </div>
 @endsection
 @push('bottom')
+<script src=
+"https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js" >
+</script>
+<script src=
+"https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" >
+</script>
+    <script src=
+"https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js" >
+</script>
     <script type="text/javascript">
         function preventBack() {
             window.history.forward();
@@ -126,12 +161,118 @@
             null;
         };
         setTimeout("preventBack()", 0);
-
+        var table;
         $(document).ready(function() {
+            table = $("#edit-cycle-count").DataTable({
+                bPaginate: false,
+                bLengthChange: false,
+                bFilter: false,
+                bInfo: true,
+                bAutoWidth: false,
+                ordering:false,
+                buttons: [
+                    {
+                        extend: "excel",
+                        title: "",
+                        exportOptions: {
+                            columns: ":not(.not-export-column)",
+                            columns: [1,2,3]
+                        },
+                    },
+                ],
+            })
+            $("#btn-export").on("click", function () {
+                table.button(".buttons-excel").trigger();
+            });
+            //Show Modal upload file
+            $("#btnUpload").click(function () {
+                $('#addRowModal').modal('show');
+            });
+            //Upload file
+            $('#upload-cycle-count').on('click', function(event) {
+                event.preventDefault();
+                if($('#cycle-count-file').val() === ''){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose file!',
+                        icon: 'error',
+                        confirmButtonColor: '#3c8dbc',
+                    });
+                    event.preventDefault();
+                    return false;
+                }else{
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                
+                    let formData = new FormData();
+                    formData.append('cycle-count-file', $('#cycle-count-file')[0].files[0]);
+                    formData.append('cycle_count_type', $('#cycle_count_type').val());
+                    formData.append('locations_id', $('#locations_id').val());
+                    $.ajax({
+                        type:'POST',
+                        url: "{{ route('cycle-count-edit-file-store') }}",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: (response) => {
+                            console.log(response.items);
+                            if (response) {
+                                Swal.fire({
+                                    title: response.msg,
+                                    icon: response.status,
+                                    confirmButtonColor: '#3085d6',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $('#addRowModal').modal('hide');
+                                        overwriteTable(response.items);
+                                        $('#totalQty').val(calculateTotalQuantityInput());
+                                        $('#filename').val(response.filename);
+                                        $('#btnUpload').attr('disabled', true);
+                                    }
+                                });  
+                            }
+                        },
+                        error: function(response){
+                            $('#file-input-error').text(response.responseJSON.message);
+                        }
+                    });
+                }
+            });
+            $('#totalQty').val(calculateTotalQuantityInput());
             $('#totalQty').text(calculateTotalQuantity());
             $('#totalVariance').text(calculateVarianceQuantity());
         });
 
+        function overwriteTable(data){
+            $//("#edit-cycle-count tbody").empty();
+            data.forEach((item, index) => {
+                const tr = $('#edit-cycle-count tbody').find('tr');
+                const qty = tr.find('input[item="'+parseInt(item.item_code)+'"]');
+                const newQty = parseInt(item.qty) ? parseInt(item.qty) : 0;
+               
+                if(qty.length > 0){
+                    qty.val(newQty);
+                }else{
+                    const newrow =`
+                        <tr class="item-row existing-machines" machine="${item.digits_code2}">
+                            <td class="td-style">${item.machine}
+                                <input type="hidden" name="machine[]" value="${item.machine}">
+                            </td>
+                            <td class="td-style existing-item-code">${item.item_code}
+                                <input type="hidden" name="item_code[]"  value="${item.item_code}">
+                            </td>
+                            <td class="td-style">
+                                <input machine="${item.machine}" item="${item.item_code}" item_code="${item.item_code}" class="text-center finput qty item-details" value=${item.qty} type="text" name="qty[]" style="width:100%; border:none" autocomplete="off" required readonly>
+                            </td>
+                        </tr>
+                    `;
+                    $('#edit-cycle-count tbody').append(newrow);
+                }
+            });
+        }
 
         function calculateTotalQuantity() {
             let totalQuantity = 0;
@@ -158,6 +299,19 @@
                 varianceQuantity += qty;
             });
             return varianceQuantity;
+        }
+
+        function calculateTotalQuantityInput() {
+            let totalQuantity = 0;
+            $('.qty').each(function() {
+                let qty = 0;
+                if (!($(this).val() === '')) {
+                    qty = parseInt($(this).val().replace(/,/g, ''));
+                }
+
+                totalQuantity += qty;
+            });
+            return totalQuantity;
         }
 
     </script>
