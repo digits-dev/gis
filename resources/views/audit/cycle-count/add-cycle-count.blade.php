@@ -871,7 +871,15 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $('#location_id').attr('disabled', false);
+                        $('#btnSubmit').attr('disabled', true)
                         $('#cycleCount').submit();
+                        Swal.fire({
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            title: "Please wait while saving...",
+                            didOpen: () => Swal.showLoading()
+                        });
                     }
                 });
 
