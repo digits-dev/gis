@@ -163,6 +163,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/approval-cycle-count',[AdminCycleCountApprovalController::class, 'submitApprovalCc'])->name('submit_approval_cc'); 
     Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-edit/{id}',[AdminCycleCountsController::class, 'getEdit'])->name('get-edit');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/edit-store-file', [AdminCycleCountsController::class, 'storeFileEdit'])->name('cycle-count-edit-file-store');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-edit', [AdminCycleCountsController::class, 'editCycleCount'])->name('submit-cycle-count-edit');
+    
     //GASHA MACHINES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);
     Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');

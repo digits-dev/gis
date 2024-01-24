@@ -72,4 +72,18 @@ class CycleCountLine extends Model
         ->select('cycle_counts.*','cycle_count_lines.*','cycle_count_lines.id AS ccl_id')
         ->get();
     }
+
+    public function scopeEditDetailBody($query, $id){
+        return $query->leftjoin('gasha_machines', 'cycle_count_lines.gasha_machines_id', '=', 'gasha_machines.id')
+            ->leftjoin('statuses', 'cycle_count_lines.status', '=', 'statuses.id')
+            ->select('cycle_count_lines.id as id',
+                    'statuses.status_description AS ccl_status',
+                    'cycle_count_lines.*',
+                    'gasha_machines.*')
+            ->where('cycle_count_lines.cycle_counts_id',$id)
+            ->where('cycle_count_lines.status',9)
+            ->where('cycle_count_lines.qty','>',0)
+            ->get();
+    }
 }
+

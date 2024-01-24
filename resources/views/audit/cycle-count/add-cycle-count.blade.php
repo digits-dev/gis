@@ -350,6 +350,7 @@
                                     $('#filename').val(response.filename);
                                     $('#btnUpload').attr('disabled', true);
                                     formatTableRowSpan();
+                                    validateQty();
                                 }
                             });  
                         }
@@ -376,6 +377,24 @@
                 }
 
             }
+        }
+
+        function validateQty(){
+            const inputs = $('.td-style .qty').get();
+            let isValid = true;
+            inputs.forEach(input =>{
+                const currentVal = $(input).val(); 
+                const value = Number(currentVal.replace(/\D/g, ''));
+
+                if(!currentVal){
+                    isValid = false;
+                    $(input).css('border', '2px solid red');
+                }else {
+                    $(input).css('border', '');
+                }
+            });
+            isValid = isValid;
+            $('#btnSubmit').attr('disabled',!isValid);
         }
    
 
@@ -824,8 +843,8 @@
                     }
                 }
 
-                let qty = $('input[name^="qty[]"]').length;
-                let qty_value = $('input[name^="qty[]"]');
+                let qty = $('.qty').length;
+                let qty_value = $('.qty');
                 for (i = 0; i < qty; i++) {
                     if (qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null) {
                         swal({
@@ -952,7 +971,7 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${item.machine}" item="${item.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required readonly>
+                            <input machine="${item.machine}" item="${item.item_code}" description="${item.item_description}" id="qty" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required readonly>
                         </td>
                         <td class="td-style exclude">
                             ${index+1}
