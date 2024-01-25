@@ -258,7 +258,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8])){
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
 				$query->whereNull('collect_rr_token_lines.deleted_at')
 					  ->orderBy('collect_rr_token_lines.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){

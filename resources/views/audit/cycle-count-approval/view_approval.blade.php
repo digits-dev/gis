@@ -32,12 +32,12 @@
                             <tr class="active">
                                 <th style="width:8%; text-align: center">Jan#</th>   
                                 <th style="width:8%; text-align: center">Ref#</th> 
-                                <th style="width:8%; text-align: center">System Qty</th>  
+                                <th style="width:8%; text-align: center">System Qty(Stockroom)</th>  
                                 <th style="width:8%; text-align: center">Actual Qty</th>       
                                 <th style="width:1%"></th>
                                 <th style="width:8%; text-align: center">Ref#</th> 
                                 <th style="width:8%; text-align: center">Machine</th> 
-                                <th style="width:8%; text-align: center">System Qty</th>  
+                                <th style="width:8%; text-align: center">System Qty(Machine)</th>  
                                 <th style="width:8%; text-align: center">Actual Qty</th>          
                             </tr>
                         </thead>
@@ -82,6 +82,9 @@
     </script>
 
     <script type="text/javascript">
+        $(function(){
+            $('body').addClass("sidebar-collapse");
+        });
         var table;
         $(document).ready(function () {
             table = $("#table_dashboards").DataTable({
@@ -95,8 +98,9 @@
                     {
                         extend: "excel",
                         title: "Cycle-count-for-approval",
+                        header: true
                     },
-                ],
+                ], 
            })
            $("#btn-export").on("click", function () {
                 table.button(".buttons-excel").trigger();
@@ -224,5 +228,6 @@
                 });
             });
         }
+
     </script>
 @endpush

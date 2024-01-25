@@ -300,7 +300,7 @@
         let itemTokenNo = 0;
 
         $('#btnUpload').attr('disabled', true);
-
+        $('#btnExport').attr('disabled', true);
         //Show Modal upload file
         $("#btnUpload").click(function () {
             $('#addRowModal').modal('show');
@@ -399,8 +399,11 @@
    
 
         $('#location_id').change(function() {
+            const url_download = '{{CRUDBooster::adminpath("cycle_counts/exportfloor/")}}';
+            $('#btnExport').attr('href', url_download+'/'+$(this).val());
             $(this).attr('disabled', true);
             $('#btnUpload').attr('disabled', false);
+            $('#btnExport').attr('disabled', false);
             $.ajax({
                 type: 'POST',
                 url: "{{ route('check-inventory-qty') }}",

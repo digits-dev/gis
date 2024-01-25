@@ -145,7 +145,7 @@
 	        */
 	        $this->index_button = array();
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
                     $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
 					$this->index_button[] = [
@@ -483,7 +483,7 @@
 					array_push($excelFile, $value);
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
-                    $fqty = str_replace(',', '', $qty[$key_machine][$key_item]);
+                    $fqty = str_replace(',', '', (int)$qty[$key_machine][$key_item]);
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
                         'locations_id'     => $request->location_id
@@ -513,7 +513,7 @@
                         'digits_code'       => $value,
                         'gasha_machines_id' => $machine_id,
                         'qty'               => $fqty,
-                        'variance'          => ($fqty - $capsuleInventoryLine->qty),
+                        'variance'          => ($fqty - (int)$capsuleInventoryLine->qty),
                         'created_at'        => date('Y-m-d H:i:s'),
 						'cycle_count_type'  => "FLOOR"
                     ]);
@@ -781,7 +781,50 @@
 				$spreadSheet->getActiveSheet()->fromArray($data);
 				$Excel_writer = new Xlsx($spreadSheet);
 				header('Content-Type: application/vnd.ms-excel');
-				header('Content-Disposition: attachment;filename="cycle-count.xlsx"');
+				header('Content-Disposition: attachment;filename="cycle-count-stockroom.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+
+		public function getExportfloor($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$capsuleInventoryData = InventoryCapsule::getInventoryByLocation($id);
+			
+			$data_array [] = array(
+				"Machine",
+				"Item Code",
+				"Item Description",
+				"Quantity",
+			);
+
+			//foreach($capsuleInventoryData as $data_item){
+				$data_array[] = array(
+					'Machine'          => '',
+					'Item Code'        => '',
+					'Item Description' => '',
+					'Quantity'         => '',
+					
+				);
+			//}
+			$this->ExportExcelFloor($data_array);
+		}
+
+		public function ExportExcelFloor($data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="cycle-count-floor.xlsx"');
 				header('Cache-Control: max-age=0');
 				ob_end_clean();
 				$Excel_writer->save('php://output');
@@ -1069,5 +1112,54 @@
 				}
 			}
 			CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been updated!','success ')->send();
+		}
+
+		public function getExportedit($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$refNo = CycleCount::where('id',$id)->first();
+			$cycleCountLinesData = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+								  ->select('cycle_count_lines.id AS ccl_id',
+								  		   'cycle_count_lines.*',
+								  		   'gasha_machines.serial_number AS machine')
+								  ->where('cycle_counts_id',$id)
+								  ->where('cycle_count_lines.status',9)
+								  ->where('cycle_count_lines.qty','>',0)
+								  ->get();
+			
+			$data_array [] = array(
+				"Machine",
+				"Item Code",
+				"Qty"
+			);
+
+			foreach($cycleCountLinesData as $data_item){
+				$data_array[] = array(
+					'Machine'   => $data_item->machine,
+					'Item Code' => $data_item->digits_code,
+					'Qty'       => $data_item->qty
+					
+				);
+			}
+			$this->ExportExcelEdit($data_array,$refNo->reference_number);
+		}
+
+		public function ExportExcelEdit($data,$refNo){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="cycle-count-edit-'.$refNo.'.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
 		}
 	}

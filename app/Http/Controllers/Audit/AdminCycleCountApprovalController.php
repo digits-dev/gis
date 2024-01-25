@@ -489,7 +489,7 @@
 					]);
 				}
 				CycleCountLine::where([
-					'id' => $mValue->ccl_id,
+					'id' => $mValue->ccl_id
 				])->update([
 					'status' => $this->closed
 				]);
@@ -505,7 +505,7 @@
 			
 			if($checkHeaderLinesMachine == 0){
 				CycleCount::where([
-					'id' => $HeaderMachine->cc_id,
+					'id' => $HeaderMachine->cc_id
 				])->update([
 					'header_status' => $this->closed
 				]);
@@ -578,7 +578,7 @@
 					]);
 				}
 				CycleCountLine::where([
-					'id' => $stVal->ccl_id,
+					'id' => $stVal->ccl_id
 				])->update([
 					'status' => $this->closed
 				]);
@@ -595,7 +595,7 @@
 			
 			if($checkHeaderLinesStockRoom == 0){
 				CycleCount::where([
-					'id' => $HeaderStockRoom->cc_id,
+					'id' => $HeaderStockRoom->cc_id
 				])->update([
 					'header_status' => $this->closed
 				]);
@@ -604,5 +604,5 @@
 			$data = ['status'=>'success','msg'=>'Successfully approved!','redirect_url'=>CRUDBooster::adminpath('cycle_count_approval')];
 			return json_encode($data);
 		}
-
+	
 	}

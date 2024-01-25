@@ -64,9 +64,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+                        <a href="{{CRUDBooster::adminpath("cycle_counts/exportedit/".$detail_header->id)}}" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                             <span>download template</span>
-                        </button>
+                        </a>
                         <table class="table" id="edit-cycle-count">
                             <thead>
                                 <tr style="vertical-align: top;">
@@ -178,27 +178,27 @@
         setTimeout("preventBack()", 0);
         var table;
         $(document).ready(function() {
-            table = $("#edit-cycle-count").DataTable({
-                bPaginate: false,
-                bLengthChange: false,
-                bFilter: false,
-                bInfo: true,
-                bAutoWidth: false,
-                ordering:false,
-                buttons: [
-                    {
-                        extend: "excel",
-                        title: "",
-                        exportOptions: {
-                            columns: ":not(.not-export-column)",
-                            columns: [1,2,3]
-                        },
-                    },
-                ],
-            })
-            $("#btn-export").on("click", function () {
-                table.button(".buttons-excel").trigger();
-            });
+            // table = $("#edit-cycle-count").DataTable({
+            //     bPaginate: false,
+            //     bLengthChange: false,
+            //     bFilter: false,
+            //     bInfo: true,
+            //     bAutoWidth: false,
+            //     ordering:false,
+            //     buttons: [
+            //         {
+            //             extend: "excel",
+            //             title: "",
+            //             exportOptions: {
+            //                 columns: ":not(.not-export-column)",
+            //                 columns: [1,2,3]
+            //             },
+            //         },
+            //     ],
+            // })
+            // $("#btn-export").on("click", function () {
+            //     table.button(".buttons-excel").trigger();
+            // });
             //Show Modal upload file
             $("#btnUpload").click(function () {
                 $('#addRowModal').modal('show');
