@@ -7,10 +7,10 @@
 ### 🪙 Token
 
 -   [x] Add Token Balance
--   [ ] Adjust Token Balance
+-   [x] Adjust Token Balance
 -   [x] Pullout Defective Token
 -   [x] Disburse Token
--   [ ] Receive Token (Acctg)
+-   [x] Receive Token (Acctg)
 -   [x] Receive Token (Store)
 -   [x] Token Inventory
 -   [x] Token History
@@ -19,8 +19,8 @@
 
 -   [x] Capsule Refill
 -   [x] Capsule Return
--   [ ] Capsule Swap
--   [ ] Capsule Merge
+-   [x] Capsule Swap
+-   [x] Capsule Merge
 -   [x] Capsule Inventory
 -   [x] Capsule History
 
