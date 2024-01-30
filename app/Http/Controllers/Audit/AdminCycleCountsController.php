@@ -921,11 +921,18 @@
 			
 			$newArray = [];
 			$contArray = [];
-			
+			$isDuplicate = [];
 			foreach($data as $key => $val){
 				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->location_id)->count();
 				$allJanNo = Item::where('digits_code',$val[1])->count();
-				
+
+				$new_key = $val[0] . $val[1];
+                if (array_key_exists($new_key, $isDuplicate)) {
+                    return response()->json(['status'=>'error', 'msg'=>'Not allowed duplicate Machines and Jan No! At line:'.($key+1)]);
+                }
+    
+                $isDuplicate[$new_key] = $val;
+
 				if($machines == 0){
 					return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
 				}
@@ -963,16 +970,34 @@
 			$spreadsheet = $reader->load($request->file('cycle-count-file'));
 			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
 			$data = $sheet->toArray();
+			$headerSheet = array_filter($data[0]);
 			unset($data[0]);
-			
+
+			if($request->cycle_count_type == "FLOOR"){
+				if (count($headerSheet) !== 4) {
+					return response()->json(['status'=>'error', 'msg'=>'Machines edit template mismatch']);
+				}
+			}else{
+				if (count($headerSheet) !== 3) {
+					return response()->json(['status'=>'error', 'msg'=>'Stockroom edit template mismatch']);
+				}
+			}
+
 			$newArray = [];
 			$contArray = [];
-			
+			$isDuplicate = [];
 			foreach($data as $key => $val){
 				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->locations_id)->count();
 				$allJanNo = Item::where('digits_code',$val[1])->count();
 
 				if($request->cycle_count_type == "FLOOR"){
+
+					$new_key = $val[0] . $val[1];
+					if (array_key_exists($new_key, $isDuplicate)) {
+						return response()->json(['status'=>'error', 'msg'=>'Not allowed duplicate Machines and Jan No! At line:'.($key+1)]);
+					}
+					$isDuplicate[$new_key] = $val;
+					
 					if($machines == 0){
 						return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
 					}
@@ -980,13 +1005,38 @@
 					if($allJanNo == 0){
 						return response()->json(['status'=>'error', 'msg'=>'Jan No not found! At line:'.($key+1)]);
 					}
-				}
 
-				$contArray['machine'] = $val[0];
-				$contArray['item_code'] = $val[1];
-				$contArray['qty'] = $val[2];
-				$newArray[] = $contArray;
-				
+					//check if already exist
+					$isExist = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+												->where('cycle_counts_id',$request->cycle_count_id)
+												->select(DB::raw("CONCAT(gasha_machines.serial_number,'-',cycle_count_lines.digits_code) AS code"))
+												->where('cycle_count_lines.status',$this->closed)
+												->get()->toArray();
+				    $checkRow = array_column($isExist, 'code');
+					if(in_array($val[0]."-".$val[1], $checkRow)){
+						return response()->json(['status'=>'error', 'msg'=>'Machine and Jan no already approved! At line:'.($key+1)]);
+					}
+					$contArray['machine'] = $val[0];
+					$contArray['item_code'] = $val[1];
+					$contArray['qty'] = $val[3];
+					$newArray[] = $contArray;
+					
+				}else {
+					//check if already exist
+					$isExist = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+												->where('cycle_counts_id',$request->cycle_count_id)
+												->select('cycle_count_lines.digits_code AS code')
+												->where('cycle_count_lines.status',$this->closed)
+												->get()->toArray();
+				    $checkRow = array_column($isExist, 'code');
+					if(in_array($val[0], $checkRow)){
+						return response()->json(['status'=>'error', 'msg'=>'Machine and Jan no already approved! At line:'.($key+1)]);
+					}
+					$contArray['machine'] = '';
+					$contArray['item_code'] = $val[0];
+					$contArray['qty'] = $val[2];
+					$newArray[] = $contArray;
+				}
 			}
 
 			return response()->json([
@@ -1117,30 +1167,55 @@
 		public function getExportedit($id) {
 			ini_set('max_execution_time', 0);
 			ini_set('memory_limit', '4000M');
-			$refNo = CycleCount::where('id',$id)->first();
+			$refNo = CycleCount::where('cycle_counts.id',$id)->leftjoin('cycle_count_lines','cycle_counts.id','cycle_count_lines.cycle_counts_id')
+			->select('cycle_counts.*','cycle_count_lines.*')
+			->first();
 			$cycleCountLinesData = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+								  ->leftjoin('items','cycle_count_lines.digits_code','=','items.digits_code')
 								  ->select('cycle_count_lines.id AS ccl_id',
 								  		   'cycle_count_lines.*',
-								  		   'gasha_machines.serial_number AS machine')
+								  		   'gasha_machines.serial_number AS machine',
+										   'items.item_description')
 								  ->where('cycle_counts_id',$id)
 								  ->where('cycle_count_lines.status',9)
 								  ->where('cycle_count_lines.qty','>',0)
 								  ->get();
 			
-			$data_array [] = array(
-				"Machine",
-				"Item Code",
-				"Qty"
-			);
-
-			foreach($cycleCountLinesData as $data_item){
-				$data_array[] = array(
-					'Machine'   => $data_item->machine,
-					'Item Code' => $data_item->digits_code,
-					'Qty'       => $data_item->qty
-					
+			if($refNo->cycle_count_type == "FLOOR"){
+				$data_array [] = array(
+					"Machine",
+					"Item Code",
+					"Item Description",
+					"Qty"
 				);
+	
+				foreach($cycleCountLinesData as $data_item){
+					$data_array[] = array(
+						'Machine'          => $data_item->machine,
+						'Item Code'        => $data_item->digits_code,
+						'Item Description' => $data_item->item_description,
+						'Qty'              => $data_item->qty
+						
+					);
+				}
+			}else{
+				$data_array [] = array(
+					"Item Code",
+					"Item Description",
+					"Qty"
+				);
+	
+				foreach($cycleCountLinesData as $data_item){
+					$data_array[] = array(
+						'Item Code'        => $data_item->digits_code,
+						'Item Description' => $data_item->item_description,
+						'Qty'              => $data_item->qty
+						
+					);
+				}
 			}
+			
+
 			$this->ExportExcelEdit($data_array,$refNo->reference_number);
 		}
 

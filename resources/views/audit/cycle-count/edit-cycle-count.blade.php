@@ -229,6 +229,7 @@
                     formData.append('cycle-count-file', $('#cycle-count-file')[0].files[0]);
                     formData.append('cycle_count_type', $('#cycle_count_type').val());
                     formData.append('locations_id', $('#locations_id').val());
+                    formData.append('cycle_count_id', $('#cycle_count_id').val());
                     $.ajax({
                         type:'POST',
                         url: "{{ route('cycle-count-edit-file-store') }}",
