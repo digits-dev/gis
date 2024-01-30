@@ -60,7 +60,8 @@ class CycleCountLine extends Model
                     )
             ->where('cycle_count_lines.status',9)
             ->groupBy('cycle_count_lines.digits_code','cycle_count_floor_view.serial_number')
-            ->orderBy(DB::raw('ISNULL(cycle_count_floor_view.digits_code), cycle_count_floor_view.digits_code'), 'ASC')
+            ->orderBy(DB::raw('ISNULL(cycle_count_floor_view.digits_code), cycle_count_floor_view.digits_code'), 'ASC',
+                      DB::raw('MAX(cycle_counts.reference_number)'), 'ASC')
             ->get();
     }
 
@@ -69,7 +70,7 @@ class CycleCountLine extends Model
         ->where('locations_id',$id)
         ->where('cycle_count_lines.cycle_count_type',$type)
         ->where('cycle_count_lines.status',9)
-        ->select('cycle_counts.*','cycle_count_lines.*','cycle_count_lines.id AS ccl_id')
+        ->select('cycle_counts.*','cycle_count_lines.*','cycle_count_lines.id AS ccl_id','cycle_counts.id AS cc_id')
         ->get();
     }
 

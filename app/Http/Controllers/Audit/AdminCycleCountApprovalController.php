@@ -493,6 +493,7 @@
 				])->update([
 					'status' => $this->closed
 				]);
+				
 			}
 			//UPDATE HEADER STATUS IF THERE IS NON FOR APPROVAL MACHINE
 			$HeaderMachine = CycleCount::leftjoin('cycle_count_lines','cycle_counts.id','=','cycle_count_lines.cycle_counts_id')
@@ -514,28 +515,28 @@
 			//STOCK ROOM PROCESS
 			$stockRoomItems = CycleCountLine::getApprovalLinesForProcess($location_id,$stockRoomType);
 			//REMOVE MORE THAN SYSTEM QTY ITEMS STOCK ROOM
-			$stockRoomData = [];
-			foreach($stockRoomItems as $key => $val){
-				$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
-				$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
-				$item = Item::where('digits_code',$val->digits_code)->first();
+			// $stockRoomData = [];
+			// foreach($stockRoomItems as $key => $val){
+			// 	$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
+			// 	$machine_id = GashaMachines::where('id',$val->gasha_machines_id)->where('location_id',$location_id)->first()->id;
+			// 	$item = Item::where('digits_code',$val->digits_code)->first();
 
-				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
-				->where('locations_id',$location_id)->first();
+			// 	$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+			// 	->where('locations_id',$location_id)->first();
 
-				$capsuleInventoryLine =  InventoryCapsuleLine::where([
-					'inventory_capsules_id'=>$capsuleInventory->id,
-					'sub_locations_id'=> $sublocation_id->id,
-					'gasha_machines_id'=> null
-				])->first();
+			// 	$capsuleInventoryLine =  InventoryCapsuleLine::where([
+			// 		'inventory_capsules_id'=>$capsuleInventory->id,
+			// 		'sub_locations_id'=> $sublocation_id->id,
+			// 		'gasha_machines_id'=> null
+			// 	])->first();
 
-				if($val->qty <= $capsuleInventoryLine->qty){
-					$stockRoomData[] = $val;
-				}
+			// 	if($val->qty <= $capsuleInventoryLine->qty){
+			// 		$stockRoomData[] = $val;
+			// 	}
 				
-			}
+			// }
 			//PROCESS DATA STOCKROOM
-			foreach($stockRoomData as $stKey => $stVal){
+			foreach($stockRoomItems as $stKey => $stVal){
 				$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
 				$item = Item::where('digits_code',$stVal->digits_code)->first();
 				$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
@@ -582,24 +583,29 @@
 				])->update([
 					'status' => $this->closed
 				]);
-			}
-
-			//UPDATE HEADER STATUS IF THERE IS NON FOR APPROVAL STOCKROOM
-			$HeaderStockRoom = CycleCount::leftjoin('cycle_count_lines','cycle_counts.id','=','cycle_count_lines.cycle_counts_id')
-										->where('cycle_count_lines.cycle_count_type',$stockRoomType)
-										->select('cycle_counts.id AS cc_id',
-												 'cycle_counts.*',
-												 'cycle_count_lines.*')
-										->first();
-			$checkHeaderLinesStockRoom = CycleCountLine::where('status',9)->where('cycle_count_type',$stockRoomType)->count();
-			
-			if($checkHeaderLinesStockRoom == 0){
 				CycleCount::where([
-					'id' => $HeaderStockRoom->cc_id
+					'id' => $stVal->cc_id
 				])->update([
 					'header_status' => $this->closed
 				]);
 			}
+
+			// UPDATE HEADER STATUS IF THERE IS NON FOR APPROVAL STOCKROOM
+			// $HeaderStockRoom = CycleCount::leftjoin('cycle_count_lines','cycle_counts.id','=','cycle_count_lines.cycle_counts_id')
+			// 							->where('cycle_count_lines.cycle_count_type',$stockRoomType)
+			// 							->select('cycle_counts.id AS cc_id',
+			// 									 'cycle_counts.*',
+			// 									 'cycle_count_lines.*')
+			// 							->first();
+			// $checkHeaderLinesStockRoom = CycleCountLine::where('status',9)->where('cycle_count_type',$stockRoomType)->count();
+			
+			// if($checkHeaderLinesStockRoom == 0){
+			// 	CycleCount::where([
+			// 		'id' => $HeaderStockRoom->cc_id
+			// 	])->update([
+			// 		'header_status' => $this->closed
+			// 	]);
+			// }
 			
 			$data = ['status'=>'success','msg'=>'Successfully approved!','redirect_url'=>CRUDBooster::adminpath('cycle_count_approval')];
 			return json_encode($data);

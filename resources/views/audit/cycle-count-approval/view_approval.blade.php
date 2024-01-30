@@ -147,7 +147,7 @@
                 const stValue = Number(stCurrentVal.replace(/\D/g, ''));
                 const stMaxValue = Number($(stInput).attr('st-system-qty'));
                 if (stValue > stMaxValue) {
-                    $(stInput).css('border', '2px solid red');
+                    $(stInput).css('border', '2px solid #f39c12');
                 } else if (!stCurrentVal) {
                     $(stInput).css('border', '');
                 } else {

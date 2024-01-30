@@ -14,6 +14,9 @@
                 margin: auto !important;
             }
         }
+        input.finput:read-only {
+            background-color: #fff;
+        }
     </style>
 @endpush
 @extends('crudbooster::admin_template')
@@ -88,9 +91,9 @@
                                         </td>
                                         <td class="text-center">
                                             @if($cycle_count_type == "FLOOR")
-                                                <input class="form-control qty" id="qty" style="text-align:center;" name="qty[]" type="text" value="{{ $row->qty }}" item="{{ $row->digits_code."-".$row->serial_number }}">
+                                                <input class="form-control finput qty" id="qty" style="text-align:center; border:none" name="qty[]" type="text" value="{{ $row->qty }}" item="{{ $row->digits_code."-".$row->serial_number }}" readonly>
                                             @else
-                                                <input class="form-control qty" id="qty" style="text-align:center;" name="qty[]" type="text" value="{{ $row->qty }}" item="{{ $row->digits_code }}">
+                                                <input class="form-control finput qty" id="qty" style="text-align:center; border:none;" name="qty[]" type="text" value="{{ $row->qty }}" item="{{ $row->digits_code }}" readonly>
                                             @endif
                                         </td>
                                     </tr>
