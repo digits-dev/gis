@@ -15,6 +15,7 @@ use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
 use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Token\AdminTokenAdjustmentsController;
+use App\Http\Controllers\Audit\AdminCollectTokenApprovalController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\Capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
@@ -98,6 +99,12 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine-collect', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine-collect');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/check-inventory-qty-collect',[AdminCollectRrTokensController::class, 'checkInventoryQty'])->name('check-inventory-qty-collect');
+    
+    //Collected Token Approval
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/approval-collect-token',[AdminCollectTokenApprovalController::class, 'submitApprovalCc'])->name('submit-collect-token-approval'); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/collect-token-edit/{id}',[AdminCollectRrTokensController::class, 'getCollectTokenEdit'])->name('collect-token-edit');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/edit-collect-token-file', [AdminCollectTokenApprovalController::class, 'collectTokenFileEdit'])->name('collect-token-edit-file-store');
+
     //Temporary Add no of token in collect token line
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/update-no-of-token', [AdminCollectRrTokenSalesController::class, 'UploadNoOfToken']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/upload-no-of-token',[AdminCollectRrTokenSalesController::class, 'saveNoOfToken'])->name('upload-no-of-token');

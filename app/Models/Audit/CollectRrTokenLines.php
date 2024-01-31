@@ -11,6 +11,7 @@ class CollectRrTokenLines extends Model
     protected $table = 'collect_rr_token_lines';
 
     protected $fillable = [
+        'line_status', 
         'collected_token_id', 
         'gasha_machines_id',
         'gasha_machines_id',
@@ -27,6 +28,19 @@ class CollectRrTokenLines extends Model
                               'gasha_machines.*'
                               )
                      ->where('collect_rr_token_lines.collected_token_id',$id)
+                     ->get();
+    }
+
+    public function scopeDetailApprovalBody($query, $id){
+        return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
+                     ->leftjoin('collect_rr_tokens', 'collect_rr_token_lines.collected_token_id', '=', 'collect_rr_tokens.id')
+                     ->select('collect_rr_tokens.reference_number',
+                            'collect_rr_token_lines.id as id',
+                            'collect_rr_token_lines.*',
+                            'collect_rr_token_lines.no_of_token as no_of_token_line',
+                            'gasha_machines.*'
+                            )
+                     ->where('collect_rr_token_lines.line_status',9)
                      ->get();
     }
 }

@@ -413,6 +413,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Audit\AdminCapsuleSplitController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token Approval',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_token_approval',
+                'table_name'   => 'collect_rr_token_lines',
+                'controller'   => 'Audit\AdminCollectTokenApprovalController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 

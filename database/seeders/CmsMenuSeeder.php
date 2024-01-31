@@ -469,6 +469,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 3
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token Approval',
+            ],
+            [
+                'name'              => 'Collect Token Approval',
+                'type'              => 'Route',
+                'path'              => 'Audit\AdminCollectTokenApprovalControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 3,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
     }
 
     public function submasterMenu() {
