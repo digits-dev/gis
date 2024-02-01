@@ -265,12 +265,12 @@
             $('#btnUpdate').click(function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Are you sure ?',
+                    title: 'Are you sure you want to update?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Save',
+                    confirmButtonText: 'Yes',
                     returnFocus: false,
                     reverseButtons: true,
                 }).then((result) => {

@@ -39,7 +39,7 @@
 
     <form action="{{ route('submit-collect-token-edit') }}" method="POST" id="updateCollectToken" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="{{ $detail_header->ct_id }}" name="disburse_id" id="disburse_id">
+        <input type="hidden" value="{{ $detail_header->ct_id }}" name="ct_id" id="ct_id">
         <input type="hidden" value="{{ $detail_header->collected_qty }}" name="collected_qty" id="collected_qty">
         <input type="hidden" value="{{ $detail_header->location_id }}" name="location_id" id="location_id">
         <div class='panel-body'>
@@ -65,13 +65,15 @@
                     <span>download template</span>
                 </a>
                 <table class="table" id="collected-token">
-                    <tbody id="bodyTable">    
-                            <tr>
-                                <th width="20%" class="text-center">Machine</th> 
-                                <th width="20%" class="text-center">Machine no of tokens</th> 
-                                <th width="5%" class="text-center">Collected tokens</th>
-            
-                            </tr>      
+                    <thead>
+                        <tr>
+                            <th width="20%" class="text-center">Machine</th> 
+                            <th width="20%" class="text-center">Machine no of tokens</th> 
+                            <th width="5%" class="text-center">Collected tokens</th>
+                        </tr> 
+                    </thead>
+                                
+                    <tbody id="bodyTable">
                         @foreach($detail_body as $row)
                             <tr>
                                 <td style="text-align:center" height="10">
@@ -82,8 +84,8 @@
                                     {{$row->no_of_token_line}}    
                                     <input type="hidden" name="no_of_token[]"  value="{{$row->no_of_token_line}} ">                          
                                 </td>
-                                <td qty="{{$row->qty}}" no-of-token="{{$row->no_of_token_line}}" style="text-align:center" height="10" class="qty">
-                                    <input type="text" value="{{$row->qty}}" class="text-center finput" name="qty[]" id="qty" item="{{$row->serial_number.'-'.$row->no_of_token_line}}" readonly>                             
+                                <td qty="{{$row->qty}}" no-of-token="{{$row->no_of_token_line}}" style="text-align:center" height="10" class="tdQty">
+                                    <input type="text" value="{{$row->qty}}" class="text-center finput qty" name="qty[]" id="qty" item="{{$row->serial_number.'-'.$row->no_of_token_line}}" readonly>                             
                                 </td>
                             </tr>
                         @endforeach                                            
@@ -91,7 +93,7 @@
                     <tfoot>
                         <tr>
                             <td colspan="2" style="text-align: center;"><b>Total</b></td>
-                            <td class="text-center"><span id="totalQty">0</span></td>
+                            <td class="text-center"><input id="totalQty" type="text" class="finput text-center" name="newTotalQty" readonly></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -127,7 +129,7 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnUpdate"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button>
         </div>
     </form>
 
@@ -148,7 +150,8 @@
     setTimeout("preventBack()", 0);
     $('#location').select2();
     $(document).ready(function() {
-        $('#totalQty').text(calculateTotalQuantity());
+        $('#btnUpdate').attr('disabled',true);
+        $('#totalQty').val(calculateTotalQuantity());
         isDivisible();
         $("#btnUpload").click(function () {
             $('#addRowModal').modal('show');
@@ -191,12 +194,15 @@
                                 confirmButtonColor: '#3085d6',
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    $('#btnUpdate').attr('disabled',false);
                                     $('#addRowModal').modal('hide');
                                     overwriteTable(response.items);
-                                    $('#totalQty').val(calculateTotalQuantityInput());
+                                    $('#totalQty').val(calculateTotalQuantity());
                                     $('#filename').val(response.filename);
                                     $('#btnUpload').attr('disabled', true);
+                                   
                                 }
+                                isDivisible();
                             });  
                         }
                     },
@@ -211,12 +217,12 @@
         $('#btnUpdate').click(function(event) {
             event.preventDefault();
             Swal.fire({
-                title: 'Are you sure ?',
+                title: 'Are you sure you want to update?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Save',
+                confirmButtonText: 'Yes',
                 returnFocus: false,
                 reverseButtons: true,
             }).then((result) => {
@@ -228,27 +234,20 @@
 
         });
 
-        //Variance
-        $('#received_qty').on('keyup', function() {
-            const received_qty = this.value.replace(/,/g, '');
-            const released_qty = $('#released_qty').val();
-            const total = Math.abs(received_qty - released_qty);
-            $('#variance_qty').val(total);
-        });
     });
 
     function overwriteTable(data){
+        $('#collected-token tbody').empty();
         data.forEach((item, index) => {
-  
             const tr = $('#collected-token tbody').find('tr');
             collectTokenConcat = item.machine.concat('-', item.no_of_token);
         
             const qty = tr.find('input[item="'+collectTokenConcat+'"]');
             const newQty = parseInt(item.qty) ? parseInt(item.qty) : 0;
             
-            if(qty.length > 0){
-                qty.val(newQty);
-            }else{
+            // if(qty.length > 0){
+            //     qty.val(newQty);
+            // }else{
                 const newrow =`
                     <tr class="item-row existing-machines" machine="${item.machine}">
                         <td class="td-style text-center">${item.machine}
@@ -257,13 +256,13 @@
                         <td class="td-style existing-item-code text-center">${item.no_of_token}
                             <input type="hidden" name="no_of_token[]"  value="${item.no_of_token}">
                         </td>
-                        <td class="td-style">
-                            <input item="${item.machine.concat('-',item.no_of_token)}" id="qty" class="text-center finput qty item-details" value=${item.qty} type="text" name="qty[]" style="width:100%; border:none" autocomplete="off" required readonly>
+                        <td class="tdQty" qty="${item.qty}" no-of-token="${item.no_of_token}">
+                            <input item="${item.machine.concat('-',item.no_of_token)}" id="qty" class="text-center finput qty" value=${item.qty} type="text" name="qty[]" style="width:100%; border:none" autocomplete="off" required readonly>
                         </td>
                     </tr>
                 `;
                 $('#collected-token tbody').append(newrow);
-            }
+            //}
         });
     }
 
@@ -271,8 +270,8 @@
         let totalQuantity = 0;
         $('.qty').each(function() {
             let qty = 0;
-            if($(this).text().trim()) {
-                qty = parseInt($(this).text().replace(/,/g, ''));
+            if (!($(this).val() === '')) {
+                qty = parseInt($(this).val().replace(/,/g, ''));
             }
 
             totalQuantity += qty;
@@ -281,12 +280,12 @@
     }
 
     function isDivisible() {
-        const inputs = $('.qty').get();
-        console.log(inputs);
+        const inputs = $('.tdQty').get();
+     
         inputs.forEach(input => {
             const qty = Number($(input).attr('qty')); 
             const noOfToken = Number($(input).attr('no-of-token'));
-            
+            console.log(qty, noOfToken);
             if (qty % noOfToken === 0) {
                 $(input).css('border', '');
             } else {

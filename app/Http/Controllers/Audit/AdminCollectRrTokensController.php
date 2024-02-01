@@ -626,4 +626,72 @@
 			}
 		}
 		
+
+		//PROCESS EDIT CYCLE COUNT
+		public function editCollectToken(Request $request){
+			$fields         = Request::all();
+			$collectTokenId = $fields['ct_id'];
+			$location_id    = $fields['location_id'];
+			$machines        = $fields['machine'];
+			$no_of_token    = $fields['no_of_token'];
+			$qty            = $fields['qty'];
+			$newTotalQty    = $fields['newTotalQty'];
+			$collectTokenHeader = CollectRrTokens::where('id',$collectTokenId)->first();
+
+			$variances   = [];
+			$insertLines = [];
+			foreach($machines as $key => $value){
+				$machine = GashaMachines::where('serial_number',$value)->first();
+				$fqty = str_replace(',', '', (int)$qty[$key]);
+				$is_existing_machine_line = CollectRrTokenLines::leftJoin('collect_rr_tokens as ct', 'ct.id', 'collect_rr_token_lines.collected_token_id')
+				->where('collect_rr_token_lines.collected_token_id',$collectTokenId)
+				->where('gasha_machines_id', $machine->id)
+				->where('ct.location_id', $location_id)
+				->where('collect_rr_token_lines.line_status',9)
+				->exists();
+
+				//VARIANCES
+				$variances[] = fmod(intval($fqty),$machine->no_of_token);
+
+				if ($is_existing_machine_line) {
+					// updating the qty if existing
+					CollectRrTokenLines::leftJoin('collect_rr_tokens as ct', 'ct.id', 'collect_rr_token_lines.collected_token_id')
+						->where('collect_rr_token_lines.collected_token_id',$collectTokenId)
+						->where('gasha_machines_id', $machine->id)
+						->where('ct.location_id', $location_id)
+						->where('collect_rr_token_lines.line_status',9)
+						->update(['collect_rr_token_lines.qty' => $fqty]);
+
+				}else {
+					//insert not exist
+					$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
+					$insertLines[$key]['line_status']        = $this->forApproval;	
+					$insertLines[$key]['collected_token_id'] = $collectTokenId;
+					$insertLines[$key]['gasha_machines_id']  = $machine->id;
+					$insertLines[$key]['no_of_token']        = $machine->no_of_token;
+					$insertLines[$key]['qty']                = intval($fqty);
+					$insertLines[$key]['variance']           = fmod(intval($fqty),$machine->no_of_token);
+					$insertLines[$key]['location_id']        = $location_id;
+					$insertLines[$key]['current_cash_value'] = $current_value->current_cash_value;
+					$insertLines[$key]['created_at']         = date('Y-m-d H:i:s');
+				}
+			}
+
+			//IINSERT NOT EXIST LINES
+			CollectRrTokenLines::insert($insertLines);
+
+			//UPDATE HEADER TOTAL QTY
+			CollectRrTokens::where('id',$collectTokenId)->update(['collected_qty' => $newTotalQty]);
+
+			//UPDATE HEADER VARIANCE
+			foreach($variances as $variance){
+				if(intval($variance) !== 0){
+					CollectRrTokens::where('id',$collectTokenId)->update(['variance' => 'Yes']);
+				}else{
+					CollectRrTokens::where('id',$collectTokenId)->update(['variance' => 'No']);
+				}
+			}
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Collect Token has been updated!','success ')->send();
+		}
 	}
