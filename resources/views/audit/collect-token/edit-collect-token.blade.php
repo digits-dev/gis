@@ -32,7 +32,7 @@
 @endif
 
 <div class='panel panel-default'>
-    <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Fill Qty via upload file</button></span>
+    {{-- <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Fill Qty via upload file</button></span> --}}
     <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
         Received collected token form
     </div>
@@ -84,8 +84,8 @@
                                     {{$row->no_of_token_line}}    
                                     <input type="hidden" name="no_of_token[]"  value="{{$row->no_of_token_line}} ">                          
                                 </td>
-                                <td qty="{{$row->qty}}" no-of-token="{{$row->no_of_token_line}}" style="text-align:center" height="10" class="tdQty">
-                                    <input type="text" value="{{$row->qty}}" class="text-center finput qty" name="qty[]" id="qty" item="{{$row->serial_number.'-'.$row->no_of_token_line}}" readonly>                             
+                                <td  style="text-align:center" height="10">
+                                    <input qty="{{$row->qty}}" no-of-token="{{$row->no_of_token_line}}" type="text" value="{{$row->qty}}" class="text-center form-control qty" name="qty[]" id="qty" item="{{$row->serial_number.'-'.$row->no_of_token_line}}">                             
                                 </td>
                             </tr>
                         @endforeach                                            
@@ -150,12 +150,21 @@
     setTimeout("preventBack()", 0);
     $('#location').select2();
     $(document).ready(function() {
-        $('#btnUpdate').attr('disabled',true);
+        // $('#btnUpdate').attr('disabled',true);
         $('#totalQty').val(calculateTotalQuantity());
         isDivisible();
         $("#btnUpload").click(function () {
             $('#addRowModal').modal('show');
         });
+
+        $('.qty').on('input', function() {
+            const currentVal = $(this).val();
+            const val = Number(currentVal.replace(/\D/g, ''));
+            $(this).val(currentVal ? val.toLocaleString() : '');
+            $('#totalQty').val(calculateTotalQuantity());
+            isDivisible();
+        });
+        
 
         //Upload file
         $('#upload-collect-token').on('click', function(event) {
@@ -216,6 +225,22 @@
         //SUBMIT FORM   
         $('#btnUpdate').click(function(event) {
             event.preventDefault();
+
+            let qty = $('input[name^="qty[]"]').length;
+            let qty_value = $('input[name^="qty[]"]');
+            for (i = 0; i < qty; i++) {
+                if (qty_value.eq(i).val() == '' || qty_value.eq(i).val() == null || qty_value.eq(i).val() == 0) {
+                    swal({
+                        type: 'error',
+                        title: 'Qty cannot be empty!',
+                        icon: 'error',
+                        confirmButtonColor: '#3c8dbc',
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+            }
+
             Swal.fire({
                 title: 'Are you sure you want to update?',
                 icon: 'warning',
@@ -280,15 +305,13 @@
     }
 
     function isDivisible() {
-        const inputs = $('.tdQty').get();
-     
+        const inputs = $('.qty').get();
         inputs.forEach(input => {
-            const qty = Number($(input).attr('qty')); 
+            const qty = Number($(input).val());
             const noOfToken = Number($(input).attr('no-of-token'));
-            console.log(qty, noOfToken);
             if (qty % noOfToken === 0) {
                 $(input).css('border', '');
-            } else {
+            }else{
                 $(input).css('border', '2px solid red');
             }
         });
