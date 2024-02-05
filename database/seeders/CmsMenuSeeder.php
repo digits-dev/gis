@@ -412,6 +412,24 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Adjust Capsule Balance',
+            ],
+            [
+                'name'              => 'Adjust Capsule Balance',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleAdjustmentsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 8
+            ]
+        );
+
 
     }
 

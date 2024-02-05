@@ -422,6 +422,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Audit\AdminCollectTokenApprovalController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Adjust Capsule Balance',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_adjustments',
+                'table_name'   => 'capsule_adjustments',
+                'controller'   => 'Capsule\AdminCapsuleAdjustmentsController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 

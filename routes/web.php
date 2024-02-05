@@ -34,6 +34,7 @@ use App\Http\Controllers\Submaster\AdminAddOnsController;
 use App\Http\Controllers\History\AdminSwapHistoriesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
 use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
+use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,9 +147,12 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
     Route::post('admin/capsule_sales/export-with-date', [AdminCapsuleSalesController::class, 'exportDataWithDate'])->name('capsule_sales_export_with_date');
 
+    //CAPSULE ADJUSTMENT
+    Route::post('admin/capsule_adjustments/view',[AdminCapsuleAdjustmentsController::class,'getJanCode'])->name('getJanCode');
+    Route::post('admin/capsule_adjustments_machines/view',[AdminCapsuleAdjustmentsController::class,'getMachines'])->name('getMachines');
+
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
-
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
