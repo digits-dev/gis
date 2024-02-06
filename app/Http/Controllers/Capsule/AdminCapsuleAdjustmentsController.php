@@ -18,10 +18,10 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -33,19 +33,26 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Locations Id","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Adjustment Qty","name"=>"adjustment_qty"];
 			$this->col[] = ["label"=>"Reason","name"=>"reason"];
 			$this->col[] = ["label"=>"Before Qty","name"=>"before_qty"];
 			$this->col[] = ["label"=>"After Qty","name"=>"after_qty"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
+			$this->form[] = ['label'=>'Reference #','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Adjustment Qty','name'=>'adjustment_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Reason','name'=>'reason','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Before Qty','name'=>'before_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'After Qty','name'=>'after_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -353,5 +360,118 @@
 										->where('inventory_capsules_id', $id)->get();
 
 			return response()->json(['items'=> $items]);
+		}
+
+		public function getMachinesQty(Request $request){
+			$fields = $request->all();
+			$id = $fields['id'];
+			$capsule_qty = InventoryCapsuleLine::where('id', $id)->pluck('qty')->first();
+			return response()->json(['qty'=> $capsule_qty]);
+		}
+
+		public function getCapsuleInventory(Request $request) {
+			$locations_id = $request->get('location_id');
+			$capsule_id = $request->get('capsule_id');
+			$action = $request->get('action');
+			$adjustment_qty =  $request->get('value');
+		
+			$current_inventory = DB::table('inventory_capsule_lines')
+				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+				->where('inventory_capsule_lines.id', $capsule_id)
+				->where('inventory_capsules.locations_id', $locations_id)
+				->get()
+				->first();
+	
+			$current_inventory->action = $action;
+			$current_inventory->adjustment_qty = (integer) $adjustment_qty;
+			if ($action == 'add') {
+				$current_inventory->new_qty = $current_inventory->qty + $adjustment_qty;
+			} else {
+				$current_inventory->new_qty = $current_inventory->qty - $adjustment_qty;
+
+			}
+
+			return response()->json($current_inventory);
+		}
+
+		public function submitCapsuleAmount(Request $request){
+			$data = $request->all();
+			$time_stamp = date('Y-m-d H:i:s');
+			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
+			$action_by = CRUDBooster::myId();
+			$capsule_id = $data['machine'];
+			$locations_id = $data['locations_id'];
+			$action = $data['action'];
+			$adjustment_qty = preg_replace("/\D/", '', $data['adjustment_qty_' . $action]);
+			$reason = $data['reason_' . $action];
+			$capsule_type = 6;
+			$inventory_query = DB::table('inventory_capsule_lines')
+							->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+							->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+							->where('inventory_capsule_lines.id', $capsule_id)
+							->where('inventory_capsules.locations_id', $locations_id);
+			
+			$before_qty = $inventory_query->pluck('qty')->first();
+			if ($action == 'add') {
+				$inventory_query->update([
+					'qty' => DB::raw("qty + $adjustment_qty"),
+					'inventory_capsule_lines.updated_at' => $time_stamp,
+					'inventory_capsule_lines.updated_by' => $action_by,
+				]);
+				
+			} else {
+				if ($adjustment_qty > $inventory_query->pluck('qty')->first()){
+					return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Deduct Capsule cannot exceed to capsule inventory.',"danger");
+				}
+				$adjustment_qty = "-$adjustment_qty";
+				$inventory_query->update([
+					'qty' => DB::raw("qty + ($adjustment_qty)"),
+					'inventory_capsule_lines.updated_at' => $time_stamp,
+					'inventory_capsule_lines.updated_by' => $action_by,
+				]);
+			}
+			$after_qty = $inventory_query->pluck('qty')->first();
+			$to_be_inserted = [
+				'reference_number' => $reference_number,
+				'locations_id' => $locations_id,
+				'adjustment_qty' => $adjustment_qty,
+				'reason' => $reason,
+				'before_qty' => $before_qty,
+				'after_qty' => $after_qty,
+				'created_by' => $action_by,
+				'created_at' => $time_stamp
+			];
+
+			DB::table('capsule_adjustments')->insert($to_be_inserted);
+			if ($action == 'add') {
+				$history = [
+					'reference_number' => $reference_number,
+					'item_code' => $inventory_query->pluck('item_code')->first(),
+					'capsule_action_types_id' => $capsule_type,
+					'locations_id' => $locations_id,
+					'to_machines_id' => $inventory_query->pluck('gasha_machines_id')->first(),
+					'to_sub_locations_id' => $inventory_query->pluck('sub_locations_id')->first(),
+					'qty' => $adjustment_qty,
+					'created_at' => $time_stamp,
+					'created_by' => $action_by
+				];
+			}else{
+				$history = [
+					'reference_number' => $reference_number,
+					'item_code' => $inventory_query->pluck('item_code')->first(),
+					'capsule_action_types_id' => $capsule_type,
+					'locations_id' => $locations_id,
+					'from_machines_id' => $inventory_query->pluck('gasha_machines_id')->first(),
+					'from_sub_locations_id' => $inventory_query->pluck('sub_locations_id')->first(),
+					'qty' => $adjustment_qty,
+					'created_at' => $time_stamp,
+					'created_by' => $action_by
+				];
+			}
+			
+			DB::table('history_capsules')->insert($history);
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Your form submitted succesfully.',"success");
 		}
 	}

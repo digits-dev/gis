@@ -1,14 +1,15 @@
 @extends('crudbooster::admin_template')
 @push('head')
-    <link rel="stylesheet" href="{{ asset('css/capsule-adjustment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/capsule-adjustment.css?v=2') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
     <style>
-    input:read-only {
-        background-color: #dddd;
-    }
-
+        input.dark:read-only {
+            background-color: #ecf0f5;
+            border: 1px solid #999;
+            border-radius: 3px;
+        }
     </style>
 @endpush
 @section('content')
@@ -42,7 +43,7 @@
 
 <div class="panel-content">
     <div class='panel panel-default'>
-        <form action="{{ route('submitAmount') }}" method="POST" autocomplete="off">
+        <form action="{{ route('submitCapsuleAmount') }}" method="POST" autocomplete="off">
             @csrf
             <input type="text" name="action" hidden>
             <div class='panel-header'>
@@ -61,21 +62,21 @@
 
                 <div class="jan_no_div select_store_div" style="display:none;">
                     <label><span style="color:red">*</span>Select Jan#</label>
-                    <select class="js-example-basic-single s-single" name="jan_no" id="jan_no" >
+                    <select selected data-placeholder="Select Jan#" class="js-example-basic-single s-single" name="jan_no" id="jan_no" >
                   
                     </select>
                 </div>
 
                 <div class="machine_div select_store_div" style="display:none;">
                     <label><span style="color:red">*</span>Select Machine/Stockroom</label>
-                    <select class="js-example-basic-single s-single" name="machine" id="machine" >
+                    <select selected data-placeholder="Select machine/stockroom" class="js-example-basic-single s-single" name="machine" id="machine" >
                        
                     </select>
                 </div>
 
                 <div class="display_qty_div">
                     <label>Current Capsule Quantity:</label>
-                    <input class="text-center" type="text" id ="current_capsule_amount" readonly>
+                    <input class="form-control text-center dark" type="text" id ="current_capsule_amount" readonly>
                 </div>
                 
                 <div class="add_deduct_div select_store_div" style="display:none;">
@@ -99,7 +100,7 @@
                     </div>
                     <div class="display_qty_div">
                         <label>New Capsule Quantity:</label>
-                        <input type="text" id="new_capsule_add" readonly>
+                        <input class="form-control text-center dark" type="text" id="new_capsule_add" readonly>
                     </div>
                     <div class="reason_input_div">
                         <label><span style="color:red">*</span>Reason:</label>
@@ -114,7 +115,7 @@
                     </div>
                     <div class="display_qty_div">
                         <label>New Capsule Quantity:</label>
-                        <input type="text" id="new_capsule_deduct" readonly>
+                        <input class="form-control dark" type="text" id="new_capsule_deduct" readonly>
                     </div>
                     <div class="reason_input_div">
                         <label>Reason:</label>
@@ -159,7 +160,7 @@
                 },
                 success:function(res){
                     console.log(res);
-                    populateAmount(res);
+                    populateDivs(res);
                 },
                 error:function(res){
                     alert('Failed')
@@ -167,7 +168,7 @@
             });
         });
 
-        //JAN # Select
+        //JAN # SELECT
         $('#jan_no').on('change',function() {
             const selectedValue = $(this).val();
             //$(this).attr('disabled', true);
@@ -185,12 +186,34 @@
        
                     var i;
                     var showData = [];
-                    showData[0] = "<option value=''>Select Machine/Stockroom</option>";
+                    showData[0] = "<option value=''></option>";
                     for (i = 0; i < result.length; ++i) {
                         var j = i + 1;
                         showData[j] = "<option value='"+result[i].icl_id+"'>"+result[i].machines+"</option>";
                     }
-                    jQuery('#machine').html(showData); 
+                    $('#machine').html(showData); 
+                },
+                error:function(res){
+                    alert('Failed')
+                },
+            });
+        });
+
+        //MACHINE SELECT
+        $('#machine').on('change',function() {
+            const selectedValue = $(this).val();
+            $('#action_type').val('').trigger('change');  
+            //$(this).attr('disabled', true);
+            $.ajax({
+                url:"{{ route('getMachinesQty')}}",
+                type:"POST",
+                dataType:'json',
+                data:{
+                    _token:"{{csrf_token()}}",
+                    id: selectedValue,
+                },
+                success:function(res){
+                    populateQty(res);
                 },
                 error:function(res){
                     alert('Failed')
@@ -247,24 +270,35 @@
         });
     });
 
-    function populateAmount(res){
- 
-        const result = res.items;
-       
-        var i;
-        var showData = [];
-        showData[0] = "<option value=''>Select Jan#</option>";
-        for (i = 0; i < result.length; ++i) {
-            var j = i + 1;
-            showData[j] = "<option value='"+result[i].inv_id+"'>"+result[i].digits_code+"</option>";
-        }
-        jQuery('#jan_no').html(showData); 
+    function populateQty(res){
+        $(".add_deduct_div").fadeOut({
+            done: function() {
+                console.log(res.qty)
+                const locationQty = res.qty;
+                // Format locationQty with commas
+                $('#current_capsule_amount').val(locationQty ? locationQty.toLocaleString() : 0);
+                $('#new_capsule_add, #new_capsule_deduct').val(locationQty ? locationQty.toLocaleString() : 0);
+            }
+        });
         
         $('.add_deduct_div').slideDown();
         $('.add_capsule_div').slideUp();
         $('.deduct_capsule_div').slideUp();
         $('.panel-footer').slideUp();
         $('.action_btn').removeClass('active_button');
+    }
+
+    function populateDivs(res){
+        const result = res.items;
+        var i;
+        var showData = [];
+        showData[0] = "<option value=''></option>";
+        for (i = 0; i < result.length; ++i) {
+            var j = i + 1;
+            showData[j] = "<option value='"+result[i].inv_id+"'>"+result[i].digits_code+"</option>";
+        }
+        $('#jan_no').html(showData); 
+        
         $('.jan_no_div').slideDown();
         $('.machine_div').slideDown();
     }
@@ -284,7 +318,7 @@
         } else {
             $('#save-btn').attr('disabled', false);
         }
-        $(`#new_token_${action}`).val(newValue.toLocaleString());
+        $(`#new_capsule_${action}`).val(newValue.toLocaleString());
     })
 
     $('.action_btn').on('click', function() {
@@ -300,7 +334,8 @@
     }
 
     $('#save-btn').on('click', function() {
-        const selectedValue = $('#select_store_location').val();
+        const selectedLocationValue = $('#select_store_location').val();
+        const selectedValue = $('#machine').val();
         const action = $('input[name="action"]').val();
         let value = 0;
         if (action == 'add') {
@@ -310,12 +345,13 @@
         }
 
         $.ajax({
-            url: "{{ route('getTokenInventory') }}",
+            url: "{{ route('getCapsuleInventory') }}",
             type:"POST",
             dataType:'json',
             data:{
                 _token:"{{csrf_token()}}",
-                location_id: selectedValue,
+                capsule_id: selectedValue,
+                location_id: selectedLocationValue,
                 action,
                 value,
             },

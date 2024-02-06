@@ -149,8 +149,11 @@ Route::group(['middleware' => ['web']], function() {
 
     //CAPSULE ADJUSTMENT
     Route::post('admin/capsule_adjustments/view',[AdminCapsuleAdjustmentsController::class,'getJanCode'])->name('getJanCode');
-    Route::post('admin/capsule_adjustments_machines/view',[AdminCapsuleAdjustmentsController::class,'getMachines'])->name('getMachines');
-
+    Route::post('admin/capsule_adjustments_machines/getMachines',[AdminCapsuleAdjustmentsController::class,'getMachines'])->name('getMachines');
+    Route::post('admin/capsule_adjustments/getMachinesQty',[AdminCapsuleAdjustmentsController::class,'getMachinesQty'])->name('getMachinesQty');
+    Route::post('admin/capsule_adjustments/getCapsuleInventory',[AdminCapsuleAdjustmentsController::class,'getCapsuleInventory'])->name('getCapsuleInventory');
+    Route::post('admin/capsule_adjustments/submit-capsule-adjustment',[AdminCapsuleAdjustmentsController::class,'submitCapsuleAmount'])->name('submitCapsuleAmount');
+    
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
 
