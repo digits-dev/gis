@@ -1,6 +1,6 @@
 @extends('crudbooster::admin_template')
 @push('head')
-    <link rel="stylesheet" href="{{ asset('css/capsule-adjustment.css?v=2') }}">
+    <link rel="stylesheet" href="{{ asset('css/capsule-adjustment.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
