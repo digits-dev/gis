@@ -17,7 +17,7 @@ class CmsMenuSeeder extends Seeder
         // self::indexMenu();
         self::tokenMenu();
         self::capsuleMenu();
-        // self::auditMenu();
+        self::auditMenu();
         self::historyMenu();
         self::submasterMenu();
     }
