@@ -61,9 +61,9 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{CRUDBooster::adminpath("collect_rr_tokens/exportedit/".$detail_header->ct_id)}}" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+                {{-- <a href="{{CRUDBooster::adminpath("collect_rr_tokens/exportedit/".$detail_header->ct_id)}}" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                     <span>download template</span>
-                </a>
+                </a> --}}
                 <table class="table" id="collected-token">
                     <thead>
                         <tr>
@@ -76,11 +76,11 @@
                     <tbody id="bodyTable">
                         @foreach($detail_body as $row)
                             <tr>
-                                <td style="text-align:center" height="10">
+                                <td style="text-align:center; padding-top:15px" height="10">
                                     {{$row->serial_number}}     
                                     <input type="hidden" name="machine[]" value="{{$row->serial_number}}">                          
                                 </td>
-                                <td style="text-align:center" height="10">
+                                <td style="text-align:center; padding-top:15px" height="10">
                                     {{$row->no_of_token_line}}    
                                     <input type="hidden" name="no_of_token[]"  value="{{$row->no_of_token_line}} ">                          
                                 </td>
