@@ -5,6 +5,9 @@
                 border: 1px solid rgba(000, 0, 0, .4);
                 padding: 8px;
             }
+            table.dataTable td.dataTables_empty {
+                text-align: center;    
+            }
         </style>
     @endpush
 @section('content')

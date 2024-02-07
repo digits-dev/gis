@@ -410,7 +410,7 @@ class CmsModulSeeder extends Seeder
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'cycle_count_approval',
                 'table_name'   => 'cycle_count_lines',
-                'controller'   => 'Audit\AdminCapsuleSplitController',
+                'controller'   => 'Audit\AdminCycleCountApprovalController',
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
