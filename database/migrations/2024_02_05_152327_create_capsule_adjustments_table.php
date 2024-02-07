@@ -16,6 +16,8 @@ class CreateCapsuleAdjustmentsTable extends Migration
         Schema::create('capsule_adjustments', function (Blueprint $table) {
             $table->increments('id');
             $table->string('reference_number')->length(20)->nullable();
+            $table->string('jan_number')->length(199)->nullable();
+            $table->string('machine')->length(199)->nullable();
             $table->integer('locations_id')->length(10)->unsigned()->nullable();
             $table->integer('adjustment_qty')->length(10)->nullable();
             $table->longText('reason')->nullable();

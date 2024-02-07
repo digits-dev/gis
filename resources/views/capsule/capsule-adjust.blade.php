@@ -73,7 +73,7 @@
                        
                     </select>
                 </div>
-
+                <input type="hidden" name="type" id="type">
                 <div class="display_qty_div">
                     <label>Current Capsule Quantity:</label>
                     <input class="form-control text-center dark" type="text" id ="current_capsule_amount" readonly>
@@ -103,8 +103,8 @@
                         <input class="form-control text-center dark" type="text" id="new_capsule_add" readonly>
                     </div>
                     <div class="reason_input_div">
-                        <label><span style="color:red">*</span>Reason:</label>
-                        <textarea name="reason_add" id="textarea_add" cols="50" rows="1"></textarea>
+                        <label><span style="color:red">*</span>Memo:</label>
+                        <textarea name="reason_add" id="textarea_add" cols="50" rows="1" required></textarea>
                     </div>
                 </div>
                 <div class="deduct_capsule_div" style="display: none" >
@@ -118,8 +118,8 @@
                         <input class="form-control dark" type="text" id="new_capsule_deduct" readonly>
                     </div>
                     <div class="reason_input_div">
-                        <label>Reason:</label>
-                        <textarea name="reason_deduct" id="textarea_deduct" cols="50" rows="1"></textarea>
+                        <label><span style="color:red">*</span>Memo:</label>
+                        <textarea name="reason_deduct" id="textarea_deduct" cols="50" rows="1" required></textarea>
                     </div>
                 </div>
             </div>
@@ -171,6 +171,7 @@
         //JAN # SELECT
         $('#jan_no').on('change',function() {
             const selectedValue = $(this).val();
+            const selectedLocationValue = $('#select_store_location').val();
             //$(this).attr('disabled', true);
             $.ajax({
                 url:"{{ route('getMachines')}}",
@@ -179,6 +180,7 @@
                 data:{
                     _token:"{{csrf_token()}}",
                     id: selectedValue,
+                    location_id: selectedLocationValue
                 },
                 success:function(res){
                     console.log(res);
@@ -189,7 +191,7 @@
                     showData[0] = "<option value=''></option>";
                     for (i = 0; i < result.length; ++i) {
                         var j = i + 1;
-                        showData[j] = "<option value='"+result[i].icl_id+"'>"+result[i].machines+"</option>";
+                        showData[j] = "<option value='"+result[i].item_id+"'>"+result[i].description+"</option>";
                     }
                     $('#machine').html(showData); 
                 },
@@ -201,7 +203,10 @@
 
         //MACHINE SELECT
         $('#machine').on('change',function() {
+            const janCodeId = $('#jan_no').val();
             const selectedValue = $(this).val();
+            const type = $('#machine option:selected').text();
+  
             $('#action_type').val('').trigger('change');  
             //$(this).attr('disabled', true);
             $.ajax({
@@ -211,6 +216,8 @@
                 data:{
                     _token:"{{csrf_token()}}",
                     id: selectedValue,
+                    inv_id: janCodeId,
+                    type: type
                 },
                 success:function(res){
                     populateQty(res);
@@ -335,7 +342,9 @@
 
     $('#save-btn').on('click', function() {
         const selectedLocationValue = $('#select_store_location').val();
+        const janCodeId = $('#jan_no').val();
         const selectedValue = $('#machine').val();
+        const type = $('#machine option:selected').text();
         const action = $('input[name="action"]').val();
         let value = 0;
         if (action == 'add') {
@@ -352,6 +361,8 @@
                 _token:"{{csrf_token()}}",
                 capsule_id: selectedValue,
                 location_id: selectedLocationValue,
+                janCodeId: janCodeId,
+                type: type,
                 action,
                 value,
             },
@@ -363,6 +374,7 @@
                 clonedTable.find('.current-capsule-amount-cell').text(res.qty.toLocaleString());
                 clonedTable.find('.adjusment-amount-cell').text(res.adjustment_qty.toLocaleString());
                 clonedTable.find('.new-capsule-amount-cell').text(res.new_qty.toLocaleString());
+                $('#type').val(res.type);
                 const outerHTML = clonedTable.prop('outerHTML');
                 Swal.fire({
                     title: "Are Sure You Want To Submit?",

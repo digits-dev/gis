@@ -8,6 +8,10 @@
 	use App\Models\Submaster\Counter;
 	use App\Models\Capsule\InventoryCapsule;
     use App\Models\Capsule\InventoryCapsuleLine;
+	use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\SubLocations;
+	use App\Models\Submaster\Item;
+
 	class AdminCapsuleAdjustmentsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -34,11 +38,13 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference #","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Jan#","name"=>"jan_number"];
+			$this->col[] = ["label"=>"Machine/Stockroom","name"=>"machine"];
 			$this->col[] = ["label"=>"Adjustment Qty","name"=>"adjustment_qty"];
 			$this->col[] = ["label"=>"Reason","name"=>"reason"];
 			$this->col[] = ["label"=>"Before Qty","name"=>"before_qty"];
 			$this->col[] = ["label"=>"After Qty","name"=>"after_qty"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -48,12 +54,13 @@
 
 			# END FORM DO NOT REMOVE THIS LINE
 			$this->form[] = ['label'=>'Reference #','name'=>'reference_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
+			$this->form[] = ['label'=>'Jan#','name'=>'jan_number','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Machine/Stockroom','name'=>'machine','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Adjustment Qty','name'=>'adjustment_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Reason','name'=>'reason','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Before Qty','name'=>'before_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'After Qty','name'=>'after_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-
+			$this->form[] = ['label'=>'Location','name'=>'locations_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			/* 
 	        | ---------------------------------------------------------------------- 
 	        | Sub Module
@@ -351,38 +358,131 @@
 		public function getMachines(Request $request){
 			$fields = $request->all();
 			$id = $fields['id'];
-			$items = InventoryCapsuleLine::leftjoin('gasha_machines','inventory_capsule_lines.gasha_machines_id','gasha_machines.id')
-										->leftjoin('sub_locations','inventory_capsule_lines.sub_locations_id','sub_locations.id')
-										->select('inventory_capsule_lines.*',
-										'gasha_machines.*',
-										'inventory_capsule_lines.id AS icl_id',
-										DB::raw('IF(gasha_machines.serial_number IS NULL, sub_locations.description, gasha_machines.serial_number) AS machines'))
-										->where('inventory_capsules_id', $id)->get();
+			$location_id = $fields['location_id'];
+			// $items = InventoryCapsuleLine::leftjoin('gasha_machines','inventory_capsule_lines.gasha_machines_id','gasha_machines.id')
+			// 							->leftjoin('sub_locations','inventory_capsule_lines.sub_locations_id','sub_locations.id')
+			// 							->select('inventory_capsule_lines.*',
+			// 							'gasha_machines.*',
+			// 							'inventory_capsule_lines.id AS icl_id',
+			// 							DB::raw('IF(gasha_machines.serial_number IS NULL, sub_locations.description, gasha_machines.serial_number) AS machines'))
+			// 							->where('inventory_capsules_id', $id)->get();
+			$machines = GashaMachines::where('location_id',$location_id)
+										->select('id AS item_id',
+										'serial_number AS description')
+										->get()->toArray();
+
+			$stockroom = SubLocations::where('location_id',$location_id)
+										->select('id AS item_id',
+												'description AS description')
+										->get()->toArray();
+			$items = array_merge($stockroom, $machines);
 
 			return response()->json(['items'=> $items]);
 		}
 
 		public function getMachinesQty(Request $request){
 			$fields = $request->all();
+			$inv_id = $fields['inv_id'];
 			$id = $fields['id'];
-			$capsule_qty = InventoryCapsuleLine::where('id', $id)->pluck('qty')->first();
+			$type = $fields['type'];
+			$items = InventoryCapsule::leftjoin('inventory_capsule_lines','inventory_capsule_lines.inventory_capsules_id','inventory_capsules.id')
+			->where('inventory_capsules.id', $inv_id);
+			if($type === "STOCK ROOM"){
+				$capsule_qty   = $items->where('inventory_capsule_lines.sub_locations_id', $id)->pluck('qty')->first();
+				
+			}else{
+				$capsule_qty   = $items->where('inventory_capsule_lines.gasha_machines_id', $id)->pluck('qty')->first();
+				
+			}
+
 			return response()->json(['qty'=> $capsule_qty]);
 		}
 
 		public function getCapsuleInventory(Request $request) {
 			$locations_id = $request->get('location_id');
+			$inv_id = $request->get('janCodeId');
 			$capsule_id = $request->get('capsule_id');
 			$action = $request->get('action');
 			$adjustment_qty =  $request->get('value');
+			$type =  $request->get('type');
+			$time_stamp = date('Y-m-d H:i:s');
+			$action_by = CRUDBooster::myId();
+			$current_inventory = new \stdClass();
+			$locationname = Locations::where('id',$locations_id)->pluck('location_name')->first();
+			if($type === "STOCK ROOM"){
+				$isExist = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.sub_locations_id', $capsule_id)
+					->where('inventory_capsules.id', $inv_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->get()
+					->first();
+				//check if not existing
+				if(!$isExist){
+					// // inserting a new entry for inventory capsule lines
+					// InventoryCapsuleLine::insert([
+					// 	'inventory_capsules_id' => $inv_id,
+					// 	'sub_locations_id' => $capsule_id,
+					// 	'qty' => 0,
+					// 	'created_by' => $action_by,
+					// 	'created_at' => $time_stamp,
+					// ]);
+					$current_inventory->action = $action;
+					$current_inventory->qty = 0;
+					$current_inventory->location_name = $locationname;
+					$current_inventory->type = "STOCK ROOM";
+				}else{
+					$current_inventory = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.sub_locations_id', $capsule_id)
+					->where('inventory_capsules.id', $inv_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->select('*','inventory_capsule_lines.id as icl_id')
+					->get()
+					->first();
+					$current_inventory->type = "STOCK ROOM";
+				}
+				
+			}else{
+				$isExist = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.gasha_machines_id', $capsule_id)
+					->where('inventory_capsules.id', $inv_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->get()
+					->first();
+				//check if not existing
+				if(!$isExist){
+					// // inserting a new entry for inventory capsule lines
+					// InventoryCapsuleLine::insert([
+					// 	'inventory_capsules_id' => $inv_id,
+					// 	'gasha_machines_id' => $capsule_id,
+					// 	'qty' => 0,
+					// 	'created_by' => $action_by,
+					// 	'created_at' => $time_stamp,
+					// ]);
+					$current_inventory->action = $action;
+					$current_inventory->qty = 0;
+					$current_inventory->location_name = $locationname;
+					$current_inventory->type = "MACHINE";
+				}else{
+					$current_inventory = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.gasha_machines_id', $capsule_id)
+					->where('inventory_capsules.id', $inv_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->select('*','inventory_capsule_lines.id as icl_id')
+					->get()
+					->first();
+					$current_inventory->type = "MACHINE";
+				}
+				
+			}
 		
-			$current_inventory = DB::table('inventory_capsule_lines')
-				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
-				->where('inventory_capsule_lines.id', $capsule_id)
-				->where('inventory_capsules.locations_id', $locations_id)
-				->get()
-				->first();
-	
 			$current_inventory->action = $action;
 			$current_inventory->adjustment_qty = (integer) $adjustment_qty;
 			if ($action == 'add') {
@@ -391,7 +491,7 @@
 				$current_inventory->new_qty = $current_inventory->qty - $adjustment_qty;
 
 			}
-
+		
 			return response()->json($current_inventory);
 		}
 
@@ -400,19 +500,71 @@
 			$time_stamp = date('Y-m-d H:i:s');
 			$reference_number = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			$action_by = CRUDBooster::myId();
-			$capsule_id = $data['machine'];
+			$header_id = $data['jan_no'];
+			$capsule_id = $data['capsule_line_id'];
 			$locations_id = $data['locations_id'];
 			$action = $data['action'];
 			$adjustment_qty = preg_replace("/\D/", '', $data['adjustment_qty_' . $action]);
 			$reason = $data['reason_' . $action];
 			$capsule_type = 6;
-			$inventory_query = DB::table('inventory_capsule_lines')
-							->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-							->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
-							->where('inventory_capsule_lines.id', $capsule_id)
-							->where('inventory_capsules.locations_id', $locations_id);
+			$type = $data['type'];
+			$id = $data['machine'];
+			// $inventory_query = DB::table('inventory_capsule_lines')
+			// 				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+			// 				->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+			// 				->where('inventory_capsule_lines.id', $capsule_id)
+			// 				->where('inventory_capsules.locations_id', $locations_id);
+	
+			if($type === "MACHINE"){
+				$isExist = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.gasha_machines_id', $id)
+					->where('inventory_capsules.id', $header_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->get()
+					->first();
+				if(!$isExist){
+					// inserting a new entry for inventory capsule lines
+					InventoryCapsuleLine::insert([
+						'inventory_capsules_id' => $header_id,
+						'gasha_machines_id' => $id,
+						'qty' => 0,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp,
+					]);
+			
+				}
+				$inventory_query   = InventoryCapsule::leftjoin('inventory_capsule_lines','inventory_capsule_lines.inventory_capsules_id','inventory_capsules.id')
+				->where('inventory_capsules.id', $header_id)->where('inventory_capsule_lines.gasha_machines_id', $id)->where('inventory_capsules.locations_id', $locations_id);
+				
+			}else{
+				$isExist = DB::table('inventory_capsule_lines')
+					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->leftJoin('locations', 'locations.id', 'inventory_capsules.locations_id')
+					->where('inventory_capsule_lines.sub_locations_id', $id)
+					->where('inventory_capsules.id', $header_id)
+					->where('inventory_capsules.locations_id', $locations_id)
+					->get()
+					->first();
+				if(!$isExist){
+					// inserting a new entry for inventory capsule lines
+					InventoryCapsuleLine::insert([
+						'inventory_capsules_id' => $header_id,
+						'sub_locations_id' => $id,
+						'qty' => 0,
+						'created_by' => $action_by,
+						'created_at' => $time_stamp,
+					]);
+			
+				}
+				$inventory_query   = InventoryCapsule::leftjoin('inventory_capsule_lines','inventory_capsule_lines.inventory_capsules_id','inventory_capsules.id')
+				->where('inventory_capsules.id', $header_id)->where('inventory_capsule_lines.sub_locations_id', $id)->where('inventory_capsules.locations_id', $locations_id);
+				
+			}
 			
 			$before_qty = $inventory_query->pluck('qty')->first();
+		
 			if ($action == 'add') {
 				$inventory_query->update([
 					'qty' => DB::raw("qty + $adjustment_qty"),
@@ -431,9 +583,26 @@
 					'inventory_capsule_lines.updated_by' => $action_by,
 				]);
 			}
+		
+			
 			$after_qty = $inventory_query->pluck('qty')->first();
+			$itemCode = $inventory_query->pluck('item_code')->first();
+			$digits_code = Item::where('digits_code2',$itemCode)->pluck('digits_code')->first();
+			$machineId = $inventory_query->pluck('gasha_machines_id')->first();
+			$serial_number = GashaMachines::where('id', $machineId)->pluck('serial_number')->first();
+			$subLocationId = $inventory_query->pluck('sub_locations_id')->first();
+			$subLocationDescription = SubLocations::where('id',$subLocationId)->pluck('description')->first();
+
+			if($machineId){
+				$machine = $serial_number;
+			}else{
+				$machine = $subLocationDescription;
+			}
+
 			$to_be_inserted = [
 				'reference_number' => $reference_number,
+				'jan_number'   => $digits_code,
+				'machine'   => $machine,
 				'locations_id' => $locations_id,
 				'adjustment_qty' => $adjustment_qty,
 				'reason' => $reason,
