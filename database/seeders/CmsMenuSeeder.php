@@ -17,7 +17,7 @@ class CmsMenuSeeder extends Seeder
         // self::indexMenu();
         self::tokenMenu();
         self::capsuleMenu();
-        // self::auditMenu();
+        self::auditMenu();
         self::historyMenu();
         self::submasterMenu();
     }
@@ -412,6 +412,24 @@ class CmsMenuSeeder extends Seeder
             ]
         );
 
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Adjust Capsule Balance',
+            ],
+            [
+                'name'              => 'Adjust Capsule Balance',
+                'type'              => 'Route',
+                'path'              => 'Capsule\AdminCapsuleAdjustmentsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 2,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 8
+            ]
+        );
+
 
     }
 
@@ -442,6 +460,42 @@ class CmsMenuSeeder extends Seeder
                 'name'              => 'Cycle Count (Capsule)',
                 'type'              => 'Route',
                 'path'              => 'Audit\AdminCycleCountsControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 3,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 2
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Cycle Count Approval',
+            ],
+            [
+                'name'              => 'Cycle Count Approval',
+                'type'              => 'Route',
+                'path'              => 'Audit\AdminCycleCountApprovalControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 3,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token Approval',
+            ],
+            [
+                'name'              => 'Collect Token Approval',
+                'type'              => 'Route',
+                'path'              => 'Audit\AdminCollectTokenApprovalControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 3,

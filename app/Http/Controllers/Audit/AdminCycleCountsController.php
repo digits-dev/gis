@@ -30,10 +30,17 @@
 	use Illuminate\Http\UploadedFile;
 
 	class AdminCycleCountsController extends \crocodicstudio\crudbooster\controllers\CBController {
-
+		private $forApproval;
+		private $closed;
         private const CYCLE_COUNT_ACTION = 'Cycle Count';
         private const CYCLE_SALE_TYPE = 'CYCLE COUNT';
         private const STOCK_ROOM = 'STOCK ROOM';
+
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forApproval =  9;
+			$this->closed      =  4;
+		}
 
 	    public function cbInit() {
 
@@ -43,7 +50,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -62,6 +69,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
             $this->col[] = ["label"=>"Created Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Status","name"=>"header_status","join"=>"statuses,status_description"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -97,7 +105,9 @@
 	        |
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('get-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[header_status] == "'.$this->forApproval.'"','color'=>'success'];	
+			}
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -135,7 +145,7 @@
 	        */
 	        $this->index_button = array();
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
                     $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
 					$this->index_button[] = [
@@ -317,7 +327,16 @@
 	    |
 	    */
 	    public function hook_row_index($column_index,&$column_value) {
-	    	//Your code here
+	    	$forApproval = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$closed      = DB::table('statuses')->where('id', $this->closed)->value('status_description');   
+			  
+			if($column_index == 5){
+				if($column_value == $forApproval){
+					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -424,6 +443,22 @@
 			return $this->view("audit.cycle-count.detail-cycle-count", $data);
 		}
 
+		public function getEdit($id){
+
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Edit Cycle Count(Capsule)';
+
+			$data['detail_header'] = CycleCount::detail($id);
+			$data['detail_body']   = CycleCountLine::editDetailBody($id);
+			$data['cycle_count_type'] = CycleCountLine::where('cycle_counts_id',$id)->first()->cycle_count_type;
+			return $this->view("audit.cycle-count.edit-cycle-count", $data);
+		}
+
         public function getAddCycleCountStockRoom() {
             $this->cbLoader();
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
@@ -439,18 +474,19 @@
         }
 
         public function submitCycleCountFloor(Request $request){
-
+			$excelFile = [];
 			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// $capsuleSalesRef = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
             $qty = $request->qty;
 			foreach($request->item_code as $key_machine => $item_value){
                 foreach($item_value as $key_item => $value){
+					array_push($excelFile, $value);
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
-                    $fqty = str_replace(',', '', $qty[$key_machine][$key_item]);
+                    $fqty = str_replace(',', '', (int)$qty[$key_machine][$key_item]);
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
-                        'locations_id' => $request->location_id
+                        'locations_id'     => $request->location_id
                     ];
 
                     $capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
@@ -458,75 +494,122 @@
 
                     $capsuleInventoryLine = InventoryCapsuleLine::where([
                         'inventory_capsules_id'=>$capsuleInventory->id,
-                        'gasha_machines_id'=> $machine_id,
-                        'sub_locations_id'=> null
+                        'gasha_machines_id'    => $machine_id,
+                        'sub_locations_id'     => null
                     ])->first();
 
                     $capsule = CycleCount::firstOrCreate($capsuleHeader,[
                         'reference_number' => $cycleCountFloorRef,
-                        'locations_id' => $request->location_id,
-                        'total_qty' => $request->quantity_total,
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
+						'header_status'    => $this->forApproval,
+                        'locations_id'     => $request->location_id,
+                        'total_qty'        => $request->quantity_total,
+                        'created_by'       => CRUDBooster::myId(),
+                        'created_at'       => date('Y-m-d H:i:s')
                     ]);
 
                     $capsuleLines = new CycleCountLine([
-                        'cycle_counts_id' => $capsule->id,
-                        'digits_code' => $value,
+						'status'            => $this->forApproval,
+                        'cycle_counts_id'   => $capsule->id,
+                        'digits_code'       => $value,
                         'gasha_machines_id' => $machine_id,
-                        'qty' => $fqty,
-                        'variance' => ($fqty - $capsuleInventoryLine->qty),
-                        'created_at' => date('Y-m-d H:i:s')
+                        'qty'               => $fqty,
+                        'variance'          => ($fqty - (int)$capsuleInventoryLine->qty),
+                        'created_at'        => date('Y-m-d H:i:s'),
+						'cycle_count_type'  => "FLOOR"
                     ]);
 
                     $capsuleLines->save();
 
-                    HistoryCapsule::insert([
-                        'reference_number' => $capsule->reference_number,
-                        'item_code' => $item->digits_code2,
-                        'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                        'gasha_machines_id' => $machine_id,
-                        'locations_id' => $request->location_id,
-                        'from_machines_id' => $machine_id,
-                        'qty' => ($fqty - $capsuleInventoryLine->qty),
-                        'created_by' => CRUDBooster::myId(),
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
+                    // HistoryCapsule::insert([
+                    //     'reference_number' => $capsule->reference_number,
+                    //     'item_code' => $item->digits_code2,
+                    //     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
+                    //     'gasha_machines_id' => $machine_id,
+                    //     'locations_id' => $request->location_id,
+                    //     'from_machines_id' => $machine_id,
+                    //     'qty' => ($fqty - $capsuleInventoryLine->qty),
+                    //     'created_by' => CRUDBooster::myId(),
+                    //     'created_at' => date('Y-m-d H:i:s')
+                    // ]);
 
-                    if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
-                        InventoryCapsuleLine::where([
-                            'inventory_capsules_id' => $capsuleInventory->id,
-                            'gasha_machines_id'=> $machine_id
-                        ])->update([
-                            'qty' => $fqty,
-                            'updated_by' => CRUDBooster::myId(),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
+                    // if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
+                    //     InventoryCapsuleLine::where([
+                    //         'inventory_capsules_id' => $capsuleInventory->id,
+                    //         'gasha_machines_id'=> $machine_id
+                    //     ])->update([
+                    //         'qty' => $fqty,
+                    //         'updated_by' => CRUDBooster::myId(),
+                    //         'updated_at' => date('Y-m-d H:i:s')
+                    //     ]);
 
-                        //generate capsule sales
-                        CapsuleSales::insert([
-                            'reference_number' => $capsule->reference_number,
-                            'item_code' => $value,
-                            'gasha_machines_id' => $machine_id,
-                            'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
-                            'locations_id' => $request->location_id,
-                            'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
-                            'created_by' => CRUDBooster::myId(),
-                            'created_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
-                    else{
-                        InventoryCapsuleLine::insert([
-                            'inventory_capsules_id' => $capsuleInventory->id,
-                            'gasha_machines_id'=> $machine_id,
-                            'qty' => $fqty,
-                            'updated_by' => CRUDBooster::myId(),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
+                    //     //generate capsule sales
+                    //     CapsuleSales::insert([
+                    //         'reference_number' => $capsule->reference_number,
+                    //         'item_code' => $value,
+                    //         'gasha_machines_id' => $machine_id,
+                    //         'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
+                    //         'locations_id' => $request->location_id,
+                    //         'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
+                    //         'created_by' => CRUDBooster::myId(),
+                    //         'created_at' => date('Y-m-d H:i:s')
+                    //     ]);
+                    // }else{
+                    //     InventoryCapsuleLine::insert([
+                    //         'inventory_capsules_id' => $capsuleInventory->id,
+                    //         'gasha_machines_id'=> $machine_id,
+                    //         'qty' => $fqty,
+                    //         'updated_by' => CRUDBooster::myId(),
+                    //         'updated_at' => date('Y-m-d H:i:s')
+                    //     ]);
+                    // }
                 }
 
 			}
+			//PROCESS NOT INCLUDED IN FILE
+			$notIncludedInExcel = InventoryCapsule::leftJoin('items', 'inventory_capsules.item_code', 'items.digits_code2')
+			->leftJoin('inventory_capsule_view', 'inventory_capsules.id', 'inventory_capsule_view.inventory_capsules_id')
+			->leftJoin('inventory_capsule_lines', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+			->whereNotIn('items.digits_code', $excelFile)
+			->where('inventory_capsule_lines.qty','>',0)
+			->where('inventory_capsules.locations_id', $request->location_id)
+			->whereNotNull('inventory_capsule_lines.gasha_machines_id')
+			->select('items.digits_code','items.digits_code2','items.item_description','machine_capsule_qty','inventory_capsule_lines.gasha_machines_id','inventory_capsule_lines.qty')
+			->get();
+			//dd($notIncludedInExcel->toArray());
+
+			if($notIncludedInExcel){
+				foreach($notIncludedInExcel->toArray() as $key_item => $item_value){
+					$machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
+					$fqty = $item_value['qty'];
+					$capsuleHeader = [
+						'reference_number' => $cycleCountFloorRef,
+						'locations_id' => $request->location_id
+					];    
+	
+					$capsule = CycleCount::firstOrCreate($capsuleHeader,[
+                        'reference_number' => $cycleCountFloorRef,
+						'header_status'    => $this->forApproval,
+                        'locations_id'     => $request->location_id,
+                        'total_qty'        => $request->quantity_total,
+                        'created_by'       => CRUDBooster::myId(),
+                        'created_at'       => date('Y-m-d H:i:s')
+                    ]);
+
+                    $capsuleLines = new CycleCountLine([
+						'status'            => $this->forApproval,
+                        'cycle_counts_id'   => $capsule->id,
+                        'digits_code'       => $item_value['digits_code'],
+                        'gasha_machines_id' => $item_value['gasha_machines_id'],
+                        'qty'               => 0,
+                        'variance'          => -1 * abs($fqty),
+                        'created_at'        => date('Y-m-d H:i:s'),
+						'cycle_count_type'  => "FLOOR"
+                    ]);
+	
+					$capsuleLines->save();
+				}
+			}
+
             CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been created','success ')->send();
 		}
 
@@ -698,7 +781,50 @@
 				$spreadSheet->getActiveSheet()->fromArray($data);
 				$Excel_writer = new Xlsx($spreadSheet);
 				header('Content-Type: application/vnd.ms-excel');
-				header('Content-Disposition: attachment;filename="cycle-count.xlsx"');
+				header('Content-Disposition: attachment;filename="cycle-count-stockroom.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+
+		public function getExportfloor($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$capsuleInventoryData = InventoryCapsule::getInventoryByLocation($id);
+			
+			$data_array [] = array(
+				"Machine",
+				"Item Code",
+				"Item Description",
+				"Quantity",
+			);
+
+			//foreach($capsuleInventoryData as $data_item){
+				$data_array[] = array(
+					'Machine'          => '',
+					'Item Code'        => '',
+					'Item Description' => '',
+					'Quantity'         => '',
+					
+				);
+			//}
+			$this->ExportExcelFloor($data_array);
+		}
+
+		public function ExportExcelFloor($data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="cycle-count-floor.xlsx"');
 				header('Cache-Control: max-age=0');
 				ob_end_clean();
 				$Excel_writer->save('php://output');
@@ -782,5 +908,333 @@
 		public function exportData(Request $request) {
 			$filename = $request->input('filename');
 			return Excel::download(new CycleCountExport, $filename.'.csv');
+		}
+
+		//CYCLE COUNT FLOOR FILE PROCESS
+		public function storeFileFloor(Request $request){
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$reader->setReadDataOnly(true);
+			$spreadsheet = $reader->load($request->file('cycle-count-file'));
+			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+			$data = $sheet->toArray();
+			unset($data[0]);
+			
+			$newArray = [];
+			$contArray = [];
+			$isDuplicate = [];
+			foreach($data as $key => $val){
+				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->location_id)->count();
+				$allJanNo = Item::where('digits_code',$val[1])->count();
+
+				$new_key = $val[0] . $val[1];
+                if (array_key_exists($new_key, $isDuplicate)) {
+                    return response()->json(['status'=>'error', 'msg'=>'Not allowed duplicate Machines and Jan No! At line:'.($key+1)]);
+                }
+    
+                $isDuplicate[$new_key] = $val;
+
+				if($machines == 0){
+					return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
+				}
+				
+				if($allJanNo == 0){
+					return response()->json(['status'=>'error', 'msg'=>'Jan No not found! At line:'.($key+1)]);
+				}
+
+				$contArray['machine'] = $val[0];
+				$contArray['item_code'] = $val[1];
+				$contArray['item_description'] = $val[2];
+				$contArray['qty'] = $val[3];
+				$newArray[] = $contArray;
+				
+			}
+			
+			// foreach($request->files as $file){
+			// 	$name = time().rand(1,50) .'-'. $file->getClientOriginalName();
+			// 	$filename = $name;
+			// 	$file->move('cycle-count-files',$filename);
+			// }
+
+			return response()->json([
+				'status'=>'success', 
+				'msg'=>'File uploaded successfully!',
+				'items'=>$newArray,
+				'filename'=>$filename
+			]);
+		}
+
+		//CYCLE COUNT FLOOR FILE PROCESS
+		public function storeFileEdit(Request $request){
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$reader->setReadDataOnly(true);
+			$spreadsheet = $reader->load($request->file('cycle-count-file'));
+			$sheet = $spreadsheet->getSheet($spreadsheet->getFirstSheetIndex());
+			$data = $sheet->toArray();
+			$headerSheet = array_filter($data[0]);
+			unset($data[0]);
+
+			if($request->cycle_count_type == "FLOOR"){
+				if (count($headerSheet) !== 4) {
+					return response()->json(['status'=>'error', 'msg'=>'Machines edit template mismatch']);
+				}
+			}else{
+				if (count($headerSheet) !== 3) {
+					return response()->json(['status'=>'error', 'msg'=>'Stockroom edit template mismatch']);
+				}
+			}
+
+			$newArray = [];
+			$contArray = [];
+			$isDuplicate = [];
+			foreach($data as $key => $val){
+				$machines = DB::table('gasha_machines')->where('serial_number',$val[0])->where('location_id', $request->locations_id)->count();
+				$allJanNo = Item::where('digits_code',$val[1])->count();
+
+				if($request->cycle_count_type == "FLOOR"){
+
+					$new_key = $val[0] . $val[1];
+					if (array_key_exists($new_key, $isDuplicate)) {
+						return response()->json(['status'=>'error', 'msg'=>'Not allowed duplicate Machines and Jan No! At line:'.($key+1)]);
+					}
+					$isDuplicate[$new_key] = $val;
+					
+					if($machines == 0){
+						return response()->json(['status'=>'error', 'msg'=>'Machines not found! At line:'.($key+1)]);
+					}
+					
+					if($allJanNo == 0){
+						return response()->json(['status'=>'error', 'msg'=>'Jan No not found! At line:'.($key+1)]);
+					}
+
+					//check if already exist
+					$isExist = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+												->where('cycle_counts_id',$request->cycle_count_id)
+												->select(DB::raw("CONCAT(gasha_machines.serial_number,'-',cycle_count_lines.digits_code) AS code"))
+												->where('cycle_count_lines.status',$this->closed)
+												->get()->toArray();
+				    $checkRow = array_column($isExist, 'code');
+					if(in_array($val[0]."-".$val[1], $checkRow)){
+						return response()->json(['status'=>'error', 'msg'=>'Machine and Jan no already approved! At line:'.($key+1)]);
+					}
+					$contArray['machine'] = $val[0];
+					$contArray['item_code'] = $val[1];
+					$contArray['qty'] = $val[3];
+					$newArray[] = $contArray;
+					
+				}else {
+					//check if already exist
+					$isExist = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+												->where('cycle_counts_id',$request->cycle_count_id)
+												->select('cycle_count_lines.digits_code AS code')
+												->where('cycle_count_lines.status',$this->closed)
+												->get()->toArray();
+				    $checkRow = array_column($isExist, 'code');
+					if(in_array($val[0], $checkRow)){
+						return response()->json(['status'=>'error', 'msg'=>'Machine and Jan no already approved! At line:'.($key+1)]);
+					}
+					$contArray['machine'] = '';
+					$contArray['item_code'] = $val[0];
+					$contArray['qty'] = $val[2];
+					$newArray[] = $contArray;
+				}
+			}
+
+			return response()->json([
+				'status'=>'success', 
+				'msg'=>'File uploaded successfully!',
+				'items'=>$newArray,
+				'filename'=>$filename
+			]);
+		}
+
+		//PROCESS EDIT CYCLE COUNT
+		public function editCycleCount(Request $request){
+			$cycleCountId   = $request->cycle_count_id;
+			$cycleCountType = $request->cycle_count_type;
+			$location_id   = $request->locations_id;
+			$jan_code       = $request->item_code;
+			$qty            = $request->qty;
+			$machine        = $request->machine;
+			
+			$cycleCountHeader = CycleCount::where('id',$cycleCountId)->first();
+			if($cycleCountType == "FLOOR"){
+				foreach($jan_code as $key => $value){
+					$machine_id = GashaMachines::getMachineByLocation($machine[$key],$location_id)->id;
+                    $item = Item::where('digits_code',$value)->first();
+                    $fqty = str_replace(',', '', (int)$qty[$key]);
+	
+                    $is_existing_machine_line = CycleCountLine::leftJoin('cycle_counts as cc', 'cc.id', 'cycle_count_lines.cycle_counts_id')
+					->where('cycle_count_lines.cycle_counts_id',$cycleCountId)
+					->where('gasha_machines_id', $machine_id)
+					->where('cc.locations_id', $location_id)
+					->where('cycle_count_lines.qty','>',0)
+					->where('cycle_count_lines.status',9)
+					->where('cycle_count_lines.cycle_count_type',$cycleCountType)
+					->where('cycle_count_lines.digits_code', $value)
+					->exists();
+					if ($is_existing_machine_line) {
+						// updating the qty if existing
+						CycleCountLine::leftJoin('cycle_counts as cc', 'cc.id', 'cycle_count_lines.cycle_counts_id')
+						->where('cycle_count_lines.cycle_counts_id',$cycleCountId)
+						->where('gasha_machines_id', $machine_id)
+						->where('cc.locations_id', $location_id)
+						->where('cycle_count_lines.qty','>',0)
+						->where('cycle_count_lines.status',9)
+						->where('cycle_count_lines.cycle_count_type',$cycleCountType)
+						->where('cycle_count_lines.digits_code', $value)
+							->update([
+								'cycle_count_lines.qty' => $fqty
+							]);
+	
+					} else {
+						$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+                        ->where('locations_id',$location_id)->first();
+
+						$capsuleInventoryLine = InventoryCapsuleLine::where([
+							'inventory_capsules_id'=>$capsuleInventory->id,
+							'gasha_machines_id'    => $machine_id,
+							'sub_locations_id'     => null
+						])->first();
+
+						$capsuleLines = new CycleCountLine([
+							'status'            => $this->forApproval,
+							'cycle_counts_id'   => $cycleCountHeader->id,
+							'digits_code'       => $value,
+							'gasha_machines_id' => $machine_id,
+							'qty'               => $fqty,
+							'variance'          => ($fqty - $capsuleInventoryLine->qty),
+							'created_at'        => date('Y-m-d H:i:s'),
+							'cycle_count_type'  => "FLOOR"
+						]);
+	
+						$capsuleLines->save();
+					}
+				}
+			}else{
+				foreach($jan_code as $key => $value){
+					$sublocation_id = SubLocations::where('location_id',$location_id)->where('description',self::STOCK_ROOM)->first();
+                    $item = Item::where('digits_code',$value)->first();
+                    $fqty = str_replace(',', '', (int)$qty[$key]);
+	
+                    $is_existing_stockroom_line = CycleCountLine::leftJoin('cycle_counts as cc', 'cc.id', 'cycle_count_lines.cycle_counts_id')
+					->where('cycle_count_lines.cycle_counts_id',$cycleCountId)
+					->where('cc.locations_id', $location_id)
+					->where('cycle_count_lines.qty','>',0)
+					->where('cycle_count_lines.status',9)
+					->where('cycle_count_lines.cycle_count_type',$cycleCountType)
+					->where('cycle_count_lines.digits_code', $value)
+					->exists();
+					if ($is_existing_stockroom_line) {
+						// updating the qty if existing
+						CycleCountLine::leftJoin('cycle_counts as cc', 'cc.id', 'cycle_count_lines.cycle_counts_id')
+						->where('cycle_count_lines.cycle_counts_id',$cycleCountId)
+						->where('cc.locations_id', $location_id)
+						->where('cycle_count_lines.qty','>',0)
+						->where('cycle_count_lines.status',9)
+						->where('cycle_count_lines.cycle_count_type',$cycleCountType)
+						->where('cycle_count_lines.digits_code', $value)
+							->update([
+								'cycle_count_lines.qty' => $fqty
+							]);
+	
+					} else {
+						$capsuleInventory = InventoryCapsule::where('item_code',$item->digits_code2)
+						->where('locations_id',$location_id)->first();
+			
+						$capsuleInventoryLine = InventoryCapsuleLine::where([
+							'inventory_capsules_id' => $capsuleInventory->id,
+							'sub_locations_id'      => $sublocation_id->id,
+							'gasha_machines_id'     => null
+						])->first();
+
+						$capsuleLines = new CycleCountLine([
+							'status'           => $this->forApproval,
+							'cycle_counts_id'  => $cycleCountHeader->id,
+							'digits_code'      => $value,
+							'qty'              => $fqty,
+							'variance'         => ($fqty - $capsuleInventoryLine->qty),
+							'created_at'       => date('Y-m-d H:i:s'),
+							'cycle_count_type' => "STOCK ROOM"
+						]);
+	
+						$capsuleLines->save();
+					}
+				}
+			}
+			CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Cycle count has been updated!','success ')->send();
+		}
+
+		public function getExportedit($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$refNo = CycleCount::where('cycle_counts.id',$id)->leftjoin('cycle_count_lines','cycle_counts.id','cycle_count_lines.cycle_counts_id')
+			->select('cycle_counts.*','cycle_count_lines.*')
+			->first();
+			$cycleCountLinesData = CycleCountLine::leftjoin('gasha_machines','cycle_count_lines.gasha_machines_id','=','gasha_machines.id')
+								  ->leftjoin('items','cycle_count_lines.digits_code','=','items.digits_code')
+								  ->select('cycle_count_lines.id AS ccl_id',
+								  		   'cycle_count_lines.*',
+								  		   'gasha_machines.serial_number AS machine',
+										   'items.item_description')
+								  ->where('cycle_counts_id',$id)
+								  ->where('cycle_count_lines.status',9)
+								  ->where('cycle_count_lines.qty','>',0)
+								  ->get();
+			
+			if($refNo->cycle_count_type == "FLOOR"){
+				$data_array [] = array(
+					"Machine",
+					"Item Code",
+					"Item Description",
+					"Qty"
+				);
+	
+				foreach($cycleCountLinesData as $data_item){
+					$data_array[] = array(
+						'Machine'          => $data_item->machine,
+						'Item Code'        => $data_item->digits_code,
+						'Item Description' => $data_item->item_description,
+						'Qty'              => $data_item->qty
+						
+					);
+				}
+			}else{
+				$data_array [] = array(
+					"Item Code",
+					"Item Description",
+					"Qty"
+				);
+	
+				foreach($cycleCountLinesData as $data_item){
+					$data_array[] = array(
+						'Item Code'        => $data_item->digits_code,
+						'Item Description' => $data_item->item_description,
+						'Qty'              => $data_item->qty
+						
+					);
+				}
+			}
+			
+
+			$this->ExportExcelEdit($data_array,$refNo->reference_number);
+		}
+
+		public function ExportExcelEdit($data,$refNo){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="cycle-count-edit-'.$refNo.'.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
 		}
 	}

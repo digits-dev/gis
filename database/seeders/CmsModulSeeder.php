@@ -405,6 +405,33 @@ class CmsModulSeeder extends Seeder
                 'is_protected' => 0,
                 'is_active'    => 0
             ],
+            [
+                'name'         => 'Cycle Count Approval',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'cycle_count_approval',
+                'table_name'   => 'cycle_count_lines',
+                'controller'   => 'Audit\AdminCycleCountApprovalController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token Approval',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_token_approval',
+                'table_name'   => 'collect_rr_token_lines',
+                'controller'   => 'Audit\AdminCollectTokenApprovalController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Adjust Capsule Balance',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'capsule_adjustments',
+                'table_name'   => 'capsule_adjustments',
+                'controller'   => 'Capsule\AdminCapsuleAdjustmentsController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ]
         ];
 
         foreach ($modules as $module) {

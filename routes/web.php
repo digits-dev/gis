@@ -15,6 +15,7 @@ use App\Http\Controllers\Token\AdminReceiveTokenStoreController;
 use App\Http\Controllers\Token\AdminPulloutTokensController;
 use App\Http\Controllers\Token\AdminReceivedPulloutTokensController;
 use App\Http\Controllers\Token\AdminTokenAdjustmentsController;
+use App\Http\Controllers\Audit\AdminCollectTokenApprovalController;
 use App\Http\Controllers\Audit\AdminCollectRrTokensController;
 use App\Http\Controllers\Capsule\AdminCapsuleRefillsController;
 use App\Http\Controllers\Token\AdminCollectRrTokensReceivingController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Token\AdminCollectRrTokenSalesController;
 use App\Http\Controllers\Capsule\AdminCapsuleReturnsController;
 use App\Http\Controllers\AdminTruncateController;
 use App\Http\Controllers\Audit\AdminCycleCountsController;
+use App\Http\Controllers\Audit\AdminCycleCountApprovalController;
 use App\Http\Controllers\Capsule\AdminCapsuleMergesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSalesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSplitController;
@@ -32,6 +34,7 @@ use App\Http\Controllers\Submaster\AdminAddOnsController;
 use App\Http\Controllers\History\AdminSwapHistoriesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
 use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
+use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +100,13 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens_receiving/get-edit/{id}', [AdminCollectRrTokensReceivingController::class, 'getEdit']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/get-machine-collect', [AdminCollectRrTokensController::class, 'getMachine'])->name('get_machine-collect');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/check-inventory-qty-collect',[AdminCollectRrTokensController::class, 'checkInventoryQty'])->name('check-inventory-qty-collect');
+    
+    //Collected Token Approval
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/approval-collect-token',[AdminCollectTokenApprovalController::class, 'submitApprovalCc'])->name('submit-collect-token-approval'); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/collect-token-edit/{id}',[AdminCollectRrTokensController::class, 'getCollectTokenEdit'])->name('collect-token-edit');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/edit-collect-token-file', [AdminCollectTokenApprovalController::class, 'collectTokenFileEdit'])->name('collect-token-edit-file-store');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/submit-collect-token-edit', [AdminCollectRrTokensController::class, 'editCollectToken'])->name('submit-collect-token-edit');
+
     //Temporary Add no of token in collect token line
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/update-no-of-token', [AdminCollectRrTokenSalesController::class, 'UploadNoOfToken']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/upload-no-of-token',[AdminCollectRrTokenSalesController::class, 'saveNoOfToken'])->name('upload-no-of-token');
@@ -137,9 +147,15 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_sales/export', [AdminCapsuleSalesController::class, 'exportData'])->name('capsule_sales_export');
     Route::post('admin/capsule_sales/export-with-date', [AdminCapsuleSalesController::class, 'exportDataWithDate'])->name('capsule_sales_export_with_date');
 
+    //CAPSULE ADJUSTMENT
+    Route::post('admin/capsule_adjustments/view',[AdminCapsuleAdjustmentsController::class,'getJanCode'])->name('getJanCode');
+    Route::post('admin/capsule_adjustments_machines/getMachines',[AdminCapsuleAdjustmentsController::class,'getMachines'])->name('getMachines');
+    Route::post('admin/capsule_adjustments/getMachinesQty',[AdminCapsuleAdjustmentsController::class,'getMachinesQty'])->name('getMachinesQty');
+    Route::post('admin/capsule_adjustments/getCapsuleInventory',[AdminCapsuleAdjustmentsController::class,'getCapsuleInventory'])->name('getCapsuleInventory');
+    Route::post('admin/capsule_adjustments/submit-capsule-adjustment',[AdminCapsuleAdjustmentsController::class,'submitCapsuleAmount'])->name('submitCapsuleAmount');
+    
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
-
 
     //Restricted Route
     // Route::get(config('crudbooster.ADMIN_PATH').'/db-truncate',[AdminTruncateController::class, 'dbtruncate']);
@@ -156,8 +172,14 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/add-cycle-count-sr', [AdminCycleCountsController::class, 'getAddCycleCountStockRoom'])->name('get-add-cycle-count-stock-room');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-item-code', [AdminCycleCountsController::class, 'checkItem'])->name('check-item-code');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/store-file', [AdminCycleCountsController::class, 'storeFile'])->name('cycle-count-file-store');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/store-file-floor', [AdminCycleCountsController::class, 'storeFileFloor'])->name('cycle-count-floor-file-store');
     Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/delete-file',[AdminCycleCountsController::class, 'deleteFile'])->name('delete-file'); 
 
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/approval-cycle-count',[AdminCycleCountApprovalController::class, 'submitApprovalCc'])->name('submit_approval_cc'); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/cycle_counts/get-edit/{id}',[AdminCycleCountsController::class, 'getEdit'])->name('get-edit');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/edit-store-file', [AdminCycleCountsController::class, 'storeFileEdit'])->name('cycle-count-edit-file-store');
+    Route::post(config('crudbooster.ADMIN_PATH').'/cycle_counts/submit-capsule-cycle-edit', [AdminCycleCountsController::class, 'editCycleCount'])->name('submit-cycle-count-edit');
+    
     //GASHA MACHINES IMPORT
     Route::get(config('crudbooster.ADMIN_PATH').'/gasha_machines/machines-upload', [AdminGashaMachinesController::class, 'UploadMachines']);
     Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/upload-machines',[AdminImportController::class, 'saveMachines'])->name('upload-machines');

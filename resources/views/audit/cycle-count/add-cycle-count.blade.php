@@ -132,6 +132,8 @@
     @endif
 
     <div class='panel panel-default'>
+        <span><a class="btn btn-default btn-sm" id="btnExport" style="float:right; margin: 5px 5px 0 0"><i class="fa fa-download"></i> Download template</a></span>
+        <span><button class="btn btn-default btn-sm" id="btnUpload" style="float:right; margin: 5px 5px 0 0;"><i class="fa fa-upload"></i> Fill quantity via upload file</button></span>
         <div class='panel-heading' style="background-color:#3c8dbc; color:#fff">
             Cycle Count (Capsule) Form
         </div>
@@ -166,19 +168,15 @@
                                     <th width="15%" class="text-center">Item Code</th>
                                     <th width="30%" class="text-center">Item Description</th>
                                     <th width="15%" class="text-center">Quantity</th>
-                                    <th width="3%" class="text-center"><i class="fa fa-trash"></i></th>
+                                    <th width="3%" class="text-center"><i class="fa fa-list"></i></th>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr id="tr-table1" class="bottom">
-                                    <td class="text-center">
-                                        <button class="red-tooltip" id="add-Row" name="add-Row" title="Add Row">
-                                            <div class="iconPlus" id="bigplus"></div>
-                                        </button>
+                                 
+                                    <td colspan="3">
                                     </td>
-                                    <td colspan="2">
-                                    </td>
-                                    <td colspan="1">
+                                    <td>
                                         <input type="text" name="quantity_total" class="form-control text-center"
                                             id="quantity_total" readonly>
                                     </td>
@@ -191,9 +189,8 @@
                 </div>
             </div>
 
-            <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+            {{-- <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog">
-
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -216,18 +213,6 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="col-md-6">
-                                    <div class="form-group" style="display: flex">
-                                        <input input-for="searchitem" class="form-control text-center finput"
-                                            type="text" placeholder="Scan/Enter Item Code" id="search_item"
-                                            style="width:100%" autocomplete="off" readonly>
-                                        <button btn-for="searchitem" type="button"
-                                            class="btn btn-danger btn-sm open-camera" id="ic-camera" tabindex="-1" disabled><i
-                                                class="fa fa-camera"></i></button>
-                                        <div id="item_display_error"></div>
-                                    </div>
-                                </div> --}}
-
                                 <div class="col-md-12">
                                     <table class="table table-responsive table-bordered" id="newItemModalTable">
                                         <thead>
@@ -248,11 +233,37 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float: left;">Cancel</button>
                             <button type='button' id="add-cycle-count" class="btn btn-primary" disabled><i
                                     class="fa fa-save"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+
+            {{-- Modal upload file --}}
+            <div id="addRowModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title text-center"><strong>Cycle Count Floor (Upload File)</strong></h4>
+                        </div>
+                        <div class="row">
+                            <div class="modal-body">
+                                <div class="col-md-12">
+                                    <div class="form-group" >
+                                    <input type="file" name="cycle-count-file" class="form-control" id="cycle-count-file">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float: left;">Cancel</button>
+                            <button type='button' id="upload-cycle-count" class="btn btn-primary"><i class="fa fa-upload"></i> Upload</button>
                         </div>
                     </div>
                 </div>
@@ -288,9 +299,111 @@
         let machineTokenNo = 0;
         let itemTokenNo = 0;
 
-        $('#location_id').change(function() {
-            $(this).attr('disabled', true);
+        $('#btnUpload').attr('disabled', true);
+        $('#btnExport').attr('disabled', true);
+        //Show Modal upload file
+        $("#btnUpload").click(function () {
+            $('#addRowModal').modal('show');
+        });
 
+        //Upload file
+        $('#upload-cycle-count').on('click', function(event) {
+            event.preventDefault();
+            const location_id = $('#location_id').val();
+            if($('#cycle-count-file').val() === ''){
+                swal({
+                    type: 'error',
+                    title: 'Please choose file!',
+                    icon: 'error',
+                    confirmButtonColor: '#3c8dbc',
+                });
+                event.preventDefault();
+                return false;
+            }else{
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+             
+                let formData = new FormData();
+                formData.append('cycle-count-file', $('#cycle-count-file')[0].files[0]);
+                formData.append('location_id', location_id);
+                $.ajax({
+                    type:'POST',
+                    url: "{{ route('cycle-count-floor-file-store') }}",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: (response) => {
+                        console.log(response.files);
+                        if (response) {
+                            Swal.fire({
+                                title: response.msg,
+                                icon: response.status,
+                                confirmButtonColor: '#3085d6',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#addRowModal').modal('hide');
+                                    populateOutsideTable(response);
+                                    $('#quantity_total').val(calculateTotalQuantity());
+                                    $('#filename').val(response.filename);
+                                    $('#btnUpload').attr('disabled', true);
+                                    formatTableRowSpan();
+                                    validateQty();
+                                }
+                            });  
+                        }
+                    },
+                    error: function(response){
+                        //$('#file-input-error').text(response.responseJSON.message);
+                    }
+                });
+            }
+        });
+
+        function formatTableRowSpan(){
+            const table = document.querySelector('table');
+            let headerCell = null;
+
+            for (let row of table.rows) {
+                const firstCell = row.cells[0];
+                
+                if (headerCell === null || firstCell.innerText !== headerCell.innerText) {
+                    headerCell = firstCell;
+                } else {
+                    headerCell.rowSpan++;
+                    firstCell.remove();
+                }
+
+            }
+        }
+
+        function validateQty(){
+            const inputs = $('.td-style .qty').get();
+            let isValid = true;
+            inputs.forEach(input =>{
+                const currentVal = $(input).val(); 
+                const value = Number(currentVal.replace(/\D/g, ''));
+
+                if(!currentVal){
+                    isValid = false;
+                    $(input).css('border', '2px solid red');
+                }else {
+                    $(input).css('border', '');
+                }
+            });
+            isValid = isValid;
+            $('#btnSubmit').attr('disabled',!isValid);
+        }
+   
+
+        $('#location_id').change(function() {
+            const url_download = '{{CRUDBooster::adminpath("cycle_counts/exportfloor/")}}';
+            $('#btnExport').attr('href', url_download+'/'+$(this).val());
+            $(this).attr('disabled', true);
+            $('#btnUpload').attr('disabled', false);
+            $('#btnExport').attr('disabled', false);
             $.ajax({
                 type: 'POST',
                 url: "{{ route('check-inventory-qty') }}",
@@ -733,8 +846,8 @@
                     }
                 }
 
-                let qty = $('input[name^="qty[]"]').length;
-                let qty_value = $('input[name^="qty[]"]');
+                let qty = $('.qty').length;
+                let qty_value = $('.qty');
                 for (i = 0; i < qty; i++) {
                     if (qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null) {
                         swal({
@@ -761,7 +874,15 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $('#location_id').attr('disabled', false);
+                        $('#btnSubmit').attr('disabled', true)
                         $('#cycleCount').submit();
+                        Swal.fire({
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            title: "Please wait while saving...",
+                            didOpen: () => Swal.showLoading()
+                        });
                     }
                 });
 
@@ -847,14 +968,13 @@
             data.items.forEach((item, index) => {
                 let rowspan = data.items.length;
                 const newrow =`
-                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${data.machine}">
-                        ${index == 0 ? `
-                            <td rowspan="${rowspan}" class="td-style">
-                                ${data.machine}
-                                <input type="hidden" name="machine_code[]" value="${item.machine}">
-                            </td> ` : ''
-                        }
-
+                    <tr class="item-row existing-machines" style="background-color: #d4edda; color:#155724" machine="${item.machine}">
+                       
+                        <td class="td-style">
+                            ${item.machine}
+                            <input type="hidden" name="machine_code[]" value="${item.machine}">
+                        </td> 
+                        
                         <td class="td-style">${item.item_code}
                             <input type="hidden" name="item_code[${item.machine}][]" value="${item.item_code}">
                         </td>
@@ -862,17 +982,11 @@
                         <td class="td-style existing-item-description">${item.item_description}</td>
 
                         <td class="td-style">
-                            <input machine="${data.machine}" item="${data.item_code}" description="${item.item_description}" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required readonly>
+                            <input machine="${item.machine}" item="${item.item_code}" description="${item.item_description}" id="qty" class="form-control text-center finput qty item-details" type="text" name="qty[${item.machine}][]" style="width:100%" value="${item.qty}" autocomplete="off" required readonly>
                         </td>
-
-                        ${index == 0 ? `
-                            <td rowspan=${rowspan} class="td-style">
-                                <button id="deleteRow" machine="${data.machine}" class="btn btn-danger btn-sm removeRow">
-                                    <i class="glyphicon glyphicon-trash"></i>
-                                </button>
-                            </td>` : ''
-                        }
-
+                        <td class="td-style exclude">
+                            ${index+1}
+                        </td>
                     </tr>
 
                 `;

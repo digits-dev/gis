@@ -12,18 +12,24 @@
 	use App\Models\Audit\CollectRrTokens;
 	use App\Models\Audit\CollectRrTokenLines;
 	use App\Models\Submaster\Counter;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Carbon\Carbon;
 
 	class AdminCollectRrTokensController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forApproval;
 		private $collected;
 		private $forChecking;
 		private $received;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->collected       =  5;    
-			$this->forChecking     =  6;
-			$this->received          =  8;      
+			$this->forApproval  =  9;
+			$this->collected    =  5;    
+			$this->forChecking  =  6;
+			$this->received     =  8;      
 		}
 	    public function cbInit() {
 
@@ -103,7 +109,9 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+			if(CRUDBooster::isUpdate()) {
+				$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('collect-token-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == "'.$this->forApproval.'"','color'=>'success'];	
+			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
 	        | Add More Button Selected
@@ -140,7 +148,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,11])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,11,14])){
 					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
 				}
 			}
@@ -285,7 +293,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(in_array(CRUDBooster::myPrivilegeId(),[1,4])){
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 				$query->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[6,11])){
@@ -303,12 +311,15 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$collected       = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
-			$forChecking   = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
-			$received         = DB::table('statuses')->where('id', $this->received)->value('status_description');  
+	    public function hook_row_index($column_index,&$column_value) {	
+			$forApproval  = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');          
+	    	$collected    = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
+			$forChecking  = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
+			$received     = DB::table('statuses')->where('id', $this->received)->value('status_description');  
 			if($column_index == 2){
-				if($column_value == $collected){
+				if($column_value == $forApproval){
+					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
+				}else if($column_value == $collected){
 					$column_value = '<span class="label label-info">'.$collected.'</span>';
 				}else if($column_value == $forChecking){
 					$column_value = '<span class="label label-info">'.$forChecking.'</span>';
@@ -339,7 +350,7 @@
 		   }
 		   
 		   $postdata['reference_number'] = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
-		   $postdata['statuses_id']      = $this->collected;
+		   $postdata['statuses_id']      = $this->forApproval;
 		   $postdata['location_id']      = $location_id;
 		   $postdata['variance']         = 'No';
 		   $postdata['collected_qty']    = intval(str_replace(',', '', $collected_qty));
@@ -395,7 +406,8 @@
 			}
 			$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
 
-			for($x=0; $x < count((array)$gm_serials); $x++) {		
+			for($x=0; $x < count((array)$gm_serials); $x++) {	
+				$dataLines[$x]['line_status']        = $this->forApproval;	
 				$dataLines[$x]['collected_token_id'] = $id;
 				$dataLines[$x]['gasha_machines_id']  = $gm_ids[$x];
 				$dataLines[$x]['no_of_token']        = $gm_tokens[$x];
@@ -527,21 +539,21 @@
 			return $this->view("audit.collect-token.detail-collect-token", $data);
 		}
 
-		// public function getEdit($id){
+		public function getCollectTokenEdit($id){
 			
-		// 	$this->cbLoader();
-        //     if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
-        //         CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-        //     }
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
 
-		// 	$data = array();
-		// 	$data['page_title'] = 'Check Collected Token';
+			$data = array();
+			$data['page_title'] = 'Check Collected Token';
 
-		// 	$data['detail_header'] = CollectRrTokens::detail($id);
-		// 	$data['detail_body']   = CollectRrTokenLines::detailBody($id);
+			$data['detail_header'] = CollectRrTokens::detail($id);
+			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
 		
-		// 	return $this->view("audit.collect-token.edit-collect-token", $data);
-		// }
+			return $this->view("audit.collect-token.edit-collect-token", $data);
+		}
 
 		public function getMachine(Request $request) {
 			$data = Request::all();
@@ -564,4 +576,122 @@
 				return json_encode(['tokenInventory' => $tokenInventory]);
 		}
 
+		public function getExportedit($id) {
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			$refNo = CollectRrTokens::where('collect_rr_tokens.id',$id)->first();
+
+			$collectTokenLinesData = CollectRrTokenLines::leftjoin('gasha_machines','collect_rr_token_lines.gasha_machines_id','=','gasha_machines.id')
+								  ->select('collect_rr_token_lines.id AS ccl_id',
+								  		   'collect_rr_token_lines.*',
+								  		   'gasha_machines.serial_number AS machine',)
+								  ->where('collected_token_id',$id)
+								  ->where('collect_rr_token_lines.line_status',9)
+								  ->get();
+			
+	
+			$data_array [] = array(
+				"Machine",
+				"Machine no of tokens",
+				"Collected tokens",
+			);
+
+			foreach($collectTokenLinesData as $data_item){
+				$data_array[] = array(
+					'Machine'              => $data_item->machine,
+					'Machine no of tokens' => $data_item->no_of_token,
+					'Collected tokens'     => $data_item->qty,			
+				);
+			}
+			
+			$this->ExportExcelEdit($data_array,$refNo->reference_number);
+		}
+
+		public function ExportExcelEdit($data,$refNo){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="collect-token-edit-'.$refNo.'.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+		
+
+		//PROCESS EDIT CYCLE COUNT
+		public function editCollectToken(Request $request){
+			$fields         = Request::all();
+			$collectTokenId = $fields['ct_id'];
+			$location_id    = $fields['location_id'];
+			$machines        = $fields['machine'];
+			$no_of_token    = $fields['no_of_token'];
+			$qty            = $fields['qty'];
+			$newTotalQty    = $fields['newTotalQty'];
+			$collectTokenHeader = CollectRrTokens::where('id',$collectTokenId)->first();
+
+			$variances   = [];
+			$insertLines = [];
+			foreach($machines as $key => $value){
+				$machine = GashaMachines::where('serial_number',$value)->first();
+				$fqty = str_replace(',', '', (int)$qty[$key]);
+				$is_existing_machine_line = CollectRrTokenLines::leftJoin('collect_rr_tokens as ct', 'ct.id', 'collect_rr_token_lines.collected_token_id')
+				->where('collect_rr_token_lines.collected_token_id',$collectTokenId)
+				->where('gasha_machines_id', $machine->id)
+				->where('ct.location_id', $location_id)
+				->where('collect_rr_token_lines.line_status',9)
+				->exists();
+
+				//VARIANCES
+				$variances[] = fmod(intval($fqty),$machine->no_of_token);
+
+				if ($is_existing_machine_line) {
+					// updating the qty if existing
+					CollectRrTokenLines::leftJoin('collect_rr_tokens as ct', 'ct.id', 'collect_rr_token_lines.collected_token_id')
+						->where('collect_rr_token_lines.collected_token_id',$collectTokenId)
+						->where('gasha_machines_id', $machine->id)
+						->where('ct.location_id', $location_id)
+						->where('collect_rr_token_lines.line_status',9)
+						->update(['collect_rr_token_lines.qty' => $fqty]);
+
+				}else {
+					//insert not exist
+					$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
+					$insertLines[$key]['line_status']        = $this->forApproval;	
+					$insertLines[$key]['collected_token_id'] = $collectTokenId;
+					$insertLines[$key]['gasha_machines_id']  = $machine->id;
+					$insertLines[$key]['no_of_token']        = $machine->no_of_token;
+					$insertLines[$key]['qty']                = intval($fqty);
+					$insertLines[$key]['variance']           = fmod(intval($fqty),$machine->no_of_token);
+					$insertLines[$key]['location_id']        = $location_id;
+					$insertLines[$key]['current_cash_value'] = $current_value->current_cash_value;
+					$insertLines[$key]['created_at']         = date('Y-m-d H:i:s');
+				}
+			}
+
+			//IINSERT NOT EXIST LINES
+			CollectRrTokenLines::insert($insertLines);
+
+			//UPDATE HEADER TOTAL QTY
+			CollectRrTokens::where('id',$collectTokenId)->update(['collected_qty' => $newTotalQty]);
+
+			//UPDATE HEADER VARIANCE
+			foreach($variances as $variance){
+				if(intval($variance) !== 0){
+					CollectRrTokens::where('id',$collectTokenId)->update(['variance' => 'Yes']);
+				}else{
+					CollectRrTokens::where('id',$collectTokenId)->update(['variance' => 'No']);
+				}
+			}
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Collect Token has been updated!','success ')->send();
+		}
 	}

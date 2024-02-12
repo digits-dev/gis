@@ -11,6 +11,7 @@ class CycleCount extends Model
     protected $table = 'cycle_counts';
     protected $fillable = [
         "reference_number",
+        "header_status",
         "locations_id",
         "sub_locations_id",
         "total_qty",

@@ -55,15 +55,19 @@
                     <table class="table table-bordered" id="collected-token">
                         <thead>
                             <tr style="vertical-align: top;">
-                                <th width="25%" class="text-center">Machine</th>
-                                <th width="25%" class="text-center">Item Code</th>
-                                <th width="25%" class="text-center">Qty</th>
-                                <th width="25%" class="text-center">Variance</th>
+                                <th width="20%" class="text-center">Line Status</th>
+                                <th width="20%" class="text-center">Machine</th>
+                                <th width="20%" class="text-center">Item Code</th>
+                                <th width="20%" class="text-center">Qty</th>
+                                <th width="20%" class="text-center">Variance</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($detail_body as $row)
                                 <tr>
+                                    <td style="text-align:center">
+                                        {{ $row->ccl_status }}
+                                    </td>
                                     <td style="text-align:center">
                                         {{ $row->serial_number }}
                                     </td>
@@ -81,7 +85,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="2" style="text-align: right;"><b>Total</b></td>
+                                <td colspan="3" style="text-align: right;"><b>Total</b></td>
                                 <td class="text-center"><span id="totalQty">0</span></td>
                                 <td class="text-center"><span id="totalVariance">0</span></td>
                             </tr>
