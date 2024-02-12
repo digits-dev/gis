@@ -208,6 +208,8 @@
             const type = $('#machine option:selected').text();
   
             $('#action_type').val('').trigger('change');  
+            $('#add_capsule_input').val('');
+            $('#deduct_capsule_input').val('');  
             //$(this).attr('disabled', true);
             $.ajax({
                 url:"{{ route('getMachinesQty')}}",
