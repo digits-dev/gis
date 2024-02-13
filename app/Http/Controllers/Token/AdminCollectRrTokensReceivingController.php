@@ -400,7 +400,7 @@
 			$data['detail_header'] = CollectRrTokens::detail($id);
 			$data['detail_body']   = CollectRrTokenLines::detailBody($id);
 
-			return $this->view("audit.collect-token.edit-collect-token", $data);
+			return $this->view("audit.collect-token.receive-collect-token", $data);
 		}
 
 		public function getDetail($id){
