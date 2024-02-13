@@ -653,7 +653,7 @@
 				//VARIANCES
 				$variances[] = fmod(intval($fqty),$machine->no_of_token);
 
-				if ($is_existing_machine_line) {
+				// if ($is_existing_machine_line) {
 					// updating the qty if existing
 					CollectRrTokenLines::leftJoin('collect_rr_tokens as ct', 'ct.id', 'collect_rr_token_lines.collected_token_id')
 						->where('collect_rr_token_lines.collected_token_id',$collectTokenId)
@@ -662,23 +662,23 @@
 						->where('collect_rr_token_lines.line_status',9)
 						->update(['collect_rr_token_lines.qty' => $fqty]);
 
-				}else {
-					//insert not exist
-					$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
-					$insertLines[$key]['line_status']        = $this->forApproval;	
-					$insertLines[$key]['collected_token_id'] = $collectTokenId;
-					$insertLines[$key]['gasha_machines_id']  = $machine->id;
-					$insertLines[$key]['no_of_token']        = $machine->no_of_token;
-					$insertLines[$key]['qty']                = intval($fqty);
-					$insertLines[$key]['variance']           = fmod(intval($fqty),$machine->no_of_token);
-					$insertLines[$key]['location_id']        = $location_id;
-					$insertLines[$key]['current_cash_value'] = $current_value->current_cash_value;
-					$insertLines[$key]['created_at']         = date('Y-m-d H:i:s');
-				}
+				// }else {
+				// 	//insert not exist
+				// 	$current_value = DB::table('token_conversions')->where('status','ACTIVE')->first();
+				// 	$insertLines[$key]['line_status']        = $this->forApproval;	
+				// 	$insertLines[$key]['collected_token_id'] = $collectTokenId;
+				// 	$insertLines[$key]['gasha_machines_id']  = $machine->id;
+				// 	$insertLines[$key]['no_of_token']        = $machine->no_of_token;
+				// 	$insertLines[$key]['qty']                = intval($fqty);
+				// 	$insertLines[$key]['variance']           = fmod(intval($fqty),$machine->no_of_token);
+				// 	$insertLines[$key]['location_id']        = $location_id;
+				// 	$insertLines[$key]['current_cash_value'] = $current_value->current_cash_value;
+				// 	$insertLines[$key]['created_at']         = date('Y-m-d H:i:s');
+				// }
 			}
 
 			//IINSERT NOT EXIST LINES
-			CollectRrTokenLines::insert($insertLines);
+			//CollectRrTokenLines::insert($insertLines);
 
 			//UPDATE HEADER TOTAL QTY
 			CollectRrTokens::where('id',$collectTokenId)->update(['collected_qty' => $newTotalQty]);
