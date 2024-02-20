@@ -276,7 +276,13 @@ use Maatwebsite\Excel\Facades\Excel;
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if (in_array(CRUDBooster::myPrivilegeId(), [1, 2, 4, 6, 7, 8, 14])) {
+				$query->whereNull('capsule_merges.deleted_at')
+					->orderBy('capsule_merges.created_at', 'desc');
+			} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5])) {
+				$query->where('capsule_merges.locations_id', CRUDBooster::myLocationId())
+					->orderBy('capsule_merges.created_at', 'desc');
+			}
 
 	    }
 
