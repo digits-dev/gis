@@ -59,9 +59,11 @@ class CycleCountLine extends Model
                     DB::raw('MAX(cycle_count_floor_view.gasha_machines_id) AS gasha_machines_id'),
                     )
             ->where('cycle_count_lines.status',9)
+            ->where('cycle_counts.locations_id', $id)
             ->groupBy('cycle_count_lines.digits_code','cycle_count_floor_view.serial_number')
             ->orderBy(DB::raw('ISNULL(cycle_count_floor_view.digits_code), cycle_count_floor_view.digits_code'), 'ASC',
                       DB::raw('MAX(cycle_counts.reference_number)'), 'ASC')
+
             ->get();
     }
 
