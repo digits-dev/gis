@@ -36,7 +36,7 @@ class POSTokenSwapController extends Controller
         $data['tokens'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'token')->select('value')->get();
         $data['paymayas'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'paymaya')->select('value')->get();
         $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
-        $data['addons'] = DB::table('add_ons')->where('qty', '>', '0')->where('status', 'ACTIVE')->get();
+        $data['addons'] = DB::table('add_ons')->where('qty', '>', '0')->where('status', 'ACTIVE')->where('locations_id', Auth::user()->location_id)->get();
         $data['cash_value'] = TokenConversion::first()->current_cash_value;
         $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
 
@@ -108,7 +108,7 @@ class POSTokenSwapController extends Controller
                 AddonsHistory::insert($inserDataLines);
     
                 foreach($inserDataLines as $key => $data) {
-                    DB::table('add_ons')->where('digits_code', $data['digits_code'])->decrement('qty',(int)$data['qty']);
+                    DB::table('add_ons')->where('digits_code', $data['digits_code'])->where('locations_id',Auth::user()->location_id)->decrement('qty',(int)$data['qty']);
                 } 
             }
 

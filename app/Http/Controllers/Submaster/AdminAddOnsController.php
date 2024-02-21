@@ -8,7 +8,7 @@
 	use App\Models\Submaster\AddOnMovementHistory;
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\View;
-
+	use App\Models\Submaster\Locations;
 
 
 	class AdminAddOnsController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -39,6 +39,7 @@
 			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
 			$this->col[] = ["label"=>"Qty","name"=>"qty","callback_php"=>'number_format($row->qty)'];
 			$this->col[] = ["label"=>"Description","name"=>"description"];
+			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
@@ -350,6 +351,7 @@
 
 			$data = array();
 			$data['page_title'] = 'Create Add-ons';
+			$data['locations'] = Locations::activeDisburseToken();
 			return view('submaster.add-ons.add-ons',$data);
 		}
 
@@ -367,9 +369,10 @@
 
 		public function submitAddOns(Request $request){
 			$data = $request->all();
+			$location_id = $data['location'];
 			$time_stamp = date('Y-m-d H:i:s');
 			$qtyRemoveComma = str_replace(',','',$data['int_qty']);
-			$existingRecord = AddOns::where('digits_code', $data['int_digits_code'])->first();
+			$existingRecord = AddOns::where('digits_code', $data['int_digits_code'])->where('locations_id',$location_id)->first();
 			$addOnTypeId = DB::table('add_on_action_types')->select('id')->where('description', 'DR')->first()->id;
 			
 			if($existingRecord){
@@ -383,6 +386,7 @@
 					'digits_code' => $data['int_digits_code'],
 					'qty' => $qtyRemoveComma,
 					'description' => $data['int_description'],
+					'locations_id' => $location_id,
 					'status' => 'ACTIVE',
 					'created_by' => CRUDBooster::myId(),
 					'created_at' => $time_stamp,
@@ -392,7 +396,7 @@
 				'reference_number' => $data['dr_number'],
 				'digits_code' => $data['int_digits_code'],
 				'add_on_action_types_id' => $addOnTypeId,
-				'locations_id'=> CRUDBooster::myLocationId(),
+				'locations_id'=> $location_id,
 				'qty' => $qtyRemoveComma,
 				'created_by' => CRUDBooster::myId(),
 				'created_at' => date('Y-m-d H:i:s')
