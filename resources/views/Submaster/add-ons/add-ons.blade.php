@@ -38,6 +38,15 @@
             </div>
             <div class='panel-body'>
                 <div class="display_qty_div">
+                    <label class="control-label"><span style="color:red">*</span>Choose location</label>
+                    <select selected data-placeholder="Choose location" validation-name="Location" id="location" name="location" class="form-select select2" style="width:100%;" required>
+                    @foreach($locations as $location)
+                    <option value=""></option>
+                        <option value="{{ $location->id }}">{{ $location->location_name }}</option>
+                    @endforeach
+                    </select>
+                </div>
+                <div class="display_qty_div">
                     <label><span style="color:red">*</span>DR Number:</label>
                     <input type="text" class="form-control" name ="dr_number" id ="dr_number" required>
                 </div>
@@ -70,7 +79,7 @@
 @endsection
 @push('bottom')
 <script>
-    $('.s-single').select2();
+       $('#location').select2();
 
     $(document).ready(function(){
         $('#check-btn').on('click',function(){

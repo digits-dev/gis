@@ -117,7 +117,7 @@
                         if($('#release_qty').val().replace(/,/g, '') > qty){
                             Swal.fire({
                                 type: 'info',
-                                title: 'Token Qty Exceed in Token Inventory!',
+                                title: 'Token Qty Exceed in Head Office Token Inventory!',
                                 icon: 'error',
                                 confirmButtonColor: '#359D9D',
                             }); 

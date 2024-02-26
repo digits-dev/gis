@@ -47,7 +47,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label class="require control-label"> Disburse Number:</label>
+                            <label class="require control-label"> Reference#:</label>
                             <input type="text" class="form-control finput" style="" value="{{ $detail_header->reference_number }}" readonly>
                         </div>
                     </div>
