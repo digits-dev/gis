@@ -121,7 +121,7 @@ class POSSwapHistoryController extends Controller
         $histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
         $items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
         foreach ($items as $key => $data) {
-            DB::table('add_ons')->where('digits_code', $data->digits_code)->increment('qty', $data->qty);
+            DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',Auth::user()->location_id)->increment('qty', $data->qty);
         }
         DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
         // dd($items);
