@@ -251,7 +251,14 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
+				$query->whereNull('add_on_movement_histories.deleted_at')
+					  ->orderBy('add_on_movement_histories.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11])){
+				$query->where('add_on_movement_histories.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('add_on_movement_histories.deleted_at')
+					  ->orderBy('add_on_movement_histories.id', 'desc');
+			}
 	            
 	    }
 

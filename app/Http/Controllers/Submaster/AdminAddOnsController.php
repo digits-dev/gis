@@ -246,13 +246,14 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
-			// $digits_code = 40000582;
-			// $code_description = DB::connection('aimfs')->table('digits_imfs')
-			// 	->where('digits_code', $digits_code)
-			// 	->pluck('item_description')
-			// 	->first();
-	        // dd(DB::connection('aimfs')->table('digits_imfs')->get());
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
+				$query->whereNull('add_ons.deleted_at')
+					  ->orderBy('add_ons.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11])){
+				$query->where('add_ons.locations_id', CRUDBooster::myLocationId())
+					  ->whereNull('add_ons.deleted_at')
+					  ->orderBy('add_ons.id', 'desc');
+			}
 	    }
 
 	    /*
