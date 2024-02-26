@@ -32,7 +32,9 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
-			$this->col[] = ["label"=>"Description","name"=>"digits_code","join"=>"add_ons,description", 'join_id' =>'digits_code' ];
+			$this->col[] = ["label"=>"Description","name"=>"digits_code",'callback'=>function($row){
+				return $row->a_desc;
+			}];
 			$this->col[] = ["label"=>"Qty","name"=>"qty"];
 			$this->col[] = ["label"=>"Location","name"=>"locations_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"Action Type","name"=>"add_on_action_types_id","join"=>"add_on_action_types,description"];
@@ -253,12 +255,18 @@
 	    public function hook_query_index(&$query) {
 			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
 				$query->whereNull('add_on_movement_histories.deleted_at')
-					  ->orderBy('add_on_movement_histories.id', 'desc');
+					 ->orderBy('add_on_movement_histories.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11])){
 				$query->where('add_on_movement_histories.locations_id', CRUDBooster::myLocationId())
 					  ->whereNull('add_on_movement_histories.deleted_at')
 					  ->orderBy('add_on_movement_histories.id', 'desc');
 			}
+			$query->leftJoin('add_ons', function($join) 
+							{
+								$join->on('add_on_movement_histories.digits_code', '=', 'add_ons.digits_code');
+								$join->on('add_on_movement_histories.locations_id', '=', 'add_ons.locations_id');
+						})
+					->addSelect('add_ons.description AS a_desc');
 	            
 	    }
 
