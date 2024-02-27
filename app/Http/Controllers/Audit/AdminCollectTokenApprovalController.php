@@ -1,11 +1,13 @@
 <?php namespace App\Http\Controllers\Audit;
 
+	use App\Exports\CollectTokenApprovalExport;
 	use Session;
 	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 	use App\Models\Audit\CollectRrTokenLines;
     use App\Models\Audit\CollectRrTokens;
+	use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminCollectTokenApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private const ForApproval  = 9;
@@ -120,7 +122,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ['label'=>'Export','url'=>CRUDBooster::mainpath("export_collect_token_approval"),"icon"=>"fa fa-upload", 'color'=>'primary'];
+			}
 
 
 	        /* 
@@ -421,6 +425,10 @@
 				'items'=>$newArray,
 				'filename'=>$filename
 			]);
+		}
+
+		public function exportTokenApproval(){
+			return Excel::download(new CollectTokenApprovalExport, 'CollectTokenApproval.xlsx');
 		}
 
 	}
