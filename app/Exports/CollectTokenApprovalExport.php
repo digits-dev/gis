@@ -16,6 +16,7 @@ class CollectTokenApprovalExport implements FromCollection, WithHeadings
             'LOCATION',
             'GASHA MACHINE',
             'QTY',
+            'NO. OF TOKENS',
             'CREATED BY',
             'CREATED DATE',
         ];
@@ -36,6 +37,7 @@ class CollectTokenApprovalExport implements FromCollection, WithHeadings
                 'locations.location_name',
                 'gasha_machines.serial_number',
                 'collect_rr_token_lines.qty',
+                'gasha_machines.no_of_token',
                 'cms_users.name',
                 'collect_rr_token_lines.created_at'
         );
@@ -44,7 +46,7 @@ class CollectTokenApprovalExport implements FromCollection, WithHeadings
             $query->where('collect_rr_token_lines.location_id', CRUDBooster::myLocationId());
         }
 
-        return $query->get();
+        return ($query->get());
         
     }
 }
