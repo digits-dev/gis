@@ -146,8 +146,8 @@
 	        $this->index_button = array();
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
-					// $this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
-                    // $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
+					$this->index_button[] = ["label"=>"Count (Floor)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add'),"color"=>"success"];
+                    $this->index_button[] = ["label"=>"Count (Stock Room)","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-cycle-count-sr'),"color"=>"success"];
 					$this->index_button[] = [
 						"title"=>"Export Data",
 						"label"=>"Export Data",
