@@ -475,15 +475,17 @@
 
         public function submitCycleCountFloor(Request $request){
 			$excelFile = [];
+			
 			$cycleCountFloorRef = Counter::getNextReference(CRUDBooster::getCurrentModule()->id);
 			// $capsuleSalesRef = Counter::getNextReference(CmsModule::getModuleByName('Capsule Sales')->id);
             $qty = $request->qty;
 			foreach($request->item_code as $key_machine => $item_value){
                 foreach($item_value as $key_item => $value){
-					array_push($excelFile, $value);
                     $machine_id = GashaMachines::getMachineByLocation($key_machine,$request->location_id)->id;
                     $item = Item::where('digits_code',$value)->first();
                     $fqty = str_replace(',', '', (int)$qty[$key_machine][$key_item]);
+					array_push($excelFile, trim($value.'-'.$machine_id));
+					
                     $capsuleHeader = [
                         'reference_number' => $cycleCountFloorRef,
                         'locations_id'     => $request->location_id
@@ -520,62 +522,20 @@
 
                     $capsuleLines->save();
 
-                    // HistoryCapsule::insert([
-                    //     'reference_number' => $capsule->reference_number,
-                    //     'item_code' => $item->digits_code2,
-                    //     'capsule_action_types_id' => CapsuleActionType::getByDescription(self::CYCLE_COUNT_ACTION)->id,
-                    //     'gasha_machines_id' => $machine_id,
-                    //     'locations_id' => $request->location_id,
-                    //     'from_machines_id' => $machine_id,
-                    //     'qty' => ($fqty - $capsuleInventoryLine->qty),
-                    //     'created_by' => CRUDBooster::myId(),
-                    //     'created_at' => date('Y-m-d H:i:s')
-                    // ]);
-
-                    // if(!empty($capsuleInventoryLine) || !is_null($capsuleInventoryLine)){
-                    //     InventoryCapsuleLine::where([
-                    //         'inventory_capsules_id' => $capsuleInventory->id,
-                    //         'gasha_machines_id'=> $machine_id
-                    //     ])->update([
-                    //         'qty' => $fqty,
-                    //         'updated_by' => CRUDBooster::myId(),
-                    //         'updated_at' => date('Y-m-d H:i:s')
-                    //     ]);
-
-                    //     //generate capsule sales
-                    //     CapsuleSales::insert([
-                    //         'reference_number' => $capsule->reference_number,
-                    //         'item_code' => $value,
-                    //         'gasha_machines_id' => $machine_id,
-                    //         'sales_type_id' => SalesType::getByDescription(self::CYCLE_SALE_TYPE)->id,
-                    //         'locations_id' => $request->location_id,
-                    //         'qty' =>  abs($fqty - $capsuleInventoryLine->qty),
-                    //         'created_by' => CRUDBooster::myId(),
-                    //         'created_at' => date('Y-m-d H:i:s')
-                    //     ]);
-                    // }else{
-                    //     InventoryCapsuleLine::insert([
-                    //         'inventory_capsules_id' => $capsuleInventory->id,
-                    //         'gasha_machines_id'=> $machine_id,
-                    //         'qty' => $fqty,
-                    //         'updated_by' => CRUDBooster::myId(),
-                    //         'updated_at' => date('Y-m-d H:i:s')
-                    //     ]);
-                    // }
                 }
 
 			}
+		
 			//PROCESS NOT INCLUDED IN FILE
 			$notIncludedInExcel = InventoryCapsule::leftJoin('items', 'inventory_capsules.item_code', 'items.digits_code2')
 			->leftJoin('inventory_capsule_view', 'inventory_capsules.id', 'inventory_capsule_view.inventory_capsules_id')
 			->leftJoin('inventory_capsule_lines', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
-			->whereNotIn('items.digits_code', $excelFile)
+			->whereNotIn(DB::raw("CONCAT(items.digits_code,'-',inventory_capsule_lines.gasha_machines_id)"), $excelFile)
 			->where('inventory_capsule_lines.qty','>',0)
 			->where('inventory_capsules.locations_id', $request->location_id)
 			->whereNotNull('inventory_capsule_lines.gasha_machines_id')
 			->select('items.digits_code','items.digits_code2','items.item_description','machine_capsule_qty','inventory_capsule_lines.gasha_machines_id','inventory_capsule_lines.qty')
 			->get();
-			//dd($notIncludedInExcel->toArray());
 
 			if($notIncludedInExcel){
 				foreach($notIncludedInExcel->toArray() as $key_item => $item_value){

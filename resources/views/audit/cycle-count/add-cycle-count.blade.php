@@ -846,22 +846,6 @@
                     }
                 }
 
-                let qty = $('.qty').length;
-                let qty_value = $('.qty');
-                for (i = 0; i < qty; i++) {
-                    if (qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null) {
-                        swal({
-                            type: 'error',
-                            title: 'Qty cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: '#3c8dbc',
-                        });
-                        event.preventDefault();
-                        return false;
-                    }
-
-                }
-
                 Swal.fire({
                     title: 'Are you sure ?',
                     icon: 'warning',
