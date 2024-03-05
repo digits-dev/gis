@@ -48,6 +48,9 @@
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
+			if((CRUDBooster::isSuperadmin())){
+				$this->col[] = ["label"=>"Uuid","name"=>"uuid"];
+			}
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
