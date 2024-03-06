@@ -14,7 +14,7 @@ class AddUuidToSwapHistories extends Migration
     public function up()
     {
         Schema::table('swap_histories', function (Blueprint $table) {
-            $table->integer('uuid')->length(10)->unsigned()->nullable()->after('deleted_at');
+            $table->string('uuid')->length(255)->nullable()->after('deleted_at');
         });
     }
 

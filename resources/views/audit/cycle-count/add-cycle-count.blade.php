@@ -811,16 +811,17 @@
                 event.preventDefault();
                 var rowCount = $('#cycle-count tr').length - 2;
                 // console.log(rowCount);
-                if (rowCount === 0) {
-                    swal({
-                        type: 'error',
-                        title: 'Please add an item!',
-                        icon: 'error',
-                        confirmButtonColor: "#3c8dbc",
-                    });
-                    event.preventDefault();
-                    return false;
-                } else if ($('#location_id').val() === '') {
+                // if (rowCount === 0) {
+                //     swal({
+                //         type: 'error',
+                //         title: 'Please add an item!',
+                //         icon: 'error',
+                //         confirmButtonColor: "#3c8dbc",
+                //     });
+                //     event.preventDefault();
+                //     return false;
+                // } else 
+                if ($('#location_id').val() === '') {
                     swal({
                         type: 'error',
                         title: 'Location cannot be empty!',
