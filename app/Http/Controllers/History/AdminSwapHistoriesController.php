@@ -48,6 +48,9 @@
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
+			if((CRUDBooster::isSuperadmin())){
+				$this->col[] = ["label"=>"Uuid","name"=>"uuid"];
+			}
 
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -399,7 +402,7 @@
 			$data = [];
 			$data['page_title'] = 'Void Token Swap History';
 			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
-			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
 			return view('history.token-swap-void', $data);
 		}
 
@@ -409,7 +412,7 @@
 			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
 			$data['mod_description'] = DB::table('mode_of_payments')->where('id', $data['swap_histories']->mode_of_payments_id)->select('payment_description')->first();
 			$data['location_name'] = DB::table('locations')->where('id', $data['swap_histories']->locations_id)->select('location_name')->first();
-			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
 			return view('history.token-swap-details', $data);
 		}
 

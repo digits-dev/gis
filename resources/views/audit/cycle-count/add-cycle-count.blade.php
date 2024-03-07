@@ -811,16 +811,17 @@
                 event.preventDefault();
                 var rowCount = $('#cycle-count tr').length - 2;
                 // console.log(rowCount);
-                if (rowCount === 0) {
-                    swal({
-                        type: 'error',
-                        title: 'Please add an item!',
-                        icon: 'error',
-                        confirmButtonColor: "#3c8dbc",
-                    });
-                    event.preventDefault();
-                    return false;
-                } else if ($('#location_id').val() === '') {
+                // if (rowCount === 0) {
+                //     swal({
+                //         type: 'error',
+                //         title: 'Please add an item!',
+                //         icon: 'error',
+                //         confirmButtonColor: "#3c8dbc",
+                //     });
+                //     event.preventDefault();
+                //     return false;
+                // } else 
+                if ($('#location_id').val() === '') {
                     swal({
                         type: 'error',
                         title: 'Location cannot be empty!',
@@ -844,22 +845,6 @@
                         event.preventDefault();
                         return false;
                     }
-                }
-
-                let qty = $('.qty').length;
-                let qty_value = $('.qty');
-                for (i = 0; i < qty; i++) {
-                    if (qty_value.eq(i).val() == 0 || qty_value.eq(i).val() == null) {
-                        swal({
-                            type: 'error',
-                            title: 'Qty cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: '#3c8dbc',
-                        });
-                        event.preventDefault();
-                        return false;
-                    }
-
                 }
 
                 Swal.fire({

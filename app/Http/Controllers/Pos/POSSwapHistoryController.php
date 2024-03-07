@@ -70,7 +70,11 @@ class POSSwapHistoryController extends Controller
     public function getDetails($id) {
         $data = [];
         $data['swap_histories'] = SwapHistory::where('swap_histories.id', $id)->leftjoin('mode_of_payments', 'swap_histories.mode_of_payments_id','mode_of_payments.id')->first();
-        $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+        $data['addons'] = DB::table('addons_history')
+        ->where('token_swap_id', $id)
+        ->where('add_ons.locations_id', Auth::user()->location_id)
+        ->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')
+        ->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
 
         return json_encode($data);
         
@@ -90,7 +94,7 @@ class POSSwapHistoryController extends Controller
         
         $data['mod_description'] = DB::table('mode_of_payments')->where('id', $swapData->mode_of_payments_id)->select('payment_description')->first();
         $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
-        $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+        $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
         $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
         $data['updated_by'] = DB::table('cms_users')->where('id', $swapData->updated_by)->select('name')->first();
         return view('pos-frontend.views.show-swap-history', $data);
