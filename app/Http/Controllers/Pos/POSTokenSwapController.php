@@ -12,6 +12,7 @@ use App\Models\Token\TokenInventory;
 use App\Models\PosFrontend\AddonsHistory;
 use App\Models\PosFrontend\POSTokenSwap;
 use App\Models\PosFrontend\SwapHistory;
+use App\Models\Capsule\InventoryCapsule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Pos\POSDashboardController;
@@ -137,6 +138,32 @@ class POSTokenSwapController extends Controller
 
             return json_encode(['message'=>'success', 'reference_number'=> $refNumber]);
         
+    }
+    public function suggestJanNumber(Request $request)
+    {
+        $term = $request->input('term');
+        $store_location = Auth::user()->location_id;
+        $suggestions = InventoryCapsule::where('locations_id', $store_location)
+            ->leftJoin('items', 'items.digits_code2', 'inventory_capsules.item_code')
+            ->select('inventory_capsules.*',
+                'items.*',
+                'items.digits_code',
+                'items.item_description'
+            )
+            ->where('items.digits_code', 'like', '%' . $term . '%')
+            ->get();
+
+        $formattedSuggestions = [];
+        foreach ($suggestions as $suggestion) {
+            $formattedSuggestions[] = [
+                'id' => $suggestion->id,
+                'text' => $suggestion->digits_code, // Change this to whatever property you want to display
+                'description' => $suggestion->item_description
+            ];
+        }
+
+        return response()->json($formattedSuggestions);
+
     }
 
     /**

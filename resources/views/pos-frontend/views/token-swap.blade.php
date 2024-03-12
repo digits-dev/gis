@@ -73,6 +73,7 @@
     margin-bottom: 10px;
     font-size: 19px;
   }
+
   .mode-of-payment {
     display: flex;
     width: 100%;
@@ -88,6 +89,19 @@
     background: none;
     cursor: pointer;
   }
+  .select2-container--default .select2-selection--single {
+    width: 100% !important;
+    display: flex !important;
+    background: none !important;
+    cursor: pointer !important;
+    border: 2px solid #ffbfbf !important;
+    height: 45px !important;
+    align-items: center !important;
+    border-radius: 10px !important;
+    padding: 0 20px !important;
+    margin: 16px 0 !important;
+}
+.
   .acc-number {
     margin-top: 10px;
   }
@@ -139,37 +153,38 @@
       color: #c02f2f;
 }
 
-.addons-table {
+.addons-table, .jan-desc-table{
   border: 1px solid #ffbfbf;
   border-radius: 13px; 
   border-spacing: 0;
   width: 100%;
   margin: 12px auto;
   margin-bottom: 20px;
- font-weight: normal;
+  font-weight: normal;
+  overflow: hidden;
 }
-.addons-table th , .addons-table td {
+.addons-table th , .addons-table td, .jan-desc-table th , .jan-desc-table td{
   text-align: left;
   text-align: center;
   padding: 5px 10px; 
   border: 1px solid #ffbfbf;
 }
-.addons-table td {
+.addons-table td, .jan-desc-table td{
 font-size: 14px;
 }
 
-.addons-table th:nth-child(1) {
+.addons-table th:nth-child(1), .jan-desc-table th:nth-child(1){
   border-radius: 10px 0 0 0;
 }
-.addons-table th:nth-child(3) {
+.addons-table th:nth-child(3), .jan-desc-table th:nth-child(3){
   border-radius: 0 10px 0 0;
 }
 
-.addons-table th {
+.addons-table th, .jan-desc-table th{
   font-weight: normal;
 }
 
-.addons-table td input  {
+.addons-table td input, .jan-desc-table td input  {
   text-align: center;
 }
 
@@ -422,7 +437,8 @@ font-size: 14px;
 .child{
   position: absolute;
 }
-.lessQty {
+.lessQty,
+.janLessQty {
   color: #e60213;
   cursor: pointer;
 }
@@ -498,6 +514,31 @@ font-size: 14px;
               <span id="reference" >Reference Number</span>
               <input class="input-field acc-number" type="text" name="amount_received" id="amount_received" oninput="onAmountReceived()">
               <input class="input-field acc-number" type="text" name="payment_reference" id="payment_reference">
+              <div class="jan-number-div">
+                <select name="jan_number" id="jan_number" >
+                    <option value="" disabled selected>Input JAN Number</option>
+                </select>
+                <div>
+                  <div class="jan-description-table-wrapper">
+                    <table class="jan-desc-table">
+                      <thead>
+                        <tr>
+                          <th>
+                            Description
+                          </th>
+                          <th>Quantity</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="jan-desc-tbody">
+                        <!-- Add rows dynamically here -->
+                    </tbody>
+                    </table>
+                  </div>
+                  {{-- <span>Item Description:</span>
+                  <input class="input-field jan-item" type="text" readonly /> --}}
+                </div>
+              </div>
             </div>
             <div class="summary">
                 <div class="summary-value">
@@ -581,19 +622,6 @@ font-size: 14px;
         </button>
         </div>
       </div>
-        <div class="paymaya">
-          <div class="paymaya-div">
-            @foreach ($paymayas as $paymayas)
-              <button class="btn-paymaya button-pushable" role="button">
-                <span class="button-shadow"></span>
-                <span class="button-edge"></span>
-                <span class="button-front btn-paymaya">
-                    {{ $paymayas->value }}
-                </span>
-            </button>
-            @endforeach
-          </div>
-        </div>
     </div>
 
 </div>
@@ -606,7 +634,13 @@ font-size: 14px;
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+      $('#jan_number').select2({
+          width:'100%',
+          theme: 'default', // Ensures the default Select2 styles are applied
+      });
 
       $(document).ready(function() {
           $(".container").fadeIn(1000);
@@ -614,7 +648,6 @@ font-size: 14px;
           $('#mode_of_payment').attr('disabled', true);
           $("#cash_value").focus();
           $('#payment_reference_div').hide();
-          $('.paymaya').hide();
           $('.addons').hide();
       });
 
@@ -632,6 +665,10 @@ font-size: 14px;
     const presetsLabel = document.querySelector('.preset-label');
     const horizontalLine = document.querySelector('.horizontal-line');
     const resetDiv = document.querySelector('.btn-reset-div');
+
+    // Jan Description
+    let jan_data = [];
+
 
     resizeButton.addEventListener('click', () => {
       if (presetsDiv.offsetWidth === 44) {
@@ -693,7 +730,6 @@ font-size: 14px;
             $("#mode_of_payment").val("");
             $('#mode_of_payment').attr('disabled', true);
             $('#payment_reference_div').fadeOut();
-            $('.paymaya').fadeOut(500);
             
             // ADDONS
             addonsObject = <?php echo json_encode($addons); ?>;
@@ -806,41 +842,131 @@ font-size: 14px;
     $("#mode_of_payment").on("change", function() {
       const float1Value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const selectedValue = $(this).val();
-        
+      console.log(selectedValue);
       const selectedDescription = $('option:selected', this).text();
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
 
-      if(selectedValue == 5) {
-        $('.paymaya').fadeIn(1000);
-      }
-      else {
-        $('.paymaya').fadeOut(1000);
-      }
-        if(selectedValue != 1){
+        if(selectedValue != 1 ){
           $('#change_value').val('0');
           $('#payment_reference').val("");
           $('#reference').text("Reference Number"); 
           $('#payment_reference').fadeIn(); 
           $('#amount_received').hide(); 
-          
+          $('.jan-number-div').hide();  
           $('#amount_received').val(""); 
+          $('#jan_number').val("").trigger('change'); // Set the value of #jan_number and trigger change event
+          $('.jan-item').val(""); 
           $('#payment_reference_div').fadeIn(1000);
           $('#payment_reference').focus();  
-        }else {
+          $("#jan-desc-tbody tr").remove();
+          $('.addons-container').fadeIn(1000);
+
+          jan_data = [];
+        }
+        if(selectedValue == 32){
+          $('#payment_reference').hide();
+          $('.jan-number-div').fadeIn(1000);
+          $('#reference').text("JAN Number:"); 
+          $('.addons-container').hide();
+        }
+        
+        else {
           $('#amount_received').val(float1Value);
           $('#payment_reference_div').fadeIn(1000);
           $('#reference').text("Amount Received"); 
           $('#amount_received').fadeIn(); 
           $('#amount_received').val(""); 
           $('#payment_reference').hide();  
+          $('.jan-number-div').hide();  
           $('#amount_received').focus()
+          $('#jan_number').val(""); 
+          $('.jan-item').val("");
+          $('.addons-container').fadeIn(1000);
+
         }
           
         });
 
     let isSwapped = false;
     let cashValueHasFocus = true;
+
+    $('#jan_number').select2({
+        ajax: {
+            url: "{{ route('suggest_jan_number') }}",
+            dataType: 'json',
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        width: '100%'
+    })
+    .on('select2:select', function (e) {
+
+      const data = e.params.data;
+      $('.jan-item').val(data.description);
+
+      const existingObjectIndex = jan_data.findIndex(obj => obj.jan_number === data.text);
+
+      if (existingObjectIndex !== -1) {
+          jan_data[existingObjectIndex].qty++;
+          $(`#${data.text}`).text(jan_data[existingObjectIndex].qty);
+          $(`input[inputjanqty="${data.text}"]`).val(jan_data[existingObjectIndex].qty);
+
+      } else {
+          jan_data.push({
+              "jan_number": data.text,
+              'qty': 1
+          });
+
+          console.log(jan_data);
+
+          const jan_obj = jan_data.find( (e) => e.jan_number === data.text )
+          const htmlContent = `
+              <tr data-row="">
+                  <td>
+                      <input type="hidden" name="jan_number[]" value="${data.text}">
+                      <input type="hidden" inputjanqty="${data.text}" name="jan_qty[]" value="${jan_obj.qty}">
+                      <span>${data.text} - ${data.description}</span>
+                  </td>
+                  <td>
+                      <span id="${data.text}">${jan_obj.qty}</span>
+                  </td>
+                  <td>
+                      <i class="fas fa-minus-circle janLessQty" less-id="${data.text}" data-id=""></i>
+                  </td>
+              </tr>`;
+          $("#jan-desc-tbody").append(htmlContent);
+
+
+      }
+      setTimeout( () => {
+        $('#jan_number').val("").trigger('change');
+      }, 500)
+    });
+
+    $(document).on('click', '.janLessQty', function() {
+        const JanCode = $(this).attr('less-id');
+        removeJanQuantity(JanCode); 
+        // console.log(JanCode);
+      });
+
+    function removeJanQuantity(attrJanNumber)
+    {
+      const data = jan_data.find( (obj) => obj.jan_number === attrJanNumber)
+        data.qty--
+        $(`#${attrJanNumber}`).text(data.qty);
+        $(`input[inputjanqty="${attrJanNumber}"]`).val(data.qty);
+
+        if(data.qty === 0 ){
+          $(`#${attrJanNumber}`).parents('tr').remove();
+            jan_data = jan_data.filter( (obj) => obj.jan_number !== attrJanNumber );
+        }
+      // console.log(jan_data);
+    }
 
     function swap() {
    
@@ -1073,6 +1199,7 @@ font-size: 14px;
           obj.qty = row.find('input[name="quantity[]"]').val();
           addOns.push(obj);
         });
+
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
                 Swal.fire({
                     type: 'error',
@@ -1105,7 +1232,15 @@ font-size: 14px;
                         confirmButtonColor: '#367fa9',
                     });
             }
-          else if( $('#payment_reference').val() === '' && $('#mode_of_payment').val() != 1) {
+          else if($('#mode_of_payment').val() == 32 && !jan_data.length){
+                Swal.fire({
+                        type: 'error',
+                        title: 'Please Input at least One Jan Number!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+            }
+          else if( ($('#payment_reference').val() === '' && $('#mode_of_payment').val() != 1) && $('#mode_of_payment').val() != 32) {
             Swal.fire({
                         type: 'error',
                         title: 'Reference Number is Required!',
