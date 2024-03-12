@@ -30,4 +30,7 @@ class Locations extends Model
     public function scopeActiveLocationPerUserPullout($query, $id){
         return $query->where('id',$id)->where('status','ACTIVE')->first();
     }
+    public function scopeActiveLocationPerUserCollectToken($query, $id){
+        return $query->where('id',$id)->where('status','ACTIVE')->get();
+    }
 }

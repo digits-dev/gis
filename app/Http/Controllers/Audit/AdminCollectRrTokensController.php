@@ -148,7 +148,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,11,14])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,3,4,5,6,11,14])){
 					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
 				}
 			}
@@ -296,9 +296,8 @@
 			if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 				$query->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[6,11])){
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
 				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
-					  ->where('collect_rr_tokens.statuses_id',$this->collected)
 					  ->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
 			}
@@ -504,7 +503,13 @@
 			$data = [];
 			$data['page_title'] = 'Collect Token';
 			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['locations'] = Locations::activeDisburseToken();
+			
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
+				$data['locations'] = Locations::activeDisburseToken();
+			}else{
+				$data['locations'] = Locations::activeLocationPerUserCollectToken(CRUDBooster::myLocationId());
+			}
+		
 			$data['gasha_machines'] = GashaMachines::activeMachines();
 			$data['dateTime'] = Carbon::now()->format('F d, Y g:i A');
 
