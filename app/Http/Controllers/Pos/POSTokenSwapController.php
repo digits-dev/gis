@@ -63,7 +63,7 @@ class POSTokenSwapController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $tokenSwapCount = DB::table('swap_histories')->max('id');
         $headerCount = str_pad($tokenSwapCount + 1, 8, "0", STR_PAD_LEFT);
         $refNumber = 'TS-'.$headerCount;

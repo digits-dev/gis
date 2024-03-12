@@ -847,11 +847,22 @@ font-size: 14px;
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
 
-        if(selectedValue != 1 ){
+
+        if(selectedValue == 32){
+          $('#payment_reference').hide();
+          $('.jan-number-div').fadeIn(1000);
+          $('#reference').text("JAN Number:"); 
+          $('.addons-container').hide();
+          $('#amount_received').hide(); 
+          $('#payment_reference_div').fadeIn(1000);
+
+
+        }
+        else if(selectedValue != 1 ){
           $('#change_value').val('0');
           $('#payment_reference').val("");
           $('#reference').text("Reference Number"); 
-          $('#payment_reference').fadeIn(); 
+          $('#payment_reference').fadeIn(1000); 
           $('#amount_received').hide(); 
           $('.jan-number-div').hide();  
           $('#amount_received').val(""); 
@@ -864,12 +875,7 @@ font-size: 14px;
 
           jan_data = [];
         }
-        if(selectedValue == 32){
-          $('#payment_reference').hide();
-          $('.jan-number-div').fadeIn(1000);
-          $('#reference').text("JAN Number:"); 
-          $('.addons-container').hide();
-        }
+
         
         else {
           $('#amount_received').val(float1Value);
@@ -883,6 +889,9 @@ font-size: 14px;
           $('#jan_number').val(""); 
           $('.jan-item').val("");
           $('.addons-container').fadeIn(1000);
+          $("#jan-desc-tbody tr").remove();
+          jan_data = [];
+
 
         }
           
