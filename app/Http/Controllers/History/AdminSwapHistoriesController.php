@@ -4,6 +4,8 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Capsule\HistoryCapsule;
+	use App\Models\Capsule\InventoryCapsuleLine;
 
 	class AdminSwapHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -348,30 +350,54 @@
 	    |
 	    */
 	    public function hook_after_edit($id) {
-	        //Your code here
+
 			$histories_id = DB::table('swap_histories')->where('id', $id)->first();
-			DB::table('swap_histories')->where('id', $id)->update([
-				'status'      => "VOID",
-				'updated_by'  => CRUDBooster::myId(),
-				'updated_at'  => date('Y-m-d H:i:s'),
-			]);
-			// $token_inventory = DB::table('token_inventories')->where('locations_id', $histories_id->locations_id)->first();
-			// $token_inventory_qty = $token_inventory->qty;
-			// $total_qty = $token_inventory_qty + $histories_id->token_value;
-			
 			$histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
 			$items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
-			foreach ($items as $key => $data) {
-				DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',$histories_id->locations_id)->increment('qty', $data->qty);
+			$capsule_history = DB::table('history_capsules')->where('reference_number', $histories_ref_number)->get();
+			$capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
+
+			if($capsule_history) {
+				foreach ($capsule_history as $key => $value) {
+					HistoryCapsule::insert([
+						'reference_number' => $value->reference_number,
+						'item_code' => $value->item_code,
+						'capsule_action_types_id' => $capsule_type_id,
+						'locations_id' => $value->locations_id,
+						'from_sub_locations_id' => $value->to_sub_locations_id,
+						'qty' => $value->qty * -1,
+						'created_at' => date('Y-m-d H:i:s'),
+						'created_by' => CRUDBooster::myId()
+					]);
+		
+					InventoryCapsuleLine::leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $value->locations_id)
+					->where('inventory_capsule_lines.sub_locations_id',  $value->to_sub_locations_id )
+					->where('ic.item_code', $value->item_code,)
+					->update([
+						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty -  $value->qty"),
+						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
+						'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
+					]);
+				}
+		
+			}else {
+
+				foreach ($items as $key => $data) {
+					DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',$histories_id->locations_id)->increment('qty', $data->qty);
+				}
+				
+				DB::table('token_inventories')
+				->where('locations_id', $histories_id->locations_id)
+				->update([
+					'qty' =>  DB::raw("qty + $histories_id->token_value"),
+				]);
 			}
 
+			DB::table('swap_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => CRUDBooster::myId(), 'updated_at' =>  date('Y-m-d H:i:s')]);
 			DB::table('add_on_movement_histories')->where('reference_number',$histories_ref_number)->update(['status' => 'VOID', 'updated_by' => CRUDBooster::myId(),'updated_at' => date('Y-m-d H:i:s')]);
-			
-			DB::table('token_inventories')
-			->where('locations_id', $histories_id->locations_id)
-			->update([
-				'qty' =>  DB::raw("qty + $histories_id->token_value"),
-			]);
+	
+		
 	    }
 
 	    /*
@@ -403,6 +429,13 @@
 			$data['page_title'] = 'Void Token Swap History';
 			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
 			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['defective_returns'] = DB::table('history_capsules')
+			->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+			->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+			->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
+			->select('history_capsules.qty', 'items.digits_code')
+			->get()->toArray();
+	
 			return view('history.token-swap-void', $data);
 		}
 

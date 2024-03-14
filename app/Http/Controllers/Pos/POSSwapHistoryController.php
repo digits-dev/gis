@@ -8,6 +8,8 @@ use App\Models\PosFrontend\SwapHistory;
 use App\Models\Token\TokenInventory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Capsule\HistoryCapsule;
+use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\Submaster\AddOnMovementHistory;
 use App\Http\Controllers\Pos\POSDashboardController;
 
@@ -75,7 +77,15 @@ class POSSwapHistoryController extends Controller
         ->where('add_ons.locations_id', Auth::user()->location_id)
         ->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')
         ->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+        
+        $data['defective_returns'] = DB::table('history_capsules')
+        ->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+        ->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+        ->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
+        ->select('history_capsules.qty', 'items.digits_code')
+        ->get()->toArray();
 
+    
         return json_encode($data);
         
     }
@@ -92,9 +102,20 @@ class POSSwapHistoryController extends Controller
         $data['swap_histories'] = SwapHistory::find($id);
         $swapData = $data['swap_histories'];
         
+        $refNumber = $swapData->reference_number;
         $data['mod_description'] = DB::table('mode_of_payments')->where('id', $swapData->mode_of_payments_id)->select('payment_description')->first();
         $data['location_name'] = DB::table('locations')->where('id', $swapData->locations_id)->select('location_name')->first();
         $data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+        
+        $data['defective_returns'] = DB::table('history_capsules')
+        ->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+        ->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+        ->where('history_capsules.reference_number', $swapData->reference_number)
+        ->select('history_capsules.qty', 'items.digits_code', 'capsule_action_types.description' )
+        ->get();
+        
+    
+
         $data['created_by'] = DB::table('cms_users')->where('id', $swapData->created_by)->select('name')->first();
         $data['updated_by'] = DB::table('cms_users')->where('id', $swapData->updated_by)->select('name')->first();
         return view('pos-frontend.views.show-swap-history', $data);
@@ -124,35 +145,50 @@ class POSSwapHistoryController extends Controller
         
         $histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
         $items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
-        foreach ($items as $key => $data) {
-            DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',Auth::user()->location_id)->increment('qty', $data->qty);
-        }
-        DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
-        // dd($items);
-        // $inserMovementHistories = [];
-        // $inserMovementHistoriesContainer = [];
-        // $addOnTypeId = DB::table('add_on_action_types')->select('id')->where('description', 'DR')->first()->id;
-
-        // foreach($items as $key => $val){
-        //         $inserMovementHistoriesContainer['reference_number'] =  $histories_ref_number;
-        //         $inserMovementHistoriesContainer['digits_code'] = $val->digits_code;
-        //         $inserMovementHistoriesContainer['add_on_action_types_id'] = $addOnTypeId;
-        //         $inserMovementHistoriesContainer['locations_id'] = Auth::user()->location_id;
-        //         $inserMovementHistoriesContainer['qty'] = $val->qty;
-        //         $inserMovementHistoriesContainer['created_by'] = Auth::user()->id;
-        //         $inserMovementHistoriesContainer['created_at'] = date('Y-m-d H:i:s');
-        //         $inserMovementHistories[] = $inserMovementHistoriesContainer;
-        //     }
-        //     AddOnMovementHistory::insert($inserMovementHistories);
-                
-        $token_inventory = DB::table('token_inventories')->where('locations_id', Auth::user()->location_id)->first();
-        $token_inventory_qty = $token_inventory->qty;
-        $total_qty = $token_inventory_qty + $histories_id;
-        DB::table('swap_histories')->where('id', $id)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
+        $capsule_history = DB::table('history_capsules')->where('reference_number', $histories_ref_number)->get();
+        $capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
         
-        TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+        if($capsule_history) {
+            foreach ($capsule_history as $key => $value) {
+                HistoryCapsule::insert([
+                    'reference_number' => $value->reference_number,
+                    'item_code' => $value->item_code,
+                    'capsule_action_types_id' => $capsule_type_id,
+                    'locations_id' => $value->locations_id,
+                    'from_sub_locations_id' => $value->to_sub_locations_id,
+                    'qty' => $value->qty * -1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => Auth::user()->id
+                ]);
+    
+                InventoryCapsuleLine::leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+                ->where('ic.locations_id', $value->locations_id)
+                ->where('inventory_capsule_lines.sub_locations_id',  $value->to_sub_locations_id )
+                ->where('ic.item_code', $value->item_code,)
+                ->update([
+                    'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty -  $value->qty"),
+                    'inventory_capsule_lines.updated_by' => Auth::user()->id,
+                    'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+    
+        }else {
 
-            
+            foreach ($items as $key => $data) {
+                DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',Auth::user()->location_id)->increment('qty', $data->qty);
+            }
+               
+            $token_inventory = DB::table('token_inventories')->where('locations_id', Auth::user()->location_id)->first();
+            $token_inventory_qty = $token_inventory->qty;
+            $total_qty = $token_inventory_qty + $histories_id;
+         
+            TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+        }
+        
+        $ref_number = DB::table('swap_histories')->where('id', $id)->pluck('reference_number');
+        DB::table('swap_histories')->where('reference_number', $ref_number)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
+        DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
+
             return json_encode(['message'=>'success', 'swap_history' => SwapHistory::find($id), 'histories_id' => $histories_status ]);
         
     }

@@ -99,9 +99,12 @@
     align-items: center !important;
     border-radius: 10px !important;
     padding: 0 20px !important;
-    margin: 16px 0 !important;
 }
-.
+.select2-selection__arrow{
+  margin-top: 8px;
+  margin-right: 18px;
+
+}
   .acc-number {
     margin-top: 10px;
   }
@@ -1200,14 +1203,31 @@ font-size: 14px;
         const cashValue = Number($('#cash_value').val().replace(/[.,]/g, ''));
         const amountReceived = Number($('#amount_received').val().replace(/[.,]/g, ''));
         const addOns = [];
+        const janNumber = [];
         
         $('.addons-table tbody tr').get().forEach(tr => {
           const row = $(tr);
           const obj = {};
           obj.description = row.find('input[name="description[]"]').val();
           obj.qty = row.find('input[name="quantity[]"]').val();
+
           addOns.push(obj);
         });
+
+
+
+        $('.jan-desc-table tbody tr').get().forEach(tr => {
+          const row = $(tr);
+          const jan_obj = {};
+          jan_obj.jan_number = row.find('input[name="jan_number[]"]').val();
+          jan_obj.qty = row.find('input[name="jan_qty[]"]').val();
+   
+          janNumber.push(jan_obj);
+        });
+
+        console.log(janNumber);
+
+
 
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
                 Swal.fire({
@@ -1270,7 +1290,7 @@ font-size: 14px;
             title: 'Are you sure you want to continue?',
             icon: 'info',
             closeOnClickOutside: false,
-            className: (addOns.length != 0 ? 'swal-container' : ''),
+            className: ((janNumber.length != 0 || addOns.length != 0)? 'swal-container' : ''),
             content: {
             element: "div",
             attributes: {
@@ -1286,6 +1306,13 @@ font-size: 14px;
               '<tr><td colspan="2">Addons</td></tr>' +
               '<tr><td>Description</td><td>Quantity</td> </tr>' +
               addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                 '</table>' : '') +
+
+                 (janNumber.length != 0 ? 
+                  '<table class="styled-table-swap">'+
+              '<tr><td colspan="2">Defective Return</td></tr>' +
+              '<tr><td>Jan Number</td><td>Quantity</td> </tr>' +
+              janNumber.map(item => `<tr><td>${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
                  '</table>' : '')
                 }
           },
@@ -1334,6 +1361,12 @@ font-size: 14px;
                             '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
                             addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
                         '</table>' : '') +
+                            (janNumber.length != 0 ? 
+                            '<table class="styled-table-swap">'+
+                            '<tr><td colspan="2">Defective Return</td></tr>' +
+                            '<tr><td>Jan Number</td><td>Quantity</td> </tr>' +
+                            janNumber.map(item => `<tr><td>${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
+                            '</table>' : '') + 
                       '</div>'
                                 
                     }).then((result) => {

@@ -84,75 +84,106 @@
             <table class="styled-table">
                 <thead>
                     <tr>
-                        <th colspan="2">Swap Token Details</th>
+                        <th colspan="3">Swap Token Details</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Reference Number</td>
                         <td>{{ $swap_histories->reference_number }}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Value</td>
                         <td>{{number_format($swap_histories->total_value, 2,'.',',') }}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Token</td>
                         <td>{{ number_format($swap_histories->token_value) }}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Mode of Payments</td>
                         <td>{{ $mod_description->payment_description }}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Location</td>
                         <td>{{ $location_name->location_name}}</td>
+                        <td></td>
                     </tr>
                     @if ($mod_description->payment_description != "CASH")
                     <tr>
                         <td>Payment Reference</td>
                         <td>{{ $swap_histories->payment_reference}}</td>
+                        <td></td>
                     </tr>
                     @endif
                     <tr>
                         <td>Created By</td>
                         <td>{{ $created_by->name}}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Created Date</td>
                         <td>{{ $swap_histories->created_at}}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Updated By</td>
                         <td>{{ $updated_by->name}}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Updated Date</td>
                         <td>{{ $swap_histories->updated_at}}</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Status</td>
                         <td>{{ $swap_histories->status}}</td>
+                        <td></td>
                     </tr>
                     @if (!empty($addons))
                         <tr>
-                            <td colspan="2" style="background-color: #c02f2f; color: white;">Addons</td>
+                            <td colspan="3" style="background-color: #c02f2f; color: white;">Addons</td>
                         </tr>
                         <tr>
                             <td>Description</td>
                             <td>Qty</td>
+                            <td></td>   
                         </tr>
                         @foreach ($addons as $addon)
                             <tr>
                                 <td>{{ $addon->description}}</td>
                                 <td>{{ $addon->qty}}</td>
+                                <td></td>
                             </tr>
                         @endforeach
                      @endif
+                     @if (isset($defective_returns) && count($defective_returns) > 0)
+                     <tr>
+                         <td colspan="3" style="background-color: #c02f2f; color: white;">Jan Number Details</td>
+                     </tr>
+                     <tr>
+                         <td>Jan Number</td>
+                         <td>Action Type</td>
+                         <td>Qty</td>
+                     </tr>
+                     @foreach ($defective_returns as $defective_return)
+                         <tr>
+                             <td>{{ $defective_return->digits_code}}</td>
+                             <td>{{ $defective_return->description}}</td>
+                             <td>{{ $defective_return->qty}}</td>
+                         </tr>
+                     @endforeach
+                  @endif
+
                 </tbody>
                 <tfoot>
                     <tr>
-                      <td colspan="2"><button class="btn-back" onclick="goBack()">Back</button></td>
+                      <td colspan="3"><button class="btn-back" onclick="goBack()">Back</button></td>
                     </tr>
                   </tfoot>
             </table>
