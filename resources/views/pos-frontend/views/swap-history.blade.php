@@ -241,7 +241,7 @@
                           '<tr><td>Reference Number</td><td>'+ data.swap_histories.reference_number +'</td></tr>' +
                           '<tr><td>Value</td><td>'+ data.swap_histories.total_value+'</td></tr>' +
                           '<tr><td>Mode of Payments</td><td>'+ data.swap_histories.payment_description+'</td></tr>' +
-                          '<tr><td>Token</td><td>'+ data.swap_histories.token_value+'</td></tr>' +
+                          '<tr><td>Token</td><td>'+ (data.swap_histories.token_value ? data.swap_histories.token_value : '0')+'</td></tr>' +
                           '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
                           '</table>' +
                             (data.addons.length != 0 ? 
