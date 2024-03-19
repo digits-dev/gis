@@ -38,6 +38,8 @@ class InventoryCapsuleLine extends Model
             ->where('inventory_capsules_id', $id)
             ->leftJoin('gasha_machines', 'inventory_capsule_lines.gasha_machines_id', '=','gasha_machines.id')
             ->leftJoin('sub_locations', 'inventory_capsule_lines.sub_locations_id','=', 'sub_locations.id')
+            ->orderByRaw("CASE WHEN sub_locations.description LIKE 'STOCK ROOM%' THEN 1 ELSE 2 END")
+            ->orderBy('sub_location', 'asc')
             ->get();
     }
 
