@@ -356,6 +356,7 @@
 			$items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
 			$capsule_history = DB::table('history_capsules')->where('reference_number', $histories_ref_number)->get();
 			$capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
+			$swap_histories = DB::table('swap_histories')->where('reference_number', $histories_ref_number)->get();
 
 			if($capsule_history) {
 				foreach ($capsule_history as $key => $value) {
@@ -379,6 +380,16 @@
 						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
 						'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
 					]);
+
+					foreach ($swap_histories  as $key => $value) {
+						$token_value = (int)$value->token_value;
+						DB::table('token_inventories')
+							->where('locations_id', $value->locations_id)
+							->update([
+								'qty' =>  DB::raw("qty + $token_value"),
+							]);
+					}
+			
 				}
 		
 			}else {

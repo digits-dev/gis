@@ -845,7 +845,6 @@ font-size: 14px;
     $("#mode_of_payment").on("change", function() {
       const float1Value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const selectedValue = $(this).val();
-      console.log(selectedValue);
       const selectedDescription = $('option:selected', this).text();
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
@@ -920,21 +919,19 @@ font-size: 14px;
 
       const data = e.params.data;
       $('.jan-item').val(data.description);
-
       const existingObjectIndex = jan_data.findIndex(obj => obj.jan_number === data.text);
-
       if (existingObjectIndex !== -1) {
           jan_data[existingObjectIndex].qty++;
           $(`#${data.text}`).text(jan_data[existingObjectIndex].qty);
           $(`input[inputjanqty="${data.text}"]`).val(jan_data[existingObjectIndex].qty);
-
+          $(`input[no_of_tokens="${data.text}"]`).val(jan_data[existingObjectIndex].qty * data.no_of_tokens);
       } else {
           jan_data.push({
               "jan_number": data.text,
-              'qty': 1
+              'qty': 1,
+              'no_of_tokens': data.no_of_tokens
           });
 
-          console.log(jan_data);
 
           const jan_obj = jan_data.find( (e) => e.jan_number === data.text )
           const htmlContent = `
@@ -942,7 +939,8 @@ font-size: 14px;
                   <td>
                       <input type="hidden" name="jan_number[]" value="${data.text}">
                       <input type="hidden" inputjanqty="${data.text}" name="jan_qty[]" value="${jan_obj.qty}">
-                      <span>${data.text} - ${data.description}</span>
+                      <input type="hidden" id='no_of_tokens' no_of_tokens="${data.text}" name="no_of_tokens[]" value="${jan_obj.no_of_tokens}">
+                      <span>${data.text} - ${data.description} (${data.no_of_tokens})</span>
                   </td>
                   <td>
                       <span id="${data.text}">${jan_obj.qty}</span>
@@ -1081,7 +1079,6 @@ font-size: 14px;
             if (existingRow.length) {
                 let quantityElement = existingRow.find("td:nth-last-child(2) input");
                 let quantity = parseInt(quantityElement.val());
-                console.log(quantity)
                 quantityElement.val(quantity + 1);
             } else {
                 $("#addons-body").append('<tr data-row="' + addonDigitsCode + '">' + 
@@ -1114,12 +1111,10 @@ font-size: 14px;
         const addonDigitsCode = $(this).attr('data-id');
 
         const currentValue = parseInt($('#qty_value'+addonDigitsCode).val());
-        console.log(currentValue);
         const newValue = currentValue - 1;
 
         const item = addonsObject.find(e => e.digits_code === addonDigitsCode);
         item.qty++;
-        console.log(addonsObject);
 
         if (newValue == 0) {
           $(this).parents('tr').remove();
@@ -1199,9 +1194,11 @@ font-size: 14px;
     $('form').submit(function(e) {
         e.preventDefault(); 
         const formData = $('form').serialize();
-
+        
         const cashValue = Number($('#cash_value').val().replace(/[.,]/g, ''));
         const amountReceived = Number($('#amount_received').val().replace(/[.,]/g, ''));
+   
+        
         const addOns = [];
         const janNumber = [];
         
@@ -1214,19 +1211,22 @@ font-size: 14px;
           addOns.push(obj);
         });
 
-
+  
 
         $('.jan-desc-table tbody tr').get().forEach(tr => {
           const row = $(tr);
           const jan_obj = {};
           jan_obj.jan_number = row.find('input[name="jan_number[]"]').val();
           jan_obj.qty = row.find('input[name="jan_qty[]"]').val();
+          jan_obj.no_of_tokens = row.find('input[name="no_of_tokens[]"]').val();
    
           janNumber.push(jan_obj);
         });
 
-        console.log(janNumber);
-
+        let totalTokens = 0;
+        janNumber.forEach(ojb => {
+          totalTokens += parseInt(ojb.no_of_tokens);
+        })
 
 
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
@@ -1265,6 +1265,14 @@ font-size: 14px;
                 Swal.fire({
                         type: 'error',
                         title: 'Please Input at least One Jan Number!',
+                        icon: 'error',
+                        confirmButtonColor: '#367fa9',
+                    });
+            }
+          else if($('#mode_of_payment').val() == 32 && totalTokens != $('#token_value').val()){
+                Swal.fire({
+                        type: 'error',
+                        title: 'Token should be equal to the total number of tokens of defective return!',
                         icon: 'error',
                         confirmButtonColor: '#367fa9',
                     });
@@ -1336,14 +1344,13 @@ font-size: 14px;
                 data: formData,
                 success: function(res) {
                     const data = JSON.parse(res);
-                    console.log(data)
                   swal.stopLoading();
                   swal.close();
                   if (data.message === 'success') {
                     Swal.fire({
                       icon: 'success',
                       title: 'Swap Successfully!',
-                      customClass: (addOns.length != 0 ? 'swal-container2' : ''),
+                      customClass: ((janNumber.length != 0 || addOns.length != 0)? 'swal-container2' : ''),
                       allowOutsideClick: false,
                       html: 
                       '<div class="swal-table-container">'+

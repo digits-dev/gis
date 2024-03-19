@@ -74,7 +74,15 @@ class POSTokenSwapController extends Controller
         $current_cash_value = DB::table('token_conversions')->value('current_cash_value');
         $typeId = DB::table('token_action_types')->select('id')->where('description', 'Swap')->first()->id;
 
-        if($request->mode_of_payment == 32) {
+        $token_inventory = TokenInventory::where('locations_id', Auth::user()->location_id);
+        $token_inventory_qty = $token_inventory->first()->qty;
+        $total_qty = $token_inventory_qty - intval(str_replace(',', '',$request->token_value));
+
+        if ($token_inventory_qty >= intval(str_replace(',', '',$request->token_value))) {
+
+            TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+
+            if($request->mode_of_payment == 32) {
             
             $commonData = [
                 'reference_number' => $refNumber,
@@ -92,7 +100,6 @@ class POSTokenSwapController extends Controller
             //  negative total_value
             DB::table('swap_histories')->insertGetId(array_merge($commonData, [
                 'total_value' => intval(str_replace(',', '', $request->total_value)) * -1,
-                'token_value' => intval(str_replace(',', '', $request->token_value)) * -1,
             ]));
             
             // positive total_value
@@ -170,20 +177,9 @@ class POSTokenSwapController extends Controller
 					]);
 				}
 
-        }
-
-
-        }else {
-
-            $token_inventory = TokenInventory::where('locations_id', Auth::user()->location_id);
-            $token_inventory_qty = $token_inventory->first()->qty;
-            $total_qty = $token_inventory_qty - intval(str_replace(',', '',$request->token_value));
-    
-            if ($token_inventory_qty >= intval(str_replace(',', '',$request->token_value))) {
-                
-                TokenInventory::updateOrInsert(['locations_id' => Auth::user()->location_id],['qty' => $total_qty]);
+            }
+          }else {
             
-                
                 $swapId = DB::table('swap_histories')->insertGetId([
                     'reference_number' =>  $refNumber,
                     'cash_value' => intval(str_replace(',', '',$request->cash_value)),
@@ -263,7 +259,8 @@ class POSTokenSwapController extends Controller
             $formattedSuggestions[] = [
                 'id' => $suggestion->id,
                 'text' => $suggestion->digits_code, // Change this to whatever property you want to display
-                'description' => $suggestion->item_description
+                'description' => $suggestion->item_description,
+                'no_of_tokens' => $suggestion->no_of_tokens
             ];
         }
 

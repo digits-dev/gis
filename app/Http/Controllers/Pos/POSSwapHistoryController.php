@@ -147,9 +147,12 @@ class POSSwapHistoryController extends Controller
         $items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
         $capsule_history = DB::table('history_capsules')->where('reference_number', $histories_ref_number)->get();
         $capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
-        
+        $swap_histories = DB::table('swap_histories')->where('reference_number', $histories_ref_number)->get();
+
+        // Voiding of Defective Return
         if($capsule_history) {
             foreach ($capsule_history as $key => $value) {
+                // Capsuple Movement History for Voided Defective Return
                 HistoryCapsule::insert([
                     'reference_number' => $value->reference_number,
                     'item_code' => $value->item_code,
@@ -170,10 +173,20 @@ class POSSwapHistoryController extends Controller
                     'inventory_capsule_lines.updated_by' => Auth::user()->id,
                     'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
                 ]);
+
+            }
+
+            foreach ($swap_histories  as $key => $value) {
+                $token_value = (int)$value->token_value;
+            	DB::table('token_inventories')
+					->where('locations_id', $value->locations_id)
+					->update([
+						'qty' =>  DB::raw("qty + $token_value"),
+					]);
             }
     
         }else {
-
+            // Voiding of addons and swap history
             foreach ($items as $key => $data) {
                 DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',Auth::user()->location_id)->increment('qty', $data->qty);
             }
