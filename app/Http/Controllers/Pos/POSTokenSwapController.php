@@ -67,9 +67,12 @@ class POSTokenSwapController extends Controller
      */
     public function store(Request $request)
     {
-        $tokenSwapCount = DB::table('swap_histories')->max('id');
-        $headerCount = str_pad($tokenSwapCount + 1, 8, "0", STR_PAD_LEFT);
+        
+        $string = DB::table('swap_histories')->max('reference_number');
+		[$ts, $num] = explode('-', $string);
+        $headerCount = str_pad($num + 1, 8, '0', STR_PAD_LEFT);
         $refNumber = 'TS-'.$headerCount;
+
         
         $current_cash_value = DB::table('token_conversions')->value('current_cash_value');
         $typeId = DB::table('token_action_types')->select('id')->where('description', 'Swap')->first()->id;
