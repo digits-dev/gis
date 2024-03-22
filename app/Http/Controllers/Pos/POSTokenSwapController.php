@@ -111,7 +111,7 @@ class POSTokenSwapController extends Controller
                 'token_value' => intval(str_replace(',', '', $request->token_value)),
             ]));
 
-            $action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', 'DEFECTIVE')->first();
+            $action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', 'DEFECTIVE RETURN')->first();
 
             $sub_locations_id = DB::table('sub_locations')
             ->where('location_id', Auth::user()->location_id)
