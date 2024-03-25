@@ -254,16 +254,17 @@ class POSTokenSwapController extends Controller
                 'items.digits_code',
                 'items.item_description'
             )
-            ->where('items.digits_code', 'like', '%' . $term . '%')
+            ->whereRaw("(items.digits_code LIKE '%$term%' OR items.item_description LIKE '%$term%')")
             ->get();
 
         $formattedSuggestions = [];
         foreach ($suggestions as $suggestion) {
             $formattedSuggestions[] = [
                 'id' => $suggestion->id,
-                'text' => $suggestion->digits_code, // Change this to whatever property you want to display
+                'text' => $suggestion->digits_code . ': ' . $suggestion->item_description,
                 'description' => $suggestion->item_description,
-                'no_of_tokens' => $suggestion->no_of_tokens
+                'no_of_tokens' => $suggestion->no_of_tokens,
+                'item' => $suggestion->digits_code,
             ];
         }
 

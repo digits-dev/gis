@@ -919,34 +919,36 @@ font-size: 14px;
 
       const data = e.params.data;
       $('.jan-item').val(data.description);
-      const existingObjectIndex = jan_data.findIndex(obj => obj.jan_number === data.text);
+      const existingObjectIndex = jan_data.findIndex(obj => obj.jan_number === data.item);
+
       if (existingObjectIndex !== -1) {
           jan_data[existingObjectIndex].qty++;
-          $(`#${data.text}`).text(jan_data[existingObjectIndex].qty);
-          $(`input[inputjanqty="${data.text}"]`).val(jan_data[existingObjectIndex].qty);
-          $(`input[no_of_tokens="${data.text}"]`).val(jan_data[existingObjectIndex].qty * data.no_of_tokens);
+          $(`#${data.item}`).text(jan_data[existingObjectIndex].qty);
+          $(`input[inputjanqty="${data.item}"]`).val(jan_data[existingObjectIndex].qty);
+          $(`input[no_of_tokens="${data.item}"]`).val(jan_data[existingObjectIndex].qty * data.no_of_tokens);
       } else {
           jan_data.push({
-              "jan_number": data.text,
+              "jan_number": data.item,
               'qty': 1,
               'no_of_tokens': data.no_of_tokens
           });
 
 
-          const jan_obj = jan_data.find( (e) => e.jan_number === data.text )
+          const jan_obj = jan_data.find( (e) => e.jan_number === data.item )
           const htmlContent = `
               <tr data-row="">
                   <td>
-                      <input type="hidden" name="jan_number[]" value="${data.text}">
-                      <input type="hidden" inputjanqty="${data.text}" name="jan_qty[]" value="${jan_obj.qty}">
-                      <input type="hidden" id='no_of_tokens' no_of_tokens="${data.text}" name="no_of_tokens[]" value="${jan_obj.no_of_tokens}">
-                      <span>${data.text} - ${data.description} (${data.no_of_tokens})</span>
+                      <input type="hidden" name="jan_number[]" value="${data.item}">
+                      <input type="hidden" name="jan_description[]" value="${data.description}">
+                      <input type="hidden" inputjanqty="${data.item}" name="jan_qty[]" value="${jan_obj.qty}">
+                      <input type="hidden" id='no_of_tokens' no_of_tokens="${data.item}" name="no_of_tokens[]" value="${jan_obj.no_of_tokens}">
+                      <span>${data.item} - ${data.description} (${data.no_of_tokens})</span>
                   </td>
                   <td>
-                      <span id="${data.text}">${jan_obj.qty}</span>
+                      <span id="${data.item}">${jan_obj.qty}</span>
                   </td>
                   <td>
-                      <i class="fas fa-minus-circle janLessQty" less-id="${data.text}" data-id=""></i>
+                      <i class="fas fa-minus-circle janLessQty" less-id="${data.item}" data-id=""></i>
                   </td>
               </tr>`;
           $("#jan-desc-tbody").append(htmlContent);
@@ -970,6 +972,7 @@ font-size: 14px;
         data.qty--
         $(`#${attrJanNumber}`).text(data.qty);
         $(`input[inputjanqty="${attrJanNumber}"]`).val(data.qty);
+        $(`input[no_of_tokens="${attrJanNumber}"]`).val(data.no_of_tokens/data.qty);
 
         if(data.qty === 0 ){
           $(`#${attrJanNumber}`).parents('tr').remove();
@@ -1218,9 +1221,11 @@ font-size: 14px;
           const jan_obj = {};
           jan_obj.jan_number = row.find('input[name="jan_number[]"]').val();
           jan_obj.qty = row.find('input[name="jan_qty[]"]').val();
+          jan_obj.description = row.find('input[name="jan_description[]"]').val();
           jan_obj.no_of_tokens = row.find('input[name="no_of_tokens[]"]').val();
    
           janNumber.push(jan_obj);
+
         });
 
         let totalTokens = 0;
@@ -1228,6 +1233,9 @@ font-size: 14px;
           totalTokens += parseInt(ojb.no_of_tokens);
         })
 
+        console.log(totalTokens);
+        console.log($('#token_value').val());
+        console.log(janNumber);
 
         if($('#cash_value').val() === '' && $('#token_value').val() === ''){
                 Swal.fire({
@@ -1320,7 +1328,7 @@ font-size: 14px;
                   '<table class="styled-table-swap">'+
               '<tr><td colspan="2">Defective Return</td></tr>' +
               '<tr><td>Jan Number</td><td>Quantity</td> </tr>' +
-              janNumber.map(item => `<tr><td>${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
+              janNumber.map(item => `<tr><td> ${item.description}:${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
                  '</table>' : '')
                 }
           },
