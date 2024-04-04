@@ -224,7 +224,7 @@
 						<div class='modal-header'>
 							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
 								<span aria-hidden='true'>×</span></button>
-							<h4 class='modal-title'><i class='fa fa-download'></i> Export Capsule Sales</h4>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export Data</h4>
 						</div>
 
 						<form method='post' target='_blank' action=".route('gasha_machines_export').">
