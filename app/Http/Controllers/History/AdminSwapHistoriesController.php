@@ -499,7 +499,7 @@ use Maatwebsite\Excel\Facades\Excel;
 			->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
 			->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
 			->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
-			->select('history_capsules.qty', 'items.digits_code')
+			->select('history_capsules.qty', 'items.digits_code', 'items.item_description')
 			->get()->toArray();
 	
 			return view('history.token-swap-void', $data);
@@ -512,6 +512,12 @@ use Maatwebsite\Excel\Facades\Excel;
 			$data['mod_description'] = DB::table('mode_of_payments')->where('id', $data['swap_histories']->mode_of_payments_id)->select('payment_description')->first();
 			$data['location_name'] = DB::table('locations')->where('id', $data['swap_histories']->locations_id)->select('location_name')->first();
 			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['defective_returns'] = DB::table('history_capsules')
+			->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+			->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+			->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
+			->select('history_capsules.qty', 'items.digits_code', 'items.item_description')
+			->get()->toArray();
 			return view('history.token-swap-details', $data);
 		}
 
