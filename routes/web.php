@@ -199,4 +199,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/check-machine', [AdminCapsuleSwapHeadersController::class, 'checkMachine'])->name('check-machine');
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/save-swap', [AdminCapsuleSwapHeadersController::class, 'saveSwap'])->name('submit_swap');
 
+    //TOKEN SWAP HISTORY
+    Route::post('admin/swap_histories/export', [AdminSwapHistoriesController::class, 'exportSwapHistoryData'])->name('swap_histories.export');
+
 });
