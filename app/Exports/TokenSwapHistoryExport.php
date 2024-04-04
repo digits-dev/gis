@@ -54,9 +54,9 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
                 'swap_histories.payment_reference',
                 'token_action_types.description',
                 'locations.location_name',
-                'creator.name',
+                'creator.name as creator_name',
                 'swap_histories.created_at',
-                'updater.name',
+                'updater.name as updater_name',
                 'swap_histories.updated_at',
                 'swap_histories.status',
             );
