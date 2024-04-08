@@ -108,7 +108,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/edit-collect-token-file', [AdminCollectTokenApprovalController::class, 'collectTokenFileEdit'])->name('collect-token-edit-file-store');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/submit-collect-token-edit', [AdminCollectRrTokensController::class, 'editCollectToken'])->name('submit-collect-token-edit');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token_approval/export_collect_token_approval', [AdminCollectTokenApprovalController::class, 'exportTokenApproval'])->name('collect-token-edit-file-store');
-
+    //Cancel Collect Token
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/collect-token-cancel/{id}',[AdminCollectRrTokensController::class, 'cancelCollectToken'])->name('collect-token-cancel');
     //Temporary Add no of token in collect token line
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/update-no-of-token', [AdminCollectRrTokenSalesController::class, 'UploadNoOfToken']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/upload-no-of-token',[AdminCollectRrTokenSalesController::class, 'saveNoOfToken'])->name('upload-no-of-token');

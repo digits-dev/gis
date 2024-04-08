@@ -23,13 +23,15 @@
 		private $collected;
 		private $forChecking;
 		private $received;
+		private $cancelled;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 			$this->forApproval  =  9;
 			$this->collected    =  5;    
 			$this->forChecking  =  6;
-			$this->received     =  8;      
+			$this->received     =  8;   
+			$this->cancelled    =  6;      
 		}
 	    public function cbInit() {
 
@@ -111,6 +113,13 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 				$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('collect-token-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == "'.$this->forApproval.'"','color'=>'success'];	
+				$this->addaction[] = ['title'=>'Cancel Request',
+				'url'=>CRUDBooster::mainpath('collect-token-cancel/[id]'),
+				'icon'=>'fa fa-trash', 
+				"showIf"=>"[statuses_id] == $this->forApproval",
+				'confirmation'=>'yes',
+				'confirmation_title'=>'Confirm Cancel',
+				'confirmation_text'=>'Are you sure to Cancel this request?','color'=>'danger'];
 			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -314,10 +323,13 @@
 			$forApproval  = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');          
 	    	$collected    = DB::table('statuses')->where('id', $this->collected)->value('status_description');     
 			$forChecking  = DB::table('statuses')->where('id', $this->forChecking)->value('status_description');   
-			$received     = DB::table('statuses')->where('id', $this->received)->value('status_description');  
+			$received     = DB::table('statuses')->where('id', $this->received)->value('status_description'); 
+			$cancel    = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
 			if($column_index == 2){
 				if($column_value == $forApproval){
 					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
+				}else if($column_value == $cancel){
+					$column_value = '<span class="label label-danger">'.$cancel.'</span>';
 				}else if($column_value == $collected){
 					$column_value = '<span class="label label-info">'.$collected.'</span>';
 				}else if($column_value == $forChecking){
@@ -698,5 +710,12 @@
 			}
 
 			CRUDBooster::redirect(CRUDBooster::mainpath(),'Success! Collect Token has been updated!','success ')->send();
+		}
+
+		public function cancelCollectToken($id) {
+			$reference_number = CollectRrTokens::where('id',$id)->first()->reference_number;
+			CollectRrTokens::where('id',$id)->update(['statuses_id' => $this->cancelled]);
+			CollectRrTokenLines::where('collected_token_id',$id)->update(['line_status' => $this->cancelled]);
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_cancelled_success",['reference_number'=>$reference_number]), 'success');
 		}
 	}

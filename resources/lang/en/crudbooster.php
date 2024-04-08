@@ -91,6 +91,7 @@ return [
     'alert_receiving_success'    => ':reference_number has been received successfully!',
 
     'alert_closing_success'    => ':reference_number has been closed successfully!',
+    'alert_cancelled_success'    => ':reference_number has been cancelled successfully!',
 
     'mo_success'    => ':reference_number has been moved order successfully!',
     

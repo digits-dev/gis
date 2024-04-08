@@ -41,6 +41,7 @@ class CollectRrTokenLines extends Model
                             'gasha_machines.*'
                             )
                      ->where('collect_rr_token_lines.line_status',9)
+                     ->where('collect_rr_tokens.location_id',$id)
                      ->get();
     }
 }
