@@ -233,7 +233,7 @@
                 title: "Are you sure you want to void this transaction? ",
                 icon: 'warning',
                 reverseButtons: true,
-                customClass: (data.addons.length != 0 ? 'swal-container2' : ''),
+                customClass: ((data.defective_returns.length != 0 || data.addons.length != 0) ? 'swal-container2' : ''),
                 allowOutsideClick: false,
                 html: 
                 '<div class="swal-table-container">'+
@@ -241,7 +241,7 @@
                           '<tr><td>Reference Number</td><td>'+ data.swap_histories.reference_number +'</td></tr>' +
                           '<tr><td>Value</td><td>'+ data.swap_histories.total_value+'</td></tr>' +
                           '<tr><td>Mode of Payments</td><td>'+ data.swap_histories.payment_description+'</td></tr>' +
-                          '<tr><td>Token</td><td>'+ data.swap_histories.token_value+'</td></tr>' +
+                          '<tr><td>Token</td><td>'+ (data.swap_histories.token_value ? data.swap_histories.token_value : '0')+'</td></tr>' +
                           '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
                           '</table>' +
                             (data.addons.length != 0 ? 
@@ -249,13 +249,14 @@
                             '<tr><td colspan="2">Addons</td></tr>' +
                             '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
                             data.addons.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
-                        '</table>' : '') +
+                            '</table>' : '') +
+                            (data.defective_returns.length != 0 ? 
+                            '<table class="styled-table-void">'+
+                            '<tr><td colspan="2">Defective Return</td></tr>' +
+                            '<tr><td style="width: 70%">Jan Number</td><td>Quantity</td> </tr>' +
+                            data.defective_returns.map(item => `<tr><td>${item.digits_code}</td><td>${item.qty}</td></tr>`).join('') +
+                            '</table>' : '') +
                       '</div>',
-                          
-                          
-                          
-                        //   data.addons.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
-                        //   '</table>',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
                 denyButtonText: `Don't save`,

@@ -469,18 +469,18 @@
                 count_fail = 0;
             }
 
-            if(!$.isNumeric($('#qty_inputed').val())){
-                Swal.fire({ 
-                    type: 'error',
-                    title: 'Number Only!',
-                    icon: 'error',
-                    confirmButtonColor: "#dd4b39",
-                });
-                count_fail++;
-                return false;
-            }else{
-                count_fail = 0;
-            }
+            // if(!$.isNumeric($('#qty_inputed').val().replace(/\D/g, ''))){
+            //     Swal.fire({ 
+            //         type: 'error',
+            //         title: 'Number Only!',
+            //         icon: 'error',
+            //         confirmButtonColor: "#dd4b39",
+            //     });
+            //     count_fail++;
+            //     return false;
+            // }else{
+            //     count_fail = 0;
+            // }
 
             if($('#qty_inputed').val() == 0){
                 Swal.fire({ 
@@ -617,39 +617,46 @@
         $('#quantity_total').val(calculateTotalQuantity());
     });
    
-    $(document).on('keyup','#qty_inputed', function (e) {
-        if(event.which >= 37 && event.which <= 40) return;
+    // $(document).on('keyup','#qty_inputed', function (e) {
+    //     if(event.which >= 37 && event.which <= 40) return;
 
-        if(this.value.charAt(0) == '.'){
-            this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2){
-                return '.' + g1;
-            })
+    //     if(this.value.charAt(0) == '.'){
+    //         this.value = this.value.replace(/\.(.*?)(\.+)/, function(match, g1, g2){
+    //             return '.' + g1;
+    //         })
+    //     }
+
+    //     // if(event.key == '.' && this.value.split('.').length > 2){
+    //     if(this.value.split('.').length > 2){
+    //         this.value = this.value.replace(/([\d,]+)([\.]+.+)/, '$1') 
+    //             + '.' + this.value.replace(/([\d,]+)([\.]+.+)/, '$2').replace(/\./g,'')
+    //         return;
+    //     }
+
+    //     $(this).val( function(index, value) {
+    //         value = value.replace(/[^0-9.]+/g,'')
+    //         let parts = value.toString().split(".");
+    //         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    //         return parts.join(".");
+    //     });
+
+    //     if(event.which >= 37 && event.which <= 40) return;
+    //     $(this).val(function(index, value) {
+    //         return value
+    //         .replace(/\D/g, "")
+    //         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    //         ;
+    //       });
+
+    // });  
+    $('#qty_inputed').on('input',function(){
+        const currentVal = $(this).val();
+        const val = Number(currentVal.replace(/\D/g, ''));
+        $(this).val(currentVal ? val.toLocaleString() : '');
+        if($('#request_type_id').val() == 9){
+            validateQty();
         }
-
-        // if(event.key == '.' && this.value.split('.').length > 2){
-        if(this.value.split('.').length > 2){
-            this.value = this.value.replace(/([\d,]+)([\.]+.+)/, '$1') 
-                + '.' + this.value.replace(/([\d,]+)([\.]+.+)/, '$2').replace(/\./g,'')
-            return;
-        }
-
-        $(this).val( function(index, value) {
-            value = value.replace(/[^0-9.]+/g,'')
-            let parts = value.toString().split(".");
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return parts.join(".");
-        });
-
-        if(event.which >= 37 && event.which <= 40) return;
-        $(this).val(function(index, value) {
-            return value
-            .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-          });
-
-    });  
-
+    })
    
      
     $(document).ready(function() {

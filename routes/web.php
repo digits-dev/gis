@@ -66,6 +66,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_logout_account_es', [POSLoginController::class, 'endSession'])->name('logout_end_session');
     Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
     Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
+    Route::get('pos_token_swap/suggest_jan_number', [POSTokenSwapController::class, 'suggestJanNumber'])->middleware('auth')->name('suggest_jan_number');
     Route::post('pos_token_swap/swap', [POSTokenSwapController::class, 'store'])->middleware('auth')->name('swap');
     Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index'])->middleware('auth');
     Route::get('pos_swap_history/{id}', [POSSwapHistoryController::class, 'show'])->middleware('auth');
@@ -107,7 +108,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/edit-collect-token-file', [AdminCollectTokenApprovalController::class, 'collectTokenFileEdit'])->name('collect-token-edit-file-store');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/submit-collect-token-edit', [AdminCollectRrTokensController::class, 'editCollectToken'])->name('submit-collect-token-edit');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token_approval/export_collect_token_approval', [AdminCollectTokenApprovalController::class, 'exportTokenApproval'])->name('collect-token-edit-file-store');
-
+    //Cancel Collect Token
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_tokens/collect-token-cancel/{id}',[AdminCollectRrTokensController::class, 'cancelCollectToken'])->name('collect-token-cancel');
     //Temporary Add no of token in collect token line
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/update-no-of-token', [AdminCollectRrTokenSalesController::class, 'UploadNoOfToken']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_rr_token_sales/upload-no-of-token',[AdminCollectRrTokenSalesController::class, 'saveNoOfToken'])->name('upload-no-of-token');
@@ -197,5 +199,8 @@ Route::group(['middleware' => ['web']], function() {
     //CAPSULE SWAP
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/check-machine', [AdminCapsuleSwapHeadersController::class, 'checkMachine'])->name('check-machine');
     Route::post(config('crudbooster.ADMIN_PATH').'/capsule_swap_headers/save-swap', [AdminCapsuleSwapHeadersController::class, 'saveSwap'])->name('submit_swap');
+
+    //TOKEN SWAP HISTORY
+    Route::post('admin/swap_histories/export', [AdminSwapHistoriesController::class, 'exportSwapHistoryData'])->name('swap_histories.export');
 
 });

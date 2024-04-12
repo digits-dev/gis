@@ -69,9 +69,33 @@
                                     <td>{{ $addon->qty}}</td>
                                 </tr>
                             @endforeach
-                        @endif
                         </tbody>
                     </table>
+                    @endif
+                    @if (isset($defective_returns) && count($defective_returns) > 0)
+                    <table class="style-table-void">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center;">Jan Number Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                            <tr>
+                                <td style="font-weight: bold;">Digits Code</td>
+                                <td style="font-weight: bold;">Description</td>
+                                <td style="font-weight: bold;">Qty</td>
+                            </tr>
+                            @foreach ($defective_returns as $defective_return)
+                                <tr>
+                                    <td>{{ $defective_return->digits_code}}</td>
+                                    <td>{{ $defective_return->item_description}}</td>
+                                    <td>{{ $defective_return->qty}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
             </div>
         </div>
         <div class='panel-footer'>

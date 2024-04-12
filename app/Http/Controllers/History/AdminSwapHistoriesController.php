@@ -1,9 +1,13 @@
 <?php namespace App\Http\Controllers\History;
 
-	use Session;
-	use Request;
+use App\Exports\TokenSwapHistoryExport;
+use Session;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Capsule\HistoryCapsule;
+	use App\Models\Capsule\InventoryCapsuleLine;
+use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminSwapHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -29,7 +33,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "swap_histories";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -154,6 +158,15 @@
 	        |
 	        */
 	        $this->index_button = array();
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = [
+					"title"=>"Export Data",
+					"label"=>"Export Data",
+					"icon"=>"fa fa-upload",
+					"color"=>"primary",
+					"url"=>"javascript:showExport()",
+				];
+			}
 
 
 
@@ -187,7 +200,12 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = "
+				function showExport() {
+					$('#modal-export').modal('show');
+				}
+			
+			";
 
 
             /*
@@ -210,7 +228,46 @@
 	        | $this->post_index_html = "<p>test</p>";
 	        |
 	        */
-	        $this->post_index_html = null;
+			$module_name = CRUDBooster::getCurrentModule()->name;
+	        $this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export $module_name</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('swap_histories.export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export $module_name'/>
+								<br/>
+								<div class='row'>
+									<div class='col-sm-6'>
+										<label>Date From</label>
+										<input type='date' name='date_from' class='form-control' required/>
+									</div>
+									<div class='col-sm-6'>
+										<label>Date To</label>
+										<input type='date' name='date_to' class='form-control' required/>
+									</div>
+								</div>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
 
 
 
@@ -348,30 +405,65 @@
 	    |
 	    */
 	    public function hook_after_edit($id) {
-	        //Your code here
+
 			$histories_id = DB::table('swap_histories')->where('id', $id)->first();
-			DB::table('swap_histories')->where('id', $id)->update([
-				'status'      => "VOID",
-				'updated_by'  => CRUDBooster::myId(),
-				'updated_at'  => date('Y-m-d H:i:s'),
-			]);
-			// $token_inventory = DB::table('token_inventories')->where('locations_id', $histories_id->locations_id)->first();
-			// $token_inventory_qty = $token_inventory->qty;
-			// $total_qty = $token_inventory_qty + $histories_id->token_value;
-			
 			$histories_ref_number = DB::table('swap_histories')->where('id', $id)->value('reference_number');
 			$items = DB::table('add_on_movement_histories')->where('reference_number', $histories_ref_number)->select('digits_code', DB::raw('ABS(qty) as qty'))->get();
-			foreach ($items as $key => $data) {
-				DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',$histories_id->locations_id)->increment('qty', $data->qty);
+			$capsule_history = DB::table('history_capsules')->where('reference_number', $histories_ref_number)->get();
+			$capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
+			$swap_histories = DB::table('swap_histories')->where('reference_number', $histories_ref_number)->get();
+
+			if($capsule_history) {
+				foreach ($capsule_history as $key => $value) {
+					HistoryCapsule::insert([
+						'reference_number' => $value->reference_number,
+						'item_code' => $value->item_code,
+						'capsule_action_types_id' => $capsule_type_id,
+						'locations_id' => $value->locations_id,
+						'from_sub_locations_id' => $value->to_sub_locations_id,
+						'qty' => $value->qty * -1,
+						'created_at' => date('Y-m-d H:i:s'),
+						'created_by' => CRUDBooster::myId()
+					]);
+		
+					InventoryCapsuleLine::leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
+					->where('ic.locations_id', $value->locations_id)
+					->where('inventory_capsule_lines.sub_locations_id',  $value->to_sub_locations_id )
+					->where('ic.item_code', $value->item_code,)
+					->update([
+						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty -  $value->qty"),
+						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
+						'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
+					]);
+
+					foreach ($swap_histories  as $key => $value) {
+						$token_value = (int)$value->token_value;
+						DB::table('token_inventories')
+							->where('locations_id', $value->locations_id)
+							->update([
+								'qty' =>  DB::raw("qty + $token_value"),
+							]);
+					}
+			
+				}
+		
+			}else {
+
+				foreach ($items as $key => $data) {
+					DB::table('add_ons')->where('digits_code', $data->digits_code)->where('locations_id',$histories_id->locations_id)->increment('qty', $data->qty);
+				}
+				
+				DB::table('token_inventories')
+				->where('locations_id', $histories_id->locations_id)
+				->update([
+					'qty' =>  DB::raw("qty + $histories_id->token_value"),
+				]);
 			}
 
+			DB::table('swap_histories')->where('reference_number', $histories_ref_number)->update(['status' => "VOID", 'updated_by' => CRUDBooster::myId(), 'updated_at' =>  date('Y-m-d H:i:s')]);
 			DB::table('add_on_movement_histories')->where('reference_number',$histories_ref_number)->update(['status' => 'VOID', 'updated_by' => CRUDBooster::myId(),'updated_at' => date('Y-m-d H:i:s')]);
-			
-			DB::table('token_inventories')
-			->where('locations_id', $histories_id->locations_id)
-			->update([
-				'qty' =>  DB::raw("qty + $histories_id->token_value"),
-			]);
+	
+		
 	    }
 
 	    /*
@@ -403,6 +495,13 @@
 			$data['page_title'] = 'Void Token Swap History';
 			$data['swap_histories'] = DB::table('swap_histories')->where('id', $id)->first();
 			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['defective_returns'] = DB::table('history_capsules')
+			->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+			->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+			->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
+			->select('history_capsules.qty', 'items.digits_code', 'items.item_description')
+			->get()->toArray();
+	
 			return view('history.token-swap-void', $data);
 		}
 
@@ -413,7 +512,23 @@
 			$data['mod_description'] = DB::table('mode_of_payments')->where('id', $data['swap_histories']->mode_of_payments_id)->select('payment_description')->first();
 			$data['location_name'] = DB::table('locations')->where('id', $data['swap_histories']->locations_id)->select('location_name')->first();
 			$data['addons'] = DB::table('addons_history')->where('token_swap_id', $id)->where('add_ons.locations_id',$data['swap_histories']->locations_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get()->toArray();
+			$data['defective_returns'] = DB::table('history_capsules')
+			->leftJoin('items', 'items.digits_code2', '=', 'history_capsules.item_code')
+			->leftJoin('capsule_action_types', 'capsule_action_types.id', '=', 'history_capsules.capsule_action_types_id')
+			->where('history_capsules.reference_number', $data['swap_histories']->reference_number)
+			->select('history_capsules.qty', 'items.digits_code', 'items.item_description')
+			->get()->toArray();
 			return view('history.token-swap-details', $data);
+		}
+
+		public function exportSwapHistoryData(Request $request) {
+			$filename = $request->filename;
+			$date_from = $request->date_from;
+			$date_to = $request->date_to;
+			$filename = "$filename---$date_from to $date_to";
+			$date_to = date('Y-m-d', strtotime($date_to.'+ 1 days'));
+			return Excel::download(new TokenSwapHistoryExport($date_from, $date_to), $filename.'.csv');
+			// return Excel::download(new GashaMachineExport, $filename.'.csv');
 		}
 
 	}

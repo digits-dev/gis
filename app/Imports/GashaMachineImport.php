@@ -28,12 +28,12 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
             if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
                 return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
             }
-            if($row['no_of_token'] == 0){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
-            }
-            if($row['no_of_token'] > 9){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token must be equal or less than 9! at line ".($key+2),"danger");
-            }
+            // if($row['no_of_token'] == 0){
+            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
+            // }
+            // if($row['no_of_token'] > 9){
+            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token must be equal or less than 9! at line ".($key+2),"danger");
+            // }
             if($location_name == NULL){
                 return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"No location tag! at line ".($key+2),"danger");
             }
