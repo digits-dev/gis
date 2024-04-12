@@ -261,7 +261,7 @@ class POSTokenSwapController extends Controller
         foreach ($suggestions as $suggestion) {
             $formattedSuggestions[] = [
                 'id' => $suggestion->id,
-                'text' => $suggestion->digits_code . ': ' . $suggestion->item_description,
+                'text' => $suggestion->digits_code . ' - ' . $suggestion->item_description,
                 'description' => $suggestion->item_description,
                 'no_of_tokens' => $suggestion->no_of_tokens,
                 'item' => $suggestion->digits_code,

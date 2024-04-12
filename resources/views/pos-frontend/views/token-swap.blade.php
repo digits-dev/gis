@@ -1326,10 +1326,12 @@ font-size: 14px;
 
                  (janNumber.length != 0 ? 
                   '<table class="styled-table-swap">'+
-              '<tr><td colspan="2">Defective Return</td></tr>' +
-              '<tr><td>Jan Number</td><td>Quantity</td> </tr>' +
-              janNumber.map(item => `<tr><td> ${item.description}:${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
+              '<tr><td colspan="3">Defective Return</td></tr>' +
+              '<tr><td>Jan Number</td><td style="color:#C33A3A">Description</td><td style="color:black">Quantity</td> </tr>' +
+              janNumber.map(item => `<tr><td> ${item.jan_number}</td><td style="color:#C33A3A"> ${item.description} </td><td style="color:black">${item.qty}</td></tr>`).join('') +
                  '</table>' : '')
+                
+
                 }
           },
             buttons: {
@@ -1378,9 +1380,9 @@ font-size: 14px;
                         '</table>' : '') +
                             (janNumber.length != 0 ? 
                             '<table class="styled-table-swap">'+
-                            '<tr><td colspan="2">Defective Return</td></tr>' +
-                            '<tr><td>Jan Number</td><td>Quantity</td> </tr>' +
-                            janNumber.map(item => `<tr><td>${item.jan_number}</td><td>${item.qty}</td></tr>`).join('') +
+                            '<tr><td colspan="3">Defective Return</td></tr>' +
+                            '<tr><td>Jan Number</td><td style="color:#C02F2F">Description</td><td style="color:black">Quantity</td> </tr>' +
+                            janNumber.map(item => `<tr><td>${item.jan_number}</td><td style="color:#C02F2F">${item.description}</td><td style="color:black">${item.qty}</td></tr>`).join('') +
                             '</table>' : '') + 
                       '</div>'
                                 
