@@ -15,4 +15,4 @@
 <link rel="stylesheet" href="{{ asset('datatable/jquery.dataTables.min.css') }}">
 <script src="{{ asset('datatable/jquery.dataTables.min.js') }}"></script>
 {{-- SWEET ALERT --}}
-{{-- <script src="{{ asset('plugins/sweetalert.js') }}"></script> --}}
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
