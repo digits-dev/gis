@@ -113,13 +113,15 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 				$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('collect-token-edit/[id]'),'icon'=>'fa fa-pencil', 'showIf'=>'[statuses_id] == "'.$this->forApproval.'"','color'=>'success'];	
-				$this->addaction[] = ['title'=>'Cancel Request',
-				'url'=>CRUDBooster::mainpath('collect-token-cancel/[id]'),
-				'icon'=>'fa fa-trash', 
-				"showIf"=>"[statuses_id] == $this->forApproval",
-				'confirmation'=>'yes',
-				'confirmation_title'=>'Confirm Cancel',
-				'confirmation_text'=>'Are you sure to Cancel this request?','color'=>'danger'];
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
+					$this->addaction[] = ['title'=>'Cancel Request',
+					'url'=>CRUDBooster::mainpath('collect-token-cancel/[id]'),
+					'icon'=>'fa fa-trash', 
+					"showIf"=>"[statuses_id] == $this->forApproval",
+					'confirmation'=>'yes',
+					'confirmation_title'=>'Confirm Cancel',
+					'confirmation_text'=>'Are you sure to Cancel this request?','color'=>'danger'];
+				}
 			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
