@@ -21,6 +21,12 @@
                 </a>
             </li>
             <li>
+                <a data-item="token-despense" class="nav-module {{ Request::Segment(1) == 'pos_token_despense' ? 'active' : '' }}" href="/pos_token_despense">
+                    <i class="fa-solid fa-coins {{ Request::Segment(1) == 'pos_token_despense' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_token_despense' ? 'active_span' : '' }}">Token Despense</span>
+                </a>
+            </li>
+            <li>
                 <a class="nav-module {{ Request::Segment(1) == 'pos_swap_history' ? 'active' : '' }}" href="/pos_swap_history">
                     <i class="fa fa-window-restore {{ Request::Segment(1) == 'pos_swap_history' ? 'active_i' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'pos_swap_history' ? 'active_span' : '' }}">Swap History</span>
@@ -47,3 +53,15 @@
         </ul>
     </nav>
 </section>
+
+<script>
+     $(document).ready(function() {
+        const isTokenDespense = $('li a.active').attr('data-item');
+        console.log(isTokenDespense)
+        if(isTokenDespense === 'token-despense'){
+            $('.sidebar_section').css('background', 'linear-gradient(to top right, #00a65a, #00a65a)');
+        }else{
+            $('.sidebar_section').css('background', 'linear-gradient(to top right, #fe3e3e, #8a2121)');
+        }
+    });
+</script>
