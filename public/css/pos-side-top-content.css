@@ -328,8 +328,16 @@ body {
     color: red !important;
 }
 
+.active_i_dispense {
+    color: #00a65a !important;
+}
+
 .active_span {
     color: red !important;
+}
+
+.active_span_dispense {
+    color: #00a65a !important;
 }
 
 

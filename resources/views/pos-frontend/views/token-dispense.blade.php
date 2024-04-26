@@ -2,10 +2,11 @@
 
 {{-- Extend the dashboard layout --}}
 @extends('pos-frontend.components.content')
+{{-- Title of the page --}}
 
 {{-- Your Plugins --}}
 @section('plugins')
-    <link rel="stylesheet" href="{{ asset('css/token-despense.css?v=2') }}">
+    <link rel="stylesheet" href="{{ asset('css/token-despense.css') }}">
     <link rel="stylesheet" type="text/css" href="https://flatlogic.github.io/awesome-bootstrap-checkbox/demo/build.css" />
 @endsection
 
@@ -63,7 +64,7 @@
     <div class="main-container">
         <div class="container">
             <div class="header">
-                <h1 style="font-size: 19px;">Swap</h1>
+                <h1 style="font-size: 17px;">Gachapon Token Dispenser</h1>
                 <p>{{ $cash_value }} per token</p>
             </div>
             @if (session('message'))
@@ -142,52 +143,15 @@
                         <span>Total</span>
                         <input class="total-value" type="text" name="total_value" id="total_value" readonly placeholder="0">
                     </div>
-                    <div class="summary-value">
-                        <span>Change</span>
-                        <input class="change-value" type="text" name="change_value" id="change_value" readonly placeholder="0">
-                    </div>
+                    
                 </div>
-                {{-- ADD ONS --}}
-                <div class="addons-container">
-        
-                    <Span>Addons</Span>
-                    <div class="round">
-                        <input type="checkbox" id="myCheckbox" />
-                        <label for="myCheckbox"></label>
-                    </div>
-                    {{-- <input type="checkbox" name="" id="myCheckbox"> --}}
-                    <div class="addons">
-                        <select class="addons-selection parent" name="addons" id="addons">
-                            <option class="child" value="" disabled selected>Select Addons</option>
-                            @foreach ($addons as $addon )
-                            <option class="child" data-id="{{ $addon->digits_code ." - ". $addon->description  }}" value="{{ $addon->digits_code  }}">{{ $addon->digits_code ." - ". $addon->description  }} ({{ $addon->qty }})</option>                      
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="addon-table-wrapper" style="display: none;">
-                <table class="addons-table">
-                    <thead>
-                    <tr>
-                        <th>
-                        Description
-                        </th>
-                        <th>Quantity</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody id="addons-body">
-                    <!-- Add rows dynamically here -->
-                </tbody>
-                </table>
-                </div>
-                {{-- <button class="btn-swap" type="submit" >Swap</button> --}}
+    
                 <button class="button-pushable btn-swap" role="button">
                     <span class="button-shadow"></span>
                     <span class="button-edge btn-swap-edge"></span>
                     <span class="button-front text btn-swap">
                         <i style="margin-right: 10px;" class="fa-solid fa-rotate"></i>
-                        Swap
+                        Dispense
                     </span>
                 </button>
     
@@ -247,6 +211,13 @@
           theme: 'default', // Ensures the default Select2 styles are applied
       });
 
+      var listOfMOP = [];
+      var modeOfPayments = {!! json_encode($mode_of_payments) !!};
+    
+      modeOfPayments.forEach(item => {
+        listOfMOP.push(item.id);
+      });
+
       $(document).ready(function() {
           $(".container").fadeIn(1000);
           $(".presets-container").fadeIn(1000);
@@ -301,22 +272,23 @@
         var currentTokenValue = parseInt(removeCommas($("#token_value").val())) || 0;
         var currentTotalValue = parseInt(removeCommas($("#total_value").val())) || 0;
 
-        const tokenValue = presetValue * {{ $cash_value }};
-        
-        $("#cash_value").val((currentTotalValue + tokenValue).toLocaleString());
-        $("#token_value").val((currentTokenValue + presetValue).toLocaleString());
-        $("#total_value").val((currentTotalValue + tokenValue).toLocaleString());
+        const allToken = currentTokenValue + presetValue;
+        const tokenValue = allToken * {{ $cash_value }};
 
+        $("#cash_value").val((tokenValue).toLocaleString());
+        $("#token_value").val((allToken).toLocaleString());
+        $("#total_value").val((tokenValue).toLocaleString());
     }
     $(document).ready(function() {
-    $(".btn").click(function() {
-        var presetValue = parseInt($(this).text());
-        setPresetValue(presetValue);
-        $('#mode_of_payment').attr('disabled', false);
-        amountReceivedInput.value = "";
-        $('#payment_reference').val("");
-        changeElement.value = "0";
-    });
+        $(".btn").click(function() {
+            var presetValue = parseInt($(this).text());
+            setPresetValue(presetValue);
+
+            $('#mode_of_payment').attr('disabled', false);
+            amountReceivedInput.value = "";
+            $('#payment_reference').val("");
+            changeElement.value = "0";
+        });
     });
 
     $('.btn-paymaya').click(function () {
@@ -447,9 +419,10 @@
       const float1Value = Number(float1Input.value.replace(/[^0-9]/g,''));
       const selectedValue = $(this).val();
       const selectedDescription = $('option:selected', this).text();
+    
+      console.log(listOfMOP);
       $('#mode_of_payment_description').text(selectedDescription);
       $('#mode_of_payment_description').hide();
-
 
         if(selectedValue == 32){
           $('#payment_reference').hide();
@@ -459,9 +432,7 @@
           $('#amount_received').hide(); 
           $('#payment_reference_div').fadeIn(1000);
 
-
-        }
-        else if(selectedValue != 1 ){
+        }else if(listOfMOP.includes(selectedValue)){
           $('#change_value').val('0');
           $('#payment_reference').val("");
           $('#reference').text("Reference Number"); 
@@ -477,10 +448,7 @@
           $('.addons-container').fadeIn(1000);
 
           jan_data = [];
-        }
-
-        
-        else {
+        }else {
           $('#amount_received').val(float1Value);
           $('#payment_reference_div').fadeIn(1000);
           $('#reference').text("Amount Received"); 
@@ -494,10 +462,7 @@
           $('.addons-container').fadeIn(1000);
           $("#jan-desc-tbody tr").remove();
           jan_data = [];
-
-
         }
-          
     });
 
     let isSwapped = false;
@@ -844,7 +809,7 @@
                             confirmButtonColor: '#367fa9',
                         });
                 }
-            else if(cashValue > amountReceived && $('#mode_of_payment').val() == 1){
+            else if(cashValue > amountReceived && !listOfMOP.includes($('#mode_of_payment').val())){
                     Swal.fire({
                             type: 'error',
                             title: 'Amount Received should be greater than Peso Amount!',
@@ -876,7 +841,7 @@
                             confirmButtonColor: '#367fa9',
                         });
                 }
-            else if( ($('#payment_reference').val() === '' && $('#mode_of_payment').val() != 1) && $('#mode_of_payment').val() != 32) {
+            else if( ($('#payment_reference').val() === '' && listOfMOP.includes($('#mode_of_payment').val())) && $('#mode_of_payment').val() != 32) {
                 Swal.fire({
                             type: 'error',
                             title: 'Reference Number is Required!',
@@ -893,6 +858,27 @@
             else {
                 $('.btn-swap').css({"background-color": "gray", "border-radius": "12px"});
                 $('.btn-swap').attr('disabled', true);
+
+                const addOnsSummary = 
+                        (addOns.length != 0 ? 
+                            '<table class="styled-table-swap">'+
+                            '<tr><td colspan="2">Addons</td></tr>' +
+                            '<tr><td>Description</td><td>Quantity</td> </tr>' +
+                        addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
+                            '</table>' : '');
+                const janNumberSummary = 
+                        (janNumber.length != 0 ? 
+                            '<table class="styled-table-swap">'+
+                            '<tr><td colspan="3">Defective Return</td></tr>' +
+                            '<tr><td>Jan Number</td><td style="color:#C33A3A">Description</td><td style="color:black">Quantity</td> </tr>' +
+                        janNumber.map(item => `
+                                <tr>
+                                    <td> ${item.jan_number}</td>
+                                    <td style="color:#C33A3A"> ${item.description} </td>
+                                    <td style="color:black">${item.qty}</td>
+                                </tr>`).join('') +
+                            '</table>' : '');
+                            
 
                 const summaryTable = `
                     <div class="swal-table-container">
@@ -918,28 +904,10 @@
                                 $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") +
                             '</td></tr>' +
 
-                            '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ 
-                                $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                            '</table>'+
-
-                            (addOns.length != 0 ? 
-                                '<table class="styled-table-swap">'+
-                                '<tr><td colspan="2">Addons</td></tr>' +
-                                '<tr><td>Description</td><td>Quantity</td> </tr>' +
-                            addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
-                                '</table>' : '') +
-
-                            (janNumber.length != 0 ? 
-                                '<table class="styled-table-swap">'+
-                                '<tr><td colspan="3">Defective Return</td></tr>' +
-                                '<tr><td>Jan Number</td><td style="color:#C33A3A">Description</td><td style="color:black">Quantity</td> </tr>' +
-                            janNumber.map(item => `
-                                    <tr>
-                                        <td> ${item.jan_number}</td>
-                                        <td style="color:#C33A3A"> ${item.description} </td>
-                                        <td style="color:black">${item.qty}</td>
-                                    </tr>`).join('') +
-                        '</table>' : '') +
+                            
+                        '</table>'+ 
+                         addOnsSummary + 
+                         janNumberSummary +
                     '</div>'
                 ;
 
@@ -948,13 +916,27 @@
                     icon: 'info',
                     customClass: ((janNumber.length != 0 || addOns.length != 0) ? 'swal-container2' : ''),
                     allowOutsideClick: false,
-                    html: summaryTable
+                    html: summaryTable,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Submit',
+                    returnFocus: false,
+                    reverseButtons: true,
                 }).then((save) => {
-                    if (save) {
+                 
+                    if (save.isConfirmed) {
                         // setTimeout(() => {
+                        Swal.fire({
+                            allowEscapeKey: false,
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            title: "Please wait while saving...",
+                            didOpen: () => Swal.showLoading()
+                        });
                         return $.ajax({
                             type: 'POST',
-                            url: "{{ route('swap-despense') }}",
+                            url: "{{ route('swap-dispense') }}",
                             data: formData,
                             success: function(res) {
                                 const data = JSON.parse(res);
@@ -974,20 +956,9 @@
                                         '<tr><td>Mode of Payment</td><td>' + $('#mode_of_payment_description').text() + '</td></tr>' +
                                         ($('#mode_of_payment').val() == 1 ? '<tr><td>Amount Received</td><td>' + $('#amount_received').val().replace(/\B(?=(\d{3})+(?!\d))/g,",") + '</td></tr>' : '')  +
                                         '<tr><td>Total</td><td>'+ $('#total_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
-                                        '<tr style="background-color:#a5dc86;"><td>Change</td><td>'+ $('#change_value').val().replace(/\B(?=(\d{3})+(?!\d))/g,",")+'</td></tr>' +
                                     '</table>' +
-                                        (addOns.length != 0 ? 
-                                        '<table class="styled-table-swap">'+
-                                        '<tr><td colspan="2">Addons</td></tr>' +
-                                        '<tr><td style="width: 70%">Description</td><td>Quantity</td> </tr>' +
-                                        addOns.map(item => `<tr><td>${item.description}</td><td>${item.qty}</td></tr>`).join('') +
-                                    '</table>' : '') +
-                                        (janNumber.length != 0 ? 
-                                        '<table class="styled-table-swap">'+
-                                        '<tr><td colspan="3">Defective Return</td></tr>' +
-                                        '<tr><td>Jan Number</td><td style="color:#C02F2F">Description</td><td style="color:black">Quantity</td> </tr>' +
-                                        janNumber.map(item => `<tr><td>${item.jan_number}</td><td style="color:#C02F2F">${item.description}</td><td style="color:black">${item.qty}</td></tr>`).join('') +
-                                        '</table>' : '') + 
+                                    addOnsSummary + 
+                                    janNumberSummary + 
                                 '</div>'
                                             
                                 }).then((result) => {
@@ -1000,9 +971,9 @@
                         }
                             });
                         // }, 6000);
-                        
+                       
                     } else {
-                            $('.btn-swap').css({"background-color": "#e60213", "border-radius": "12px"});
+                            $('.btn-swap').css({"background-color": "#00a65a", "border-radius": "12px"});
                             $('.btn-swap').attr('disabled', false);
                     }   
                 })

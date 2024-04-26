@@ -8,7 +8,7 @@ use App\Http\Controllers\Pos\POSSwapHistoryController;
 use App\Http\Controllers\Pos\SettingsController;
 use App\Http\Controllers\Pos\POSEndOfDayController;
 use App\Http\Controllers\Pos\POSSettingsController;
-use App\Http\Controllers\Pos\POSTokenDespenseController;
+use App\Http\Controllers\Pos\POSTokenDispenseController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Token\DisburseTokenRequestController;
 use App\Http\Controllers\Token\AdminStoreRrTokenController;
@@ -80,8 +80,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
     
     //TOKEN DESPENSE
-    Route::get('pos_token_despense', [POSTokenDespenseController::class, 'index'])->middleware('auth');
-    Route::post('pos_token_despense/swap-despense', [POSTokenDespenseController::class, 'store'])->middleware('auth')->name('swap-despense');
+    Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
+    Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
     //POS Dashboard
     Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
 

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Pos\POSDashboardController;
 
-class POSTokenDespenseController extends Controller
+class POSTokenDispenseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -38,12 +38,13 @@ class POSTokenDespenseController extends Controller
         $data = [];
         $data['tokens'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'token')->select('value')->get();
         $data['paymayas'] = Preset::where('status', 'ACTIVE')->where('preset_type', 'paymaya')->select('value')->get();
-        $data['mode_of_payments'] = ModeOfPayment::where('status', 'ACTIVE')->get();
+        $data['mode_of_payments'] = ModeOfPayment::whereNotNull('type')->where('status', 'ACTIVE')->get();
+   
         $data['addons'] = DB::table('add_ons')->where('qty', '>', '0')->where('status', 'ACTIVE')->where('locations_id', Auth::user()->location_id)->get();
         $data['cash_value'] = TokenConversion::where('id',2)->first()->current_cash_value;
         $data['inventory_qty'] = TokenInventory::where('locations_id', Auth::user()->location_id)->value('qty');
 
-        return view('pos-frontend.views.token-despense',$data);
+        return view('pos-frontend.views.token-dispense',$data);
         
     }
 
