@@ -809,10 +809,10 @@
                             confirmButtonColor: '#367fa9',
                         });
                 }
-            else if(cashValue > amountReceived && !listOfMOP.includes($('#mode_of_payment').val())){
+            else if(cashValue != amountReceived && !listOfMOP.includes($('#mode_of_payment').val())){
                     Swal.fire({
                             type: 'error',
-                            title: 'Amount Received should be greater than Peso Amount!',
+                            title: 'Amount Received should be equal than Peso Amount!',
                             icon: 'error',
                             confirmButtonColor: '#367fa9',
                         });
