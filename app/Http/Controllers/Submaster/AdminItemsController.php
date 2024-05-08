@@ -346,7 +346,7 @@
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL,config('api.dimfs_api_created_link'));
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
             curl_setopt($ch, CURLOPT_POST, FALSE);
             curl_setopt($ch, CURLOPT_POSTFIELDS,null);
@@ -369,9 +369,11 @@
             if(!empty($response["data"])) {
                 foreach ($response["data"] as $key => $value) {
                     Item::insert([
-                        'digits_code' => $value['digits_code'],
+                        'digits_code' => $value['jan_no'],
+						'digits_code2' => $value['digits_code'],
                         'item_description' => $value['item_description'],
                         'no_of_token' => $value['no_of_token'],
+						'current_srp' => $value['current_srp']
                     ]);
                 }
             }
@@ -424,6 +426,7 @@
                     Item::where('digits_code', $value['digits_code'])->update([
                         'item_description' => $value['item_description'],
                         'no_of_token' => $value['no_of_token'],
+						'current_srp' => $value['current_srp']
                     ]);
                 }
             }
