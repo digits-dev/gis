@@ -32,6 +32,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Payment Description","name"=>"payment_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Type","name"=>"type"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
@@ -41,7 +42,7 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Payment Description','name'=>'payment_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			
+			$this->form[] = ['label'=>'Type','name'=>'type','type'=>'text','validation'=>'min:1|max:255','width'=>'col-sm-10'];
 			if(in_array(CRUDBooster::getCurrentMethod(), ['getEdit','getDetail','postEditSave'])){
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE'];			# END FORM DO NOT REMOVE THIS LINE
 			}

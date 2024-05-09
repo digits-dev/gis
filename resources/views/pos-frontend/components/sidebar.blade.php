@@ -20,6 +20,12 @@
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_swap' ? 'active_span' : '' }}">Token Swap</span>
                 </a>
             </li>
+            {{-- <li>
+                <a data-item="token-dispense" class="nav-module {{ Request::Segment(1) == 'pos_token_dispense' ? 'active' : '' }}" href="/pos_token_dispense">
+                    <i class="fa-solid fa-cash-register {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_span_dispense' : '' }}">Token Dispense</span>
+                </a>
+            </li> --}}
             <li>
                 <a class="nav-module {{ Request::Segment(1) == 'pos_swap_history' ? 'active' : '' }}" href="/pos_swap_history">
                     <i class="fa fa-window-restore {{ Request::Segment(1) == 'pos_swap_history' ? 'active_i' : '' }}"></i>
@@ -47,3 +53,22 @@
         </ul>
     </nav>
 </section>
+
+<script>
+     $(document).ready(function() {
+        const isTokenDispense = $('li a.active').attr('data-item');
+        if(isTokenDispense === 'token-dispense'){
+            $('.sidebar_section').css('background', 'linear-gradient(to top right, #00a65a, #00a65a)');
+            
+            $('.sidebar_section nav ul li a').hover(function() {
+                $(this).find('i').css('color', '#00a65a');
+                $(this).find('.nav-item').css('color', '#00a65a');
+            }, function() {
+                $(this).find('i').css('color', ''); // Reset to default
+                $(this).find('.nav-item').css('color', ''); // Reset to default
+            });
+        }else{
+            $('.sidebar_section').css('background', 'linear-gradient(to top right, #fe3e3e, #8a2121)');
+        }
+    });
+</script>

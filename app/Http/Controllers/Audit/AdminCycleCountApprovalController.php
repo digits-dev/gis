@@ -493,7 +493,7 @@
 										->first();
 			$checkHeaderLinesMachine = CycleCountLine::where('status',9)->where('cycle_count_type',$typeMachine)->count();
 			
-			if($checkHeaderLinesMachine == 0){
+			if($checkHeaderLinesMachine === 0){
 				CycleCount::where([
 					'id' => $HeaderMachine->cc_id
 				])->update([

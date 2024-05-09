@@ -32,7 +32,7 @@ class POSFloatHistoryController extends Controller
         $token_id = FloatEntry::where('description', 'TOKEN')->pluck('id');
         $data = [];
         $data['float_entries'] = FloatEntry::where('description', '!=', 'TOKEN')->orderBy('id','desc')->get();
-        $data['mode_of_payments'] = DB::table('mode_of_payments')->where('status', 'ACTIVE')->get()->toArray();
+        $data['mode_of_payments'] = DB::table('mode_of_payments')->whereNull('type')->where('status', 'ACTIVE')->get()->toArray();
         $data['mode_of_payments'] = array_map(function($obj) {
             $obj->payment_custom_desc = preg_replace("/[^a-zA-Z]/", '_', $obj->payment_description);
             return $obj;
