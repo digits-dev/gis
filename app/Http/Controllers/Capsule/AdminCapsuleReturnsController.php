@@ -361,7 +361,7 @@
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();
 			$validateGM = $inventory_capsule_lines->where('gasha_machines_id', $gasha_machines->id)->first();
-			$sub_location_id = SubLocations::where('location_id', $gasha_machines->location_id)->first()->id;
+			$sub_location_id = SubLocations::where('location_id', $gasha_machines->location_id)->where('sub_locations.description', 'STOCK ROOM')->first()->id;
 
 			$filteredData = [];
 
@@ -460,7 +460,9 @@
 				DB::table('inventory_capsule_lines')->whereNotNull('sub_locations_id')
 					->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 					->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
-					->where('inventory_capsules_id', $inventory_capsule_id)
+					->where('sub_locations.location_id', $gasha_machines->location_id)
+					->where('sub_locations.description', 'STOCK ROOM')
+					->where('inventory_capsule_lines.inventory_capsules_id', $inventory_capsule_id)
 					->where('inventory_capsules.item_code', $items->digits_code2)
 					->update([
 						'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),

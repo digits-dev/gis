@@ -443,6 +443,7 @@
 			//getting the sublocations
 			$sub_locations_id = DB::table('sub_locations')
 				->where('location_id', $locations_id)
+				->where('description', 'STOCK ROOM')
 				->pluck('id')
 				->first();
 
@@ -504,6 +505,7 @@
 				->leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
 				->leftJoin('sub_locations', 'sub_locations.id', 'inventory_capsule_lines.sub_locations_id')
 				->where('sub_locations.location_id', $locations_id)
+				->where('sub_locations.description', 'STOCK ROOM')
 				->where('inventory_capsules.item_code', $item->digits_code2)
 				->update([
 					'inventory_capsule_lines.updated_by' => $action_by,
