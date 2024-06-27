@@ -129,8 +129,11 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"Upload Machines","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('machines-upload'),'color'=>'primary'];
+				if(CRUDBooster::isSuperAdmin()){
+					$this->index_button[] = ["label"=>"Add Machine","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-machine'),"color"=>"success"];
+					$this->index_button[] = ["label"=>"Upload Machines","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('machines-upload'),'color'=>'primary'];
+				}
+				
 				$this->index_button[] = [
 					"title"=>"Export Data",
 					"label"=>"Export Data",
@@ -322,7 +325,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,14])){
 				$query->orderBy('gasha_machines.id', 'desc');
 			}else {
 				$query->where('gasha_machines.location_id', CRUDBooster::myLocationId())
