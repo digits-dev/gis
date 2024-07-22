@@ -22,7 +22,7 @@ class AdminItemsImport implements ToCollection, SkipsEmptyRows, WithHeadingRow
             try {
                 $this->validateRow($row);
 
-                Item::updateOrCreate(
+                Item::updateOrInsert(
                     [
                         'digits_code' => $row['jan_no'],
                         'digits_code2' => $row['digits_code']
