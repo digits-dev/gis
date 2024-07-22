@@ -2,9 +2,16 @@
 
     use App\Models\Submaster\Item;
     use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Imports\AdminItemsImport;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Excel;
+	use Maatwebsite\Excel\HeadingRowImport;
 
 	class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -108,7 +115,11 @@
 	        |
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				if(CRUDBooster::isSuperAdmin()){
+					$this->index_button[] = ["label"=>"Upload Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('upload-items'),'color'=>'primary'];
+				}
+			}
 
 
 	        /*
@@ -434,5 +445,42 @@
             \Log::info('itemupdate: executed!');
         }
 
+		public function importData() {
+			$data['page_title']= 'Upload Data';
+			return view('import.items.item-import', $data)->render();
+		}
+
+		public function importPostSave(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			Excel::import(new AdminItemsImport, $path);	
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Upload Successfully!"), 'success');
+		}
+
+		function importItemsTemplate() {
+			$arrHeader = [
+				"jan_no"             => "Jan No",
+				"digits_code"        => "Digits Code",
+				"item_description"   => "Item Description",
+				"no_of_tokens"       => "No Of Tokens"
+			];
+
+			$arrData = [
+				"jan_no"             => "4570118023759",
+				"digits_code"        => "60000058",
+				"item_description"   => "POCKET MONSTERS ACRYLIC STAND COLLECTN 2",
+				"no_of_tokens"       => "3"
+			];
+
+			$spreadsheet = new Spreadsheet();
+			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+			$filename = "items-".date('Y-m-d');
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = new Xlsx($spreadsheet);
+			$writer->save('php://output');
+		}
 
 	}

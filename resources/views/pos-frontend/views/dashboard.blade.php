@@ -379,7 +379,7 @@
     monthlySwaps.forEach(month => {
         const date = new Date(2000, month.month - 1, 1); // Use any year, 2000 in this case
         const options = { month: 'long' };
-        const monthName = date.toLocaleDateString(undefined, options);
+        const monthName = date.toLocaleDateString(undefined, options);
         months.push(`${monthName} ${month.year}`);
         values.push(month.token_value);
     })
