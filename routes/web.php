@@ -36,6 +36,7 @@ use App\Http\Controllers\History\AdminSwapHistoriesController;
 use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
 use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
+use App\Http\Controllers\Submaster\AdminItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -207,4 +208,8 @@ Route::group(['middleware' => ['web']], function() {
     //TOKEN SWAP HISTORY
     Route::post('admin/swap_histories/export', [AdminSwapHistoriesController::class, 'exportSwapHistoryData'])->name('swap_histories.export');
 
+    //ITEMS
+    Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items',[AdminItemsController::class, 'importData']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/items/upload-items-save',[AdminItemsController::class, 'importPostSave'])->name('upload-item-save');
+    Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items-template',[AdminItemsController::class, 'importItemsTemplate']);
 });
