@@ -218,15 +218,6 @@
         listOfMOP.push(item.id);
       });
 
-      $(document).ready(function() {
-          $(".container").fadeIn(1000);
-          $(".presets-container").fadeIn(1000);
-          $('#mode_of_payment').attr('disabled', true);
-          $("#cash_value").focus();
-          $('#payment_reference_div').hide();
-          $('.addons').hide();
-      });
-
     const float1Input = document.getElementById("cash_value");
     const float2Input = document.getElementById("token_value");
     const amountReceivedInput = document.getElementById("amount_received");
@@ -242,9 +233,23 @@
     const horizontalLine = document.querySelector('.horizontal-line');
     const resetDiv = document.querySelector('.btn-reset-div');
 
+    $(document).ready(function() {
+          $(".container").fadeIn(1000);
+          $(".presets-container").fadeIn(1000);
+          presetsDiv.style.width = '44px';
+            presetsDiv.style.height = '44px';
+            presetsValueDiv.style.display = 'none';
+            presetsLabel.style.display = 'none';
+            horizontalLine.style.display = 'none';
+            resetDiv.style.display = 'none';
+          $('#mode_of_payment').attr('disabled', true);
+          $("#cash_value").focus();
+          $('#payment_reference_div').hide();
+          $('.addons').hide();
+      });
+
     // Jan Description
     let jan_data = [];
-
 
     resizeButton.addEventListener('click', () => {
       if (presetsDiv.offsetWidth === 44) {

@@ -20,12 +20,12 @@
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_swap' ? 'active_span' : '' }}">Token Swap</span>
                 </a>
             </li>
-            {{-- <li>
+            <li>
                 <a data-item="token-dispense" class="nav-module {{ Request::Segment(1) == 'pos_token_dispense' ? 'active' : '' }}" href="/pos_token_dispense">
                     <i class="fa-solid fa-cash-register {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_span_dispense' : '' }}">Token Dispense</span>
                 </a>
-            </li> --}}
+            </li>
             <li>
                 <a class="nav-module {{ Request::Segment(1) == 'pos_swap_history' ? 'active' : '' }}" href="/pos_swap_history">
                     <i class="fa fa-window-restore {{ Request::Segment(1) == 'pos_swap_history' ? 'active_i' : '' }}"></i>
