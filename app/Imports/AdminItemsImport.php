@@ -24,12 +24,12 @@ class AdminItemsImport implements ToCollection, SkipsEmptyRows, WithHeadingRow
 
                 Item::updateOrInsert(
                     [
-                        'digits_code' => $row['jan_no'],
-                        'digits_code2' => $row['digits_code']
+                        'digits_code' => trim($row['jan_no']),
+                        'digits_code2' => trim($row['digits_code'])
                     ],
                     [
-                        'digits_code' => $row['jan_no'],
-                        'digits_code2' => $row['digits_code'],
+                        'digits_code' => trim($row['jan_no']),
+                        'digits_code2' => trim($row['digits_code']),
                         'item_description' => $row['item_description'],
                         'no_of_tokens' => $row['no_of_tokens']
                     ]

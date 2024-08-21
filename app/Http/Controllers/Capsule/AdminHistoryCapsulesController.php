@@ -400,7 +400,8 @@
 		}
 
 		public function exportData(Request $request) {
+			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new HistoryCapsuleExport, $filename.'.csv');
+			return Excel::download(new HistoryCapsuleExport($fields), $filename.'.csv');
 		}
 	}
