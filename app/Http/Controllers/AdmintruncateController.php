@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use DB;
 use CRUDBooster;
 
-class AdminTruncateController extends \crocodicstudio\crudbooster\controllers\CBController
+class AdmintruncateController extends \crocodicstudio\crudbooster\controllers\CBController
 {
     public function dbtruncate(){
         if(!CRUDBooster::isSuperadmin()) {

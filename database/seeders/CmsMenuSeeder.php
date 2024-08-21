@@ -14,7 +14,7 @@ class CmsMenuSeeder extends Seeder
      */
     public function run() {
         // DB::table('cms_menus')->truncate();
-        // self::indexMenu();
+        self::indexMenu();
         self::tokenMenu();
         self::capsuleMenu();
         self::auditMenu();

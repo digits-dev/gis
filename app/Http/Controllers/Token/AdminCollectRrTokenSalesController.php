@@ -37,14 +37,15 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Reference #","name"=>"collected_token_id","join"=>"collect_rr_tokens,reference_number"];
-			$this->col[] = ["label"=>"Gasha Machine","name"=>"gasha_machines_id","join"=>"gasha_machines,serial_number"];
-			$this->col[] = ["label"=>"No of token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Qty","name"=>"qty",'callback_php'=>'number_format($row->qty)'];
-			$this->col[] = ["label"=>"Variance","name"=>"variance"];
-			$this->col[] = ["label"=>"Current Cash Value","name"=>"current_cash_value"];
-			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
-			$this->col[] = ["label"=>"Collected Date","name"=>"created_at"];
+			$this->col[] = ["label"=>"Reference #","name"=>"collect_rr_token_lines.collected_token_id","join"=>"collect_rr_tokens,reference_number"];
+			$this->col[] = ["label"=>"Status","name"=>"collect_rr_tokens.statuses_id","join"=>"statuses,status_description"];
+			$this->col[] = ["label"=>"Gasha Machine","name"=>"collect_rr_token_lines.gasha_machines_id","join"=>"gasha_machines,serial_number"];
+			$this->col[] = ["label"=>"No of token","name"=>"collect_rr_token_lines.no_of_token"];
+			$this->col[] = ["label"=>"Qty","name"=>"collect_rr_token_lines.qty",'callback_php'=>'number_format($row->qty)'];
+			$this->col[] = ["label"=>"Variance","name"=>"collect_rr_token_lines.variance"];
+			$this->col[] = ["label"=>"Current Cash Value","name"=>"collect_rr_token_lines.current_cash_value"];
+			$this->col[] = ["label"=>"Location","name"=>"collect_rr_token_lines.location_id","join"=>"locations,location_name"];
+			$this->col[] = ["label"=>"Collected Date","name"=>"collect_rr_token_lines.created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -258,13 +259,29 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
+			if(in_array(CRUDBooster::myPrivilegeId(),[1,2,6,7,8])){
 				$query->whereNull('collect_rr_token_lines.deleted_at')
-					  ->orderBy('collect_rr_token_lines.id', 'desc');
+					  ->orderBy('collect_rr_token_lines.id', 'desc')
+					  ->leftJoin('collect_rr_tokens as crt','collect_rr_token_lines.collected_token_id','=','crt.id')
+					  ->addSelect(
+						'crt.statuses_id'
+						);
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[4,14])){
+				$query->whereNull('collect_rr_token_lines.deleted_at')
+				->orderBy('collect_rr_token_lines.id', 'desc')
+				->leftJoin('collect_rr_tokens as crt','collect_rr_token_lines.collected_token_id','=','crt.id')
+				->whereIn('crt.statuses_id',[6,8])
+				->addSelect(
+				  'crt.statuses_id'
+				  );
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
 				$query->where('collect_rr_token_lines.location_id', CRUDBooster::myLocationId())
 					  ->whereNull('collect_rr_token_lines.deleted_at')
-					  ->orderBy('collect_rr_token_lines.id', 'desc');
+					  ->orderBy('collect_rr_token_lines.id', 'desc')
+					  ->leftJoin('collect_rr_tokens as crt','collect_rr_token_lines.collected_token_id','=','crt.id')
+					  ->addSelect(
+						'crt.statuses_id'
+						);
 			}
 	    }
 
