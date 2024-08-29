@@ -15,6 +15,12 @@ class CapsuleSplitExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
 
+    protected $filter_column;
+    
+    public function __construct($fields){
+        $this->filter_column  = $fields;
+    }
+
     public function headings(): array {
         return [
             'REFERENCE NUMBER',
@@ -64,6 +70,71 @@ class CapsuleSplitExport implements FromQuery, WithHeadings, WithMapping
 
         if ($my_locations_id) {
             $rows = $rows->where('header.locations_id', $my_locations_id);
+        }
+
+        if ($this->filter_column) {
+            $filter_column = $this->filter_column;
+
+            $rows->where(function($w) use ($filter_column) {
+                foreach($filter_column as $key=>$fc) {
+
+                    $value = @$fc['value'];
+                    $type  = @$fc['type'];
+
+                    if($type == 'empty') {
+                        $w->whereNull($key)->orWhere($key,'');
+                        continue;
+                    }
+
+                    if($value=='' || $type=='') continue;
+
+                    if($type == 'between') continue;
+
+                    switch($type) {
+                        default:
+                            if($key && $type && $value) $w->where($key,$type,$value);
+                        break;
+                        case 'like':
+                        case 'not like':
+                            $value = '%'.$value.'%';
+                            if($key && $type && $value) $w->where($key,$type,$value);
+                        break;
+                        case 'in':
+                        case 'not in':
+                            if($value) {
+                                if($key && $value) $w->whereIn($key,$value);
+                            }
+                        break;
+                    }
+                }
+            });
+
+            foreach($filter_column as $key=>$fc) {
+                $value = @$fc['value'];
+                $type  = @$fc['type'];
+                $sorting = @$fc['sorting'];
+
+                if($sorting!='') {
+                    if($key) {
+                        $rows->orderby($key,$sorting);
+                        $filter_is_orderby = true;
+                    }
+                }
+
+                if ($type=='between') {
+                    // if($key && $value) $rows->whereBetween($key,$value);
+                    if($key && $value && is_array($value) && count($value) == 2) {
+                        // Assuming $value is an array with start and end date
+                        $start_date = date('Y-m-d', strtotime($value[0]));
+                        $end_date = date('Y-m-d', strtotime($value[1]));
+                        $rows->whereBetween('capsule_split_lines.created_at', [$start_date, $end_date]);
+                    }
+                }
+
+                else {
+                    continue;
+                }
+            }
         }
 
         return $rows;

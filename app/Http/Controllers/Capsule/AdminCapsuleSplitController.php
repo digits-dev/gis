@@ -639,8 +639,9 @@ use Excel;
 		}
 
 		public function exportData(Request $request) {
+			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleSplitExport, $filename.'.csv');
+			return Excel::download(new CapsuleSplitExport($fields), $filename.'.csv');
 		}
 
 }
