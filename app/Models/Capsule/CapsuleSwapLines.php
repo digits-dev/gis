@@ -9,6 +9,11 @@ class CapsuleSwapLines extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'created_at'    => 'datetime:Y-m-d H:i:s',
+        'updated_at'    => 'datetime:Y-m-d H:i:s'
+    ];
+
     protected $table = 'capsule_swap_lines';
     public function scopeDetailBody($query, $id){
         return $query->leftjoin('gasha_machines as from_machine', 'capsule_swap_lines.from_machine', '=', 'from_machine.id')

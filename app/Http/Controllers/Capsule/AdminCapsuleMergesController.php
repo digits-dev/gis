@@ -630,8 +630,9 @@ use Maatwebsite\Excel\Facades\Excel;
 		}
 
 		public function exportData(Request $request) {
+			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleMergeExport, $filename.'.csv');
+			return Excel::download(new CapsuleMergeExport($fields), $filename.'.csv');
 		}
 
 	}

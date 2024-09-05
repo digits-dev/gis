@@ -268,12 +268,12 @@
 						);
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[4,14])){
 				$query->whereNull('collect_rr_token_lines.deleted_at')
-				->orderBy('collect_rr_token_lines.id', 'desc')
-				->leftJoin('collect_rr_tokens as crt','collect_rr_token_lines.collected_token_id','=','crt.id')
-				->whereIn('crt.statuses_id',[6,8])
-				->addSelect(
-				  'crt.statuses_id'
-				  );
+						->orderBy('collect_rr_token_lines.id', 'desc')
+						->leftJoin('collect_rr_tokens as crt','collect_rr_token_lines.collected_token_id','=','crt.id')
+						->whereIn('crt.statuses_id',[6,8])
+						->addSelect(
+						'crt.statuses_id'
+						);
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5])){
 				$query->where('collect_rr_token_lines.location_id', CRUDBooster::myLocationId())
 					  ->whereNull('collect_rr_token_lines.deleted_at')

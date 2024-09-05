@@ -133,7 +133,7 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
                 }
 
                 if ($type=='between') {
-                    // if($key && $value) $history_capsules->whereBetween($key,date('Y-m-d',$value));
+                    // if($key && $value) $history_capsules->whereBetween($key,$value);
                     if($key && $value && is_array($value) && count($value) == 2) {
                         // Assuming $value is an array with start and end date
                         $start_date = date('Y-m-d', strtotime($value[0]));

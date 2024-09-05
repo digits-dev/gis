@@ -825,8 +825,9 @@ use Maatwebsite\Excel\Facades\Excel;
 		}
 
 		public function exportData(Request $request) {
+			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleSwapExport, $filename.'.csv');
+			return Excel::download(new CapsuleSwapExport($fields), $filename.'.csv');
 		}
 
 	}
