@@ -6,6 +6,7 @@ use App\Models\PosFrontend\SwapHistory;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Carbon\Carbon;
 
 class TokenSwapHistoryExport implements FromQuery, WithHeadings
 {
@@ -56,8 +57,8 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
                 'locations.location_name',
                 'creator.name as creator_name',
                 'swap_histories.created_at',
-                'updater.name as updater_name',
                 'swap_histories.updated_at',
+                'swap_histories.updated_at', 
                 'swap_histories.status',
             );
 
@@ -70,5 +71,27 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
         }
 
         return $query;
+    }
+
+    // This method allows us to format data before exporting it
+    public function map($swapHistory): array
+    {
+        return [
+            $swapHistory->reference_number,
+            $swapHistory->token_value,
+            $swapHistory->total_value,
+            $swapHistory->change_value,
+            $swapHistory->payment_description,
+            $swapHistory->payment_reference,
+            $swapHistory->description,
+            $swapHistory->location_name,
+            $swapHistory->creator_name,
+            // Explicitly parse created_at to Y-m-d H:i:s format
+            Carbon::createFromFormat('Y-m-d H:i:s', $swapHistory->created_at)->format('Y-m-d H:i:s'),
+            $swapHistory->updater_name,
+            // Explicitly parse updated_at to Y-m-d H:i:s format
+            Carbon::createFromFormat('Y-m-d H:i:s', $swapHistory->updated_at)->format('Y-m-d H:i:s'),
+            $swapHistory->status,
+        ];
     }
 }
