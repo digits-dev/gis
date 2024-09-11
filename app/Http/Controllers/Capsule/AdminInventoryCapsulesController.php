@@ -420,8 +420,9 @@
 		}
 
 		public function exportData(Request $request) {
+			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new CapsuleInventoryExport, $filename.'.csv');
+			return Excel::download(new CapsuleInventoryExport($fields), $filename.'.csv');
 		}
 
 		public function exportDatawWithDate(Request $request) {
