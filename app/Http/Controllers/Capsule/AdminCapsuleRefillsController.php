@@ -128,9 +128,9 @@
 	        |
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Upload Capsule","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('capsules-upload'),'color'=>'primary'];
-			}
+			// if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+			// 	$this->index_button[] = ["label"=>"Upload Capsule","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('capsules-upload'),'color'=>'primary'];
+			// }
 
 
 	        /*
