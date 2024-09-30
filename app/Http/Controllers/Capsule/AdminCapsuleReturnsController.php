@@ -29,7 +29,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
-			$this->button_add = in_array(CRUDBooster::myPrivilegeId(), [1,3,5]);
+			$this->button_add = in_array(CRUDBooster::myPrivilegeId(), [1,3,5, 10]);
 			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
