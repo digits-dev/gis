@@ -159,7 +159,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,3,4,5,6,11,14])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,3,4,5,6,10,11,14])){
 					$this->index_button[] = ["label"=>"Add Collect Token","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-collect-token'),"color"=>"success"];
 				}
 			}
