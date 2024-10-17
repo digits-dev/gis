@@ -213,6 +213,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items',[AdminItemsController::class, 'importData']);
     Route::post(config('crudbooster.ADMIN_PATH').'/items/upload-items-save',[AdminItemsController::class, 'importPostSave'])->name('upload-item-save');
     Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items-template',[AdminItemsController::class, 'importItemsTemplate']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/export', [AdminItemsController::class, 'exportData'])->name('items_export');
+    Route::post(config('crudbooster.ADMIN_PATH').'/items/export', [AdminItemsController::class, 'exportData'])->name('items_export');
     
 });
