@@ -37,6 +37,7 @@ use App\Http\Controllers\Capsule\AdminCapsuleSwapHeadersController;
 use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 use App\Http\Controllers\Submaster\AdminItemsController;
+use App\Http\Controllers\AdminCmsUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -212,5 +213,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items',[AdminItemsController::class, 'importData']);
     Route::post(config('crudbooster.ADMIN_PATH').'/items/upload-items-save',[AdminItemsController::class, 'importPostSave'])->name('upload-item-save');
     Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items-template',[AdminItemsController::class, 'importItemsTemplate']);
-
+    Route::post(config('crudbooster.ADMIN_PATH').'/gasha_machines/export', [AdminItemsController::class, 'exportData'])->name('items_export');
+    
 });

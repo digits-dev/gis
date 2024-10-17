@@ -17,6 +17,7 @@ use Maatwebsite\Excel\HeadingRowImport;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Exports\ItemsExport;
 
 class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBController
 {
@@ -39,7 +40,7 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 		$this->button_show = true;
 		$this->button_filter = true;
 		$this->button_import = false;
-		$this->button_export = true;
+		$this->button_export = false;
 		$this->table = "items";
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -68,13 +69,52 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 			if (CRUDBooster::isSuperAdmin()) {
 				$this->index_button[] = ["label" => "Upload Data", "icon" => "fa fa-upload", "url" => CRUDBooster::mainpath('upload-items'), 'color' => 'primary'];
 			}
+
+			$this->index_button[] = [
+				"title"=>"Export Data",
+				"label"=>"Export Data",
+				"icon"=>"fa fa-download",
+				"color"=>"success",
+				"url"=>"javascript:showExport()",
+			];
 		}
 
 		$this->table_row_color = array();
 		$this->index_statistic = array();
-		$this->script_js = NULL;
+		$this->script_js = "
+			function showExport() {
+				$('#modal-export').modal('show');
+			}
+		";
 		$this->pre_index_html = null;
-		$this->post_index_html = null;
+		$this->post_index_html = "
+		<div class='modal fade' tabindex='-1' role='dialog' id='modal-export'>
+			<div class='modal-dialog'>
+				<div class='modal-content'>
+					<div class='modal-header'>
+						<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+							<span aria-hidden='true'>×</span></button>
+						<h4 class='modal-title'><i class='fa fa-download'></i> Export Data</h4>
+					</div>
+
+					<form method='post' target='_blank' action=".route('items_export').">
+					<input type='hidden' name='_token' value=".csrf_token().">
+					".CRUDBooster::getUrlParameters()."
+					<div class='modal-body'>
+						<div class='form-group'>
+							<label>File Name</label>
+							<input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+						</div>
+					</div>
+					<div class='modal-footer' align='right'>
+						<button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+						<button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+					</div>
+				</form>
+				</div>
+			</div>
+		</div>
+		";
 		$this->load_js = array();
 
 		$this->style_css = '
@@ -225,5 +265,11 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 		header('Cache-Control: max-age=0');
 		$writer = new Xlsx($spreadsheet);
 		$writer->save('php://output');
+	}
+
+	//EXPORT
+	public function exportData(Request $request) {
+		$filename = $request->input('filename');
+		return Excel::download(new ItemsExport, $filename.'.csv');
 	}
 }
