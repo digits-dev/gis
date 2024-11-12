@@ -7,6 +7,14 @@
     align-content: center;
     align-items: center;
 }
+@media (max-width:729px){
+    .panel-content{
+         display: inline-block;
+         justify-content: center;
+         align-content: center;
+         align-items: center;
+    }
+}
 .panel-default{
     border-radius: 20px;
     width: 100%;
