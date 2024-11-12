@@ -1,11 +1,13 @@
 <?php namespace App\Http\Controllers\Token;
 
 use App\Models\CmsModels\CmsPrivileges;
+use App\Models\Submaster\Statuses;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 
 	class AdminCollectTokenController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 		private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
+		private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
 
 	    public function cbInit() {
 
@@ -47,9 +49,20 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 				}
 
 			}
+			
+			if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
+				$this->addaction[] = [
+					'title' => 'Cashier Turnover',
+					'url' => CRUDBooster::mainpath('create-do-no/[id]'),
+					'icon' => 'fa fa-pencil',
+					'color' => 'warning',
+					'showIf' => "[statuses_id]=='" . Statuses::FORCASHIERTURNOVER . "'"
+				];
+			}
 	        
 	    }
 
+		
 	    public function hook_query_index(&$query) {
 	       
 	            
@@ -64,6 +77,16 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 
 			return view("token.collect-token.add-collect-token", $data);
 			
+		}
+
+		public function getDetail($id){
+
+			$data = [];
+			$data['page_title'] = "Collect Token Details";
+			$data['page_icon'] = 'fa fa-circle-o';
+		
+
+			return view("token.collect-token.detail-collect-token", $data);
 		}
   
 
