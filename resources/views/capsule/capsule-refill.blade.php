@@ -242,6 +242,12 @@
                 icon: 'error',
                 returnFocus: false,
             });
+        } else if (data.is_not_exist) {
+            Swal.fire({
+                title: `Duplicate JAN codes are not allowed.`,
+                icon: 'error',
+                returnFocus: false,
+            });
         } else {
             Swal.fire({
                 title: 'Machine successfully refilled.',

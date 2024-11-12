@@ -406,6 +406,17 @@
 				'inventory_capsules.id'
 			)->first();
 
+			// check if jan code, machine and location is exist
+			$isExist = InventoryCapsuleLine::where([
+				'inventory_capsules.item_code' => $item->digits_code2,
+				'inventory_capsules.locations_id' => $locations_id,
+				'inventory_capsule_lines.gasha_machines_id' => $machine->id
+			])->leftJoin(
+				'inventory_capsules',
+				'inventory_capsule_lines.inventory_capsules_id',
+				'inventory_capsules.id'
+			)->first();
+
 			// returning if no. of tokens does not match
 			if (!$is_tally) {
 				return json_encode([
@@ -422,6 +433,11 @@
 			} else if ($current_inventory->stockroom_capsule_qty < $qty) {
 				return json_encode([
 					'is_sufficient' => false,
+				]);
+			// returning if jan code, machine and location not exisit
+			}else if (!$isExist) {
+				return json_encode([
+					'is_not_exist' => true,
 				]);
 			}
 
