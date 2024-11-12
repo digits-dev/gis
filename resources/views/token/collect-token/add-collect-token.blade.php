@@ -138,7 +138,7 @@
 @endpush
 @section('content')
     <form class="panel panel-default form-content">
-        <div class="panel-heading header-title text-center">Add Token Collect Form</div>
+        <div class="panel-heading header-title text-center">Add Collect Token Form</div>
         <div class="content-panel">
             <div class="inputs-container">
                 <div class="input-container">

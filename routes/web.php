@@ -217,7 +217,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/items/export', [AdminItemsController::class, 'exportData'])->name('items_export');
 
 
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/add_collect_token',[AdminCollectTokenController::class, 'AddCollectToken'])->name('AddCollectToken');
+    // NEW COLLECT TOKEN
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/add_collect_token',[AdminCollectTokenController::class, 'getCollectToken']);
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
 
     
 });

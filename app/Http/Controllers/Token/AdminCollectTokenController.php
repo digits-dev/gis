@@ -53,7 +53,7 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 			if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 				$this->addaction[] = [
 					'title' => 'Cashier Turnover',
-					'url' => CRUDBooster::mainpath('create-do-no/[id]'),
+					'url' => CRUDBooster::mainpath('cashier_turnover/[id]'),
 					'icon' => 'fa fa-pencil',
 					'color' => 'warning',
 					'showIf' => "[statuses_id]=='" . Statuses::FORCASHIERTURNOVER . "'"
@@ -68,7 +68,7 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 	            
 	    }
 
-		public function AddCollectToken(){
+		public function getCollectToken(){
 
 			$data = [];
 			$data['page_title'] = 'Collect Token';
@@ -87,6 +87,16 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 		
 
 			return view("token.collect-token.detail-collect-token", $data);
+		}
+
+		public function getCashierTurnover($id){
+
+			$data = [];
+			$data['page_title'] = "Collect Token Details";
+			$data['page_icon'] = 'fa fa-circle-o';
+		
+
+			return view("token.collect-token.cashier-turnover-collect-token", $data);
 		}
   
 
