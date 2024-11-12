@@ -38,6 +38,7 @@ use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 use App\Http\Controllers\Submaster\AdminItemsController;
 use App\Http\Controllers\AdminCmsUsersController;
+use App\Http\Controllers\Token\AdminCollectTokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,5 +215,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/items/upload-items-save',[AdminItemsController::class, 'importPostSave'])->name('upload-item-save');
     Route::get(config('crudbooster.ADMIN_PATH').'/items/upload-items-template',[AdminItemsController::class, 'importItemsTemplate']);
     Route::post(config('crudbooster.ADMIN_PATH').'/items/export', [AdminItemsController::class, 'exportData'])->name('items_export');
+
+
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/add_collect_token',[AdminCollectTokenController::class, 'AddCollectToken'])->name('AddCollectToken');
+
     
 });
