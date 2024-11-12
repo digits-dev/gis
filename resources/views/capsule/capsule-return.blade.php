@@ -1,7 +1,7 @@
 <!-- First, extends to the CRUDBooster Layout -->
 @extends('crudbooster::admin_template')
 @push('head')
-   <link rel="stylesheet" href="{{ asset('css/capsule-refill.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/capsule-return.css') }}">
    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
    <script src="{{ asset('js/code-scanner.js') }}"></script>
    <script src="{{ asset('plugins/sweetalert.js') }}"></script>
@@ -162,6 +162,106 @@
         border-radius: 5px;
     }
 
+.card-big-shadow {
+    max-width: 320px;
+    position: relative;
+}
+
+.coloured-cards .card {
+    margin-top: 30px;
+}
+
+.card[data-radius="none"] {
+    border-radius: 0px;
+}
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
+    background-color: #FFFFFF;
+    color: #252422;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+
+.card[data-background="image"] .title, .card[data-background="image"] .stats, .card[data-background="image"] .category, .card[data-background="image"] .description, .card[data-background="image"] .content, .card[data-background="image"] .card-footer, .card[data-background="image"] small, .card[data-background="image"] .content a, .card[data-background="color"] .title, .card[data-background="color"] .stats, .card[data-background="color"] .category, .card[data-background="color"] .description, .card[data-background="color"] .content, .card[data-background="color"] .card-footer, .card[data-background="color"] small, .card[data-background="color"] .content a {
+    color: #FFFFFF;
+}
+.card.card-just-text .content {
+    padding: 30px 25px;
+    text-align: center;
+    font-style: italic
+}
+.card .content {
+    padding: 20px 20px 10px 20px;
+}
+
+.card[data-color="yellow"] .category {
+    color: #d88715;
+    font-size: 20px;
+}
+.card .card .label {
+    font-size: 10px;
+    margin-bottom: 0px;
+}
+.card-big-shadow:before {
+    background-image: url("http://static.tumblr.com/i21wc39/coTmrkw40/shadow.png");
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    bottom: -12%;
+    content: "";
+    display: block;
+    left: -12%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 0;
+}
+h4, .h4 {
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1.2em;
+}
+h6, .h6 {
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.card .description {
+    font-size: 14px;
+    color: #66615b;
+    font-style: italic
+}
+.content-card{
+    margin-top:30px;   
+    float: right; 
+    padding: 10px
+}
+@media (max-width:729px){
+    .content-card{
+        margin-top:0px;   
+        margin-right:50px;
+    }
+    .coloured-cards .card {
+        margin-top: 0px;
+    }
+}
+a:hover, a:focus {
+    text-decoration: none;
+}
+
+/*======== COLORS ===========*/
+
+.card[data-color="yellow"] {
+    background: #ffe28c;
+}
+.card[data-color="yellow"] .description {
+    color: #b25825;
+}
+
+
 </style>
     <!-- Your html goes here -->
     <div class="panel-content">
@@ -172,7 +272,7 @@
                 </div>
                 <div class="warning-content">
                     <p id="warning-title">Are you sure?</p>
-                    <p id="warning-message">You Won't be able to revert this!</p>
+                    <p id="warning-message">This will zero out your Machine Inventory!</p>
                 </div>
                 <div class="swal-buttons">
                     <button type="button" class="swal-btn btn-red swal-btn-cancel">Cancel</button>
@@ -180,7 +280,7 @@
                 </div>
             </div>
         </div>
-        <div class='panel panel-default'>
+        <div class='panel panel-default pull-right'>
             <div class='panel-header'>
                 <label>CAPSULE RETURN</label>
             </div>
@@ -212,6 +312,21 @@
             </form>
             </div>
             <div class='panel-footer'>
+            </div>
+        </div>
+        <div class="content-card">
+            <div class="card-big-shadow">
+                <div class="card card-just-text" data-background="color" data-color="yellow" data-radius="none">
+                    <div class="content">
+                        <h6 class="category"> <i class="fa fa-sticky-note"></i> Notes </h6>
+                        <hr>
+                        <h4 class="title"><a href="#">Collect Token</a></h4>
+                        <p class="description">Please token collect before doing a return</p>
+                        
+                        <h4 class="title"><a href="#">Inventory</a></h4>
+                        <p class="description">This will zero out your Machine Inventory</p>
+                    </div>
+                </div> <!-- end card -->
             </div>
         </div>
     </div>
