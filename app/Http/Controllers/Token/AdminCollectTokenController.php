@@ -17,6 +17,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
+	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 
 	public function cbInit()
 	{
@@ -59,6 +60,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			}
 		}
 
+		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
+			$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
+		}
+
 		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 			$this->addaction[] = [
 				'title' => 'Cashier Turnover',
@@ -70,12 +75,30 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 	}
 
-	public function hook_query_index(&$query) {}
+
+	public function hook_query_index(&$query) {
+		if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
+			$query->whereNull('collect_rr_tokens.deleted_at')
+				  ->orderBy('collect_rr_tokens.id', 'desc');
+		}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
+			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+				  ->whereNull('collect_rr_tokens.deleted_at')
+				  ->orderBy('collect_rr_tokens.id', 'desc');
+		}
+	}
 
 	// STEP 1
+
+	public function getPrintForm(){
+		$data = [];
+		$data['page_title'] = 'Collect Token Form';
+		$data['page_icon'] = 'fa fa-circle-o';
+
+		return view("token.collect-token.print-collecttoken-form", $data);
+	}
+
 	public function getCollectToken()
 	{
-
 		$data = [];
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';

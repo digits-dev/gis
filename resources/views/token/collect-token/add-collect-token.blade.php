@@ -39,6 +39,7 @@
         border: 1.5px solid #1d699c;
         border-radius: 5px;
         color: white;
+        user-select: none;
     }
 
     .form-button .btn-submit:hover {
@@ -123,16 +124,11 @@
         outline-color: #3C8DBC
     }
 
-    textarea {
-        width: 100%;
-        padding: 12px;
-        box-sizing: border-box;
-        border: 1px solid #3C8DBC; 
-        border-radius: 4px;
-        outline-color: #3C8DBC;
-        font-size: 14px;
-        resize: vertical;
+    input[type="text"]:disabled {
+        background-color: #F3F3F3;
     }
+
+  
 
     /* Spinner overlay container */
     .spinner-overlay {
@@ -167,6 +163,152 @@
         display: block;
     }
 
+
+    /* CHATBOX */
+
+    .chat-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #3C8DBC;
+        z-index: 20;
+        cursor: pointer;
+        padding: 10px 15px;
+        color: white;
+        font-size: 16px;
+        border-radius: 20px;
+        user-select: none;
+      
+    }
+    .chat-button:hover{
+        background-color: #53bbf7;
+    }
+
+    .chat-container{
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 20;
+        border-radius: 5px;
+        overflow: hidden;
+        background-color: white;
+        width: 350px;
+        height: 400px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-chat-container {
+        display: flex;
+        padding: 0 20px;
+        user-select: none;
+        align-items: center;
+        justify-content: space-between;
+        flex: 0 0 13%;
+        color: white;
+        background-color: #3C8DBC;
+    }
+
+    .body-chat-container {
+        flex: 1;
+        padding: 0 5px 5px 5px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 5px
+    }
+
+    
+    .chat-content-left{
+        align-self: flex-start;
+        display: flex;
+        align-items: flex-end;
+    }
+    .left-chat-details{
+        margin-left: 5px;
+    }
+    
+    .chat-content-left-text{
+        
+        background-color: #dddddd;
+        padding: 7px;
+        max-width: 170px;
+        border-radius: 10px;
+    }
+
+    .chat-content-right{
+        align-self: flex-end;
+        margin-left: 5px;
+        background-color: #dddddd;
+        padding: 7px;
+        max-width: 170px;
+        border-radius: 10px;
+    }
+
+    .body-chat-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .body-chat-container::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 4px;
+    }
+
+    .body-chat-container::-webkit-scrollbar-thumb {
+        background-color: #3C8DBC; 
+        border-radius: 4px; 
+        border: 2px solid #f0f0f0; 
+    }
+
+    .body-chat-container::-webkit-scrollbar-thumb:hover {
+        background-color: #2e6a8e;
+    }
+
+    .bottom-chat-container {
+        border-top: 1px solid #bbb;
+        padding: 10px 10px 5px 10px;
+        display: flex;
+        align-items: flex-end;
+        
+    }
+
+    .bottom-chat-container textarea {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #3C8DBC; 
+        border-radius: 4px;
+        outline-color: #3C8DBC;
+        font-size: 14px;
+        overflow-y: auto;
+        resize: none;
+        margin: 0;
+        max-height: 120px;
+    }
+
+    .bottom-chat-container textarea::-webkit-scrollbar {
+        width: 0;
+    }
+
+    .chat-textarea-div{
+        width: 100%;
+    }
+
+    .chat-send {
+        display: flex;
+        background-color: #3C8DBC;
+        cursor: pointer;
+        align-items: center;
+        border-radius: 50px;
+        margin-left: 10px;
+        padding: 10px;
+        margin-bottom: 7px;
+    }
+
+    .chat-send:hover{
+        background-color: #53bbf7;
+    }
 
 </style>
 @endpush
@@ -225,15 +367,9 @@
                 
                 <tfoot>
                     <td colspan="2"><span><b>Totay Quantity</b></span></td>
-                    <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center" readonly></td>
+                    <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center" readonly disabled></td>
                 </tfoot>
             </table>
-         
-      
-            <div class="input-container">
-                <div style="font-weight: 600; margin-bottom:4px;">Remark/s</div>
-                <textarea id="remarks" rows="2" placeholder="Add Remark here"></textarea>
-            </div>
             
             <div class="form-button" style="margin-top: 15px;" >
                 <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
@@ -241,6 +377,44 @@
             </div>
         </div>
     </form>
+
+    {{-- CHAT --}}
+    <div class="chat-button" id="chat-button" style="display:show">
+        <i class="fa fa-comment-o" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
+        <span style="font-weight: 600; font-size:18px;">Chat</span>
+    </div>
+
+    <div class="chat-container" id="chat-container" style="display: none">
+        <div class="top-chat-container">
+            <div style="font-size: 18px; font-weight:600">Messages</div>
+            <i class="fa fa-times" aria-hidden="true" style="font-size: 18px; cursor: pointer;" id="chat-close"></i>
+        </div>
+        <div class="body-chat-container">
+            <div class="chat-content-right">
+                <p style="margin: 0; padding:0; word-wrap: break-word; word-break: break-all;">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab, delectus.</p>
+            </div>
+
+            <div class="chat-content-left">
+                <div class="profile" style="background-color: #e04923; width:fit-content; height:fit-content; padding:10px 13px; border-radius:50px;">
+                    <i class="fa fa-user" aria-hidden="true" style="color:white; font-size:16px;"></i>
+                </div>
+                <div class="left-chat-details">
+                    <div style="font-size: 12px; margin-bottom: 2px; color:#6d6a6a;">Mark Anthony Aguilar <span> | Cashier</span></div>
+                    <div class="chat-content-left-text">
+                        <p style="margin: 0; padding:0; word-wrap: break-word; word-break: break-all;">Sample Text qweqoweqowieuqoiwueqoiwueqoiwue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-chat-container">
+            <div class="chat-textarea-div">
+                <textarea rows="1" id="auto-resize-textarea" placeholder="Enter your message..."></textarea>
+            </div>
+            <div class="chat-send">
+                <i class="fa fa-paper-plane" aria-hidden="true" style="color:white; font-size:16px;"></i>
+            </div>
+        </div>
+    </div>
 
 
 @endsection
@@ -267,6 +441,21 @@
         $('#customSelectBay select').on('blur', function() {
             $('#customSelectBay').removeClass('open');
         });
+
+        $('#auto-resize-textarea').on('input', function() {
+            $(this).css('height', 'auto'); // Reset height
+            $(this).css('height', this.scrollHeight + 'px'); // Set to scroll height
+        });
+    });
+
+    $('#chat-button').on('click', function() {
+        $(this).hide();
+        $('#chat-container').show();
+    });
+
+    $('#chat-close').on('click', function() {
+        $('#chat-container').hide();
+        $('#chat-button').show();
     });
 
     // filtered bay base on location
