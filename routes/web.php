@@ -222,6 +222,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/get_machines',[AdminCollectTokenController::class, 'getMachines'])->name('getMachines');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_collected_token',[AdminCollectTokenController::class, 'postCollectToken'])->name('postCollectedToken');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_cashier_turnover',[AdminCollectTokenController::class, 'postCashierTurnover'])->name('postCashierTurnover');
+
 
     
 });

@@ -70,11 +70,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 	}
 
-
 	public function hook_query_index(&$query) {}
 
 	// STEP 1
-
 	public function getCollectToken()
 	{
 
@@ -157,12 +155,44 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	}
 
 	//STEP 2
-	
-	public function getCashierTurnover(){
+	public function getCashierTurnover($id){
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
+		
 		return view("token.collect-token.cashier-turnover-collect-token", $data);
 	}
+
+	public function postCashierTurnover(Request $request)
+	{
+		// Validate
+		try {
+			$validatedData = $request->validate([
+				'collectedTokenHeader_id' => 'required',
+			]);
+		} catch (ValidationException $e) {
+			$errors = $e->validator->errors()->all();
+			$errorMessage = implode('<br>', $errors);
+			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
+		}
+
+		$collectTokenHeader = CollectRrTokens::find($validatedData['collectedTokenHeader_id']);
+		if (!$collectTokenHeader) {
+			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
+		}
+
+		$collectTokenHeader->update([
+			'statuses_id' => Statuses::FORSTOREHEADAPPROVAL,
+			'updated_by' => CRUDBooster::myId(),
+		]);
+
+		$collectTokenHeader->lines()->update([
+			'line_status' => Statuses::FORSTOREHEADAPPROVAL,
+			'updated_at' => now(),
+		]);
+
+		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collect updated successfully!", 'success');
+	}
+
 }

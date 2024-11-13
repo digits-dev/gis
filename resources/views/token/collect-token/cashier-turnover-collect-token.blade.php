@@ -194,101 +194,125 @@
 </style>
 @endpush
 @section('content')
-<form class="panel panel-default form-content">
+<form class="panel panel-default form-content" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
+    @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
-        <div class="inputs-container" style="margin-bottom: 10px;">
-            <div class="input-container">
-                <div style="font-weight: 600">Reference Number</div>
-                <input type="text" style="border-radius: 5px;" disabled>
-            </div>
+        @foreach ($collected_tokens as $detail)
+        <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$detail->id}}" readonly>
+            <div class="inputs-container" style="margin-bottom: 10px;">
+                <div class="input-container">
+                    <div style="font-weight: 600">Reference Number</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->reference_number}}" disabled>
+                </div>
 
-            <div class="input-container">
-                <div style="font-weight: 600">Location</div>
-                <input type="text" style="border-radius: 5px;" disabled>
+                <div class="input-container">
+                    <div style="font-weight: 600">Location</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->getLocation->location_name}}" disabled>
+                </div>
             </div>
-        </div>
-        <div class="inputs-container">
-            <div class="input-container">
-                <div style="font-weight: 600">Total Quantity</div>
-                <input type="text" style="border-radius: 5px;" disabled>
-            </div>
+            <div class="inputs-container">
+                <div class="input-container">
+                    <div style="font-weight: 600">Total Quantity</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                </div>
 
-            <div class="input-container">
-                <div style="font-weight: 600" >Date Created</div>
-                <input type="text" style="border-radius: 5px;" disabled>
+                <div class="input-container">
+                    <div style="font-weight: 600" >Date Created</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
+                </div>
             </div>
-        </div>
+            
+            <div class="table-wrapper custom-scroll-x">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Machine #</th>
+                            <th>JAN #</th>
+                            <th>No of Token</th>
+                            <th>Token Collected</th>
+                            <th>Variance</th>
+                            <th>Projected Capsule Sales</th>
+                            <th>Current Machine Inventory</th>
+                            <th>Actual Capsule Inventory</th>
+                            <th>Actual Capsule Sales</th>
+                            <th>Variance Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($detail->lines as $perLine)
+                            @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
+                                @php
+                                    $NoOfToken = $perLine->no_of_token; 
+                                    $tokenCollected = $perLine->qty; 
+
+                                    $divisionResult = $tokenCollected / $NoOfToken;
+                                    $projectedCapsuleSales = ceil($divisionResult);
+                                    
+                                    $actualCapsuleInventory = $capsuleLine->qty;
+                                    $currentMachineInventory = $capsuleLine->qty;
+                                    $variance = $perLine->variance;
+                                @endphp
+                                <tr>
+                                    <td><span class="serial_number">{{$perLine->machineSerial->serial_number}}</span></td>
+                                    <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->digits_code}}</span></td> 
+                                    <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
+                                    <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
+                                    <td><span class="variance">{{$perLine->variance}}</span></td>
+                                    <td><span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span></td>
+                                    <td><span class="currentMachineInventory">{{$capsuleLine->qty}}</span></td>
+                                    <td>
+                                        @if ($perLine->variance != 0)
+                                            <input type="text" placeholder="Enter Quantity" class="ActualCapsuleInventory" style="text-align: center; border-radius: 7px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="actualCapsuleSales">
+                                            @if ($perLine->variance == 0)
+                                                {{$projectedCapsuleSales}}  
+                                            @endif
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $currentMachineInventory = $capsuleLine->qty; 
+                                        @endphp
+                                        <span class="variance-status
+                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                no-variance-type
+                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                short-type
+                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                over-type
+                                            @endif
+                                        ">
+                                            
+                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                No Variance
+                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                Short
+                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                Over
+                                            @endif
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         
-        <div class="table-wrapper custom-scroll-x">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Machine #</th>
-                        <th>JAN #</th>
-                        <th>No of Token</th>
-                        <th>Token Collected</th>
-                        <th>Variance</th>
-                        <th>Projected Capsule Sales</th>
-                        <th>Current Machine Inventory</th>
-                        <th>Actual Capsule Inventory</th>
-                        <th>Actual Capsule Sales</th>
-                        <th>Variance Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>M-00000001</td>
-                        <td>4570118211583</td>
-                        <td>4</td>
-                        <td>10</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>5</td>
-                        <td><input type="text" placeholder="Enter Quantity"></td>
-                        <td></td>
-                        <td><span class="no-variance-type">No Variance</span></td>
-                    </tr>
-                    <tr>
-                        <td>M-00000002</td>
-                        <td>4570118211583</td>
-                        <td>4</td>
-                        <td>10</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>5</td>
-                        <td><input type="text" placeholder="Enter Quantity"></td>
-                        <td></td>
-                        <td><span class="short-type">Short</span></td>
-                    </tr>
-                    <tr>
-                        <td>M-00000003</td>
-                        <td>4570118211583</td>
-                        <td>4</td>
-                        <td>10</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>5</td>
-                        <td><input type="text" placeholder="Enter Quantity"></td>
-                        <td></td>
-                        <td><span class="over-type">Over</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-     
-  
-        <div class="input-container">
-            <div style="font-weight: 600; margin-bottom:4px;">Remark/s</div>
-            <textarea id="remarks" rows="2" placeholder="Add Remark here"></textarea>
-        </div>
-        
-        
-        
-        <div class="form-button" style="margin-top: 15px;" >
-            <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
-            <button class="btn-submit pull-right" id="btn-submit">Confirm</button>
-        </div>
+            <div class="input-container">
+                <div style="font-weight: 600; margin-bottom:4px;">Remark/s</div>
+                <textarea id="remarks" rows="2" placeholder="Add Remark here"></textarea>
+            </div>  
+            
+            <div class="form-button" style="margin-top: 15px;" >
+                <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
+                <button type="submit" class="btn-submit pull-right" id="btn-submit">Confirm</button>
+            </div>
+        @endforeach
     </div>
 </form>
 @endsection
@@ -296,11 +320,47 @@
 @push('bottom')
 <script>
     $(document).ready(function() {
-
         $(function(){
             $('body').addClass("sidebar-collapse");
         });
-
     });
+
+    $('.ActualCapsuleInventory').on('input', function() {
+        let actualCapsuleInventory = parseFloat($(this).val()); 
+        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = ''; 
+        
+        const currentMachineInventory = parseFloat($(this).closest('tr').find('.currentMachineInventory').text()); 
+        const variance = parseFloat($(this).closest('tr').find('.variance').text()); 
+        const projectedCapsuleSales = parseFloat($(this).closest('tr').find('.projectedCapsuleSales').text()); 
+
+        let actualCapsuleSales = '';
+        if (actualCapsuleInventory !== '') {
+            actualCapsuleSales = currentMachineInventory - actualCapsuleInventory; 
+        }
+
+        if (variance != 0 && actualCapsuleInventory !== '') {
+            $(this).closest('tr').find('.actualCapsuleSales').text(actualCapsuleSales);
+        } else {
+            $(this).closest('tr').find('.actualCapsuleSales').text('');
+        }
+
+        let statusText = "";
+        $(this).closest('tr').find('.variance-status').removeClass('no-variance-type short-type over-type');
+
+        if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance == 0) {
+            statusText = "No Variance";
+            $(this).closest('tr').find('.variance-status').addClass('no-variance-type');
+        } else if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance > 0) {
+            statusText = "Short";
+            $(this).closest('tr').find('.variance-status').addClass('short-type');
+        } else if ((currentMachineInventory - projectedCapsuleSales) != actualCapsuleInventory && variance > 0) {
+            statusText = "Over";
+            $(this).closest('tr').find('.variance-status').addClass('over-type');
+        }
+
+        // Set the status text
+        $(this).closest('tr').find('.variance-status').text(statusText);
+    });
+
 </script>
 @endpush

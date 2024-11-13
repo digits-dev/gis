@@ -2,6 +2,7 @@
 
 namespace App\Models\Capsule;
 
+use App\Models\Audit\CollectRrTokenLines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,6 +20,16 @@ class InventoryCapsuleLine extends Model
         'updated_by',
         'updated_at'
     ];
+
+    public function collectTokenLines()
+    {
+        return $this->belongsTo(CollectRrTokenLines::class, 'gasha_machines_id', 'gasha_machines_id');
+    }
+
+    public function getInventoryCapsule()
+    {
+        return $this->belongsTo(InventoryCapsule::class, 'inventory_capsules_id', 'id');
+    }
 
     public function scopeGetMachineInv($query,$gasha_machines_id) {
         return $query->where('gasha_machines_id',$gasha_machines_id)->first();

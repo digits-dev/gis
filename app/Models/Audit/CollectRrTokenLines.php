@@ -2,8 +2,12 @@
 
 namespace App\Models\Audit;
 
+use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\Submaster\GashaMachines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CollectRrTokenLines extends Model
 {
@@ -23,6 +27,14 @@ class CollectRrTokenLines extends Model
         'updated_at',
         'deleted_at	',
     ];
+
+    public function machineSerial() : BelongsTo {
+        return $this->belongsTo(GashaMachines::class, 'gasha_machines_id');
+    }
+    
+    public function inventory_capsule_lines() : HasMany {
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
+    }
 
     public function scopeDetailBody($query, $id){
         return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')

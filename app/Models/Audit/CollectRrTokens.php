@@ -2,8 +2,10 @@
 
 namespace App\Models\Audit;
 
+use App\Models\Submaster\Locations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CollectRrTokens extends Model
@@ -27,6 +29,10 @@ class CollectRrTokens extends Model
     public function lines() : HasMany {
         return $this->hasMany(CollectRrTokenLines::class, 'collected_token_id');
     }
+
+    public function getLocation() : BelongsTo {
+        return $this->belongsTo(Locations::class, 'location_id');
+    }   
 
     public function scopeDetail($query, $id){
         return $query->leftjoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')
