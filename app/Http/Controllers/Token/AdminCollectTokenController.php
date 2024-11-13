@@ -73,6 +73,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function hook_query_index(&$query) {}
 
+	// STEP 1
+
 	public function getCollectToken()
 	{
 
@@ -152,5 +154,15 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
+	}
+
+	//STEP 2
+	
+	public function getCashierTurnover(){
+		$data = [];
+		$data['page_title'] = 'Collect Token Details';
+		$data['page_icon'] = 'fa fa-circle-o';
+
+		return view("token.collect-token.cashier-turnover-collect-token", $data);
 	}
 }
