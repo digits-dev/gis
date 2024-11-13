@@ -18,6 +18,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
 	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
+	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
 
 	public function cbInit()
 	{
@@ -73,6 +74,17 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'showIf' => "[statuses_id]=='" . Statuses::FORCASHIERTURNOVER . "'"
 			];
 		}
+
+		if (in_array(CRUDBooster::myPrivilegeId(), self::APPROVER)) {
+			$this->addaction[] = [
+				'title' => 'For Approval',
+				'url' => CRUDBooster::mainpath('review/[id]'),
+				'icon' => 'fa fa-thumbs-up',
+				'color' => 'info',
+				'showIf' => "[statuses_id] == '" . Statuses::FORSTOREHEADAPPROVAL . "'"
+			];
+		}
+		
 	}
 
 
@@ -233,6 +245,18 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		]);
 
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collect updated successfully!", 'success');
+	}
+
+
+	// STEP 3
+
+	public function getCollectTokenApproval($id){
+		$data = [];
+		$data['page_title'] = 'Review Token Details';
+		$data['page_icon'] = 'fa fa-circle-o';
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
+		
+		return view("token.collect-token.approve-collect-token", $data);
 	}
 
 }
