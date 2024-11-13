@@ -4,11 +4,29 @@ namespace App\Models\Audit;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CollectRrTokens extends Model
 {
     use HasFactory;
     protected $table = 'collect_rr_tokens';
+
+    protected $fillable = [
+        'reference_number',
+        'statuses_id',
+        'location_id',
+        'collected_qty',
+        'received_qty',
+        'variance',
+        'received_by',
+        'received_at',
+        'created_by',
+        'updated_by',
+    ];
+
+    public function lines() : HasMany {
+        return $this->hasMany(CollectRrTokenLines::class, 'collected_token_id');
+    }
 
     public function scopeDetail($query, $id){
         return $query->leftjoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')

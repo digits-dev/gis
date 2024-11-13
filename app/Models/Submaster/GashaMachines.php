@@ -22,4 +22,12 @@ class GashaMachines extends Model
             ->first();
     }
 
+    public function scopeGetMachineWithBay($query)
+    {
+        return $query->selectRaw('gm.location_name, gm.location_id, GROUP_CONCAT(DISTINCT gm.bay ORDER BY gm.bay) AS bays')
+            ->from('gasha_machines as gm')
+            ->where('status','ACTIVE')
+            ->groupBy('gm.location_name', 'gm.location_id');
+    }
+
 }
