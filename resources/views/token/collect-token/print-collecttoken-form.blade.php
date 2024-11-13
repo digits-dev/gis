@@ -7,6 +7,34 @@
         justify-content: space-between;
     }
 
+    .remarks{
+        display: flex;
+        margin: 20px 20px;
+        flex-direction: column;
+    }
+
+    .signatures{
+        display: flex;
+        margin: 20px 20px;
+        justify-content: space-between;
+    }
+
+    .signature-names{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-items: center;
+        width: 200px;
+        border-top: 1px solid black;
+    }
+
+    .line {
+        border-bottom: 1px solid #000000;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
     .container {
         display: flex;
         flex-wrap: wrap;
@@ -62,11 +90,11 @@
     <div class='panel-body' id="print-section">
         <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION FORM</b></h4>
         <div class="print-details">
-            <h5><b>Store Name: </b><span>GASHAPON.MITSUKOSHI.RTL</span></h5>
+            <h5><b>Store Name: </b><span>Sample Store</span></h5>
             <h5><b>Date: </b><span>10-10-2024 12:21:32</span></h5>
         </div>
         <div class="container">
-            @foreach (range(1, 4) as $item)
+            @foreach (range(1, 8) as $item)
                 <div class="bay">
                     <table>
                         <thead>
@@ -96,6 +124,34 @@
             @endforeach
             
 
+        </div>
+
+        <div class="remarks">
+            <h5><b>Remarks: </b></h5>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+
+        <div class="signatures">
+            <h5><b>Collected by: </b></h5>
+            <h5 style="margin-right: 125px;"><b>Received by: </b></h5>
+        </div>
+        <div class="signatures">
+            <div class="collected-by" style="display:flex; flex-direction:column; gap: 20px;">
+                @foreach (range(1,3) as $item)
+                    <div class="signature-names">
+                        <div style="margin-top:5px">John Doe</div>
+                        <div><b>CSA</b></div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="received-by">
+                <div class="signature-names">
+                    <div style="margin-top:5px">Jane Doe</div>
+                    <div><b>Cashier</b></div>
+               </div>
+            </div>
         </div>
 
 

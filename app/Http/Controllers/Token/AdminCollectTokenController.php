@@ -77,25 +77,42 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 
 	public function hook_query_index(&$query) {
-		if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
+		if(in_array(CRUDBooster::myPrivilegeId(),[CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER])){
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				  ->orderBy('collect_rr_tokens.id', 'desc');
-		}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
-			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
-				  ->whereNull('collect_rr_tokens.deleted_at')
-				  ->orderBy('collect_rr_tokens.id', 'desc');
-		}
+		}else if(in_array(CRUDBooster::myPrivilegeId(),[
+				CmsPrivileges::CASHIER,
+				CmsPrivileges::OIC, 
+				CmsPrivileges::AREAMANAGER,
+				CmsPrivileges::STAFF1,
+				CmsPrivileges::STAFF2]
+			)){
+				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+					->whereNull('collect_rr_tokens.deleted_at')
+					->orderBy('collect_rr_tokens.id', 'desc');
+			}
 	}
 
-	// STEP 1
+	public function getDetail($id)
+	{
+		$data = [];
+		$data['page_title'] = 'Collect Token Details';
+		$data['page_icon'] = 'fa fa-circle-o';
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
+		
+		return view("token.collect-token.detail-collect-token", $data);
+	}
 
 	public function getPrintForm(){
 		$data = [];
-		$data['page_title'] = 'Collect Token Form';
+		$data['page_title'] = 'Token Collection Form';
 		$data['page_icon'] = 'fa fa-circle-o';
 
 		return view("token.collect-token.print-collecttoken-form", $data);
 	}
+
+	// STEP 1
+
 
 	public function getCollectToken()
 	{

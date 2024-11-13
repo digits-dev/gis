@@ -1,8 +1,6 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <style type="text/css">
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
     .form-content {
         display: flex;
         background: #fff;
@@ -173,7 +171,7 @@
     }
 
     .custom-scroll-x::-webkit-scrollbar {
-    height: 8px; 
+        height: 8px; 
     }
 
     .custom-scroll-x::-webkit-scrollbar-track {
@@ -303,10 +301,6 @@
                 </table>
             </div>
         
-            <div class="input-container">
-                <div style="font-weight: 600; margin-bottom:4px;">Remark/s</div>
-                <textarea id="remarks" rows="2" placeholder="Add Remark here"></textarea>
-            </div>  
             
             <div class="form-button" style="margin-top: 15px;" >
                 <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
