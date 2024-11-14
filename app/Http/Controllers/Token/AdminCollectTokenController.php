@@ -272,7 +272,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				$updatedCount++;
 			}
 		}
-
+		
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$updatedCount} Token collect updated successfully!", 'success');
 	}
 

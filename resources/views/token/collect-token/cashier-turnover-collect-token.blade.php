@@ -611,11 +611,10 @@
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
             } else if (actualCapsuleInventory == ""){
                 $(this).closest('tr').find('.variance').text(defaultVariance);
+                $(this).closest('tr').find('.variance').val(defaultVariance);
                 $(this).closest('tr').find('.variance').parent().css({'background': ''});
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': ''});
-
             }
-            
         }
         // Set the status text
         $(this).closest('tr').find('.variance-status').text(statusText);
