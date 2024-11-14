@@ -15,7 +15,7 @@ class AdjustCollectTokenLines extends Migration
     {
         Schema::table('collect_rr_token_lines', function (Blueprint $table) {
 
-            $table->integer('variance_type')->after('variance')->nullable();
+            $table->string('variance_type')->after('variance')->nullable();
             $table->integer('projected_capsule_sales')->after('variance_type')->nullable();
             $table->integer('actual_capsule_sales')->after('projected_capsule_sales')->nullable();
             $table->integer('current_capsule_inventory')->after('actual_capsule_sales')->nullable();

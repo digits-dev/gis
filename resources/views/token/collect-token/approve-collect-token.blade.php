@@ -209,120 +209,191 @@
         border: 2px solid #f1f1f1; 
     }
 
-    .custom-scroll-x::-webkit-scrollbar-thumb:hover {
-    
+    .swal2-popup {
+        width: 500px !important; /* Set a larger width */
+        height: 300px !important;
+    }
+    .swal2-title {
+        font-size: 24px !important; /* Customize the title size */
+    }
+    .swal2-html-container {
+        font-size: 16px !important; /* Customize the text size */
     }
 
+    .swal2-confirm {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+    .swal2-cancel {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+
+    .swal2-icon {
+        font-size: 16px !important; /* Customize the icon size */
+        width: 80px !important;
+        height: 80px !important;
+    }
 </style>
 @endpush
 @section('content')
-<form class="panel panel-default form-content" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
-    @csrf
-    <div class="panel-heading header-title text-center">Collect Token Details</div>
-    <div class="content-panel">
-        @foreach ($collected_tokens as $detail)
-        <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$detail->id}}" readonly>
-            <div class="inputs-container" style="margin-bottom: 10px;">
-                <div class="input-container">
-                    <div style="font-weight: 600">Reference Number</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->reference_number}}" disabled>
+<div class="panel panel-default form-content" style="overflow: hidden">
+    <form  method="POST" action="{{route('postCollectTokenApproval')}}" id="collect_token_details">
+        @csrf
+        <div class="panel-heading header-title text-center">Collect Token Details</div>
+        <div class="content-panel">
+            @foreach ($collected_tokens as $detail)
+            <input type="hidden" name="collect_token_id" id="collect_token_id" value="{{$detail->id}}" readonly>
+            <input type="hidden" name="action_type" id="action_type" value="">
+                <div class="inputs-container" style="margin-bottom: 10px;">
+                    <div class="input-container">
+                        <div style="font-weight: 600">Reference Number</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$detail->reference_number}}" disabled>
+                    </div>
+    
+                    <div class="input-container">
+                        <div style="font-weight: 600">Location</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$detail->getLocation->location_name}}" disabled>
+                    </div>
                 </div>
-
-                <div class="input-container">
-                    <div style="font-weight: 600">Location</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->getLocation->location_name}}" disabled>
+                <div class="inputs-container">
+                    <div class="input-container">
+                        <div style="font-weight: 600">Total Quantity</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                    </div>
+    
+                    <div class="input-container">
+                        <div style="font-weight: 600" >Date Created</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
+                    </div>
                 </div>
-            </div>
-            <div class="inputs-container">
-                <div class="input-container">
-                    <div style="font-weight: 600">Total Quantity</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                
+                <div class="table-wrapper custom-scroll-x">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Machine #</th>
+                                <th>JAN #</th>
+                                <th>No of Token</th>
+                                <th>Token Collected</th>
+                                <th>Variance</th>
+                                <th>Capsule Sales</th>
+                                <th>Machine Inventory</th>
+                                <th>Variance Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($detail->lines as $perLine)
+                                @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
+                                    @php
+                                        $NoOfToken = $perLine->no_of_token; 
+                                        $tokenCollected = $perLine->qty; 
+    
+                                        $divisionResult = $tokenCollected / $NoOfToken;
+                                        $projectedCapsuleSales = ceil($divisionResult);
+                                        
+                                        $actualCapsuleInventory = $capsuleLine->qty;
+                                        $currentMachineInventory = $capsuleLine->qty;
+                                        $variance = $perLine->variance;
+                                    @endphp
+                                    <tr>
+                                        <td><span class="serial_number">{{$perLine->machineSerial->serial_number}}</span></td>
+                                        <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->digits_code}}</span></td> 
+                                        <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
+                                        <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
+                                        <td><span class="variance">{{$perLine->variance}}</span></td>
+                                        <td><span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span></td>
+                                        <td><span class="currentMachineInventory">{{$capsuleLine->qty}}</span></td>
+                                        <td>
+                                            @php
+                                                $currentMachineInventory = $capsuleLine->qty; 
+                                            @endphp
+                                            <span class="variance-status
+                                                @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                    no-variance-type
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                    short-type
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                    over-type
+                                                @endif
+                                            ">
+                                                
+                                                @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                    No Variance
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                    Short
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                    Over
+                                                @endif
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="input-container">
-                    <div style="font-weight: 600" >Date Created</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
-                </div>
+            
+               
+                @endforeach
             </div>
             
-            <div class="table-wrapper custom-scroll-x">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Machine #</th>
-                            <th>JAN #</th>
-                            <th>No of Token</th>
-                            <th>Token Collected</th>
-                            <th>Variance</th>
-                            <th>Capsule Sales</th>
-                            <th>Machine Inventory</th>
-                            <th>Variance Type</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($detail->lines as $perLine)
-                            @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
-                                @php
-                                    $NoOfToken = $perLine->no_of_token; 
-                                    $tokenCollected = $perLine->qty; 
-
-                                    $divisionResult = $tokenCollected / $NoOfToken;
-                                    $projectedCapsuleSales = ceil($divisionResult);
-                                    
-                                    $actualCapsuleInventory = $capsuleLine->qty;
-                                    $currentMachineInventory = $capsuleLine->qty;
-                                    $variance = $perLine->variance;
-                                @endphp
-                                <tr>
-                                    <td><span class="serial_number">{{$perLine->machineSerial->serial_number}}</span></td>
-                                    <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->digits_code}}</span></td> 
-                                    <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
-                                    <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
-                                    <td><span class="variance">{{$perLine->variance}}</span></td>
-                                    <td><span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span></td>
-                                    <td><span class="currentMachineInventory">{{$capsuleLine->qty}}</span></td>
-                                    <td>
-                                        @php
-                                            $currentMachineInventory = $capsuleLine->qty; 
-                                        @endphp
-                                        <span class="variance-status
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                no-variance-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                short-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                over-type
-                                            @endif
-                                        ">
-                                            
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                Over
-                                            @endif
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        
-           
-            <div class="form-button" style="margin-top: 15px;" >
-                <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
-                <button type="submit" class="btn-approve pull-right" id="btn-approve"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Approve</button>
-                <button type="submit" class="btn-reject pull-right" id="btn-reject"  style="margin-right: 5px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Reject</button>
-            </div>
-        @endforeach
+    </form>
+    <div class="form-button panel-footer" style="margin-top: 15px;" >
+        <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
+        <button class="btn-approve pull-right" id="btn-approve"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Approve</button>
+        <button class="btn-reject pull-right" id="btn-reject"  style="margin-right: 5px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Reject</button>
     </div>
-</form>
+
+</div>
 @endsection
 
 @push('bottom')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
+
 <script>
+    $('#btn-approve').on('click', function () {
+        $('#action_type').val('approve');
+        Swal.fire({
+            title: "Are you sure you want to Approve?",
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#15a321',
+            cancelButtonColor: '#838383',
+            confirmButtonText: 'Approve',
+            iconHtml: '<i class="fa fa-thumbs-up"></i>',
+            iconColor: '#15a321',
+            returnFocus: false,
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#collect_token_details').submit();
+            }
+        });
+    });
+    
+    $('#btn-reject').on('click', function () {
+        $('#action_type').val('reject');
+        Swal.fire({
+            title: "Are you sure you want to Reject?",
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#da2404',
+            cancelButtonColor: '#838383',
+            confirmButtonText: 'Reject',
+            iconHtml: '<i class="fa fa-thumbs-down"></i>',
+            iconColor: '#da2404',
+            returnFocus: false,
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#collect_token_details').submit(); 
+            }
+        });
+    });
 </script>
 @endpush

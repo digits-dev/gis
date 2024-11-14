@@ -259,4 +259,23 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		return view("token.collect-token.approve-collect-token", $data);
 	}
 
+	public function postCollectTokenApproval(Request $request){
+		
+		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
+
+		if ($request->action_type == 'approve'){
+			
+		}
+
+		else {
+			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FORCASHIERTURNOVER,
+				'updated_at' => now(),
+			]);
+		}
+		
+		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
+		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been ". $actionType ."!", 'success');
+	}
+
 }
