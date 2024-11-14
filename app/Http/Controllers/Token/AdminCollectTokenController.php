@@ -94,7 +94,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'getCreatedBy'])->find($id);
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy'])->find($id);
 
 
 		return view("token.collect-token.detail-collect-token", $data);
@@ -285,7 +285,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Review Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getCreatedBy', 'getConfirmedBy', 'getLocation'])->find($id);
 		
 		return view("token.collect-token.approve-collect-token", $data);
 	}

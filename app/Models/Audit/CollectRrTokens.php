@@ -49,6 +49,14 @@ class CollectRrTokens extends Model
     public function getCreatedBy() : BelongsTo {
         return $this->belongsTo(CmsUsers::class, 'created_by', 'id');
     }
+    
+    public function getConfirmedBy() : BelongsTo {
+        return $this->belongsTo(CmsUsers::class, 'confirmed_by', 'id');
+    }
+    
+    public function getApprovedBy() : BelongsTo {
+        return $this->belongsTo(CmsUsers::class, 'approved_by', 'id');
+    }
 
     public function collectTokenMessages() : HasMany
     {

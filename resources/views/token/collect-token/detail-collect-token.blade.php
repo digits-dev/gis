@@ -221,16 +221,42 @@
             </div>
             <div class="inputs-container">
                 <div class="input-container">
+                    <div style="font-weight: 600" >Created By</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getCreatedBy->name}}" disabled>
+                </div>
+
+                <div class="input-container">
                     <div style="font-weight: 600" >Date Created</div>
                     <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
                 </div>
 
-                <div class="input-container">
-                    <div style="font-weight: 600" >Created By</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getCreatedBy->name}}" disabled>
-                </div>
             </div>
+
+            @if(!empty($collected_tokens->confirmed_by))
+                <div class="inputs-container" style="margin-top: 10px;">
+                    <div class="input-container">
+                        <div style="font-weight: 600">Confirmed By</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getConfirmedBy->name}}" disabled>
+                    </div>
+                    <div class="input-container">
+                        <div style="font-weight: 600">Date Confirmed</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->confirmed_at}}" disabled>
+                    </div>
+                </div>
+            @endif
             
+            @if(!empty($collected_tokens->approved_by))
+                <div class="inputs-container" style="margin-top: 10px;">
+                    <div class="input-container">
+                        <div style="font-weight: 600">Approved By</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getApprovedBy->name}}" disabled>
+                    </div>
+                    <div class="input-container">
+                        <div style="font-weight: 600">Date Approved</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->approved_at}}" disabled>
+                    </div>
+                </div>
+            @endif
             <div class="table-wrapper custom-scroll-x">
                 <table>
                     <thead>
