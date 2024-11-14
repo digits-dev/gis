@@ -2,8 +2,11 @@
 
 namespace App\Models\Submaster;
 
+use App\Models\Audit\CollectRrTokenLines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GashaMachines extends Model
 {
@@ -28,6 +31,5 @@ class GashaMachines extends Model
             ->from('gasha_machines as gm')
             ->where('status','ACTIVE')
             ->groupBy('gm.location_name', 'gm.location_id');
-    }
-
+    }    
 }

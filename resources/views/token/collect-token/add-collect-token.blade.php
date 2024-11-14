@@ -367,7 +367,7 @@
                 
                 <tfoot>
                     <td colspan="2"><span><b>Totay Quantity</b></span></td>
-                    <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center" readonly disabled></td>
+                    <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center; outline:none;" readonly></td>
                 </tfoot>
             </table>
             

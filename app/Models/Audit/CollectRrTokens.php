@@ -2,6 +2,7 @@
 
 namespace App\Models\Audit;
 
+use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Locations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,12 @@ class CollectRrTokens extends Model
 
     public function getLocation() : BelongsTo {
         return $this->belongsTo(Locations::class, 'location_id');
-    }   
+    }      
+
+    public function collectTokenMessages() : HasMany
+    {
+        return $this->hasMany(CollectTokenMessage::class, 'collect_token_id', 'id');
+    }
 
     public function scopeDetail($query, $id){
         return $query->leftjoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')

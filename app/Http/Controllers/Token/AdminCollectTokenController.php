@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Token;
 
 use App\Models\Audit\CollectRrTokens;
 use App\Models\CmsModels\CmsPrivileges;
+use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
 use App\Models\Submaster\GashaMachines;
@@ -89,42 +90,25 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 
 	public function hook_query_index(&$query) {
-		if(in_array(CRUDBooster::myPrivilegeId(),[CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER])){
+		if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				  ->orderBy('collect_rr_tokens.id', 'desc');
-		}else if(in_array(CRUDBooster::myPrivilegeId(),[
-				CmsPrivileges::CASHIER,
-				CmsPrivileges::OIC, 
-				CmsPrivileges::AREAMANAGER,
-				CmsPrivileges::STAFF1,
-				CmsPrivileges::STAFF2]
-			)){
-				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
-					->whereNull('collect_rr_tokens.deleted_at')
-					->orderBy('collect_rr_tokens.id', 'desc');
-			}
-	}
-
-	public function getDetail($id)
-	{
-		$data = [];
-		$data['page_title'] = 'Collect Token Details';
-		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
-		
-		return view("token.collect-token.detail-collect-token", $data);
-	}
-
-	public function getPrintForm(){
-		$data = [];
-		$data['page_title'] = 'Token Collection Form';
-		$data['page_icon'] = 'fa fa-circle-o';
-
-		return view("token.collect-token.print-collecttoken-form", $data);
+		}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
+			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+				  ->whereNull('collect_rr_tokens.deleted_at')
+				  ->orderBy('collect_rr_tokens.id', 'desc');
+		}
 	}
 
 	// STEP 1
 
+	public function getPrintForm(){
+		$data = [];
+		$data['page_title'] = 'Collect Token Form';
+		$data['page_icon'] = 'fa fa-circle-o';
+
+		return view("token.collect-token.print-collecttoken-form", $data);
+	}
 
 	public function getCollectToken()
 	{
@@ -132,19 +116,18 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['gasha_machines'] = GashaMachines::getMachineWithBay()->get();
-
+		
 		return view("token.collect-token.add-collect-token", $data);
 	}
-
+	
 	public function getMachines(Request $request)
 	{
 		$location_id = $request->input('location');
 		$bay = $request->input('bay');
 		$machines = GashaMachines::where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
-
 		return response()->json($machines);
 	}
-
+	
 	public function postCollectToken(Request $request)
 	{
 		// validations 
@@ -163,7 +146,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$errorMessage = implode('<br>', $errors);
 			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 		}
-
+		
 		// collect token lines to map each array 
 		$ValidatedLines = array_map(function ($gasha_machines_id, $no_of_token, $qty, $variance, $location_id) {
 			return [
@@ -174,10 +157,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'location_id' => $location_id,
 			];
 		}, $validatedData['gasha_machines_id'], $validatedData['no_of_token'], $validatedData['qty'], $validatedData['variance'], $validatedData['location_id']);
-
+		
 		// for collect token header if there's variance in the set
 		$header_variance = (count(array_filter($validatedData['variance'], fn($value) => $value != 0)) > 0) ? 'Yes' : 'No';
-
+		
 		// collect tokens headers
 		$collectTokenHeader = CollectRrTokens::firstOrCreate([
 			'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
@@ -202,26 +185,33 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'created_at' => now(),
 			]);
 		}
-
+		
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
 	}
-
+	
 	//STEP 2
 	public function getCashierTurnover($id){
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation'])->where('id', $id)->get();
-		
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+
 		return view("token.collect-token.cashier-turnover-collect-token", $data);
 	}
-
+	
 	public function postCashierTurnover(Request $request)
 	{
 		// Validate
 		try {
 			$validatedData = $request->validate([
 				'collectedTokenHeader_id' => 'required',
+				'lines_ids' => 'required',
+				'variance_type' => 'required',
+				'variance' => 'required',
+				'projectedCapsuleSales' => 'required',
+				'currentMachineInventory' => 'required',
+				'actualCapsuleInventory' => 'required',
+				'actualCapsuleSales' => 'required',
 			]);
 		} catch (ValidationException $e) {
 			$errors = $e->validator->errors()->all();
@@ -229,22 +219,50 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 		}
 
+		// collect token lines to map each array 
+		$ValidatedLines = array_map(function ($lines_ids, $variance_type, $variance, $projectedCapsuleSales, $currentMachineInventory, $actualCapsuleInventory, $actualCapsuleSales) {
+			return [
+				'lines_ids' => $lines_ids,
+				'variance_type' => $variance_type,
+				'variance' => $variance,
+				'projectedCapsuleSales' => $projectedCapsuleSales,
+				'currentMachineInventory' => $currentMachineInventory,
+				'actualCapsuleInventory' => $actualCapsuleInventory,
+				'actualCapsuleSales' => $actualCapsuleSales,
+			];
+		}, $validatedData['lines_ids'], $validatedData['variance_type'], $validatedData['variance'], $validatedData['projectedCapsuleSales'], $validatedData['currentMachineInventory'], $validatedData['actualCapsuleInventory'], $validatedData['actualCapsuleSales']);
+
 		$collectTokenHeader = CollectRrTokens::find($validatedData['collectedTokenHeader_id']);
 		if (!$collectTokenHeader) {
 			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
 		}
 
+		// update collect token header
 		$collectTokenHeader->update([
 			'statuses_id' => Statuses::FORSTOREHEADAPPROVAL,
 			'updated_by' => CRUDBooster::myId(),
 		]);
 
-		$collectTokenHeader->lines()->update([
-			'line_status' => Statuses::FORSTOREHEADAPPROVAL,
-			'updated_at' => now(),
-		]);
+		 // update each collect token line
+		 $updatedCount = 0;
+		 foreach ($ValidatedLines as $perItem) {
+			$updated = $collectTokenHeader->lines()->where('id', $perItem['lines_ids'])->update([
+				'line_status' => Statuses::FORSTOREHEADAPPROVAL,
+				'variance' => $perItem['variance'],
+				'variance_type' => $perItem['variance_type'], 
+				'projected_capsule_sales' => $perItem['projectedCapsuleSales'],
+				'actual_capsule_sales' => $perItem['actualCapsuleSales'],
+				'current_capsule_inventory' => $perItem['currentMachineInventory'],
+				'actual_capsule_inventory' => $perItem['actualCapsuleInventory'],
+				'updated_at' => now(), 
+			]);
 
-		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collect updated successfully!", 'success');
+			if ($updated) {
+				$updatedCount++;
+			}
+		}
+
+		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$updatedCount} Token collect updated successfully!", 'success');
 	}
 
 
