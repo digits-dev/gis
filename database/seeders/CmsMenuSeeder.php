@@ -959,5 +959,22 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 9
             ]
         );
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token New',
+            ],
+            [
+                'name'              => 'Collect Token New',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminCollectTokenControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 }

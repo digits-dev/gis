@@ -431,6 +431,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Capsule\AdminCapsuleAdjustmentsController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token New',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_token',
+                'table_name'   => 'collect_rr_tokens',
+                'controller'   => 'Token\AdminCollectTokenController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 

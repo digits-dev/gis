@@ -192,7 +192,7 @@
 </style>
 @endpush
 @section('content')
-<form class="panel panel-default form-content" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
+<div class="panel panel-default form-content" style="overflow: hidden" id="collect_token_details">
     @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
@@ -286,14 +286,12 @@
                     </tbody>
                 </table>
             </div>
-        
-           
-            <div class="form-button" style="margin-top: 15px;" >
-                <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
-            </div>
-        @endforeach
-    </div>
-</form>
+            @endforeach
+        </div>
+        <div class="form-button panel-footer" style="margin-top: 15px;" >
+            <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
+        </div>
+</div>
 @endsection
 
 @push('bottom')

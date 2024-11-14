@@ -282,7 +282,7 @@
                                 <th>Token Collected</th>
                                 <th>Variance</th>
                                 <th>Capsule Sales</th>
-                                <th>Machine Inventory</th>
+                                <th>Capsule Inventory</th>
                                 <th>Variance Type</th>
                             </tr>
                         </thead>
