@@ -88,6 +88,17 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		
 	}
 
+	public function getDetail($id)
+	{
+		$data = [];
+		$data['page_title'] = 'Collect Token Form';
+		$data['page_icon'] = 'fa fa-circle-o';
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+
+
+		return view("token.collect-token.detail-collect-token", $data);
+	}
+
 
 	public function hook_query_index(&$query) {
 		if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
