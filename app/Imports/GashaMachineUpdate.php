@@ -15,6 +15,7 @@ use DB;
 use CRUDBooster;
 use App\Models\Submaster\GashaMachines;
 use App\Models\Submaster\Counter;
+use App\Models\Submaster\GashaMachinesBay;
 class GashaMachineUpdate implements ToCollection, WithHeadingRow
 {
     /**
@@ -24,7 +25,8 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows){
         foreach ($rows->toArray() as $key => $row){
-            $location_name      = DB::table('locations')->where('id',CRUDBooster::myLocationId())->first();
+            $location_name = DB::table('locations')->where('id',CRUDBooster::myLocationId())->first();
+            $bay           = GashaMachinesBay::where('name',trim($row['bay']))->first();
             // if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
             //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
             // }
@@ -39,9 +41,8 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
             }
             GashaMachines::where('serial_number',$row['serial_number'])
             ->update([
-                    'bay'            => $row['bay'],
+                    'bay'            => $bay->id,
                     'layer'          => $row['layer'],
-                    'column'         => $row['column'],
                     'updated_by'	 => CRUDBooster::myId(),
                     'updated_at'     => date('Y-m-d H:i:s')
             ]);	

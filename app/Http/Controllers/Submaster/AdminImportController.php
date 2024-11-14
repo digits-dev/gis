@@ -57,28 +57,58 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
     }
 
     function downloadMachinesTemplate() {
-        $arrHeader = [
-            "no_of_token"        => "No of token",
-            "bay"                => "Bay",
-            "layer"              => "Layer"
+        // Define headers and data for the first sheet
+        $arrHeader1 = [
+            "no_of_token" => "No of token",
+            "bay"         => "Bay",
+            "layer"       => "Layer"
         ];
-
-        $arrData = [
-            "no_of_token"        => "1",
-            "bay"                => "Bay 1",
-            "layer"              => "Layer 1"
+    
+        $arrData1 = [
+            "no_of_token" => "1",
+            "bay"         => "Bay 1",
+            "layer"       => "Layer 1"
         ];
-
+    
+        // Define headers and data for the second sheet
+        $arrHeader2 = [
+            "serial_number"  => "Serial Number",
+            "bay"            => "Bay",
+            "layer"          => "Layer"
+        ];
+    
+        $arrData2 = [
+            "serial_number"  => "PH00001",
+            "bay"            => "Bay A",
+            "layer"          => "layer 1"
+        ];
+    
+        // Create a new Spreadsheet
         $spreadsheet = new Spreadsheet();
-        $spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
-        $spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
-        $filename = "gasha-machines-template-".date('Y-m-d');
+    
+        // First sheet: set headers and data
+        $spreadsheet->setActiveSheetIndex(0);
+        $spreadsheet->getActiveSheet()->setTitle('Upload Template');
+        $spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader1), null, 'A1');
+        $spreadsheet->getActiveSheet()->fromArray($arrData1, null, 'A2');
+    
+        // Create second sheet, set headers and data
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle('Update Template');
+        $sheet2->fromArray(array_values($arrHeader2), null, 'A1');
+        $sheet2->fromArray($arrData2, null, 'A2');
+    
+        // Set the filename and headers for download
+        $filename = "gasha-machines-template-" . date('Y-m-d');
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
+    
+        // Save the file to output
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
     }
+    
 
 
 }

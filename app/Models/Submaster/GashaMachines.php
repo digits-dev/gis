@@ -13,7 +13,20 @@ class GashaMachines extends Model
     use HasFactory;
     protected $guarded = [];
     protected $table = 'gasha_machines';
-
+    protected $fillable = [
+        'serial_number',
+        'description',
+        'location_name',
+        'location_id',
+        'no_of_token',
+        'bay',
+        'layer',
+        'column',
+        'machine_statuses_id',
+        'status',
+        'created_at',
+        'updated_at'
+    ];
     public function scopeActiveMachines($query){
         return $query->where('status','ACTIVE')->get();
     }
