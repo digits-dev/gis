@@ -440,6 +440,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Token\AdminCollectTokenController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Gasha Machines Bay',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'gasha_machines_bay',
+                'table_name'   => 'gasha_machines_bay',
+                'controller'   => 'Submaster\AdminGashaMachinesBayController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 
