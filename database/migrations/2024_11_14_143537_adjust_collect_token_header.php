@@ -18,9 +18,9 @@ class AdjustCollectTokenHeader extends Migration
             $table->integer('confirmed_by')->nullable()->after('created_by');
             $table->integer('approved_by')->nullable()->after('confirmed_by');
             $table->integer('rejected_by')->nullable()->after('approved_by');
-            $table->integer('confirmed_at')->nullable()->after('created_at');
-            $table->integer('approved_at')->nullable()->after('confirmed_at');
-            $table->integer('rejected_at')->nullable()->after('approved_at');
+            $table->timestamp('confirmed_at')->nullable()->after('created_at');
+            $table->timestamp('approved_at')->nullable()->after('confirmed_at');
+            $table->timestamp('rejected_at')->nullable()->after('approved_at');
         });
     }
 
@@ -36,6 +36,7 @@ class AdjustCollectTokenHeader extends Migration
             $table->dropColumn('confirmed_by');
             $table->dropColumn('approved_by');
             $table->dropColumn('rejected_by');
+            $table->dropColumn('confirmed_at');
             $table->dropColumn('approved_at');
             $table->dropColumn('rejected_at');
         });

@@ -47,6 +47,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$this->col[] = ["label" => "Reference Number", "name" => "reference_number"];
 		$this->col[] = ["label" => "Status", "name" => "statuses_id", "join" => "statuses,status_description"];
 		$this->col[] = ["label" => "Location", "name" => "location_id", "join" => "locations,location_name"];
+		$this->col[] = ["label" => "Bay", "name" => "bay_id"];
 		$this->col[] = ["label" => "Collected Qty", "name" => "collected_qty", 'callback_php' => 'number_format($row->collected_qty)'];
 		$this->col[] = ["label" => "Received Qty", "name" => "received_qty", 'callback_php' => 'number_format($row->received_qty)'];
 		$this->col[] = ["label" => "Variance", "name" => "variance"];
@@ -93,7 +94,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'getCreatedBy'])->find($id);
 
 
 		return view("token.collect-token.detail-collect-token", $data);
@@ -251,7 +252,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		// update collect token header
 		$collectTokenHeader->update([
 			'statuses_id' => Statuses::FORSTOREHEADAPPROVAL,
-			'updated_by' => CRUDBooster::myId(),
+			'confirmed_by' => CRUDBooster::myId(),
+			'confirmed_at' => now()
 		]);
 
 		 // update each collect token line
@@ -273,7 +275,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			}
 		}
 		
-		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$updatedCount} Token collect updated successfully!", 'success');
+		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
 	}
 
 
@@ -293,13 +295,20 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
 
 		if ($request->action_type == 'approve'){
-			
+
+			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FORRECEIVING,
+				'approved_by' => CRUDBooster::myId(),
+				'approved_at' => now(),
+			]);
+
 		}
 
 		else {
 			$collectTokenHeader->update([
 				'statuses_id' => Statuses::FORCASHIERTURNOVER,
-				'updated_at' => now(),
+				'rejected_by' => CRUDBooster::myId(),
+				'rejected_at' => now(),
 			]);
 		}
 		

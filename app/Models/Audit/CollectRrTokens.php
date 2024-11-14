@@ -2,6 +2,7 @@
 
 namespace App\Models\Audit;
 
+use App\Models\CmsUsers;
 use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Locations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,13 +19,23 @@ class CollectRrTokens extends Model
         'reference_number',
         'statuses_id',
         'location_id',
+        'bay_id',
         'collected_qty',
         'received_qty',
         'variance',
         'received_by',
         'received_at',
         'created_by',
+        'confirmed_by',
+        'approved_by',
+        'rejected_by',
         'updated_by',
+        'created_at',
+        'confirmed_at',
+        'approved_at',
+        'rejected_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     public function lines() : HasMany {
@@ -34,6 +45,10 @@ class CollectRrTokens extends Model
     public function getLocation() : BelongsTo {
         return $this->belongsTo(Locations::class, 'location_id');
     }      
+    
+    public function getCreatedBy() : BelongsTo {
+        return $this->belongsTo(CmsUsers::class, 'created_by', 'id');
+    }
 
     public function collectTokenMessages() : HasMany
     {

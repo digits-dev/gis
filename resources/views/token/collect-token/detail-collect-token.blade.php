@@ -193,31 +193,41 @@
 @endpush
 @section('content')
 <div class="panel panel-default form-content" style="overflow: hidden" id="collect_token_details">
-    @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
-        @foreach ($collected_tokens as $detail)
-        <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$detail->id}}" readonly>
+        <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$collected_tokens->id}}" readonly>
             <div class="inputs-container" style="margin-bottom: 10px;">
                 <div class="input-container">
                     <div style="font-weight: 600">Reference Number</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->reference_number}}" disabled>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->reference_number}}" disabled>
                 </div>
 
                 <div class="input-container">
-                    <div style="font-weight: 600">Location</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->getLocation->location_name}}" disabled>
+                    <div style="font-weight: 600">Total Quantity</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->collected_qty}}" disabled>
                 </div>
+                
+            </div>
+            <div class="inputs-container" style="margin-bottom: 10px;">
+                <div class="input-container">
+                    <div style="font-weight: 600">Location</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getLocation->location_name}}" disabled>
+                </div>
+                <div class="input-container">
+                    <div style="font-weight: 600">Bay</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->bay_id}}" disabled>
+                </div>
+                
             </div>
             <div class="inputs-container">
                 <div class="input-container">
-                    <div style="font-weight: 600">Total Quantity</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                    <div style="font-weight: 600" >Date Created</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
                 </div>
 
                 <div class="input-container">
-                    <div style="font-weight: 600" >Date Created</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
+                    <div style="font-weight: 600" >Created By</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getCreatedBy->name}}" disabled>
                 </div>
             </div>
             
@@ -236,7 +246,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($detail->lines as $perLine)
+                        @foreach ($collected_tokens->lines as $perLine)
                             @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
                                 @php
                                     $NoOfToken = $perLine->no_of_token; 
@@ -286,7 +296,6 @@
                     </tbody>
                 </table>
             </div>
-            @endforeach
         </div>
         <div class="form-button panel-footer" style="margin-top: 15px;" >
             <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
