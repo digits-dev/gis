@@ -4,6 +4,7 @@ namespace App\Models\Audit;
 
 use App\Models\CmsUsers;
 use App\Models\CollectTokenMessage;
+use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\Locations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,8 +44,13 @@ class CollectRrTokens extends Model
     }
 
     public function getLocation() : BelongsTo {
-        return $this->belongsTo(Locations::class, 'location_id');
-    }      
+        return $this->belongsTo(Locations::class, 'location_id', 'id');
+    } 
+    
+    public function getBay() : BelongsTo {
+        return $this->belongsTo(GashaMachinesBay::class, 'bay_id', 'id');
+    } 
+
     
     public function getCreatedBy() : BelongsTo {
         return $this->belongsTo(CmsUsers::class, 'created_by', 'id');
@@ -56,6 +62,10 @@ class CollectRrTokens extends Model
     
     public function getApprovedBy() : BelongsTo {
         return $this->belongsTo(CmsUsers::class, 'approved_by', 'id');
+    }
+    
+    public function getReceivedBy() : BelongsTo {
+        return $this->belongsTo(CmsUsers::class, 'received_by', 'id');
     }
 
     public function collectTokenMessages() : HasMany

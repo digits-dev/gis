@@ -48,6 +48,10 @@
             cursor: default
         }
 
+        .wrapper{
+            overflow: hidden;
+        }
+
         #box-header-module {
             box-shadow: 10px 10px 10px #dddddd;
         }

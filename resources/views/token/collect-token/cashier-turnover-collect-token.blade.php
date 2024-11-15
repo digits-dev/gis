@@ -343,7 +343,7 @@
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
         @foreach ($collected_tokens as $detail)
-        <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$detail->id}}" readonly>
+            <input type="hidden" name="collectedTokenHeader_id" id="collectedTokenHeader_id" value="{{$detail->id}}" readonly>
             <div class="inputs-container" style="margin-bottom: 10px;">
                 <div class="input-container">
                     <div style="font-weight: 600">Reference Number</div>
@@ -351,20 +351,33 @@
                 </div>
 
                 <div class="input-container">
+                    <div style="font-weight: 600">Total Quantity</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                </div>
+                
+            </div>
+            <div class="inputs-container" style="margin-bottom: 10px;">
+                <div class="input-container">
                     <div style="font-weight: 600">Location</div>
                     <input type="text" style="border-radius: 5px;" value="{{$detail->getLocation->location_name}}" disabled>
                 </div>
+                <div class="input-container">
+                    <div style="font-weight: 600">Bay</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->getBay->name}}" disabled>
+                </div>
+                
             </div>
             <div class="inputs-container">
                 <div class="input-container">
-                    <div style="font-weight: 600">Total Quantity</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                    <div style="font-weight: 600" >Created By</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->getCreatedBy->name}}" disabled>
                 </div>
 
                 <div class="input-container">
                     <div style="font-weight: 600" >Date Created</div>
                     <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
                 </div>
+
             </div>
             
             <div class="table-wrapper custom-scroll-x">

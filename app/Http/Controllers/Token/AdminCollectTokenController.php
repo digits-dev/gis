@@ -48,7 +48,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$this->col[] = ["label" => "Reference Number", "name" => "reference_number"];
 		$this->col[] = ["label" => "Status", "name" => "statuses_id", "join" => "statuses,status_description"];
 		$this->col[] = ["label" => "Location", "name" => "location_id", "join" => "locations,location_name"];
-		$this->col[] = ["label" => "Bay", "name" => "bay_id"];
+		$this->col[] = ["label" => "Bay", "name" => "bay_id", "join" => "gasha_machines_bay,name"];
 		$this->col[] = ["label" => "Collected Qty", "name" => "collected_qty", 'callback_php' => 'number_format($row->collected_qty)'];
 		$this->col[] = ["label" => "Received Qty", "name" => "received_qty", 'callback_php' => 'number_format($row->received_qty)'];
 		$this->col[] = ["label" => "Variance", "name" => "variance"];
@@ -92,9 +92,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	public function getDetail($id)
 	{
 		$data = [];
-		$data['page_title'] = 'Collect Token Form';
+		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy'])->find($id);
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy'])->find($id);
 
 
 		return view("token.collect-token.detail-collect-token", $data);

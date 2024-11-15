@@ -215,7 +215,7 @@
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Bay</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->bay_id}}" disabled>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getBay->name}}" disabled>
                 </div>
                 
             </div>
@@ -257,6 +257,20 @@
                     </div>
                 </div>
             @endif
+
+            @if(!empty($collected_tokens->received_by))
+                <div class="inputs-container" style="margin-top: 10px;">
+                    <div class="input-container">
+                        <div style="font-weight: 600">Received By</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getReceivedBy->name}}" disabled>
+                    </div>
+                    <div class="input-container">
+                        <div style="font-weight: 600">Date Received</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->received_at}}" disabled>
+                    </div>
+                </div>
+            @endif
+
             <div class="table-wrapper custom-scroll-x">
                 <table>
                     <thead>
