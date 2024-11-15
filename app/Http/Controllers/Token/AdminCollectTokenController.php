@@ -6,12 +6,14 @@ use App\Models\Audit\CollectRrTokens;
 use App\Models\Capsule\CapsuleSales;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\CmsModels\CmsPrivileges;
+use App\Models\CmsUsers;
 use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
 use App\Models\Submaster\GashaMachines;
 use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\SalesType;
+use App\Models\Submaster\Locations;
 use App\Models\Submaster\TokenConversion;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
@@ -120,16 +122,65 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 	}
 
-	// STEP 1
+	// PRINT RECEIVE FORM
 
-	public function getPrintForm()
+	public function getPrintForm(Request $request)
 	{
+
+		if ($request->ajax()){
+			$collect_tokens = CollectRrTokens::whereIn('id', $request->references)
+				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getBay')
+				->get();
+
+			$receiver = CmsUsers::with('getPrivilege')->find($request->receiver);
+
+			$collectors = [];
+
+			foreach ($collect_tokens as $collected_token) {
+				$exists = false;
+
+				$name = $collected_token->getCreatedBy->name;
+				$privilege = $collected_token->getCreatedBy->getPrivilege->name;
+
+				foreach ($collectors as $collector) {
+					if ($collector['name'] === $name && $collector['privilege'] === $privilege) {
+						$exists = true;
+						break;
+					}
+				}
+			
+				if (!$exists) {
+					$collectors[] = [
+						'name' => $name,
+						'privilege' => $privilege
+					];
+				}
+			}
+
+			return response()->json([
+				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
+				'date' => date('Y-m-d H:i:s'),
+				'collect_tokens' => $collect_tokens,
+				'collectors' => $collectors,
+				'receiver' => $receiver
+			]);
+		}
+		
 		$data = [];
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
+		$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
+		$data ['reference_numbers'] = CollectRrTokens::with('getBay')->select('id','reference_number', 'bay_id')
+			->where('location_id', CRUDBooster::myLocationId())
+			->where('statuses_id', Statuses::FORRECEIVING)
+			->get();
+		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
+
 
 		return view("token.collect-token.print-collecttoken-form", $data);
 	}
+
+	// STEP 1
 
 	public function getCollectToken()
 	{

@@ -30,7 +30,7 @@ class CollectRrTokenLines extends Model
     ];
 
     public function machineSerial() : BelongsTo {
-        return $this->belongsTo(GashaMachines::class, 'gasha_machines_id');
+        return $this->belongsTo(GashaMachines::class, 'gasha_machines_id', 'id');
     }
     
     public function inventory_capsule_lines() : HasMany {
