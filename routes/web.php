@@ -227,6 +227,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/review/{id}',[AdminCollectTokenController::class, 'getCollectTokenApproval']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_review',[AdminCollectTokenController::class, 'postCollectTokenApproval'])->name('postCollectTokenApproval');
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
 
 
     

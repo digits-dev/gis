@@ -335,10 +335,84 @@
         background-color: #53bbf7;
     }
 
+    .swal2-popup {
+        width: 500px !important; /* Set a larger width */
+        height: 300px !important;
+    }
+    .swal2-title {
+        font-size: 24px !important; /* Customize the title size */
+    }
+    .swal2-html-container {
+        font-size: 16px !important; /* Customize the text size */
+        overflow: hidden !important;
+    }
+
+    .swal2-confirm {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+    .swal2-cancel {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+
+    .swal2-icon {
+        font-size: 16px !important; /* Customize the icon size */
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    /* The backdrop (gray transparent background) */
+    .loading-backdrop {
+        position: fixed;    /* Fixed to cover the whole page */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+        display: none;      /* Initially hidden */
+        justify-content: center;  /* Horizontally center the card */
+        align-items: center;     /* Vertically center the card */
+        z-index: 9999;      /* Ensure it's on top of other content */
+        display: flex;      /* Flexbox for centering */
+    }
+
+    /* Loading card styles */
+    .loading-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Slight shadow for card effect */
+        text-align: center;
+        width: 200px; /* Small fixed width for the card */
+    }
+
+    /* Spinner styles */
+    .spinner {
+        border: 5px solid lightgrey; /* Light border */
+        border-top: 5px solid #3498db; /* Blue color for the spinner */
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 10px;  /* Centered with margin below */
+        animation: spin2 0.7s linear infinite;  /* Rotation animation */
+    }
+
+    /* Animation for the spinner */
+    @keyframes spin2 {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
 </style>
 @endpush
 @section('content')
-<form class="panel panel-default form-content" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
+<div class="panel panel-default form-content">
+<form id="confirm-details" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
     @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
@@ -494,13 +568,14 @@
                 </table>
             </div>
         
-            <div class="form-button" style="margin-top: 15px;" >
-                <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
-                <button type="submit" class="btn-submit pull-right" id="btn-submit">Confirm</button>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
+    </form>
+    <div class="form-button panel-footer" style="margin-top: 15px;" >
+        <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
+        <button type="submit" class="btn-submit pull-right" id="btn-confirm-details">Confirm</button>
     </div>
-</form>
+</div>
 
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">
@@ -549,6 +624,10 @@
                 <i class="fa fa-paper-plane" id="send_new_remarks" aria-hidden="true" style="color:white; font-size:16px;"></i>
             </div>
         </div>
+    </div>
+
+    <div id="loadingBackdrop" class="loading-backdrop" style="display: none">
+        <div class="spinner"></div>
     </div>
 
 @endsection
@@ -686,8 +765,33 @@
             }
             
         });
-
     }
+
+    $('#btn-confirm-details').on('click', function(e) {
+        e.preventDefault(); 
+        const form = document.getElementById('confirm-details');
+
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: "Are you sure you want to confirm collected token?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3C8DBC',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Create',
+                iconColor: '#3C8DBC',
+                returnFocus: false,
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingBackdrop').show();
+                    form.submit(); 
+                }
+            });
+        } else {
+            form.reportValidity();
+        }
+    });
 
 </script>
 @endpush

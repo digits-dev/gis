@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Token;
 
 use App\Models\Audit\CollectRrTokens;
+use App\Models\Capsule\CapsuleSales;
+use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
 use App\Models\Submaster\GashaMachines;
 use App\Models\Submaster\GashaMachinesBay;
+use App\Models\Submaster\SalesType;
 use App\Models\Submaster\TokenConversion;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
@@ -21,6 +24,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
 	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
+	private const EXPORTER = [CmsPrivileges::SUPERADMIN];
 
 	public function cbInit()
 	{
@@ -43,7 +47,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$this->button_export = true;
 		$this->table = "collect_rr_tokens";
 
-
 		$this->col = [];
 		$this->col[] = ["label" => "Reference Number", "name" => "reference_number"];
 		$this->col[] = ["label" => "Status", "name" => "statuses_id", "join" => "statuses,status_description"];
@@ -64,9 +67,14 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			}
 		}
 
+		if (in_array(CRUDBooster::myPrivilegeId(), self::EXPORTER)) {
+			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
+		}
+		
 		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
 			$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
 		}
+
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 			$this->addaction[] = [
@@ -99,7 +107,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		return view("token.collect-token.detail-collect-token", $data);
 	}
-
 
 	public function hook_query_index(&$query)
 	{
@@ -155,7 +162,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'qty' => 'required',
 				'variance' => 'required',
 				'location_id' => 'required',
-				'header_location_id' => 'required'
+				'header_location_id' => 'required',
+				'header_bay_id' => 'required'
 			]);
 		} catch (ValidationException $e) {
 			$errors = $e->validator->errors()->all();
@@ -182,6 +190,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
 			'statuses_id' => Statuses::FORCASHIERTURNOVER,
 			'location_id' => $validatedData['header_location_id'],
+			'bay_id' => $validatedData['header_bay_id'],
 			'collected_qty' => $validatedData['total_qty'],
 			'variance' => $header_variance,
 			'created_by' => CRUDBooster::myId()
@@ -324,16 +333,73 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
 
 		if ($request->action_type == 'approve'){
+			
+			// validations 
+			try {
+				$validatedData = $request->validate([
+					'inventory_capsule_lines_id' => 'required',
+					'actual_capsule_inventory' => 'required',
+					'ref_number' => 'required',
+					'jan_code' => 'required',
+					'gasha_machines_id' => 'required',
+					'location_id' => 'required',
+					'actual_capsule_sales' => 'required',
+				]);
+			} catch (ValidationException $e) {
+				$errors = $e->validator->errors()->all();
+				$errorMessage = implode('<br>', $errors);
+				CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
+			}
 
+			// array map for capsule sales
+			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
+				return [
+					'jan_code' => $jan_code,
+					'gasha_machines_id' => $gasha_machines_id,
+					'location_id' => $location_id,
+					'actual_capsule_sales' => $actual_capsule_sales,
+				];
+			}, $validatedData['jan_code'], $validatedData['gasha_machines_id'], $validatedData['location_id'], $validatedData['actual_capsule_sales']);
+
+			// arrap map for inventory capsule lines
+			$ValidatedInventoryCapsuleLines = array_map(function ($inventory_capsule_lines_id, $actual_capsule_inventory) {
+				return [
+					'inventory_capsule_lines_id' => $inventory_capsule_lines_id,
+					'actual_capsule_inventory' => $actual_capsule_inventory,
+				];
+			}, $validatedData['inventory_capsule_lines_id'], $validatedData['actual_capsule_inventory']);
+
+			// create capsule sales
+			foreach($ValidatedCapsuleSalesLines as $perCapsuleSale){
+				CapsuleSales::firstOrCreate([
+					'reference_number' => $validatedData['ref_number'],
+					'item_code' => $perCapsuleSale['jan_code'],
+					'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
+					'locations_id' => $perCapsuleSale['location_id'],
+					'qty' => $perCapsuleSale['actual_capsule_sales'],
+					'sales_type_id' => SalesType::COLLECTTOKEN,
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => now()
+				]);
+			}
+
+			// update inventory capsule lines qty
+			foreach($ValidatedInventoryCapsuleLines as $perLine){
+				InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
+					'qty' => $perLine['actual_capsule_inventory']
+				]);
+			}
+
+			// approved
 			$collectTokenHeader->update([
 				'statuses_id' => Statuses::FORRECEIVING,
 				'approved_by' => CRUDBooster::myId(),
 				'approved_at' => now(),
 			]);
-
 		}
 
 		else {
+			// rejected
 			$collectTokenHeader->update([
 				'statuses_id' => Statuses::FORCASHIERTURNOVER,
 				'rejected_by' => CRUDBooster::myId(),

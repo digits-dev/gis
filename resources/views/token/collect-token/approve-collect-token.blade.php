@@ -248,6 +248,7 @@
         <div class="content-panel">
                 <input type="hidden" name="collect_token_id" id="collect_token_id" value="{{$collected_tokens->id}}" readonly>
                 <input type="hidden" name="action_type" id="action_type" value="">
+                <input type="hidden" name="ref_number" value="{{$collected_tokens->reference_number}}" readonly>
                 <div class="inputs-container" style="margin-bottom: 10px;">
                     <div class="input-container">
                         <div style="font-weight: 600">Reference Number</div>
@@ -318,15 +319,31 @@
                             @foreach ($collected_tokens->lines as $perLine)
                                 @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
                                     <tr>
-                                        <td>{{$perLine->machineSerial->serial_number}}</td>
-                                        <td>{{$capsuleLine->getInventoryCapsule->item->digits_code}}</td> 
+                                        <td>
+                                            {{$perLine->machineSerial->serial_number}}
+                                            <input type="hidden" name="gasha_machines_id[]" value="{{$perLine->machineSerial->id}}" readonly>
+                                            <input type="hidden" name="location_id[]" value="{{$perLine->machineSerial->location_id}}" readonly>
+                                        </td>
+                                        <td>
+                                            {{$capsuleLine->getInventoryCapsule->item->digits_code}}
+                                            <input type="hidden" name="jan_code[]" id="jan_code" value="{{$capsuleLine->getInventoryCapsule->item->digits_code}}" readonly>
+                                        </td> 
                                         <td>{{$perLine->no_of_token}}</td>
                                         <td>{{$perLine->qty}}</td>
                                         <td>{{$perLine->variance}}</td>
                                         <td>{{$perLine->projected_capsule_sales}}</td>
-                                        <td>{{$perLine->current_capsule_inventory}}</td>
-                                        <td>{{$perLine->actual_capsule_inventory}}</td>
-                                        <td>{{$perLine->actual_capsule_sales}}</td>
+                                        <td>
+                                            {{$perLine->current_capsule_inventory}}
+                                            <input type="hidden" name="inventory_capsule_lines_id[]" value="{{$capsuleLine->id}}" readonly>
+                                        </td>
+                                        <td>
+                                            {{$perLine->actual_capsule_inventory}}
+                                            <input type="hidden" name="actual_capsule_inventory[]" value="{{$perLine->actual_capsule_inventory}}" readonly>
+                                        </td>
+                                        <td>
+                                            {{$perLine->actual_capsule_sales}}
+                                            <input type="hidden" name="actual_capsule_sales[]" value="{{$perLine->actual_capsule_sales}}">
+                                        </td>
                                         <td>
                                             <span class="variance-status
                                                 @if (($perLine->variance_type) == "No Variance") 
@@ -367,7 +384,6 @@
 
 @push('bottom')
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
-
 <script>
     $(document).ready(function() {
         $(function(){

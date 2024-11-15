@@ -2,6 +2,7 @@
 
 namespace App\Models\Audit;
 
+use App\Models\Capsule\CapsuleSales;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\Submaster\GashaMachines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,8 +35,8 @@ class CollectRrTokenLines extends Model
     
     public function inventory_capsule_lines() : HasMany {
         return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
-    }   
-
+    }
+    
     public function scopeDetailBody($query, $id){
         return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
                      ->select('collect_rr_token_lines.id as id',

@@ -163,182 +163,107 @@
         display: block;
     }
 
-
-    /* CHATBOX */
-
-    .chat-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: #3C8DBC;
-        z-index: 20;
-        cursor: pointer;
-        padding: 10px 15px;
-        color: white;
-        font-size: 16px;
-        border-radius: 20px;
-        user-select: none;
-      
+    .swal2-popup {
+        width: 500px !important; /* Set a larger width */
+        height: 300px !important;
     }
-    .chat-button:hover{
-        background-color: #53bbf7;
+    .swal2-title {
+        font-size: 24px !important; /* Customize the title size */
+    }
+    .swal2-html-container {
+        font-size: 16px !important; /* Customize the text size */
     }
 
-    .chat-container{
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 20;
-        border-radius: 5px;
-        overflow: hidden;
+    .swal2-confirm {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+    .swal2-cancel {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+
+    .swal2-icon {
+        font-size: 16px !important; /* Customize the icon size */
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    /* The backdrop (gray transparent background) */
+    .loading-backdrop {
+        position: fixed;    /* Fixed to cover the whole page */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+        display: none;      /* Initially hidden */
+        justify-content: center;  /* Horizontally center the card */
+        align-items: center;     /* Vertically center the card */
+        z-index: 9999;      /* Ensure it's on top of other content */
+        display: flex;      /* Flexbox for centering */
+    }
+
+    /* Loading card styles */
+    .loading-card {
         background-color: white;
-        width: 350px;
-        height: 400px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-        display: flex;
-        flex-direction: column;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Slight shadow for card effect */
+        text-align: center;
+        width: 200px; /* Small fixed width for the card */
     }
 
-    .top-chat-container {
-        display: flex;
-        padding: 0 20px;
-        user-select: none;
-        align-items: center;
-        justify-content: space-between;
-        flex: 0 0 13%;
-        color: white;
-        background-color: #3C8DBC;
+    /* Spinner styles */
+    .spinner {
+        border: 5px solid lightgrey; /* Light border */
+        border-top: 5px solid #3498db; /* Blue color for the spinner */
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 10px;  /* Centered with margin below */
+        animation: spin2 0.7s linear infinite;  /* Rotation animation */
     }
 
-    .body-chat-container {
-        flex: 1;
-        padding: 0 5px 5px 5px;
-        overflow: auto;
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 5px
-    }
-
-    
-    .chat-content-left{
-        align-self: flex-start;
-        display: flex;
-        align-items: flex-end;
-    }
-    .left-chat-details{
-        margin-left: 5px;
-    }
-    
-    .chat-content-left-text{
-        
-        background-color: #dddddd;
-        padding: 7px;
-        max-width: 170px;
-        border-radius: 10px;
-    }
-
-    .chat-content-right{
-        align-self: flex-end;
-        margin-left: 5px;
-        background-color: #dddddd;
-        padding: 7px;
-        max-width: 170px;
-        border-radius: 10px;
-    }
-
-    .body-chat-container::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .body-chat-container::-webkit-scrollbar-track {
-        background: #f0f0f0;
-        border-radius: 4px;
-    }
-
-    .body-chat-container::-webkit-scrollbar-thumb {
-        background-color: #3C8DBC; 
-        border-radius: 4px; 
-        border: 2px solid #f0f0f0; 
-    }
-
-    .body-chat-container::-webkit-scrollbar-thumb:hover {
-        background-color: #2e6a8e;
-    }
-
-    .bottom-chat-container {
-        border-top: 1px solid #bbb;
-        padding: 10px 10px 5px 10px;
-        display: flex;
-        align-items: flex-end;
-        
-    }
-
-    .bottom-chat-container textarea {
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-        border: 1px solid #3C8DBC; 
-        border-radius: 4px;
-        outline-color: #3C8DBC;
-        font-size: 14px;
-        overflow-y: auto;
-        resize: none;
-        margin: 0;
-        max-height: 120px;
-    }
-
-    .bottom-chat-container textarea::-webkit-scrollbar {
-        width: 0;
-    }
-
-    .chat-textarea-div{
-        width: 100%;
-    }
-
-    .chat-send {
-        display: flex;
-        background-color: #3C8DBC;
-        cursor: pointer;
-        align-items: center;
-        border-radius: 50px;
-        margin-left: 10px;
-        padding: 10px;
-        margin-bottom: 7px;
-    }
-
-    .chat-send:hover{
-        background-color: #53bbf7;
+    /* Animation for the spinner */
+    @keyframes spin2 {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
 </style>
 @endpush
 @section('content')
-    <form class="panel panel-default form-content" method="POST" action="{{route('postCollectedToken')}}">
+<div class="panel panel-default form-content" style="overflow: hidden">
+    <form id="collect_token" method="POST" action="{{route('postCollectedToken')}}">
         @csrf
         <input type="hidden" name="header_location_id" id="header_location_id" readonly>
+        <input type="hidden" name="header_bay_id" id="header_bay_id" readonly>
         <div class="panel-heading header-title text-center">Add Collect Token Form</div>
         <div class="content-panel">
             <div class="inputs-container">
                 <div class="input-container">
                     <div style="font-weight: 600">Location</div>
-                    <div class="custom-select" id="customSelectLocation">
-                        <select name="location" id="location" required>
-                            <option value="" disabled selected>Select Location</option>
-                            @foreach ($gasha_machines as $location)
-                                <option value="{{ $location->location_id }}">{{$location->location_name}}</option>
-                            @endforeach
-                        </select>
+                    <div class="">
+                        @foreach ($gasha_machines as $location)
+                            @if($location->location_id == CRUDBooster::myLocationId()) 
+                                <input type="text" class="form-control" style="border-radius: 5px; padding: 19px 10px 19px 10px;" name="location" id="location" value="{{ $location->location_name }}" readonly>
+                                <input type="hidden" class="form-control" style="border-radius: 5px; padding: 19px 10px 19px 10px;" name="location_id" id="location_id" value="{{ $location->location_id }}" readonly>
+                            @endif
+                        @endforeach                 
                     </div>
                 </div>
 
                 <div class="input-container">
                     <div style="font-weight: 600">Bay</div>
                     <div class="custom-select" id="customSelectBay">
-                        <select name="bay" id="bay"  required disabled>
+                        <select name="bay" id="bay"  required>
                             <option value="" disabled selected>Select Bay</option>
-                            {{-- @foreach($gasha_machine_bay as $perBay)
-                                <option value="{{$perBay->id}}">{{$perBay->id}}</option>
-                            @endforeach --}}
+                            {{-- options will dynamically load here  --}}
                         </select>
                     </div>
                 </div>
@@ -379,17 +304,23 @@
                     <textarea name="remarks" id="remarks" rows="4" class="form-control" style="border-radius: 7px;" placeholder="Enter your remarks here..."></textarea>
                 </div>
 
-            <div class="form-button" style="margin-top: 15px;" >
-                <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
-                <button type="submit" class="btn-submit pull-right" id="btn-submit">Confirm</button>
             </div>
+        </form>
+        
+        <div class="form-button panel-footer" style="margin-top: 15px;" >
+            <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
+            <button type="submit" class="btn-submit pull-right" id="btn-confirm-submit">Create</button>
         </div>
-    </form>
+    </div>
 
+    <div id="loadingBackdrop" class="loading-backdrop" style="display: none">
+            <div class="spinner"></div>
+    </div>
 
 @endsection
 
 @push('bottom')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script>
     $(document).ready(function() {
         $('#customSelectLocation select').on('mousedown', function() {
@@ -428,21 +359,31 @@
         $('#chat-button').show();
     });
 
-    let baysData = @json($gasha_machines->mapWithKeys(function($item) {
+    // bays in gasha machine per loaction
+    let location_baysData = @json($gasha_machines->mapWithKeys(function($item) {
         return [$item->location_id => $item->bays]; 
     }));
 
-    $('#location').change(function() {
-        let location_id = $(this).val();
-        let bay_id = $('#bay').val();
+    // bays in submaster
+    let bays_data = @json($gasha_machine_bay);
+
+    $(document).ready(function() {
+        let location_id = $('#location_id').val();
+
         if (location_id) {
-            let bays = baysData[location_id] ? baysData[location_id].split(',') : [];
-            $('#bay').prop('disabled', false);
+            let location_bays = location_baysData[location_id] ? location_baysData[location_id].split(',') : [];
+
             $('#bay').empty();
             $('#bay').append('<option value="" disabled selected>Select Bay</option>');
-            if (bay_id is in bays) {
-                $.each(bays, function(index, bay) {
-                    $('#bay').append('<option value="' + bay.trim() + '">' + bay.trim() + '</option>');
+
+            // check if bay is in locations bays
+            let filteredBays = bays_data.filter(function(bay) {
+                return location_bays.includes(bay.id.toString()); 
+            });
+
+            if (filteredBays.length > 0) {
+                filteredBays.forEach(function(bay) {
+                    $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
                 });
             } else {
                 $('#bay').append('<option value="" disabled>No bays available</option>');
@@ -450,14 +391,16 @@
         } else {
             $('#bay').prop('disabled', true).empty().append('<option value="" disabled selected>Select Bay</option>');
         }
+
         $('#header_location_id').val(location_id);
     });
 
     // request machines filteration on change bay 
     $('#bay').on('change', function(){
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
-        const location = $('#location').val();
+        const location = $('#location_id').val();
         const bayValue = $('#bay').val();
+
         $('#loading').show();
 
         $.ajax({
@@ -525,6 +468,7 @@
                 $('#loading').hide(); 
             }
         });
+        $('#header_bay_id').val(bayValue);
     });
 
     // update total qty
@@ -539,6 +483,31 @@
         $('#total_qty').val(totalQuantity);
     }
 
+    $('#btn-confirm-submit').on('click', function(e) {
+        e.preventDefault(); 
+        const form = document.getElementById('collect_token');
+
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: "Are you sure you want to create collected token?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3C8DBC',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Create',
+                iconColor: '#3C8DBC',
+                returnFocus: false,
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingBackdrop').show();
+                    form.submit(); 
+                }
+            });
+        } else {
+            form.reportValidity();
+        }
+    });
 </script>
 @endpush
 

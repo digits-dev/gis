@@ -305,30 +305,51 @@
                                     <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
                                     <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
                                     <td><span class="variance">{{$perLine->variance}}</span></td>
-                                    <td><span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span></td>
+                                    <td>
+                                        @if(empty($collected_tokens->confirmed_by))
+                                            <span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span>
+                                        @elseif(!empty($collected_tokens->confirmed_by))
+                                            <span class="projectedCapsuleSales">{{$perLine->actual_capsule_sales}}</span>
+                                        @endif
+                                    </td>
                                     <td><span class="currentMachineInventory">{{$capsuleLine->qty}}</span></td>
                                     <td>
-                                        @php
-                                            $currentMachineInventory = $capsuleLine->qty; 
-                                        @endphp
-                                        <span class="variance-status
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                no-variance-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                short-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                over-type
-                                            @endif
-                                        ">
-                                            
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                Over
-                                            @endif
-                                        </span>
+                                        @if(empty($collected_tokens->confirmed_by))
+                                            @php
+                                                $currentMachineInventory = $capsuleLine->qty; 
+                                            @endphp
+                                            <span class="variance-status
+                                                @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                    no-variance-type
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                    short-type
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                    over-type
+                                                @endif
+                                            ">
+                                                
+                                                @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                                    No Variance
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                                    Short
+                                                @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                                    Over
+                                                @endif
+                                            </span>
+
+                                        @elseif(!empty($collected_tokens->confirmed_by))
+                                            <span class="variance-status
+                                                @if ($perLine->variance_type == "No Variance") 
+                                                    no-variance-type
+                                                @elseif ($perLine->variance_type == "Short") 
+                                                    short-type
+                                                @elseif ($perLine->variance_type == "Over") 
+                                                    over-type
+                                                @endif
+                                            ">
+                                                {{$perLine->variance_type}}
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
