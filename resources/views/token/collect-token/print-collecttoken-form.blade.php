@@ -283,9 +283,13 @@
                     @endforeach
                 </select> 
             </div>
-        </div>  
+        </div>
+        <div style="margin-top: 10px;"><b style="color: red">Note:</b> Only transactions have the status <b style="color: red">FOR RECEIVING</b> will appear here.</div>
     </div>
     <div class='panel-footer no-print'>
+        <div class="form-button pull-left" style=" margin-top:10px;" >
+            <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn-submit" style="padding: 10px 20px; background:#838383; border: 1px solid #838383; margin-right: 5px;">Back</a>
+        </div>
         <div class="pull-right"  style=" display:flex">
             <div class="form-button" >
                 <button class="btn-submit"  id="btn-reset" style="background:#e73131; border: 1px solid #d34040; margin-right: 5px;">Reset</button>
@@ -347,6 +351,7 @@
 @push('bottom')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+    $('.content-header').hide();
     $(document).ready(function () {
         $('#print-button').on('click', function(){
             window.print();

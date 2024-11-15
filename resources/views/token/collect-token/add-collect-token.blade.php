@@ -322,6 +322,7 @@
 @push('bottom')
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script>
+    $('.content-header').hide();
     $(document).ready(function() {
         $('#customSelectLocation select').on('mousedown', function() {
             $('#customSelectLocation').toggleClass('open');

@@ -366,5 +366,6 @@
 
 @push('bottom')
 <script>
+    $('.content-header').hide();
 </script>
 @endpush
