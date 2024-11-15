@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CollectTokenMessage extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'collect_token_id',
+        'message',
+        'created_by',
+    ];
     
     public function getUser() : BelongsTo {
         return $this->belongsTo(CmsUsers::class, 'created_by', 'id');

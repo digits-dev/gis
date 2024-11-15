@@ -60,7 +60,7 @@ class CollectRrTokens extends Model
 
     public function collectTokenMessages() : HasMany
     {
-        return $this->hasMany(CollectTokenMessage::class, 'collect_token_id', 'id');
+        return $this->hasMany(CollectTokenMessage::class, 'collect_token_id', 'id')->orderBy('created_at', 'desc');
     }
 
     public function scopeDetail($query, $id){

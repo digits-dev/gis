@@ -334,8 +334,11 @@
                 <div class="input-container">
                     <div style="font-weight: 600">Bay</div>
                     <div class="custom-select" id="customSelectBay">
-                        <select name="bay" id="bay" disabled required>
+                        <select name="bay" id="bay"  required disabled>
                             <option value="" disabled selected>Select Bay</option>
+                            {{-- @foreach($gasha_machine_bay as $perBay)
+                                <option value="{{$perBay->id}}">{{$perBay->id}}</option>
+                            @endforeach --}}
                         </select>
                     </div>
                 </div>
@@ -371,50 +374,17 @@
                 </tfoot>
             </table>
             
+                <div style="font-weight: 600">Remarks</div>
+                <div class="remarks_aria">
+                    <textarea name="remarks" id="remarks" rows="4" class="form-control" style="border-radius: 7px;" placeholder="Enter your remarks here..."></textarea>
+                </div>
+
             <div class="form-button" style="margin-top: 15px;" >
                 <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
                 <button type="submit" class="btn-submit pull-right" id="btn-submit">Confirm</button>
             </div>
         </div>
     </form>
-
-    {{-- CHAT --}}
-    <div class="chat-button" id="chat-button" style="display:show">
-        <i class="fa fa-comment-o" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
-        <span style="font-weight: 600; font-size:18px;">Chat</span>
-    </div>
-
-    <div class="chat-container" id="chat-container" style="display: none">
-        <div class="top-chat-container">
-            <div style="font-size: 18px; font-weight:600">Messages</div>
-            <i class="fa fa-times" aria-hidden="true" style="font-size: 18px; cursor: pointer;" id="chat-close"></i>
-        </div>
-        <div class="body-chat-container">
-            <div class="chat-content-right">
-                <p style="margin: 0; padding:0; word-wrap: break-word; word-break: break-all;">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab, delectus.</p>
-            </div>
-
-            <div class="chat-content-left">
-                <div class="profile" style="background-color: #e04923; width:fit-content; height:fit-content; padding:10px 13px; border-radius:50px;">
-                    <i class="fa fa-user" aria-hidden="true" style="color:white; font-size:16px;"></i>
-                </div>
-                <div class="left-chat-details">
-                    <div style="font-size: 12px; margin-bottom: 2px; color:#6d6a6a;">Mark Anthony Aguilar <span> | Cashier</span></div>
-                    <div class="chat-content-left-text">
-                        <p style="margin: 0; padding:0; word-wrap: break-word; word-break: break-all;">Sample Text qweqoweqowieuqoiwueqoiwueqoiwue</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bottom-chat-container">
-            <div class="chat-textarea-div">
-                <textarea rows="1" id="auto-resize-textarea" placeholder="Enter your message..."></textarea>
-            </div>
-            <div class="chat-send">
-                <i class="fa fa-paper-plane" aria-hidden="true" style="color:white; font-size:16px;"></i>
-            </div>
-        </div>
-    </div>
 
 
 @endsection
@@ -458,22 +428,19 @@
         $('#chat-button').show();
     });
 
-    // filtered bay base on location
     let baysData = @json($gasha_machines->mapWithKeys(function($item) {
         return [$item->location_id => $item->bays]; 
     }));
 
     $('#location').change(function() {
-        let locationName = $(this).val();
-        if (locationName) {
-            let bays = baysData[locationName] ? baysData[locationName].split(',') : [];
-
+        let location_id = $(this).val();
+        let bay_id = $('#bay').val();
+        if (location_id) {
+            let bays = baysData[location_id] ? baysData[location_id].split(',') : [];
             $('#bay').prop('disabled', false);
-
             $('#bay').empty();
             $('#bay').append('<option value="" disabled selected>Select Bay</option>');
-
-            if (bays.length > 0) {
+            if (bay_id is in bays) {
                 $.each(bays, function(index, bay) {
                     $('#bay').append('<option value="' + bay.trim() + '">' + bay.trim() + '</option>');
                 });
@@ -483,9 +450,8 @@
         } else {
             $('#bay').prop('disabled', true).empty().append('<option value="" disabled selected>Select Bay</option>');
         }
-        $('#header_location_id').val(locationName);
+        $('#header_location_id').val(location_id);
     });
-    // end filteration here
 
     // request machines filteration on change bay 
     $('#bay').on('change', function(){

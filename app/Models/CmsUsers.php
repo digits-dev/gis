@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CmsModels\CmsPrivileges;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -56,5 +57,9 @@ class CmsUsers extends Authenticatable
 
     public function messages() : HasMany{
         return $this->hasMany(CollectTokenMessage::class, 'created_by', 'id');
+    }
+
+    public function getPrivilege() : BelongsTo {
+        return $this->belongsTo(CmsPrivileges::class, 'id_cms_privileges', 'id');
     }
 }

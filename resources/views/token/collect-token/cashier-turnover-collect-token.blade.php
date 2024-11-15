@@ -240,7 +240,7 @@
         padding: 0 5px 5px 5px;
         overflow: auto;
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
         gap: 5px
     }
 
@@ -502,6 +502,7 @@
         </div>
         <div class="body-chat-container">
             @foreach ($collected_tokens as $CTHeader)
+                <input type="hidden" name="message_collect_token_id" id="message_collect_token_id" value="{{$CTHeader->id}}" readonly>
                 @foreach ($CTHeader->collectTokenMessages as $perMessage)
                     @if ($perMessage->created_by == CRUDBooster::myId())
                         <div class="chat-content-right">
@@ -517,7 +518,7 @@
 
                             </div>
                             <div class="left-chat-details">
-                                <div style="font-size: 12px; margin-bottom: 2px; color:#6d6a6a;">{{$perMessage->getUser->name}} <span> | Cashier</span></div>
+                                <div style="font-size: 12px; margin-bottom: 2px; color:#6d6a6a;">{{$perMessage->getUser->name}} <span> | {{$perMessage->getUser->getPrivilege->name}}</span></div>
                                 <div class="chat-content-left-text">
                                     <p style="margin: 0; padding:0; word-wrap: break-word; word-break: break-all;">{{$perMessage->message}}</p>
                                 </div>
@@ -529,10 +530,10 @@
         </div>
         <div class="bottom-chat-container">
             <div class="chat-textarea-div">
-                <textarea rows="1" id="auto-resize-textarea" placeholder="Enter your message..."></textarea>
+                <textarea rows="1" id="auto-resize-textarea" class="new_remarks" placeholder="Enter your message..."></textarea>
             </div>
             <div class="chat-send">
-                <i class="fa fa-paper-plane" aria-hidden="true" style="color:white; font-size:16px;"></i>
+                <i class="fa fa-paper-plane" id="send_new_remarks" aria-hidden="true" style="color:white; font-size:16px;"></i>
             </div>
         </div>
     </div>
@@ -540,6 +541,7 @@
 @endsection
 
 @push('bottom')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script>
     $(document).ready(function() {
         $(function(){
@@ -620,6 +622,59 @@
         $(this).closest('tr').find('.variance-status').text(statusText);
         $(this).closest('tr').find('.variance-status').val(statusText);
     });
+
+    $('#send_new_remarks').on('click', function() {
+        submitMessage();
+    });
+
+    $('.new_remarks').on('keydown', function(event) {
+        if (event.keyCode === 13 && !event.shiftKey) {
+            event.preventDefault();
+            submitMessage();
+        }
+    });
+
+    function submitMessage(){
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const MessageCollectTokenId = $('#message_collect_token_id').val();
+        const NewRemarks = $('.new_remarks').val();
+        
+        if (NewRemarks.trim() === '') {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Please enter your message!"
+            });
+            return;
+        }
+
+        $.ajax({
+            url:'{{route("postNewRemarks")}}',
+            method: 'POST',
+            data: {
+                MessageCollectTokenId: MessageCollectTokenId,
+                NewRemarks: NewRemarks,
+                _token: csrfToken,
+            },
+            success: function(response) {
+                console.log(response);
+                const newMessage = `
+                    <div class="chat-content-right">
+                        <p style="margin: 0; padding: 0; word-wrap: break-word; word-break: break-all;">${response.message}</p>
+                    </div>
+                `;
+                $('.body-chat-container').prepend(newMessage);
+                $('.body-chat-container').scrollTop($('.body-chat-container')[0].scrollHeight);
+                $('.new_remarks').val("");
+                
+            },
+            error: function() {
+                alert('Error Request!');
+            }
+            
+        });
+
+    }
 
 </script>
 @endpush

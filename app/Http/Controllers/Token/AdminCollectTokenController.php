@@ -8,6 +8,7 @@ use App\Models\CollectTokenMessage;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
 use App\Models\Submaster\GashaMachines;
+use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\TokenConversion;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
@@ -86,7 +87,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'showIf' => "[statuses_id] == '" . Statuses::FORSTOREHEADAPPROVAL . "'"
 			];
 		}
-		
 	}
 
 	public function getDetail($id)
@@ -101,20 +101,22 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	}
 
 
-	public function hook_query_index(&$query) {
-		if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
+	public function hook_query_index(&$query)
+	{
+		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
-				  ->orderBy('collect_rr_tokens.id', 'desc');
-		}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
+				->orderBy('collect_rr_tokens.id', 'desc');
+		} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5, 6, 11, 12])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
-				  ->whereNull('collect_rr_tokens.deleted_at')
-				  ->orderBy('collect_rr_tokens.id', 'desc');
+				->whereNull('collect_rr_tokens.deleted_at')
+				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}
 
 	// STEP 1
 
-	public function getPrintForm(){
+	public function getPrintForm()
+	{
 		$data = [];
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
@@ -128,18 +130,20 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['gasha_machines'] = GashaMachines::getMachineWithBay()->get();
-		
+		$data['gasha_machine_bay'] = GashaMachinesBay::all();
+
 		return view("token.collect-token.add-collect-token", $data);
 	}
-	
+
 	public function getMachines(Request $request)
 	{
 		$location_id = $request->input('location');
 		$bay = $request->input('bay');
 		$machines = GashaMachines::where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
+		
 		return response()->json($machines);
 	}
-	
+
 	public function postCollectToken(Request $request)
 	{
 		// validations 
@@ -158,7 +162,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$errorMessage = implode('<br>', $errors);
 			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 		}
-		
+
 		// collect token lines to map each array 
 		$ValidatedLines = array_map(function ($gasha_machines_id, $no_of_token, $qty, $variance, $location_id) {
 			return [
@@ -169,10 +173,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'location_id' => $location_id,
 			];
 		}, $validatedData['gasha_machines_id'], $validatedData['no_of_token'], $validatedData['qty'], $validatedData['variance'], $validatedData['location_id']);
-		
+
 		// for collect token header if there's variance in the set
 		$header_variance = (count(array_filter($validatedData['variance'], fn($value) => $value != 0)) > 0) ? 'Yes' : 'No';
-		
+
 		// collect tokens headers
 		$collectTokenHeader = CollectRrTokens::firstOrCreate([
 			'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
@@ -182,6 +186,16 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			'variance' => $header_variance,
 			'created_by' => CRUDBooster::myId()
 		]);
+
+		// Save remarks if provided
+		if ($request->has('remarks') && !empty($request->input('remarks'))) {
+			$collectTokenHeader->collectTokenMessages()->create([
+				'collect_token_id' => $collectTokenHeader->id,
+				'message' => $request->input('remarks'),
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => now(),
+			]);
+		}
 
 		// collect tokens lines
 		foreach ($ValidatedLines as $item) {
@@ -197,12 +211,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'created_at' => now(),
 			]);
 		}
-		
+
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
 	}
-	
+
 	//STEP 2
-	public function getCashierTurnover($id){
+	public function getCashierTurnover($id)
+	{
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
@@ -210,7 +225,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		return view("token.collect-token.cashier-turnover-collect-token", $data);
 	}
-	
+
 	public function postCashierTurnover(Request $request)
 	{
 		// Validate
@@ -256,18 +271,18 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			'confirmed_at' => now()
 		]);
 
-		 // update each collect token line
-		 $updatedCount = 0;
-		 foreach ($ValidatedLines as $perItem) {
+		// update each collect token line
+		$updatedCount = 0;
+		foreach ($ValidatedLines as $perItem) {
 			$updated = $collectTokenHeader->lines()->where('id', $perItem['lines_ids'])->update([
 				'line_status' => Statuses::FORSTOREHEADAPPROVAL,
 				'variance' => $perItem['variance'],
-				'variance_type' => $perItem['variance_type'], 
+				'variance_type' => $perItem['variance_type'],
 				'projected_capsule_sales' => $perItem['projectedCapsuleSales'],
 				'actual_capsule_sales' => $perItem['actualCapsuleSales'],
 				'current_capsule_inventory' => $perItem['currentMachineInventory'],
 				'actual_capsule_inventory' => $perItem['actualCapsuleInventory'],
-				'updated_at' => now(), 
+				'updated_at' => now(),
 			]);
 
 			if ($updated) {
@@ -278,10 +293,23 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
 	}
 
+	public function postNewRemarks(Request $request)
+	{
+		$collect_token_id = $request->input('MessageCollectTokenId');
+		$new_remarks = $request->input('NewRemarks');
+
+		$savedRemaks = CollectTokenMessage::firstOrCreate([
+			'collect_token_id' => $collect_token_id,
+			'message' => $new_remarks,
+			'created_by' => CRUDBooster::myId(),
+		]);
+
+		return response()->json($savedRemaks);
+	}
 
 	// STEP 3
-
-	public function getCollectTokenApproval($id){
+	public function getCollectTokenApproval($id)
+	{
 		$data = [];
 		$data['page_title'] = 'Review Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
@@ -290,8 +318,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		return view("token.collect-token.approve-collect-token", $data);
 	}
 
-	public function postCollectTokenApproval(Request $request){
-		
+	public function postCollectTokenApproval(Request $request)
+	{
+
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
 
 		if ($request->action_type == 'approve'){
@@ -311,9 +340,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'rejected_at' => now(),
 			]);
 		}
-		
-		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
-		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been ". $actionType ."!", 'success');
-	}
 
+		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
+		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
+	}
 }
