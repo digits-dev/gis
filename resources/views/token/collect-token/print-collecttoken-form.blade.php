@@ -377,17 +377,20 @@
         let references = $('#reference_numbers').val();
         let receiver = $('#receiver').val();
 
-        if (references === null || references.length === 0) {
-            $('#ref_required').show();
-            return;
-        }
-        else if (receiver === null || receiver.length === 0){
+        if (receiver === null || receiver.length === 0) {
             $('#receiver_required').show();
             return;
         }
         else{
-            $('#ref_required').hide();
             $('#receiver_required').hide();
+        }
+        if (references === null || references.length === 0) {
+            $('#ref_required').show();
+            return;
+        }
+        else{
+            $('#ref_required').hide();
+            
         }
 
         $('#spinner').show();
@@ -454,6 +457,9 @@
                                     </tr>
                                 </thead>
                                 <tr>
+                                    <td colspan="2"><b>Collector: </b>${item.get_created_by.name}</td>
+                                </tr>
+                                <tr>
                                     <td>Machine #</td>
                                     <td>Qty</td>
                                 </tr>
@@ -470,7 +476,7 @@
                         </div>
                     `;
 
-                    container.prepend(bayTable);
+                    container.append(bayTable);
                 });
 
                 $('#spinner').hide();
