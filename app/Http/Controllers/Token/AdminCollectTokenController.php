@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Token;
 
+use App\Exports\ExportCollectedToken;
 use App\Models\Audit\CollectRrTokens;
 use App\Models\Capsule\CapsuleSales;
 use App\Models\Capsule\InventoryCapsuleLine;
@@ -18,6 +19,7 @@ use App\Models\Submaster\TokenConversion;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminCollectTokenController extends \crocodicstudio\crudbooster\controllers\CBController
 {
@@ -46,7 +48,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$this->button_show = true;
 		$this->button_filter = true;
 		$this->button_import = false;
-		$this->button_export = true;
+		$this->button_export = false;
 		$this->table = "collect_rr_tokens";
 
 		$this->col = [];
@@ -62,7 +64,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 		$this->col[] = ["label" => "Created Date", "name" => "created_at"];
 
-
 		if (CRUDBooster::isCreate()) {
 			if (in_array(CRUDBooster::myPrivilegeId(), self::CANCREATE)) {
 				$this->index_button[] = ["label" => "Add Collect Token", "icon" => "fa fa-plus-circle", "url" => CRUDBooster::mainpath('add_collect_token'), "color" => "success"];
@@ -70,13 +71,12 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::EXPORTER)) {
-			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
+			// $this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
 		}
 		
 		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
 			$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
 		}
-
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 			$this->addaction[] = [
@@ -104,7 +104,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy'])->find($id);
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy', 'collectTokenMessages'])->find($id);
 
 
 		return view("token.collect-token.detail-collect-token", $data);
@@ -374,8 +374,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Review Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getCreatedBy', 'getConfirmedBy', 'getLocation'])->find($id);
-		
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getCreatedBy', 'getConfirmedBy', 'getLocation', 'collectTokenMessages'])->find($id);
+		// dd($data['collected_tokens']);
 		return view("token.collect-token.approve-collect-token", $data);
 	}
 
@@ -461,5 +461,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
 		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
+	}
+
+	public function exportCollectedToken(Request $request){
+		$filter_column = $request->get('filter_column');
+		return Excel::download(new ExportCollectedToken($filter_column), 'Export-Collected-Token- ' . now()->format('Ymd h_i_sa') . '.xlsx');
 	}
 }

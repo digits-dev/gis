@@ -281,20 +281,18 @@
                 <tbody>
                     <tr>
                         <td colspan="3">
-                            <div id="loading" style="display: none;">
-                                <div class="spinner-overlay">
-                                    <div class="spinner"></div> 
-                                </div>
-                                <div style="margin-top: 18px;" id="tableNote">
-                                    <span>Loading, Please wait.</span>
-                                </div>
-                            </div>
+                            <div id="tableNote">
+                                <br>
+                                <img style="width: 50px;" src="https://cdn-icons-png.flaticon.com/128/3281/3281312.png" alt="">
+                                <br><br>
+                                <span class="text-info"><i class="fa fa-exclamation-circle"></i> Please select bay to filter data.</span>
+                            </div>                        
                         </td>
                     </tr>
                 </tbody>
                 
                 <tfoot>
-                    <td colspan="2"><span><b>Totay Quantity</b></span></td>
+                    <td colspan="2"><span><b>Total Quantity</b></span></td>
                     <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center; outline:none;" readonly></td>
                 </tfoot>
             </table>
