@@ -42,7 +42,7 @@
     }
 
     .bay {
-        flex: 1 1 calc(25% - 20px); 
+        flex: 1 1 calc(25% - 10px); 
         text-align: center;
         box-sizing: border-box;
         margin: 10px;
@@ -453,22 +453,29 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <td colspan="2">${item.get_bay.name}</td>
+                                        <td colspan="4">${item.get_bay.name}</td>
                                     </tr>
                                 </thead>
                                 <tr>
-                                    <td colspan="2"><b>Collector: </b>${item.get_created_by.name}</td>
+                                    <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
                                 </tr>
                                 <tr>
                                     <td>Machine #</td>
+                                    <td>JAN #</td>
+                                    <td>Item Description</td>
                                     <td>Qty</td>
                                 </tr>
                                 <tbody>
                                     ${item.lines.map(machine => `
-                                        <tr><td>${machine.machine_serial.serial_number}</td><td>${machine.qty}</td></tr>
+                                        <tr>
+                                            <td>${machine.machine_serial.serial_number}</td>
+                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
+                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
+                                            <td>${machine.qty}</td>
+                                        </tr>
                                     `).join('')}
                                     <tr>
-                                        <td>Total</td>
+                                        <td colspan="3">Total</td>
                                         <td>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</td>
                                     </tr>
                                 </tbody>

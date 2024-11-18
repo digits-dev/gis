@@ -129,7 +129,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		if ($request->ajax()){
 			$collect_tokens = CollectRrTokens::whereIn('id', $request->references)
-				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getBay')
+				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
 				->orderBy('bay_id', 'asc')
 				->get();
 

@@ -18,6 +18,10 @@
         border-top-right-radius: 10px;
     }
 
+    .red{
+        background-color: #f8d7da;
+    }
+
     .content-panel {
         padding: 15px;
         
@@ -60,7 +64,7 @@
     }
 
     th, td {
-        border: 1px solid #ddd;
+        border: 1px solid #3C8DBC;
         padding: 12px;
         text-align: center;
     }
@@ -349,8 +353,8 @@
                 </div>
 
                 <div class="input-container">
-                    <div style="font-weight: 600">Total Quantity</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->collected_qty}}" disabled>
+                    <div style="font-weight: 600" >Date Created</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
                 </div>
                 
             </div>
@@ -365,64 +369,13 @@
                 </div>
                 
             </div>
-            <div class="inputs-container">
-                <div class="input-container">
-                    <div style="font-weight: 600" >Created By</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getCreatedBy->name}}" disabled>
-                </div>
-
-                <div class="input-container">
-                    <div style="font-weight: 600" >Date Created</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
-                </div>
-
-            </div>
-
-            @if(!empty($collected_tokens->confirmed_by))
-                <div class="inputs-container" style="margin-top: 10px;">
-                    <div class="input-container">
-                        <div style="font-weight: 600">Confirmed By</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getConfirmedBy->name}}" disabled>
-                    </div>
-                    <div class="input-container">
-                        <div style="font-weight: 600">Date Confirmed</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->confirmed_at}}" disabled>
-                    </div>
-                </div>
-            @endif
-            
-            @if(!empty($collected_tokens->approved_by))
-                <div class="inputs-container" style="margin-top: 10px;">
-                    <div class="input-container">
-                        <div style="font-weight: 600">Approved By</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getApprovedBy->name}}" disabled>
-                    </div>
-                    <div class="input-container">
-                        <div style="font-weight: 600">Date Approved</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->approved_at}}" disabled>
-                    </div>
-                </div>
-            @endif
-
-            @if(!empty($collected_tokens->received_by))
-                <div class="inputs-container" style="margin-top: 10px;">
-                    <div class="input-container">
-                        <div style="font-weight: 600">Received By</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getReceivedBy->name}}" disabled>
-                    </div>
-                    <div class="input-container">
-                        <div style="font-weight: 600">Date Received</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->received_at}}" disabled>
-                    </div>
-                </div>
-            @endif
-
             <div class="table-wrapper custom-scroll-x">
                 <table>
                     <thead>
                         <tr>
                             <th>Machine #</th>
                             <th>JAN #</th>
+                            <th>Item Description</th>
                             <th>No of Token</th>
                             <th>Token Collected</th>
                             <th>Variance</th>
@@ -448,9 +401,10 @@
                                 <tr>
                                     <td><span class="serial_number">{{$perLine->machineSerial->serial_number}}</span></td>
                                     <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->digits_code}}</span></td> 
+                                    <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->item_description}}</span></td> 
                                     <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
                                     <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
-                                    <td><span class="variance">{{$perLine->variance}}</span></td>
+                                    <td class="@if($perLine->variance != 0) red @endif"><span class="variance">{{$perLine->variance}}</span></td>
                                     <td>
                                         @if(empty($collected_tokens->confirmed_by))
                                             <span class="projectedCapsuleSales">{{$projectedCapsuleSales}}</span>
