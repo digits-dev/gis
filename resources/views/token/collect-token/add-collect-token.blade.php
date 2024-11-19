@@ -164,14 +164,15 @@
     }
 
     .swal2-popup {
-        width: 500px !important; /* Set a larger width */
-        height: 300px !important;
+        width: 500px !important; 
+        height: 80% !important;
     }
     .swal2-title {
-        font-size: 24px !important; /* Customize the title size */
+        font-size: 24px !important; 
     }
     .swal2-html-container {
-        font-size: 16px !important; /* Customize the text size */
+        font-size: 16px !important;
+        overflow: hidden !important;
     }
 
     .swal2-confirm {
@@ -188,14 +189,14 @@
     }
 
     .swal2-icon {
-        font-size: 16px !important; /* Customize the icon size */
+        font-size: 16px !important; 
         width: 80px !important;
         height: 80px !important;
     }
 
     /* The backdrop (gray transparent background) */
     .loading-backdrop {
-        position: fixed;    /* Fixed to cover the whole page */
+        position: fixed;    
         top: 0;
         left: 0;
         width: 100%;
@@ -411,6 +412,7 @@
                 _token: csrfToken
             },
             success: function(response) {
+
                 if (response && Array.isArray(response) && response.length > 0) {
                     $('#machine-table tbody').empty();
 
@@ -433,7 +435,40 @@
                                 </td>
                             </tr>
                         `;
-                        $('#machine-table tbody').append(append);
+                        if(machine.get_collect_token_lines.length > 0) {
+                            if(machine.get_collect_token_lines[0].line_status == 5){
+                                $('#machine-table tbody').append(append);
+                            } else {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "<strong class='text-warning'> Unavailable <br> currently in collecting process.</strong>",
+                                    showCloseButton: true,
+                                    confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                                    html: `
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Location</th>
+                                                    <th>Bay</th>
+                                                    <th>Reference#</th>
+                                                    <th>Collector</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>${machine.location_name}</td>
+                                                    <td>${machine.get_bay.name}</td>
+                                                    <td>${machine.get_collect_token_lines[0].collect_token_header.reference_number}</td>
+                                                    <td>${machine.get_collect_token_lines[0].collect_token_header.get_created_by.name}</td>
+                                                <tr>
+                                            </tbody>
+                                        </table>
+                                    `
+                                });
+                            }
+                        } else {
+                            $('#machine-table tbody').append(append);
+                        }
                     });
 
                     $('#machine-table').on('input', '.qty-input', function() {

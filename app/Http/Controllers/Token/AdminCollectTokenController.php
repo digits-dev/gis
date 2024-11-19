@@ -210,13 +210,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	{
 		$location_id = $request->input('location');
 		$bay = $request->input('bay');
-		$machines = GashaMachines::where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
-		
-		// foreach ($machines as $per_machine) {
-		// 	$machine_id = $per_machine->id;
-		// 	$CollectRrTokenLines::where('gasha_machines_id', $machine_id)->get();
-
-		// }
+		$machines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getBay'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
 
 		return response()->json($machines);
 	}
@@ -324,7 +318,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			'line_status' => Statuses::FORCONFIRMATION,
 			'updated_at' => now(),
 		]);
-
 		
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
 	}
@@ -502,6 +495,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'statuses_id' => Statuses::COLLECTED,
 				'approved_by' => CRUDBooster::myId(),
 				'approved_at' => now(),
+			]);
+
+			$collectTokenHeader->lines()->update([
+				'line_status' => Statuses::COLLECTED
 			]);
 		}
 

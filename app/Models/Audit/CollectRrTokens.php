@@ -55,7 +55,6 @@ class CollectRrTokens extends Model
         return $this->belongsTo(GashaMachinesBay::class, 'bay_id', 'id');
     }
 
-
     public function getCreatedBy(): BelongsTo
     {
         return $this->belongsTo(CmsUsers::class, 'created_by', 'id');

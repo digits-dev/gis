@@ -36,6 +36,10 @@ class CollectRrTokenLines extends Model
     public function inventory_capsule_lines() : HasMany {
         return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
     }
+
+    public function collectTokenHeader() : BelongsTo {
+        return $this->belongsTo(CollectRrTokens::class, 'collected_token_id', 'id');
+    }
     
     public function scopeDetailBody($query, $id){
         return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')

@@ -28,6 +28,14 @@ class GashaMachines extends Model
         'updated_at'
     ];
 
+    public function getCollectTokenLines() : HasMany {
+         return $this->hasMany(CollectRrTokenLines::class, 'gasha_machines_id', 'id');
+    }
+
+    public function getBay() : BelongsTo {
+        return $this->belongsTo(GashaMachinesBay::class, 'bay', 'id');
+    }
+
     public function scopeActiveMachines($query){
         return $query->where('status','ACTIVE')->get();
     }

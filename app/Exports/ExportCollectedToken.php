@@ -11,13 +11,10 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
 {
     protected $filterColumn;
-    protected $filter;
 
-    public function __construct($filterColumn = null)
+    public function __construct($filter_column)
     {
-        $this->filterColumn = $filterColumn['filter_column'];
-        $this->filter = $filterColumn['filters'];
-        dd($filterColumn);
+        $this->filterColumn = $filter_column;
     }
 
     public function headings(): array
@@ -77,6 +74,16 @@ class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
                         case 'not in':
                             $values = explode(',', $value);
                             $type === 'in' ? $query->whereIn($key, $values) : $query->whereNotIn($key, $values);
+                            break;
+                        case 'between':
+                            $range = $value;
+   
+                            if (count($range) == 2) {
+                                $startDate = date('Y-m-d', strtotime($range[0]));
+                                $endDate = date('Y-m-d', strtotime($range[1]));
+                                
+                                $query->whereBetween('collect_rr_tokens.created_at', [$startDate, $endDate]);
+                            }
                             break;
                         default:
                             $query->where($key, $type, $value);
