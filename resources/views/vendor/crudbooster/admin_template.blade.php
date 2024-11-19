@@ -141,14 +141,14 @@
 <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
-        <section class="content-header" style="background-color: white; border-bottom: 1px solid #e2e2e2; padding-bottom: 15px;">
+        <section class="content-header" style="background-color: white;border-bottom: 1px solid #e2e2e2; padding-bottom: 15px;">
             <?php
             $module = CRUDBooster::getCurrentModule();
             ?>
             @if($module)
                 <h1>
                     <!--Now you can define $page_icon alongside $page_tite for custom forms to follow CRUDBooster theme style -->
-                    <i style="; padding: 8px 10px; border-radius: 10px; color: white;" class="{{ Session::get('theme_color') }} {{ $page_icon ?? $module->icon }}"></i> <span style="font-weight: 700">{!! ucwords(($page_title)?:$module->name) !!}</span>  &nbsp;&nbsp;
+                    <i style=" margin-right: 5px;  padding: 8px 10px; border-radius: 10px; color: white;" class="{{ Session::get('theme_color') }} {{ $page_icon ?? $module->icon }}"></i> <span style="font-weight: 700">{!! ucwords(($page_title)?:$module->name) !!}</span>  &nbsp;&nbsp;
 
                     <!--START BUTTON -->
 
