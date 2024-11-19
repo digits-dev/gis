@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class CollectRrTokens extends Model
 {
@@ -39,53 +40,63 @@ class CollectRrTokens extends Model
         'deleted_at',
     ];
 
-    public function lines() : HasMany {
+    public function lines(): HasMany
+    {
         return $this->hasMany(CollectRrTokenLines::class, 'collected_token_id');
     }
 
-    public function getLocation() : BelongsTo {
+    public function getLocation(): BelongsTo
+    {
         return $this->belongsTo(Locations::class, 'location_id', 'id');
-    } 
-    
-    public function getBay() : BelongsTo {
-        return $this->belongsTo(GashaMachinesBay::class, 'bay_id', 'id');
-    } 
+    }
 
-    
-    public function getCreatedBy() : BelongsTo {
+    public function getBay(): BelongsTo
+    {
+        return $this->belongsTo(GashaMachinesBay::class, 'bay_id', 'id');
+    }
+
+
+    public function getCreatedBy(): BelongsTo
+    {
         return $this->belongsTo(CmsUsers::class, 'created_by', 'id');
     }
-    
-    public function getConfirmedBy() : BelongsTo {
+
+    public function getConfirmedBy(): BelongsTo
+    {
         return $this->belongsTo(CmsUsers::class, 'confirmed_by', 'id');
     }
-    
-    public function getApprovedBy() : BelongsTo {
+
+    public function getApprovedBy(): BelongsTo
+    {
         return $this->belongsTo(CmsUsers::class, 'approved_by', 'id');
     }
-    
-    public function getReceivedBy() : BelongsTo {
+
+    public function getReceivedBy(): BelongsTo
+    {
         return $this->belongsTo(CmsUsers::class, 'received_by', 'id');
     }
 
-    public function collectTokenMessages() : HasMany
+    public function collectTokenMessages(): HasMany
     {
         return $this->hasMany(CollectTokenMessage::class, 'collect_token_id', 'id')->orderBy('created_at', 'desc');
     }
 
-    public function scopeDetail($query, $id){
+    public function scopeDetail($query, $id)
+    {
         return $query->leftjoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')
-                     ->leftjoin('locations', 'collect_rr_tokens.location_id', '=', 'locations.id')
-                     ->leftjoin('cms_users as requestor', 'collect_rr_tokens.created_by', '=', 'requestor.id')
-                     ->leftjoin('cms_users as receiver', 'collect_rr_tokens.received_by', '=', 'receiver.id')
-                     ->select('collect_rr_tokens.id as ct_id',
-                              'collect_rr_tokens.*',
-                              'statuses.*',
-                              'locations.*',
-                              'requestor.name as requestor_name',
-                              'receiver.name as receiver_name',
-                              'collect_rr_tokens.created_at as collect_rr_tokens_created')
-                     ->where('collect_rr_tokens.id',$id)
-                     ->first();
+            ->leftjoin('locations', 'collect_rr_tokens.location_id', '=', 'locations.id')
+            ->leftjoin('cms_users as requestor', 'collect_rr_tokens.created_by', '=', 'requestor.id')
+            ->leftjoin('cms_users as receiver', 'collect_rr_tokens.received_by', '=', 'receiver.id')
+            ->select(
+                'collect_rr_tokens.id as ct_id',
+                'collect_rr_tokens.*',
+                'statuses.*',
+                'locations.*',
+                'requestor.name as requestor_name',
+                'receiver.name as receiver_name',
+                'collect_rr_tokens.created_at as collect_rr_tokens_created'
+            )
+            ->where('collect_rr_tokens.id', $id)
+            ->first();
     }
 }

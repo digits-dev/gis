@@ -89,22 +89,6 @@
         text-align: center;
     }
 
-    th:nth-child(10){
-        position: sticky;
-        right: 0; 
-        background-color: #3C8DBC; 
-        z-index: 2;
-        box-shadow: -1px 0 2px rgba(0, 0, 0, 0.1);
-    }
-
-    td:nth-child(10){
-        position: sticky;
-        right: 0; 
-        background-color: white; 
-        z-index: 2; /* Ensures it stays above other content */
-        box-shadow: -1px 0 2px rgba(0, 0, 0, 0.1);
-    }
-
     th {
         background-color: #3C8DBC;
         color: white;
@@ -402,8 +386,8 @@
                     </div>
 
                     <div class="input-container">
-                        <div style="font-weight: 600">Total Quantity</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->collected_qty}}" disabled>
+                        <div style="font-weight: 600" >Date Created</div>
+                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
                     </div>
                     
                 </div>
@@ -418,32 +402,7 @@
                     </div>
                     
                 </div>
-                
-                <div class="inputs-container">
-                    <div class="input-container">
-                        <div style="font-weight: 600" >Created By</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getCreatedBy->name}}" disabled>
-                    </div>
-                    <div class="input-container">
-                        <div style="font-weight: 600" >Date Created</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->created_at}}" disabled>
-                    </div>
-
-                </div>
-
-                @if(!empty($collected_tokens->confirmed_by))
-                    <div class="inputs-container" style="margin-top: 10px;">
-                        <div class="input-container">
-                            <div style="font-weight: 600">Confirmed By</div>
-                            <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getConfirmedBy->name}}" disabled>
-                        </div>
-                        <div class="input-container">
-                            <div style="font-weight: 600">Date Confirmed</div>
-                            <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->confirmed_at}}" disabled>
-                        </div>
-
-                    </div>
-                @endif
+            
                 
                 <div class="table-wrapper custom-scroll-x">
                     <table>
@@ -451,6 +410,7 @@
                             <tr>
                                 <th>Machine #</th>
                                 <th>JAN #</th>
+                                <th>Item Description</th>
                                 <th>No of Token</th>
                                 <th>Token Collected</th>
                                 <th>Variance</th>
@@ -474,19 +434,29 @@
                                             {{$capsuleLine->getInventoryCapsule->item->digits_code}}
                                             <input type="hidden" name="jan_code[]" id="jan_code" value="{{$capsuleLine->getInventoryCapsule->item->digits_code}}" readonly>
                                         </td> 
-                                        <td>{{$perLine->no_of_token}}</td>
-                                        <td>{{$perLine->qty}}</td>
-                                        <td>{{$perLine->variance}}</td>
-                                        <td>{{$perLine->projected_capsule_sales}}</td>
                                         <td>
+                                            {{$capsuleLine->getInventoryCapsule->item->item_description}}
+                                        </td> 
+                                        <td>{{$perLine->no_of_token}}</td>
+                                        <td class="tokenCollected">{{$perLine->qty}}</td>
+                                        <td
+                                        @if($perLine->variance != 0)
+                                            style="background-color: #f8d7da"
+                                        @endif
+                                            class="variance"
+                                        >
+                                            {{$perLine->variance}}
+                                        </td>
+                                        <td class="projectedCapsuleSales">{{$perLine->projected_capsule_sales}}</td>
+                                        <td class="currentMachineInventory">
                                             {{$perLine->current_capsule_inventory}}
                                             <input type="hidden" name="inventory_capsule_lines_id[]" value="{{$capsuleLine->id}}" readonly>
                                         </td>
-                                        <td>
+                                        <td class="ActualCapsuleInventory">
                                             {{$perLine->actual_capsule_inventory}}
                                             <input type="hidden" name="actual_capsule_inventory[]" value="{{$perLine->actual_capsule_inventory}}" readonly>
                                         </td>
-                                        <td>
+                                        <td class="actualCapsuleSales">
                                             {{$perLine->actual_capsule_sales}}
                                             <input type="hidden" name="actual_capsule_sales[]" value="{{$perLine->actual_capsule_sales}}">
                                         </td>
@@ -514,6 +484,18 @@
                                 @endforeach
                             @endforeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4"><b>Total</b></td>
+                                <td class="total_token_collected"></td>
+                                <td class="total_variance"></td>
+                                <td class="total_projected_capsule_sale"></td>
+                                <td class="total_current_capsule_inventory"></td>
+                                <td class="total_actual_capsule_inventory"></td>
+                                <td class="total_actual_capsule_sales"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -723,6 +705,53 @@ $('.content-header').hide();
             if (result.isConfirmed) {
                 $('#collect_token_details').submit(); 
             }
+        });
+    });
+
+    // compute subtotals
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        function updateTotals() {
+            let totalTokenCollected = 0;
+            let totalVariance = 0;
+            let totalProjectedCapsuleSales = 0;
+            let totalCurrentCapsuleInventory = 0;
+            let totalActualCapsuleInventory = 0;
+            let totalActualCapsuleSales = 0;
+
+            let rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                // Get values from the table columns
+                let tokenCollected = parseFloat(row.querySelector('.tokenCollected')?.textContent || 0);
+                let variance = parseFloat(row.querySelector('.variance')?.textContent || 0);
+                let projectedCapsuleSales = parseFloat(row.querySelector('.projectedCapsuleSales')?.textContent || 0);
+                let currentMachineInventory = parseFloat(row.querySelector('.currentMachineInventory')?.textContent || 0);
+                let actualCapsuleInventory = parseFloat(row.querySelector('.ActualCapsuleInventory')?.textContent || 0);
+                let actualCapsuleSales = parseFloat(row.querySelector('.actualCapsuleSales')?.textContent || 0);
+
+                totalTokenCollected += tokenCollected;
+                totalVariance += variance;
+                totalProjectedCapsuleSales += projectedCapsuleSales;
+                totalCurrentCapsuleInventory += currentMachineInventory;
+                totalActualCapsuleInventory += actualCapsuleInventory;
+                totalActualCapsuleSales += actualCapsuleSales;
+            });
+            
+            // Update the footer with the totals
+            document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
+            document.querySelector('.total_variance').textContent = totalVariance.toFixed();
+            document.querySelector('.total_projected_capsule_sale').textContent = totalProjectedCapsuleSales.toFixed();
+            document.querySelector('.total_current_capsule_inventory').textContent = totalCurrentCapsuleInventory.toFixed();
+            document.querySelector('.total_actual_capsule_inventory').textContent = totalActualCapsuleInventory.toFixed();
+            document.querySelector('.total_actual_capsule_sales').textContent = totalActualCapsuleSales.toFixed();
+        }
+
+        updateTotals();
+
+        // Recalculate totals when ActualCapsuleInventory is updated
+        document.querySelectorAll('.ActualCapsuleInventory').forEach(input => {
+            input.addEventListener('input', updateTotals);
         });
     });
 </script>

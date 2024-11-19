@@ -455,6 +455,16 @@
                             @endforeach
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4"><b>Total</b></td>
+                            <td class="total_token_collected"></td>
+                            <td class="total_variance"></td>
+                            <td class="total_capsule_sales"></td>
+                            <td class="total_machine_inventory"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -620,5 +630,46 @@ $('.content-header').hide();
             
         });
     }
+
+     // compute subtotals
+     document.addEventListener('DOMContentLoaded', function () {
+        
+        function updateTotals() {
+            let totalTokenCollected = 0;
+            let totalVariance = 0;
+            let totalProjectedCapsuleSales = 0;
+            let totalCurrentCapsuleInventory = 0;
+            let totalActualCapsuleInventory = 0;
+            let totalActualCapsuleSales = 0;
+
+            let rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                // Get values from the table columns
+                let tokenCollected = parseFloat(row.querySelector('.tokenCollected')?.textContent || 0);
+                let variance = parseFloat(row.querySelector('.variance')?.textContent || 0);
+                let projectedCapsuleSales = parseFloat(row.querySelector('.projectedCapsuleSales')?.textContent || 0);
+                let currentMachineInventory = parseFloat(row.querySelector('.currentMachineInventory')?.textContent || 0);
+
+                totalTokenCollected += tokenCollected;
+                totalVariance += variance;
+                totalProjectedCapsuleSales += projectedCapsuleSales;
+                totalCurrentCapsuleInventory += currentMachineInventory;
+            });
+            
+            // Update the footer with the totals
+            document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
+            document.querySelector('.total_variance').textContent = totalVariance.toFixed();
+            document.querySelector('.total_capsule_sales').textContent = totalProjectedCapsuleSales.toFixed();
+            document.querySelector('.total_machine_inventory').textContent = totalCurrentCapsuleInventory.toFixed();
+        }
+
+        updateTotals();
+
+        // Recalculate totals when ActualCapsuleInventory is updated
+        document.querySelectorAll('.ActualCapsuleInventory').forEach(input => {
+            input.addEventListener('input', updateTotals);
+        });
+    });
 </script>
 @endpush

@@ -60,26 +60,11 @@
     }
 
     th, td {
-        border: 1px solid #ddd;
+        border: 1px solid #3C8DBC;
         padding: 12px;
         text-align: center;
     }
 
-    th:nth-child(10){
-        position: sticky;
-        right: 0; 
-        background-color: #3C8DBC; 
-        z-index: 2;
-        box-shadow: -1px 0 2px rgba(0, 0, 0, 0.1);
-    }
-
-    td:nth-child(10){
-        position: sticky;
-        right: 0; 
-        background-color: white; 
-        z-index: 2; /* Ensures it stays above other content */
-        box-shadow: -1px 0 2px rgba(0, 0, 0, 0.1);
-    }
 
     th {
         background-color: #3C8DBC;
@@ -423,10 +408,9 @@
                     <div style="font-weight: 600">Reference Number</div>
                     <input type="text" style="border-radius: 5px;" value="{{$detail->reference_number}}" disabled>
                 </div>
-
                 <div class="input-container">
-                    <div style="font-weight: 600">Total Quantity</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->collected_qty}}" disabled>
+                    <div style="font-weight: 600" >Date Created</div>
+                    <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
                 </div>
                 
             </div>
@@ -441,18 +425,6 @@
                 </div>
                 
             </div>
-            <div class="inputs-container">
-                <div class="input-container">
-                    <div style="font-weight: 600" >Created By</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->getCreatedBy->name}}" disabled>
-                </div>
-
-                <div class="input-container">
-                    <div style="font-weight: 600" >Date Created</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->created_at}}" disabled>
-                </div>
-
-            </div>
             
             <div class="table-wrapper custom-scroll-x">
                 <table>
@@ -460,6 +432,7 @@
                         <tr>
                             <th>Machine #</th>
                             <th>JAN #</th>
+                            <th>Item Description</th>
                             <th>No of Token</th>
                             <th>Token Collected</th>
                             <th>Variance</th>
@@ -495,6 +468,9 @@
                                         <input type="hidden" name="jan#[]" value="{{$capsuleLine->getInventoryCapsule->item->digits_code}}" readonly>
                                     </td> 
                                     <td>
+                                        <span class="jan#">{{$capsuleLine->getInventoryCapsule->item->item_description}}</span>
+                                    </td> 
+                                    <td>
                                         <span class="no_of_token">{{$perLine->no_of_token}}</span>
                                         <input type="hidden" name="no_of_token[]" value="{{$perLine->no_of_token}}" readonly>
                                     </td>
@@ -502,7 +478,11 @@
                                         <span class="tokenCollected">{{$perLine->qty}}</span>
                                         <input type="hidden" name="tokenCollected[]" value="{{$perLine->qty}}" readonly>
                                     </td>
-                                    <td>
+                                    <td 
+                                        @if($perLine->variance != 0)
+                                            style="background-color: #f8d7da"
+                                        @endif
+                                    >
                                         <span class="variance">{{$perLine->variance}}</span>
                                         <input type="hidden" class="defaultVariance" value="{{$perLine->variance}}" readonly>
                                         <input type="hidden" class="variance" name="variance[]" value="{{$perLine->variance}}" readonly>
@@ -519,7 +499,7 @@
                                         @if ($perLine->variance != 0)
                                             <input type="text" placeholder="Enter Quantity" class="ActualCapsuleInventory" name="actualCapsuleInventory[]" style="text-align: center; border-radius: 7px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
                                         @elseif ($perLine->variance == 0)
-                                            <input type="text" name="actualCapsuleInventory[]" id="actualCapsuleInventory" style="text-align: center; border: none; outline:none; background:transparent;" value="{{$capsuleLine->qty}}" readonly>
+                                            <input type="text" name="actualCapsuleInventory[]" class="ActualCapsuleInventory" style="text-align: center; border: none; outline:none; background:transparent;" value="{{$capsuleLine->qty}}" readonly>
                                         @endif
                                     </td>
                                     <td>
@@ -565,6 +545,18 @@
                             @endforeach
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4"><b>Total</b></td>
+                            <td class="total_token_collected"></td>
+                            <td class="total_variance"></td>
+                            <td class="total_projected_capsule_sale"></td>
+                            <td class="total_current_capsule_inventory"></td>
+                            <td class="total_actual_capsule_inventory"></td>
+                            <td class="total_actual_capsule_sales"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         
@@ -691,7 +683,7 @@
             statusText = "Short";
             $(this).closest('tr').find('.variance').text(defaultVariance);
             $(this).closest('tr').find('.variance-status').addClass('short-type');
-            $(this).closest('tr').find('.variance').parent().css({'background': ''});
+            $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
             $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
 
         } else if ((currentMachineInventory - projectedCapsuleSales) != actualCapsuleInventory && variance > 0) {
@@ -702,12 +694,11 @@
                 const newVariance = Math.abs((actualCapsuleSales * no_of_token) - token_collected);
                 $(this).closest('tr').find('.variance').text(newVariance);
                 $(this).closest('tr').find('.variance').val(newVariance);
-                $(this).closest('tr').find('.variance').parent().css({'background': 'lightgreen'});
+                $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
             } else if (actualCapsuleInventory == ""){
                 $(this).closest('tr').find('.variance').text(defaultVariance);
                 $(this).closest('tr').find('.variance').val(defaultVariance);
-                $(this).closest('tr').find('.variance').parent().css({'background': ''});
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': ''});
             }
         }
@@ -715,6 +706,10 @@
         $(this).closest('tr').find('.variance-status').text(statusText);
         $(this).closest('tr').find('.variance-status').val(statusText);
     });
+
+    $(document).ready(function(){
+        const no_of_token = $('.no_of_token').text();
+    })
 
     $('#send_new_remarks').on('click', function() {
         submitMessage();
@@ -792,6 +787,58 @@
         } else {
             form.reportValidity();
         }
+    });
+
+    // compute subtotals
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        function updateTotals() {
+            let totalTokenCollected = 0;
+            let totalVariance = 0;
+            let totalProjectedCapsuleSales = 0;
+            let totalCurrentCapsuleInventory = 0;
+            let totalActualCapsuleInventory = 0;
+            let totalActualCapsuleSales = 0;
+
+            let rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                // Get values from the table columns
+                let tokenCollected = parseFloat(row.querySelector('.tokenCollected')?.textContent || 0);
+                let variance = parseFloat(row.querySelector('.variance')?.textContent || 0);
+                let projectedCapsuleSales = parseFloat(row.querySelector('.projectedCapsuleSales')?.textContent || 0);
+                let currentMachineInventory = parseFloat(row.querySelector('.currentMachineInventory')?.textContent || 0);
+                let actualCapsuleInventory = parseFloat(row.querySelector('.ActualCapsuleInventory')?.value || 0);
+                let actualCapsuleSales = parseFloat(row.querySelector('.actualCapsuleSales')?.value || 0);
+
+                // If actualCapsuleSales is 0, use projectedCapsuleSales for calculation
+                if (variance === 0 && actualCapsuleSales === 0) {
+                    actualCapsuleSales = projectedCapsuleSales;
+                }
+
+                totalTokenCollected += tokenCollected;
+                totalVariance += variance;
+                totalProjectedCapsuleSales += projectedCapsuleSales;
+                totalCurrentCapsuleInventory += currentMachineInventory;
+                totalActualCapsuleInventory += actualCapsuleInventory;
+                totalActualCapsuleSales += actualCapsuleSales;
+            });
+            
+            // Update the footer with the totals
+            document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
+            document.querySelector('.total_variance').textContent = totalVariance.toFixed();
+            document.querySelector('.total_projected_capsule_sale').textContent = totalProjectedCapsuleSales.toFixed();
+            document.querySelector('.total_current_capsule_inventory').textContent = totalCurrentCapsuleInventory.toFixed();
+            document.querySelector('.total_actual_capsule_inventory').textContent = totalActualCapsuleInventory.toFixed();
+            document.querySelector('.total_actual_capsule_sales').textContent = totalActualCapsuleSales.toFixed();
+        }
+
+        updateTotals();
+
+        // Recalculate totals when ActualCapsuleInventory is updated
+        document.querySelectorAll('.ActualCapsuleInventory').forEach(input => {
+            input.addEventListener('input', updateTotals);
+        });
     });
 
 </script>

@@ -27,6 +27,7 @@ class GashaMachines extends Model
         'created_at',
         'updated_at'
     ];
+
     public function scopeActiveMachines($query){
         return $query->where('status','ACTIVE')->get();
     }

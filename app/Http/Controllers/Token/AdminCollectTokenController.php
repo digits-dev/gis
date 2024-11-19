@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Token;
 
 use App\Exports\ExportCollectedToken;
+use App\Models\Audit\CollectRrTokenLines;
 use App\Models\Audit\CollectRrTokens;
 use App\Models\Capsule\CapsuleSales;
 use App\Models\Capsule\InventoryCapsuleLine;
@@ -71,7 +72,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::EXPORTER)) {
-			// $this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
+			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
 		}
 		
 		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
@@ -200,6 +201,12 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$bay = $request->input('bay');
 		$machines = GashaMachines::where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
 		
+		// foreach ($machines as $per_machine) {
+		// 	$machine_id = $per_machine->id;
+		// 	$CollectRrTokenLines::where('gasha_machines_id', $machine_id)->get();
+
+		// }
+
 		return response()->json($machines);
 	}
 
@@ -375,7 +382,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Review Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getCreatedBy', 'getConfirmedBy', 'getLocation', 'collectTokenMessages'])->find($id);
-		// dd($data['collected_tokens']);
+
 		return view("token.collect-token.approve-collect-token", $data);
 	}
 
@@ -423,16 +430,18 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			// create capsule sales
 			foreach($ValidatedCapsuleSalesLines as $perCapsuleSale){
-				CapsuleSales::firstOrCreate([
-					'reference_number' => $validatedData['ref_number'],
-					'item_code' => $perCapsuleSale['jan_code'],
-					'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
-					'locations_id' => $perCapsuleSale['location_id'],
-					'qty' => $perCapsuleSale['actual_capsule_sales'],
-					'sales_type_id' => SalesType::COLLECTTOKEN,
-					'created_by' => CRUDBooster::myId(),
-					'created_at' => now()
-				]);
+				if ($perCapsuleSale['actual_capsule_sales'] > 0) {
+					CapsuleSales::firstOrCreate([
+						'reference_number' => $validatedData['ref_number'],
+						'item_code' => $perCapsuleSale['jan_code'],
+						'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
+						'locations_id' => $perCapsuleSale['location_id'],
+						'qty' => $perCapsuleSale['actual_capsule_sales'],
+						'sales_type_id' => SalesType::COLLECTTOKEN,
+						'created_by' => CRUDBooster::myId(),
+						'created_at' => now()
+					]);
+				}
 			}
 
 			// update inventory capsule lines qty
@@ -444,7 +453,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			// approved
 			$collectTokenHeader->update([
-				'statuses_id' => Statuses::FORRECEIVING,
+				'statuses_id' => Statuses::COLLECTED,
 				'approved_by' => CRUDBooster::myId(),
 				'approved_at' => now(),
 			]);
@@ -453,7 +462,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		else {
 			// rejected
 			$collectTokenHeader->update([
-				'statuses_id' => Statuses::FORCASHIERTURNOVER,
+				'statuses_id' => Statuses::FORCONFIRMATION,
 				'rejected_by' => CRUDBooster::myId(),
 				'rejected_at' => now(),
 			]);
@@ -465,6 +474,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function exportCollectedToken(Request $request){
 		$filter_column = $request->get('filter_column');
+
 		return Excel::download(new ExportCollectedToken($filter_column), 'Export-Collected-Token- ' . now()->format('Ymd h_i_sa') . '.xlsx');
 	}
 }

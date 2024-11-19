@@ -21,5 +21,6 @@ class Statuses extends Model
     public const FORAPPROVAL = 9;
     public const FORCASHIERTURNOVER = 10;
     public const FORSTOREHEADAPPROVAL = 11;
+    public const FORCONFIRMATION = 12;
 
 }
