@@ -397,7 +397,7 @@
 @endpush
 @section('content')
 <div class="panel panel-default form-content">
-<form id="confirm-details" method="POST" action="{{route('postCashierTurnover')}}" id="collect_token_details">
+<form id="confirm-details" method="POST" action="{{route('postConfirmToken')}}" id="collect_token_details">
     @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
@@ -438,6 +438,8 @@
                             <th>Variance</th>
                             <th>Projected Capsule Sales</th>
                             <th>Current Capsule Inventory</th>
+                            <th>Actual Capsule Inventory</th>
+                            <th>Actual Capsule Sales</th>
                             <th>Variance Type</th>
                         </tr>
                     </thead>
@@ -494,6 +496,21 @@
                                         <input type="hidden" name="currentMachineInventory[]" value="{{$capsuleLine->qty}}" readonly>
                                     </td>
                                     <td>
+                                        @if ($perLine->variance != 0)
+                                            <input type="text" placeholder="Enter Quantity" class="ActualCapsuleInventory" name="actualCapsuleInventory[]" style="text-align: center; border-radius: 7px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
+                                        @elseif ($perLine->variance == 0)
+                                            <input type="text" name="actualCapsuleInventory[]" class="ActualCapsuleInventory" style="text-align: center; border: none; outline:none; background:transparent;" value="{{$capsuleLine->qty}}" readonly>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="actualCapsuleSales">
+                                            @if ($perLine->variance == 0)
+                                                {{$projectedCapsuleSales}}  
+                                            @endif
+                                        </span>
+                                        <input type="hidden" class="actualCapsuleSales" name="actualCapsuleSales[]" value="{{$projectedCapsuleSales}}" readonly>
+                                    </td>
+                                    <td>
                                         @php
                                             $currentMachineInventory = $capsuleLine->qty; 
                                         @endphp
@@ -535,6 +552,8 @@
                             <td class="total_variance"></td>
                             <td class="total_projected_capsule_sale"></td>
                             <td class="total_current_capsule_inventory"></td>
+                            <td class="total_actual_capsule_inventory"></td>
+                            <td class="total_actual_capsule_sales"></td>
                             <td></td>
                         </tr>
                     </tfoot>
@@ -546,7 +565,7 @@
     </form>
     <div class="form-button panel-footer" style="margin-top: 15px;" >
         <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
-        <button type="submit" class="btn-submit pull-right" id="btn-confirm-details">Collect Token</button>
+        <button type="submit" class="btn-submit pull-right" id="btn-confirm-details">Confirm</button>
     </div>
 </div>
 
@@ -630,6 +649,63 @@
         $('#chat-button').show();
     });
 
+    $('.ActualCapsuleInventory').on('input', function() {
+        let actualCapsuleInventory = parseFloat($(this).val()); 
+        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = ''; 
+        
+        const no_of_token = parseFloat($(this).closest('tr').find('.no_of_token').text());
+        const token_collected = parseFloat($(this).closest('tr').find('.tokenCollected').text());
+        const defaultVariance = parseFloat($(this).closest('tr').find('.defaultVariance').val()); 
+
+        const currentMachineInventory = parseFloat($(this).closest('tr').find('.currentMachineInventory').text()); 
+        const variance = parseFloat($(this).closest('tr').find('.variance').text()); 
+        const projectedCapsuleSales = parseFloat($(this).closest('tr').find('.projectedCapsuleSales').text()); 
+
+        let actualCapsuleSales = '';
+        if (actualCapsuleInventory !== '') {
+            actualCapsuleSales = currentMachineInventory - actualCapsuleInventory; 
+        }
+
+        if (variance != 0 && actualCapsuleInventory !== '') {
+            $(this).closest('tr').find('.actualCapsuleSales').text(actualCapsuleSales);
+            $(this).closest('tr').find('.actualCapsuleSales').val(actualCapsuleSales);
+        } else {
+            $(this).closest('tr').find('.actualCapsuleSales').text('');
+        }
+
+        let statusText = "";
+        $(this).closest('tr').find('.variance-status').removeClass('no-variance-type short-type over-type');
+
+        if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance == 0) {
+            statusText = "No Variance";
+            $(this).closest('tr').find('.variance-status').addClass('no-variance-type');
+        } else if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance > 0) {
+            statusText = "Short";
+            $(this).closest('tr').find('.variance').text(defaultVariance);
+            $(this).closest('tr').find('.variance-status').addClass('short-type');
+            $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
+            $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
+
+        } else if ((currentMachineInventory - projectedCapsuleSales) != actualCapsuleInventory && variance > 0) {
+            statusText = "Over";
+            $(this).closest('tr').find('.variance-status').addClass('over-type');
+            
+            if (actualCapsuleInventory !== '') {
+                const newVariance = Math.abs((actualCapsuleSales * no_of_token) - token_collected);
+                $(this).closest('tr').find('.variance').text(newVariance);
+                $(this).closest('tr').find('.variance').val(newVariance);
+                $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
+                $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
+            } else if (actualCapsuleInventory == ""){
+                $(this).closest('tr').find('.variance').text(defaultVariance);
+                $(this).closest('tr').find('.variance').val(defaultVariance);
+                $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': ''});
+            }
+        }
+        // Set the status text
+        $(this).closest('tr').find('.variance-status').text(statusText);
+        $(this).closest('tr').find('.variance-status').val(statusText);
+    });
 
     $(document).ready(function(){
         const no_of_token = $('.no_of_token').text();
@@ -669,7 +745,6 @@
                 _token: csrfToken,
             },
             success: function(response) {
-                console.log(response);
                 const newMessage = `
                     <div class="chat-content-right">
                         <p style="margin: 0; padding: 0; word-wrap: break-word; word-break: break-all;">${response.message}</p>
@@ -693,7 +768,7 @@
 
         if (form.checkValidity()) {
             Swal.fire({
-                title: "Are you sure you want to Collected Token?",
+                title: "Are you sure you want to confirm collected token?",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3C8DBC',

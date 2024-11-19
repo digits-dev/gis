@@ -27,6 +27,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::CASHIER];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
+	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
 	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
 	private const EXPORTER = [CmsPrivileges::SUPERADMIN];
@@ -86,6 +87,16 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'icon' => 'fa fa-pencil',
 				'color' => 'warning',
 				'showIf' => "[statuses_id]=='" . Statuses::FORCASHIERTURNOVER . "'"
+			];
+		}
+		
+		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCONFIRMATION)) {
+			$this->addaction[] = [
+				'title' => 'For Confirmation',
+				'url' => CRUDBooster::mainpath('confirm_token/[id]'),
+				'icon' => 'fa fa-check',
+				'color' => 'success',
+				'showIf' => "[statuses_id]=='" . Statuses::FORCONFIRMATION . "'"
 			];
 		}
 
@@ -174,7 +185,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
 		$data ['reference_numbers'] = CollectRrTokens::with('getBay')->select('id','reference_number', 'bay_id')
 			->where('location_id', CRUDBooster::myLocationId())
-			->where('statuses_id', Statuses::FORRECEIVING)
+			->where('statuses_id', Statuses::COLLECTED)
 			->get();
 		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
 
@@ -284,6 +295,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	}
 
 	//STEP 2
+
 	public function getCashierTurnover($id)
 	{
 		$data = [];
@@ -295,6 +307,40 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	}
 
 	public function postCashierTurnover(Request $request)
+	{
+	
+		$collectTokenHeader = CollectRrTokens::find($request->collectedTokenHeader_id);
+		if (!$collectTokenHeader) {
+			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
+		}
+
+		$collectTokenHeader->update([
+			'statuses_id' => Statuses::FORCONFIRMATION,
+			'received_by' => CRUDBooster::myId(),
+			'received_at' => now()
+		]);
+
+		$collectTokenHeader->lines()->update([
+			'line_status' => Statuses::FORCONFIRMATION,
+			'updated_at' => now(),
+		]);
+
+		
+		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
+	}
+
+	//STEP 3
+	public function getConfirmToken($id)
+	{
+		$data = [];
+		$data['page_title'] = 'Collect Token Details';
+		$data['page_icon'] = 'fa fa-circle-o';
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+
+		return view("token.collect-token.confirm-collect-token", $data);
+	}
+
+	public function postConfirmToken(Request $request)
 	{
 		// Validate
 		try {
@@ -375,7 +421,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		return response()->json($savedRemaks);
 	}
 
-	// STEP 3
+	// STEP 4
 	public function getCollectTokenApproval($id)
 	{
 		$data = [];

@@ -650,7 +650,6 @@ $('.content-header').hide();
                 _token: csrfToken,
             },
             success: function(response) {
-                console.log(response);
                 const newMessage = `
                     <div class="chat-content-right">
                         <p style="margin: 0; padding: 0; word-wrap: break-word; word-break: break-all;">${response.message}</p>

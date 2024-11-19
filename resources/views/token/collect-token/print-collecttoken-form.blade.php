@@ -8,6 +8,24 @@
         justify-content: space-between;
     }
 
+    @page { 
+        size: letter;
+        margin-left: 0in;
+        margin-right: 0in;
+        margin-top: 0.5in; 
+        margin-bottom: 1in;
+    }
+
+    @page :header {
+        color: white;
+        display: none;
+    }
+
+    @page :footer {
+        color: white;
+        display: none;
+    }
+
     .remarks{
         display: flex;
         margin: 20px 20px;
@@ -284,7 +302,7 @@
                 </select> 
             </div>
         </div>
-        <div style="margin-top: 10px;"><b style="color: red">Note:</b> Only transactions have the status <b style="color: red">FOR RECEIVING</b> will appear here.</div>
+        <div style="margin-top: 10px;"><b style="color: red">Note:</b> Only transactions have the status <b style="color: red">COLLECTED</b> will appear here.</div>
     </div>
     <div class='panel-footer no-print'>
         <div class="form-button pull-left" style=" margin-top:10px;" >
@@ -405,7 +423,6 @@
             },
             success: function(response) {
                 $('#print-form').show();
-                console.log(response);
 
                 const container = $('#container');
                 const printDetails = $('#print-details');
@@ -455,16 +472,17 @@
                                     <tr>
                                         <td colspan="4">${item.get_bay.name}</td>
                                     </tr>
+                                
+                                    <tr>
+                                        <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Machine #</td>
+                                        <td>JAN #</td>
+                                        <td>Item Description</td>
+                                        <td>Qty</td>
+                                    </tr>
                                 </thead>
-                                <tr>
-                                    <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
-                                </tr>
-                                <tr>
-                                    <td>Machine #</td>
-                                    <td>JAN #</td>
-                                    <td>Item Description</td>
-                                    <td>Qty</td>
-                                </tr>
                                 <tbody>
                                     ${item.lines.map(machine => `
                                         <tr>

@@ -218,16 +218,32 @@ Route::group(['middleware' => ['web']], function() {
 
 
     // NEW COLLECT TOKEN
+
+    // COLLECT TOKEN STEP 1 - CREATION
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/add_collect_token',[AdminCollectTokenController::class, 'getCollectToken']);
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm'])->name('postPrint');
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/get_machines',[AdminCollectTokenController::class, 'getMachines'])->name('getMachines');
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_collected_token',[AdminCollectTokenController::class, 'postCollectToken'])->name('postCollectedToken');
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_cashier_turnover',[AdminCollectTokenController::class, 'postCashierTurnover'])->name('postCashierTurnover');
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/get_machines',[AdminCollectTokenController::class, 'getMachines'])->name('getMachines');
+
+    // COLLECT TOKEN STEP 2 - FOR CASHIER TURNOVER / COLLECTION OF TOKEN
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_collect_token',[AdminCollectTokenController::class, 'postCashierTurnover'])->name('postCashierTurnover');
+
+    // COLLECT TOKEN STEP 3 - FOR CONFIRMATION
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/confirm_token/{id}',[AdminCollectTokenController::class, 'getConfirmToken']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_confirm_token',[AdminCollectTokenController::class, 'postConfirmToken'])->name('postConfirmToken');
+
+    // COLLECT TOKEN STEP 4 - FOR STOREHEAD APPROVAL
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/review/{id}',[AdminCollectTokenController::class, 'getCollectTokenApproval']);
     Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_review',[AdminCollectTokenController::class, 'postCollectTokenApproval'])->name('postCollectTokenApproval');
+
+    // PRINT COLLECT TOKEN FORM
+    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm'])->name('postPrint');
+
+    // FOR REMARKS - CHATBOX
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
+
+    // EXPORT COLLECT TOKEN
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
 
 
