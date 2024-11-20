@@ -414,7 +414,6 @@
                 _token: csrfToken
             },
             success: function(response) {
-                console.log(response);
                 
                 if (response && Array.isArray(response) && response.length > 0) {
                     $('#machine-table tbody').empty();
@@ -445,7 +444,7 @@
                             </tr>
                         `;
                         if(machine.get_collect_token_lines.length > 0) {
-                            if(machine.get_collect_token_lines[0].line_status == 5){
+                            if(machine.get_collect_token_lines[0].collect_token_header.statuses_id == 5){
                                 $('#machine-table tbody').append(append);
                             } else {
                                 Swal.fire({
