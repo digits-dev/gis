@@ -433,6 +433,7 @@
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->digits_code}}
                                             <input type="hidden" name="jan_code[]" id="jan_code" value="{{$capsuleLine->getInventoryCapsule->item->digits_code}}" readonly>
+                                            <input type="hidden" name="item_code[]" id="item_code" value="{{$capsuleLine->getInventoryCapsule->item->digits_code2}}" readonly>
                                         </td> 
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->item_description}}
@@ -453,8 +454,18 @@
                                             <input type="hidden" name="inventory_capsule_lines_id[]" value="{{$capsuleLine->id}}" readonly>
                                         </td>
                                         <td class="ActualCapsuleInventory">
-                                            {{$perLine->actual_capsule_inventory}}
-                                            <input type="hidden" name="actual_capsule_inventory[]" value="{{$perLine->actual_capsule_inventory}}" readonly>
+                                            @if($perLine->variance == 0)
+                                                {{$perLine->actual_capsule_inventory - $perLine->actual_capsule_sales}}
+                                            @else
+                                                {{$perLine->actual_capsule_inventory}}
+                                            @endif
+                                            <input type="hidden" name="actual_capsule_inventory[]" value="
+                                                @if($perLine->variance == 0)
+                                                    {{$perLine->actual_capsule_inventory - $perLine->actual_capsule_sales}}
+                                                @else
+                                                    {{$perLine->actual_capsule_inventory}}
+                                                @endif
+                                            " readonly>
                                         </td>
                                         <td class="actualCapsuleSales">
                                             {{$perLine->actual_capsule_sales}}

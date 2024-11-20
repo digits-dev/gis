@@ -3,6 +3,7 @@
 namespace App\Models\Submaster;
 
 use App\Models\Audit\CollectRrTokenLines;
+use App\Models\Capsule\InventoryCapsuleLine;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,10 @@ class GashaMachines extends Model
     public function getCollectTokenLines() : HasMany {
          return $this->hasMany(CollectRrTokenLines::class, 'gasha_machines_id', 'id');
     }
+
+    public function getInventoryItem() : HasMany {
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id');
+   }
 
     public function getBay() : BelongsTo {
         return $this->belongsTo(GashaMachinesBay::class, 'bay', 'id');

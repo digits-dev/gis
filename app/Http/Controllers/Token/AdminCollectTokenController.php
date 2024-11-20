@@ -6,10 +6,12 @@ use App\Exports\ExportCollectedToken;
 use App\Models\Audit\CollectRrTokenLines;
 use App\Models\Audit\CollectRrTokens;
 use App\Models\Capsule\CapsuleSales;
+use App\Models\Capsule\HistoryCapsule;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CmsUsers;
 use App\Models\CollectTokenMessage;
+use App\Models\Submaster\CapsuleActionType;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
 use App\Models\Submaster\GashaMachines;
@@ -210,7 +212,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	{
 		$location_id = $request->input('location');
 		$bay = $request->input('bay');
-		$machines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getBay'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
+		$machines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getInventoryItem.getInventoryCapsule.item', 'getBay'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
 
 		return response()->json($machines);
 	}
@@ -439,6 +441,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 					'actual_capsule_inventory' => 'required',
 					'ref_number' => 'required',
 					'jan_code' => 'required',
+					'item_code' => 'required',
 					'gasha_machines_id' => 'required',
 					'location_id' => 'required',
 					'actual_capsule_sales' => 'required',
@@ -449,15 +452,16 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 			}
 
-			// array map for capsule sales
-			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
+			// array map for capsule sales && capsule history
+			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $item_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
 				return [
 					'jan_code' => $jan_code,
+					'item_code' => $item_code,
 					'gasha_machines_id' => $gasha_machines_id,
 					'location_id' => $location_id,
 					'actual_capsule_sales' => $actual_capsule_sales,
 				];
-			}, $validatedData['jan_code'], $validatedData['gasha_machines_id'], $validatedData['location_id'], $validatedData['actual_capsule_sales']);
+			}, $validatedData['jan_code'], $validatedData['item_code'], $validatedData['gasha_machines_id'], $validatedData['location_id'], $validatedData['actual_capsule_sales']);
 
 			// arrap map for inventory capsule lines
 			$ValidatedInventoryCapsuleLines = array_map(function ($inventory_capsule_lines_id, $actual_capsule_inventory) {
@@ -478,6 +482,18 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 						'qty' => $perCapsuleSale['actual_capsule_sales'],
 						'sales_type_id' => SalesType::COLLECTTOKEN,
 						'created_by' => CRUDBooster::myId(),
+						'created_at' => now()
+					]);
+
+					HistoryCapsule::firstOrCreate([
+						'reference_number' => $validatedData['ref_number'],
+						'item_code' => $perCapsuleSale['item_code'],
+						'capsule_action_types_id' => CapsuleActionType::COLLECTTOKEN,
+						'locations_id' => $perCapsuleSale['location_id'],
+						'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
+						'qty' => -abs($perCapsuleSale['actual_capsule_sales']),
+						'to_machines_id' => $perCapsuleSale['gasha_machines_id'],
+						'created_by' => $collectTokenHeader->created_by,
 						'created_at' => now()
 					]);
 				}

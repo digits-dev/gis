@@ -275,13 +275,15 @@
                 <thead>
                     <tr>
                         <th>Machine Number</th>
+                        <th>JAN #</th>
+                        <th>Item Description</th>
                         <th>Number of Tokens</th>
                         <th>Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="3">
+                        <td colspan="5">
                             <div id="tableNote">
                                 <br>
                                 <img style="width: 50px;" src="https://cdn-icons-png.flaticon.com/128/3281/3281312.png" alt="">
@@ -412,7 +414,8 @@
                 _token: csrfToken
             },
             success: function(response) {
-
+                console.log(response);
+                
                 if (response && Array.isArray(response) && response.length > 0) {
                     $('#machine-table tbody').empty();
 
@@ -423,6 +426,12 @@
                                 <td>
                                     ${machine.serial_number}
                                     <input type="hidden" name="gasha_machines_id[]" value="${machine.id}" readonly>
+                                </td>
+                                <td>
+                                    ${machine.get_inventory_item[0]?.get_inventory_capsule.item.digits_code ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
+                                </td>
+                                <td>
+                                    ${machine.get_inventory_item[0]?.get_inventory_capsule.item.item_description ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
                                 </td>
                                 <td>
                                     ${machine.no_of_token}

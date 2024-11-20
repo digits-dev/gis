@@ -11,6 +11,8 @@ class CapsuleActionType extends Model
     protected $guarded = [];
     protected $table = 'capsule_action_types';
 
+    public const COLLECTTOKEN = 15;
+
     public function scopeGetByDescription($query,$description) {
         return $query->where('description',$description)->first();
     }

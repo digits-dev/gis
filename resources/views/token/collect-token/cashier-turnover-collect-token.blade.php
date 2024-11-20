@@ -698,7 +698,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#3C8DBC',
                 cancelButtonColor: '#838383',
-                confirmButtonText: 'Create',
+                confirmButtonText: 'Collect',
                 iconColor: '#3C8DBC',
                 returnFocus: false,
                 reverseButtons: true,
