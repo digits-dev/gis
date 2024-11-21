@@ -57,13 +57,14 @@
     .container {
         display: flex;
         flex-wrap: wrap;
+        
     }
 
     .bay {
-        flex: 1 1 calc(25% - 10px); 
+        flex: 100px;
         text-align: center;
         box-sizing: border-box;
-        margin: 10px;
+        margin: 1px;
     }
 
     table {
@@ -75,25 +76,15 @@
        margin: 0 0 10px;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
     th, td {
         border: 1px solid #000;
-        padding: 8px;
+        padding: 3px;
         text-align: center;
     }
 
     th {
         background-color: #f0f0f0;
     }
-
-    tr:last-child {
-        font-weight: bold;
-    }
-
 
     /* FOR PRINTING */
     .print-data {
@@ -183,6 +174,13 @@
         border: 1px solid #3C8DBC; 
         outline-color: #3C8DBC
     }
+    input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #3C8DBC; 
+        outline-color: #3C8DBC
+    }
 
     input[type="text"]:disabled {
         background-color: #F3F3F3;
@@ -265,6 +263,52 @@
     option[disabled] {
         color: #bbb;
     }
+
+    .swal2-popup {
+        width: 500px !important; 
+        height: 100% !important;
+    }
+    .swal2-title {
+        font-size: 24px !important; 
+    }
+    .swal2-html-container {
+        font-size: 16px !important;
+        overflow: hidden !important;
+    }
+
+    .swal2-confirm {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+    .swal2-cancel {
+        font-size: 16px !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        color: white !important;
+    }
+
+    .swal2-icon {
+        font-size: 16px !important; 
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 12px;
+        
+    }
+
+    th {
+        background-color: #3C8DBC;
+        color: white;
+        font-weight: bold;
+    }
+
     
 </style>
 @endpush
@@ -280,29 +324,15 @@
             </div>
 
             <div class="input-container">
-                <div style="font-weight: 600">Receiver <small id="receiver_required" style="display: none; color: rgba(255, 0, 0, 0.853);"> <i class="fa fa-exclamation-circle"></i> Required field! </small></div>
-                <div class="custom-select" id="customSelectLocation">
-                    <select name="receiver" id="receiver" required>
-                        <option value="" disabled selected>Select Receiver</option>
-                        @foreach ($receiver as $user)
-                            <option value="{{ $user->id }}">{{$user->name}}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <div style="font-weight: 600">Date <small id="date_required" style="display: none; color: rgba(255, 0, 0, 0.853);"> <i class="fa fa-exclamation-circle"></i> Required field! </small></div>
+                <input id="date" type="date" name="date" style="border-radius: 5px;"  >
             </div>
             
         </div>
-        <div class="inputs-container" style="margin-top: 10px;">
-            <div class="input-container">
-                <div style="font-weight: 600">Reference Number/s <small id="ref_required" style="display: none; color: rgba(255, 0, 0, 0.853);"> <i class="fa fa-exclamation-circle"></i> Required field! </small> </div>
-                <select class="js-example-basic-multiple" id="reference_numbers" name="reference_numbers[]" multiple="multiple">
-                    @foreach ($reference_numbers as $refs)
-                        <option value="{{ $refs->id }}">{{ $refs->reference_number }} - {{$refs->getBay->name}}</option>
-                    @endforeach
-                </select> 
-            </div>
-        </div>
-        <div style="margin-top: 10px;"><b style="color: red">Note:</b> Only transactions have the status <b style="color: red">COLLECTED</b> will appear here.</div>
+
+        <div style="margin-top: 10px;"><b style="color: red">Note:</b> Please make sure to <b style="color: red">COLLECT TOKENS</b> from <b style="color: red">ALL BAYS</b> before printing the form.</div>
+
+
     </div>
     <div class='panel-footer no-print'>
         <div class="form-button pull-left" style=" margin-top:10px;" >
@@ -367,6 +397,7 @@
 @endsection
 
 @push('bottom')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $('.content-header').hide();
@@ -382,33 +413,23 @@
 
     $('#btn-reset').on('click', function(event){
             event.preventDefault();
-            $('#reference_numbers').val(null).trigger('change');
+            $('#date').val(null).trigger('change');
             $('#print-form').hide();
-            $('#receiver').val(null);
-            $('#ref_required').hide();
-            $('#receiver_required').hide();
+            $('#date_required').hide();
 
         });
 
     $('#btn-submit').on('click', function(event) {
         event.preventDefault();
-        let references = $('#reference_numbers').val();
-        let receiver = $('#receiver').val();
+        let date = $('#date').val();
 
-        if (receiver === null || receiver.length === 0) {
-            $('#receiver_required').show();
+
+        if (date === null || date.length === 0) {
+            $('#date_required').show();
             return;
         }
         else{
-            $('#receiver_required').hide();
-        }
-        if (references === null || references.length === 0) {
-            $('#ref_required').show();
-            return;
-        }
-        else{
-            $('#ref_required').hide();
-            
+            $('#date_required').hide();
         }
 
         $('#spinner').show();
@@ -417,13 +438,41 @@
             url: '{{route("postPrint")}}',
             method: 'POST',
             data: {
-                references: references,
-                receiver: receiver,
+                date: date,
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                $('#print-form').show();
+                if (response.missing_bays.length != 0){
+                    $('#spinner').hide();
 
+                    Swal.fire({
+                        icon: "error",
+                        title: "<strong class='text-warning'> Unable to Filter, </br> There are missing Bays</strong>",
+                        showCloseButton: true,
+                        confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                        confirmButtonColor: '#3C8DBC',
+                        html: `
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">Location</th>
+                                        <th style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">Bay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;" rowspan="4">${response.store_name}</td>
+                                    </tr>
+                                    ${response.missing_bays.map(item => `<tr><td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">${item.name}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                        `
+                    });
+                    return;
+
+                }
+
+                $('#print-form').show();
                 const container = $('#container');
                 const printDetails = $('#print-details');
                 const receivedBy = $('#received-by');
@@ -466,15 +515,18 @@
                 response.collect_tokens.forEach(item => {
                     
                     let bayTable = `
-                        <div class="bay">
+                        <div class="bay" style="font-size:5px;">
                             <table>
                                 <thead>
                                     <tr>
-                                        <td colspan="4">${item.get_bay.name}</td>
+                                        <td colspan="4"><b>${item.get_bay.name}</b></td>
                                     </tr>
                                 
                                     <tr>
                                         <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4"><b>Receiver: </b>${item.get_received_by.name}</td>
                                     </tr>
                                     <tr>
                                         <td>Machine #</td>

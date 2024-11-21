@@ -27,12 +27,12 @@ use Maatwebsite\Excel\Facades\Excel;
 class AdminCollectTokenController extends \crocodicstudio\crudbooster\controllers\CBController
 {
 
-	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::CASHIER];
+	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
-	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
-	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
-	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
-	private const EXPORTER = [CmsPrivileges::SUPERADMIN];
+	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::STOREHEAD];
+	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::AREAMANAGER, CmsPrivileges::OPERATIONMANAGER];
+	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::AUDIT];
+	private const EXPORTER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::AUDIT ];
 
 	public function cbInit()
 	{
@@ -142,14 +142,30 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	{
 
 		if ($request->ajax()){
-			$collect_tokens = CollectRrTokens::whereIn('id', $request->references)
-				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
-				->orderBy('bay_id', 'asc')
-				->get();
-
-			$receiver = CmsUsers::with('getPrivilege')->find($request->receiver);
 
 			$collectors = [];
+			$bays = [];
+			$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
+			$collect_tokens = CollectRrTokens::whereDate('created_at', $request->date)
+			->where('statuses_id', '!=',  Statuses::FORCASHIERTURNOVER)
+			->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
+			->get() 
+			->map(function ($token) {
+				$token->machine_serial_count = $token->lines->pluck('machineSerial')->filter()->count();
+				return $token;
+			})
+			->sortBy('machine_serial_count');
+
+			$collect_tokens = $collect_tokens->values();
+
+			$bay_ids = $collect_tokens->pluck('bay_id');
+			
+			foreach ($all_bays as $key => $bay) {
+				$explodedBays = explode(',', $bay);
+				foreach ($explodedBays as $index => $value) {
+					$bays[] = $value;
+				}
+			}
 
 			foreach ($collect_tokens as $collected_token) {
 				$exists = false;
@@ -172,12 +188,15 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				}
 			}
 
+			$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
+
 			return response()->json([
+				'missing_bays' => $missing_bay_ids,
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
-				'date' => date('Y-m-d H:i:s'),
+				'date' => $request->date,
 				'collect_tokens' => $collect_tokens,
 				'collectors' => $collectors,
-				'receiver' => $receiver
+				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
 			]);
 		}
 		
