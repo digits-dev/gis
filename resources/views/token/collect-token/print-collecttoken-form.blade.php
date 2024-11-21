@@ -448,7 +448,7 @@
                     Swal.fire({
                         icon: "error",
                         title: "<strong class='text-warning'> Unable to Filter, </br> There are missing Bays</strong>",
-                        showCloseButton: true,
+                        showCloseButton: false,
                         confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
                         confirmButtonColor: '#3C8DBC',
                         html: `

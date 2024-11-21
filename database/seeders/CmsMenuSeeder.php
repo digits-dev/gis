@@ -832,6 +832,23 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 17
             ]
         );
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Gasha Machine Layers',
+            ],
+            [
+                'name'              => 'Gasha Machine Layers',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminGashaMachinesLayersControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 18
+            ]
+        );
     }
 
     public function historyMenu() {

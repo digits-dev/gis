@@ -449,6 +449,15 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Submaster\AdminGashaMachinesBayController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Gasha Machine Layers',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'gasha_machines_layers',
+                'table_name'   => 'gasha_machines_layers',
+                'controller'   => 'Submaster\AdminGashaMachinesLayersController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 
