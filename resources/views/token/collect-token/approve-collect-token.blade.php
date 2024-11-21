@@ -523,13 +523,13 @@
 
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">
-        <i class="fa fa-comment-o" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
-        <span style="font-weight: 600; font-size:18px;">Chat</span>
+        <i class="fa fa-edit" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
+        <span style="font-weight: 600; font-size:18px;">Remarks</span>
     </div>
 
     <div class="chat-container" id="chat-container" style="display: none">
         <div class="top-chat-container">
-            <div style="font-size: 18px; font-weight:600">Messages</div>
+            <div style="font-size: 18px; font-weight:600">Remarks</div>
             <i class="fa fa-times" aria-hidden="true" style="font-size: 18px; cursor: pointer;" id="chat-close"></i>
         </div>
         <div class="body-chat-container">

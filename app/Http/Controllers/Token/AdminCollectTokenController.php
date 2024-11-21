@@ -304,7 +304,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function postCashierTurnover(Request $request)
 	{
-	
 		$collectTokenHeader = CollectRrTokens::find($request->collectedTokenHeader_id);
 		if (!$collectTokenHeader) {
 			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
@@ -312,6 +311,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		$collectTokenHeader->update([
 			'statuses_id' => Statuses::FORCONFIRMATION,
+			'received_qty' => $collectTokenHeader->collected_qty,
 			'received_by' => CRUDBooster::myId(),
 			'received_at' => now()
 		]);

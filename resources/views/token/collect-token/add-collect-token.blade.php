@@ -295,7 +295,7 @@
                 </tbody>
                 
                 <tfoot>
-                    <td colspan="2"><span><b>Total Quantity</b></span></td>
+                    <td colspan="4"><span><b>Total Quantity</b></span></td>
                     <td><input type="text" placeholder="0" name="total_qty" id="total_qty" style="border-radius: 5px; text-align: center; outline:none;" readonly></td>
                 </tfoot>
             </table>
@@ -420,62 +420,72 @@
 
                     // Loop each machine & append value to table
                     response.forEach(function(machine) {
-                        let append = `
-                            <tr data-location-id="${machine.location_id}" data-no-of-token="${machine.no_of_token}">
-                                <td>
-                                    ${machine.serial_number}
-                                    <input type="hidden" name="gasha_machines_id[]" value="${machine.id}" readonly>
-                                </td>
-                                <td>
-                                    ${machine.get_inventory_item[0]?.get_inventory_capsule.item.digits_code ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
-                                </td>
-                                <td>
-                                    ${machine.get_inventory_item[0]?.get_inventory_capsule.item.item_description ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
-                                </td>
-                                <td>
-                                    ${machine.no_of_token}
-                                    <input type="hidden" name="no_of_token[]" value="${machine.no_of_token}" readonly>
-                                </td>
-                                <td>
-                                    <input type="text" placeholder="Enter Quantity" class="qty-input" name="qty[]" style="border-radius: 5px; text-align: center; background-color: transparent;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
-                                    <input type="hidden" name="location_id[]" value="${machine.location_id}" readonly>
-                                    <input type="hidden" name="variance[]" id="variance" class="variance-input" readonly>
-                                </td>
-                            </tr>
-                        `;
-                        if(machine.get_collect_token_lines.length > 0) {
-                            if(machine.get_collect_token_lines[0].collect_token_header.statuses_id == 5){
-                                $('#machine-table tbody').append(append);
+                        if (machine.get_inventory_item[0]?.get_inventory_capsule?.item?.digits_code && machine.get_inventory_item[0]?.get_inventory_capsule?.item?.item_description) {
+                            let append = `
+                                <tr data-location-id="${machine.location_id}" data-no-of-token="${machine.no_of_token}">
+                                    <td>
+                                        ${machine.serial_number}
+                                        <input type="hidden" name="gasha_machines_id[]" value="${machine.id}" readonly>
+                                    </td>
+                                    <td>
+                                        ${machine.get_inventory_item[0]?.get_inventory_capsule.item.digits_code ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
+                                    </td>
+                                    <td>
+                                        ${machine.get_inventory_item[0]?.get_inventory_capsule.item.item_description ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
+                                    </td>
+                                    <td>
+                                        ${machine.no_of_token}
+                                        <input type="hidden" name="no_of_token[]" value="${machine.no_of_token}" readonly>
+                                    </td>
+                                    <td>
+                                        <input type="text" placeholder="Enter Quantity" class="qty-input" name="qty[]" style="border-radius: 5px; text-align: center; background-color: transparent;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
+                                        <input type="hidden" name="location_id[]" value="${machine.location_id}" readonly>
+                                        <input type="hidden" name="variance[]" id="variance" class="variance-input" readonly>
+                                    </td>
+                                </tr>
+                            `;
+                        
+                            if(machine.get_collect_token_lines.length > 0) {
+                                if(machine.get_collect_token_lines[0].collect_token_header.statuses_id == 5){
+                                    $('#machine-table tbody').append(append);
+                                } else {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "<strong class='text-warning'> Unavailable <br> currently in collecting process.</strong>",
+                                        showCloseButton: true,
+                                        allowOutsideClick: false,  
+                                        allowEscapeKey: false,
+                                        allowEnterKey: true,
+                                        confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                                        html: `
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Location</th>
+                                                        <th>Bay</th>
+                                                        <th>Reference#</th>
+                                                        <th>Collector</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>${machine.location_name}</td>
+                                                        <td>${machine.get_bay.name}</td>
+                                                        <td>${machine.get_collect_token_lines[0].collect_token_header.reference_number}</td>
+                                                        <td>${machine.get_collect_token_lines[0].collect_token_header.get_created_by.name}</td>
+                                                    <tr>
+                                                </tbody>
+                                            </table>
+                                        `
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $('#bay').val('');
+                                        }
+                                    });
+                                }
                             } else {
-                                Swal.fire({
-                                    icon: "warning",
-                                    title: "<strong class='text-warning'> Unavailable <br> currently in collecting process.</strong>",
-                                    showCloseButton: true,
-                                    confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
-                                    html: `
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Location</th>
-                                                    <th>Bay</th>
-                                                    <th>Reference#</th>
-                                                    <th>Collector</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>${machine.location_name}</td>
-                                                    <td>${machine.get_bay.name}</td>
-                                                    <td>${machine.get_collect_token_lines[0].collect_token_header.reference_number}</td>
-                                                    <td>${machine.get_collect_token_lines[0].collect_token_header.get_created_by.name}</td>
-                                                <tr>
-                                            </tbody>
-                                        </table>
-                                    `
-                                });
+                                $('#machine-table tbody').append(append);
                             }
-                        } else {
-                            $('#machine-table tbody').append(append);
                         }
                     });
 
@@ -489,15 +499,17 @@
                         const divisionResult = tokenCollected / NoOfToken;
                         const ceilingResult = Math.ceil(divisionResult);
                         const multiplicationResult = ceilingResult * NoOfToken;
-                        const finalResult = multiplicationResult - tokenCollected;
+                        const finalResult = tokenCollected - multiplicationResult;
 
                         // Checking for variance
                         if (finalResult === 0) {
                             $(this).closest('tr').css('background-color', '');
                             $(this).closest('tr').find('input[name="variance[]"]').val('0'); 
+                            $('#remarks').attr('required', false);
                         } else {
                             $(this).closest('tr').css('background-color', '#f8d7da');
                             $(this).closest('tr').find('input[name="variance[]"]').val(finalResult); 
+                            $('#remarks').attr('required', true);
                         }
                     });
 

@@ -438,7 +438,6 @@
                             <th>Variance</th>
                             <th>Projected Capsule Sales</th>
                             <th>Current Capsule Inventory</th>
-                            <th>Variance Type</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -493,37 +492,6 @@
                                         <span class="currentMachineInventory">{{$capsuleLine->qty}}</span>
                                         <input type="hidden" name="currentMachineInventory[]" value="{{$capsuleLine->qty}}" readonly>
                                     </td>
-                                    <td>
-                                        @php
-                                            $currentMachineInventory = $capsuleLine->qty; 
-                                        @endphp
-                                        <span class="variance-status
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                no-variance-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                short-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                over-type
-                                            @endif
-                                        ">
-                                            
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                Over
-                                            @endif
-                                        </span>
-                                        <input type="hidden" class="variance-status" name="variance_type[]" value="
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
-                                                No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
-                                                Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
-                                                Over
-                                            @endif" readonly>
-                                    </td>
                                 </tr>
                             @endforeach
                         @endforeach
@@ -535,7 +503,6 @@
                             <td class="total_variance"></td>
                             <td class="total_projected_capsule_sale"></td>
                             <td class="total_current_capsule_inventory"></td>
-                            <td></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -552,13 +519,13 @@
 
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">
-        <i class="fa fa-comment-o" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
-        <span style="font-weight: 600; font-size:18px;">Chat</span>
+        <i class="fa fa-edit" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
+        <span style="font-weight: 600; font-size:18px;">Remarks</span>
     </div>
 
     <div class="chat-container" id="chat-container" style="display: none">
         <div class="top-chat-container">
-            <div style="font-size: 18px; font-weight:600">Messages</div>
+            <div style="font-size: 18px; font-weight:600">Remarks</div>
             <i class="fa fa-times" aria-hidden="true" style="font-size: 18px; cursor: pointer;" id="chat-close"></i>
         </div>
         <div class="body-chat-container">
@@ -715,7 +682,7 @@
 
     // compute subtotals
     document.addEventListener('DOMContentLoaded', function () {
-        
+
         function updateTotals() {
             let totalTokenCollected = 0;
             let totalVariance = 0;
@@ -764,6 +731,5 @@
             input.addEventListener('input', updateTotals);
         });
     });
-
 </script>
 @endpush

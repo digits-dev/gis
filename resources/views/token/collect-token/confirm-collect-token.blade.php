@@ -322,7 +322,7 @@
 
     .swal2-popup {
         width: 500px !important; /* Set a larger width */
-        height: 300px !important;
+        height: 80% !important;
     }
     .swal2-title {
         font-size: 24px !important; /* Customize the title size */
@@ -515,29 +515,29 @@
                                             $currentMachineInventory = $capsuleLine->qty; 
                                         @endphp
                                         <span class="variance-status
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                            @if ($variance == 0) 
                                                 no-variance-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected < ($projectedCapsuleSales * $NoOfToken)) 
                                                 short-type
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected > ($projectedCapsuleSales * $NoOfToken)) 
                                                 over-type
                                             @endif
                                         ">
                                             
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                            @if ($variance == 0) 
                                                 No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected < ($projectedCapsuleSales * $NoOfToken)) 
                                                 Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected > ($projectedCapsuleSales * $NoOfToken)) 
                                                 Over
                                             @endif
                                         </span>
                                         <input type="hidden" class="variance-status" name="variance_type[]" value="
-                                            @if (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory || $variance == 0) 
+                                            @if ($variance == 0) 
                                                 No Variance
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) == $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected < ($projectedCapsuleSales * $NoOfToken)) 
                                                 Short
-                                            @elseif (($currentMachineInventory - $projectedCapsuleSales) != $actualCapsuleInventory && $variance > 0) 
+                                            @elseif ($tokenCollected > ($projectedCapsuleSales * $NoOfToken)) 
                                                 Over
                                             @endif" readonly>
                                     </td>
@@ -571,13 +571,13 @@
 
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">
-        <i class="fa fa-comment-o" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
-        <span style="font-weight: 600; font-size:18px;">Chat</span>
+        <i class="fa fa-edit" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>
+        <span style="font-weight: 600; font-size:18px;">Remarks</span>
     </div>
 
     <div class="chat-container" id="chat-container" style="display: none">
         <div class="top-chat-container">
-            <div style="font-size: 18px; font-weight:600">Messages</div>
+            <div style="font-size: 18px; font-weight:600">Remarks</div>
             <i class="fa fa-times" aria-hidden="true" style="font-size: 18px; cursor: pointer;" id="chat-close"></i>
         </div>
         <div class="body-chat-container">
@@ -649,59 +649,117 @@
         $('#chat-button').show();
     });
 
-    $('.ActualCapsuleInventory').on('input', function() {
+    $(document).on('input', '.ActualCapsuleInventory', function() {
         let actualCapsuleInventory = parseFloat($(this).val()); 
-        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = ''; 
-        
+        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = 0;  // Default to 0 if invalid
+
+        const serial_number = $(this).closest('tr').find('.serial_number').text();
         const no_of_token = parseFloat($(this).closest('tr').find('.no_of_token').text());
         const token_collected = parseFloat($(this).closest('tr').find('.tokenCollected').text());
         const defaultVariance = parseFloat($(this).closest('tr').find('.defaultVariance').val()); 
 
         const currentMachineInventory = parseFloat($(this).closest('tr').find('.currentMachineInventory').text()); 
-        const variance = parseFloat($(this).closest('tr').find('.variance').text()); 
+        let variance = parseFloat($(this).closest('tr').find('.variance').text());  
         const projectedCapsuleSales = parseFloat($(this).closest('tr').find('.projectedCapsuleSales').text()); 
 
-        let actualCapsuleSales = '';
-        if (actualCapsuleInventory !== '') {
-            actualCapsuleSales = currentMachineInventory - actualCapsuleInventory; 
+        if(actualCapsuleInventory > currentMachineInventory){
+            event.target.value = currentMachineInventory;
+            
+            Swal.fire({
+                icon: "error",
+                title: "<strong class='text-danger'> Oops! <br> Invalid input.</strong>",
+                showCloseButton: true,
+                allowOutsideClick: false,  
+                allowEscapeKey: false,
+                allowEnterKey: true,
+                confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                html: `<p>You cannot enter more than  the current capsule inventory.</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Machine #</th>
+                                    <th>Current Capsule Inventory</th>
+                                </tr>
+                            </thead>
+                                <tr>
+                                    <td><b>${serial_number}</b></td>
+                                    <td><b>${currentMachineInventory}</b></td>
+                                </tr>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <br>    
+                `
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $(this).closest('tr').find('.variance').text(defaultVariance);
+                    $(this).closest('tr').find('.variance').val(defaultVariance);
+                    $(this).closest('tr').find('.actualCapsuleSales').text('');
+                    $(this).closest('tr').find('.actualCapsuleSales').val('');
+                    $(this).val('');
+                }
+            });
         }
 
-        if (variance != 0 && actualCapsuleInventory !== '') {
-            $(this).closest('tr').find('.actualCapsuleSales').text(actualCapsuleSales);
+        let actualCapsuleSales = 0; 
+        if (!isNaN(actualCapsuleInventory)) {
+            actualCapsuleSales = currentMachineInventory - actualCapsuleInventory;  
+        }
+
+        if (actualCapsuleInventory !== 0) {    
             $(this).closest('tr').find('.actualCapsuleSales').val(actualCapsuleSales);
+            $(this).closest('tr').find('.actualCapsuleSales').text(actualCapsuleSales); 
         } else {
             $(this).closest('tr').find('.actualCapsuleSales').text('');
-        }
+            $(this).closest('tr').find('.actualCapsuleSales').val('');
+        } 
 
         let statusText = "";
         $(this).closest('tr').find('.variance-status').removeClass('no-variance-type short-type over-type');
 
-        if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance == 0) {
+        // Handle No Variance case
+        if (variance == 0) {
             statusText = "No Variance";
             $(this).closest('tr').find('.variance-status').addClass('no-variance-type');
-        } else if ((currentMachineInventory - projectedCapsuleSales) == actualCapsuleInventory && variance > 0) {
-            statusText = "Short";
-            $(this).closest('tr').find('.variance').text(defaultVariance);
-            $(this).closest('tr').find('.variance-status').addClass('short-type');
-            $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
-            $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
+        }
 
-        } else if ((currentMachineInventory - projectedCapsuleSales) != actualCapsuleInventory && variance > 0) {
-            statusText = "Over";
-            $(this).closest('tr').find('.variance-status').addClass('over-type');
+        // Handle "Short" case
+        else if (token_collected < (actualCapsuleSales * no_of_token)) {
+            statusText = "Short";
+            $(this).closest('tr').find('.variance-status').addClass('short-type');
             
-            if (actualCapsuleInventory !== '') {
-                const newVariance = Math.abs((actualCapsuleSales * no_of_token) - token_collected);
+            if (actualCapsuleInventory !== 0) {                    
+                const newVariance = token_collected - (actualCapsuleSales * no_of_token); 
                 $(this).closest('tr').find('.variance').text(newVariance);
                 $(this).closest('tr').find('.variance').val(newVariance);
                 $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
-            } else if (actualCapsuleInventory == ""){
+            } else {
+                $(this).closest('tr').find('.variance').text(defaultVariance);
+                $(this).closest('tr').find('.variance').val(defaultVariance);
+                $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': ''});
+            }
+
+        }
+
+        // Handle "Over" case
+        else if (token_collected > (actualCapsuleSales * no_of_token)) {
+            statusText = "Over";
+            $(this).closest('tr').find('.variance-status').addClass('over-type');
+            
+            if (actualCapsuleInventory !== 0) {                    
+                const newVariance = token_collected - (actualCapsuleSales * no_of_token); // Fix the variance calculation here
+                $(this).closest('tr').find('.variance').text(newVariance);
+                $(this).closest('tr').find('.variance').val(newVariance);
+                $(this).closest('tr').find('.variance').parent().css({'background': '#f8d7da'});
+                $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': 'lightgreen'});
+            } else {
                 $(this).closest('tr').find('.variance').text(defaultVariance);
                 $(this).closest('tr').find('.variance').val(defaultVariance);
                 $(this).closest('tr').find('.actualCapsuleSales').parent().css({'background': ''});
             }
         }
+
         // Set the status text
         $(this).closest('tr').find('.variance-status').text(statusText);
         $(this).closest('tr').find('.variance-status').val(statusText);
@@ -709,7 +767,7 @@
 
     $(document).ready(function(){
         const no_of_token = $('.no_of_token').text();
-    })
+    });
 
     $('#send_new_remarks').on('click', function() {
         submitMessage();
@@ -788,9 +846,8 @@
         }
     });
 
-    // compute subtotals
     document.addEventListener('DOMContentLoaded', function () {
-        
+
         function updateTotals() {
             let totalTokenCollected = 0;
             let totalVariance = 0;
@@ -802,7 +859,6 @@
             let rows = document.querySelectorAll('table tbody tr');
             
             rows.forEach(row => {
-                // Get values from the table columns
                 let tokenCollected = parseFloat(row.querySelector('.tokenCollected')?.textContent || 0);
                 let variance = parseFloat(row.querySelector('.variance')?.textContent || 0);
                 let projectedCapsuleSales = parseFloat(row.querySelector('.projectedCapsuleSales')?.textContent || 0);
@@ -822,7 +878,7 @@
                 totalActualCapsuleInventory += actualCapsuleInventory;
                 totalActualCapsuleSales += actualCapsuleSales;
             });
-            
+
             // Update the footer with the totals
             document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
             document.querySelector('.total_variance').textContent = totalVariance.toFixed();
@@ -834,11 +890,17 @@
 
         updateTotals();
 
-        // Recalculate totals when ActualCapsuleInventory is updated
+        let debounceTimer;
+        function debouncedUpdateTotals() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateTotals, 100); 
+        }
+
         document.querySelectorAll('.ActualCapsuleInventory').forEach(input => {
-            input.addEventListener('input', updateTotals);
+            input.addEventListener('input', debouncedUpdateTotals);
         });
     });
+
 
 </script>
 @endpush
