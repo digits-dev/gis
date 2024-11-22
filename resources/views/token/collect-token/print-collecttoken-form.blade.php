@@ -296,10 +296,8 @@
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        font-size: 12px;
+        
+    
         
     }
 
@@ -452,7 +450,7 @@
                         confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
                         confirmButtonColor: '#3C8DBC',
                         html: `
-                            <table>
+                            <table style="font-size:12px; width: 100%; border-collapse: collapse; margin: 20px 0;">
                                 <thead>
                                     <tr>
                                         <th style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">Location</th>
@@ -545,8 +543,8 @@
                                         </tr>
                                     `).join('')}
                                     <tr>
-                                        <td colspan="3">Total</td>
-                                        <td>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</td>
+                                        <td colspan="3"><b>Total</b></td>
+                                        <td><b>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
                                     </tr>
                                 </tbody>
                             </table>

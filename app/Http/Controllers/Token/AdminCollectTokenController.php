@@ -147,14 +147,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$bays = [];
 			$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
 			$collect_tokens = CollectRrTokens::whereDate('created_at', $request->date)
-			->where('statuses_id', '!=',  Statuses::FORCASHIERTURNOVER)
+			->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
 			->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
-			->get() 
-			->map(function ($token) {
-				$token->machine_serial_count = $token->lines->pluck('machineSerial')->filter()->count();
-				return $token;
-			})
-			->sortBy('machine_serial_count');
+			->get()
+			->sortBy('bay_id');
 
 			$collect_tokens = $collect_tokens->values();
 
