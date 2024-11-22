@@ -27,12 +27,12 @@ use Maatwebsite\Excel\Facades\Excel;
 class AdminCollectTokenController extends \crocodicstudio\crudbooster\controllers\CBController
 {
 
-	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
+	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::CASHIER];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
-	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::STOREHEAD];
-	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::AREAMANAGER, CmsPrivileges::OPERATIONMANAGER];
-	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::AUDIT];
-	private const EXPORTER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::AUDIT ];
+	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
+	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
+	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
+	private const EXPORTER = [CmsPrivileges::SUPERADMIN];
 
 	public function cbInit()
 	{
