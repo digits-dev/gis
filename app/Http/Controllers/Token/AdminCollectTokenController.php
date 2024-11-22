@@ -167,6 +167,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				}
 			}
 
+			
 			foreach ($collect_tokens as $collected_token) {
 				$exists = false;
 
