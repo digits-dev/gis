@@ -322,7 +322,7 @@
 
     .swal2-popup {
         width: 500px !important; /* Set a larger width */
-        height: 80% !important;
+        height: 100% !important;
     }
     .swal2-title {
         font-size: 24px !important; /* Customize the title size */
@@ -668,12 +668,14 @@
             Swal.fire({
                 icon: "error",
                 title: "<strong class='text-danger'> Oops! <br> Invalid input.</strong>",
-                showCloseButton: true,
+                showCloseButton: false,
                 allowOutsideClick: false,  
+                confirmButtonColor: '#3C8DBC',
                 allowEscapeKey: false,
                 allowEnterKey: true,
                 confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
                 html: `<p>You cannot enter more than  the current capsule inventory.</p>
+                        <p><b>Please ensure that you have completed Capsule Refill first</b></p>
                         <table>
                             <thead>
                                 <tr>

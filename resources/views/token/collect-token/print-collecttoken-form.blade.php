@@ -57,7 +57,6 @@
     .container {
         display: flex;
         flex-wrap: wrap;
-        
     }
 
     .bay {
@@ -347,7 +346,7 @@
     </div>
 </form>
 
-<div class='panel panel-default print-data' id="print-form" style="display:none">
+<div class='panel panel-default print-data' id="print-form" style="display:show">
     <div class='panel-body' id="print-section">
         <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION FORM</b></h4>
         <div class="print-details" id="print-details">
@@ -357,12 +356,22 @@
             {{-- APPEND HERE --}}
         </div>
 
+        <div style=" margin: 20px;">
+            <table style="width: 100%; table-layout: fixed;">
+                <tr >
+                    <td style="padding:5px;"><b>Total Token Collected</b></td>
+                    <td id="total-tokens"></td>
+                </tr>
+            </table>
+        </div>
+        
         <div class="remarks">
             <h5><b>Remarks: </b></h5>
             <div class="line"></div>
             <div class="line"></div>
             <div class="line"></div>
         </div>
+
 
         <div class="signatures">
             <h5><b>Collected by: </b></h5>
@@ -410,12 +419,12 @@
     });
 
     $('#btn-reset').on('click', function(event){
-            event.preventDefault();
-            $('#date').val(null).trigger('change');
-            $('#print-form').hide();
-            $('#date_required').hide();
+        event.preventDefault();
+        $('#date').val(null).trigger('change');
+        $('#print-form').hide();
+        $('#date_required').hide();
 
-        });
+    });
 
     $('#btn-submit').on('click', function(event) {
         event.preventDefault();
@@ -440,9 +449,10 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
+                console.log(response);
+                
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
-
                     Swal.fire({
                         icon: "error",
                         title: "<strong class='text-warning'> Unable to Filter, </br> There are missing Bays</strong>",
@@ -475,6 +485,7 @@
                 const printDetails = $('#print-details');
                 const receivedBy = $('#received-by');
                 const collectedBy = $('#collected-by');
+                const totalTokens = $('#total-tokens');
 
                 container.empty();
                 printDetails.empty();
@@ -492,11 +503,13 @@
                         <div><b>${response.receiver.get_privilege.name}</b></div>
                     </div>
                 `;
-                
-                
 
+                let total_tokens = `${response.total_tokens}`
+
+                
                 printDetails.append(details);
                 receivedBy.append(receiver);
+                totalTokens.append(total_tokens);
 
                 response.collectors.forEach(collector => {
 

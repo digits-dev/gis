@@ -509,7 +509,10 @@
             </div>
         
             @endforeach
-        </div>
+
+            <div style="margin-top: 10px;"><b>Note:</b> <b style="color: red">UNDECLARED</b> or <b style="color: red">MISDECLARED</b> Tokens found after Token Collection should be kept inside the Gasha machine and declared the next day.</div>
+
+            </div>
     </form>
     <div class="form-button panel-footer" style="margin-top: 15px;" >
         <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>

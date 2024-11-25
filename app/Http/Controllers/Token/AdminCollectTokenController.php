@@ -191,6 +191,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'missing_bays' => $missing_bay_ids,
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
 				'date' => $request->date,
+				'total_tokens' => $collect_tokens->sum('received_qty'),
 				'collect_tokens' => $collect_tokens,
 				'collectors' => $collectors,
 				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
