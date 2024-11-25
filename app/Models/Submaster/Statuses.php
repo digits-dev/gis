@@ -20,7 +20,7 @@ class Statuses extends Model
     public const RECEIVED = 8;
     public const FORAPPROVAL = 9;
     public const FORCASHIERTURNOVER = 10;
-    public const FORSTOREHEADAPPROVAL = 11;
-    public const FORCONFIRMATION = 12;
+    public const FOROMAPPROVAL = 11;
+    public const FORCHECKING = 12;
 
 }

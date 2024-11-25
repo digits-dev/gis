@@ -454,18 +454,8 @@
                                             <input type="hidden" name="inventory_capsule_lines_id[]" value="{{$capsuleLine->id}}" readonly>
                                         </td>
                                         <td class="ActualCapsuleInventory">
-                                            @if($perLine->variance == 0)
-                                                {{$perLine->actual_capsule_inventory - $perLine->actual_capsule_sales}}
-                                            @else
                                                 {{$perLine->actual_capsule_inventory}}
-                                            @endif
-                                            <input type="hidden" name="actual_capsule_inventory[]" value="
-                                                @if($perLine->variance == 0)
-                                                    {{$perLine->actual_capsule_inventory - $perLine->actual_capsule_sales}}
-                                                @else
-                                                    {{$perLine->actual_capsule_inventory}}
-                                                @endif
-                                            " readonly>
+                                            <input type="hidden" name="actual_capsule_inventory[]" value="{{$perLine->actual_capsule_inventory}}" readonly>
                                         </td>
                                         <td class="actualCapsuleSales">
                                             {{$perLine->actual_capsule_sales}}

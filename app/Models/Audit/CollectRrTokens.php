@@ -6,6 +6,7 @@ use App\Models\CmsUsers;
 use App\Models\CollectTokenMessage;
 use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\Locations;
+use App\Models\Submaster\Statuses;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,6 +49,10 @@ class CollectRrTokens extends Model
     public function getLocation(): BelongsTo
     {
         return $this->belongsTo(Locations::class, 'location_id', 'id');
+    }
+
+    public function getStatus() : BelongsTo {
+        return $this->belongsTo(Statuses::class, 'statuses_id', 'id');
     }
 
     public function getBay(): BelongsTo

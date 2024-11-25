@@ -459,7 +459,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;" rowspan="4">${response.store_name}</td>
+                                        <td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;" rowspan="${response.missing_bays.length + 1}">${response.store_name}</td>
                                     </tr>
                                     ${response.missing_bays.map(item => `<tr><td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">${item.name}</td></tr>`).join('')}
                                 </tbody>

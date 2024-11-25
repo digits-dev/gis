@@ -98,7 +98,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'url' => CRUDBooster::mainpath('confirm_token/[id]'),
 				'icon' => 'fa fa-check',
 				'color' => 'success',
-				'showIf' => "[statuses_id]=='" . Statuses::FORCONFIRMATION . "'"
+				'showIf' => "[statuses_id]=='" . Statuses::FORCHECKING . "'"
 			];
 		}
 
@@ -108,7 +108,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'url' => CRUDBooster::mainpath('review/[id]'),
 				'icon' => 'fa fa-thumbs-up',
 				'color' => 'info',
-				'showIf' => "[statuses_id] == '" . Statuses::FORSTOREHEADAPPROVAL . "'"
+				'showIf' => "[statuses_id] == '" . Statuses::FOROMAPPROVAL . "'"
 			];
 		}
 	}
@@ -219,7 +219,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['gasha_machines'] = GashaMachines::getMachineWithBay()->get();
-		$data['gasha_machine_bay'] = GashaMachinesBay::all();
+		$data['gasha_machine_bay'] = GashaMachinesBay::with(['getCollectionStatus'])->get();
 
 		return view("token.collect-token.add-collect-token", $data);
 	}
@@ -326,14 +326,14 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		$collectTokenHeader->update([
-			'statuses_id' => Statuses::FORCONFIRMATION,
+			'statuses_id' => Statuses::FORCHECKING,
 			'received_qty' => $collectTokenHeader->collected_qty,
 			'received_by' => CRUDBooster::myId(),
 			'received_at' => now()
 		]);
 
 		$collectTokenHeader->lines()->update([
-			'line_status' => Statuses::FORCONFIRMATION,
+			'line_status' => Statuses::FORCHECKING,
 			'updated_at' => now(),
 		]);
 		
@@ -391,7 +391,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		// update collect token header
 		$collectTokenHeader->update([
-			'statuses_id' => Statuses::FORSTOREHEADAPPROVAL,
+			'statuses_id' => Statuses::FOROMAPPROVAL,
 			'confirmed_by' => CRUDBooster::myId(),
 			'confirmed_at' => now()
 		]);
@@ -400,7 +400,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$updatedCount = 0;
 		foreach ($ValidatedLines as $perItem) {
 			$updated = $collectTokenHeader->lines()->where('id', $perItem['lines_ids'])->update([
-				'line_status' => Statuses::FORSTOREHEADAPPROVAL,
+				'line_status' => Statuses::FOROMAPPROVAL,
 				'variance' => $perItem['variance'],
 				'variance_type' => $perItem['variance_type'],
 				'projected_capsule_sales' => $perItem['projectedCapsuleSales'],
@@ -537,7 +537,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		else {
 			// rejected
 			$collectTokenHeader->update([
-				'statuses_id' => Statuses::FORCONFIRMATION,
+				'statuses_id' => Statuses::FORCHECKING,
 				'rejected_by' => CRUDBooster::myId(),
 				'rejected_at' => now(),
 			]);

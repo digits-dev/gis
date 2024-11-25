@@ -4,6 +4,7 @@ namespace App\Models\Submaster;
 
 use App\Models\Audit\CollectRrTokenLines;
 use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\CmsUsers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,8 @@ class GashaMachines extends Model
         'location_id',
         'no_of_token',
         'bay',
+        'bay_select_status',
+        'bay_selected_by',
         'layer',
         'column',
         'machine_statuses_id',
@@ -39,6 +42,10 @@ class GashaMachines extends Model
 
     public function getBay() : BelongsTo {
         return $this->belongsTo(GashaMachinesBay::class, 'bay', 'id');
+    }
+
+    public function getBaySelector() : BelongsTo {
+        return $this->belongsTo(CmsUsers::class, 'bay_selected_by', 'id');
     }
 
     public function scopeActiveMachines($query){

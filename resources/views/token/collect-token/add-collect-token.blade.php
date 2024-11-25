@@ -302,7 +302,7 @@
             
                 <div style="font-weight: 600">Remarks</div>
                 <div class="remarks_aria">
-                    <textarea name="remarks" id="remarks" rows="4" class="form-control" style="border-radius: 7px;" placeholder="Enter your remarks here..."></textarea>
+                    <textarea name="remarks" id="remarks" rows="4" class="form-control" style="border-radius: 7px;" placeholder="Enter your remarks here..." required></textarea>
                 </div>
 
             </div>
@@ -381,11 +381,28 @@
             // check if bay is in locations bays
             let filteredBays = bays_data.filter(function(bay) {
                 return location_bays.includes(bay.id.toString()); 
-            });
-
+            });            
+            
             if (filteredBays.length > 0) {
                 filteredBays.forEach(function(bay) {
-                    $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                    if (bay.get_collection_status && bay.get_collection_status.length > 0 && bay.get_collection_status[0]?.created_at) {
+                        let get_created_at = bay.get_collection_status[0].created_at;
+                        let created_at_date = new Date(get_created_at);
+                        let formatted_created_at_date = created_at_date.toISOString().split('T')[0]; // Format to "YYYY-MM-DD"
+
+                        let date_now = new Date();
+                        let formatted_date_now = date_now.toISOString().split('T')[0]; // Format today to "YYYY-MM-DD"
+
+                        // Check if the created_at date is today
+                        if (formatted_created_at_date === formatted_date_now) {
+                            // if today dont show the bay option
+                        } else {
+                            $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                        }
+
+                    } else {
+                        $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                    }
                 });
             } else {
                 $('#bay').append('<option value="" disabled>No bays available</option>');
@@ -452,7 +469,7 @@
                                     Swal.fire({
                                         icon: "warning",
                                         title: "<strong class='text-warning'> Unavailable <br> currently in collecting process.</strong>",
-                                        showCloseButton: true,
+                                        showCloseButton: false,
                                         allowOutsideClick: false,  
                                         allowEscapeKey: false,
                                         allowEnterKey: true,
@@ -505,12 +522,29 @@
                         if (finalResult === 0) {
                             $(this).closest('tr').css('background-color', '');
                             $(this).closest('tr').find('input[name="variance[]"]').val('0'); 
-                            $('#remarks').attr('required', false);
                         } else {
                             $(this).closest('tr').css('background-color', '#f8d7da');
                             $(this).closest('tr').find('input[name="variance[]"]').val(finalResult); 
-                            $('#remarks').attr('required', true);
                         }
+
+                        let allFinalResults = [];
+                        let allZero = true;  
+
+                            $('#machine-table tbody tr').each(function() {
+                                const varianceValue = $(this).find('input[name="variance[]"]').val();
+                                allFinalResults.push(varianceValue);
+
+                                // If any value is not 0, set flag to false
+                                if (varianceValue !== '0') {
+                                    allZero = false;
+                                }
+                            });
+
+                            if (allZero) {
+                                $('#remarks').removeAttr('required');
+                            } else {
+                                $('#remarks').attr('required', true);
+                            }
                     });
 
                     updateTotalQuantity();
