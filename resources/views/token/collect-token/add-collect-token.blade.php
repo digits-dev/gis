@@ -402,7 +402,7 @@
                         } else {
                             if(bay.get_gasha_machine[0]?.bay_selected_by == {{CRUDBooster::myId()}}){
                                 $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
-                                $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selcted '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
+                                $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selected '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
                             } else {
                                 $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
                             }
@@ -412,7 +412,7 @@
                         if(bay.get_gasha_machine[0]?.bay_selected_by == {{CRUDBooster::myId()}}){    
                             $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
                             $('#bay_bnt_container').empty();
-                            $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selcted '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
+                            $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selected '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
                         } else {
                             $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
                         }
