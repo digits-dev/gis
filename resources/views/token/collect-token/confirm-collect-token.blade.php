@@ -651,7 +651,7 @@
 
     $(document).on('input', '.ActualCapsuleInventory', function() {
         let actualCapsuleInventory = parseFloat($(this).val()); 
-        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = 0;  // Default to 0 if invalid
+        if (isNaN(actualCapsuleInventory)) actualCapsuleInventory = 'NaN';  
 
         const serial_number = $(this).closest('tr').find('.serial_number').text();
         const no_of_token = parseFloat($(this).closest('tr').find('.no_of_token').text());
@@ -708,7 +708,7 @@
             actualCapsuleSales = currentMachineInventory - actualCapsuleInventory;  
         }
 
-        if (actualCapsuleInventory !== 0) {    
+        if (actualCapsuleInventory !== 'NaN') {    
             $(this).closest('tr').find('.actualCapsuleSales').val(actualCapsuleSales);
             $(this).closest('tr').find('.actualCapsuleSales').text(actualCapsuleSales); 
         } else {
@@ -730,7 +730,7 @@
             statusText = "Short";
             $(this).closest('tr').find('.variance-status').addClass('short-type');
             
-            if (actualCapsuleInventory !== 0) {                    
+            if (actualCapsuleInventory !== 'NaN') {                    
                 const newVariance = token_collected - (actualCapsuleSales * no_of_token); 
                 $(this).closest('tr').find('.variance').text(newVariance);
                 $(this).closest('tr').find('.variance').val(newVariance);
@@ -749,7 +749,7 @@
             statusText = "Over";
             $(this).closest('tr').find('.variance-status').addClass('over-type');
             
-            if (actualCapsuleInventory !== 0) {                    
+            if (actualCapsuleInventory !== 'NaN') {                    
                 const newVariance = token_collected - (actualCapsuleSales * no_of_token); // Fix the variance calculation here
                 $(this).closest('tr').find('.variance').text(newVariance);
                 $(this).closest('tr').find('.variance').val(newVariance);
