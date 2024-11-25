@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // CmsMenuPrivilegeSeeder::class,
             // AddOnsActionTypeSeeder::class,
-            CmsMenuSeeder::class,
-            CmsModulSeeder::class,
+            // CmsMenuSeeder::class,
+            // CmsModulSeeder::class,
             // CmsPrivilegeRoleSeeder::class,
             // CmsPrivilegeSeeder::class,
             // FloatEntrySeeder::class,
@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             // CountersSeeder::class,
             // SalesTypeSeeder::class,
             // PresetSeeder::class,
+            SeedersNov2524::class
         ]);
 
     }
