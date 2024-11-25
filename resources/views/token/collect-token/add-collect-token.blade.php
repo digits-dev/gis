@@ -472,6 +472,7 @@
                                         showCloseButton: false,
                                         allowOutsideClick: false,  
                                         allowEscapeKey: false,
+                                        confirmButtonColor: '#3c8dbc',
                                         allowEnterKey: true,
                                         confirmButtonText: `<i class="fa fa-thumbs- "></i> Got it!`,
                                     }).then((result) => {
