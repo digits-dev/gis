@@ -246,6 +246,8 @@ Route::group(['middleware' => ['web']], function() {
     // EXPORT COLLECT TOKEN
     Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
 
+    //reset selected bay
+    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');
 
     
 });

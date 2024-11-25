@@ -412,7 +412,13 @@
                                             <span class="projectedCapsuleSales">{{$perLine->actual_capsule_sales}}</span>
                                         @endif
                                     </td>
-                                    <td><span class="currentMachineInventory">{{$capsuleLine->qty}}</span></td>
+                                    <td><span class="currentMachineInventory">
+                                        @if(empty($collected_tokens->confirmed_by))
+                                            {{$capsuleLine->qty}}
+                                        @else
+                                            {{$perLine->current_capsule_inventory}}
+                                        @endif
+                                    </span></td>
                                     <td>
                                         @if(empty($collected_tokens->confirmed_by))
                                             @php

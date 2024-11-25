@@ -220,7 +220,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['gasha_machines'] = GashaMachines::getMachineWithBay()->get();
-		$data['gasha_machine_bay'] = GashaMachinesBay::with(['getCollectionStatus'])->get();
+		$data['gasha_machine_bay'] = GashaMachinesBay::with(['getCollectionStatus', 'getGashaMachine'])->get();
 
 		return view("token.collect-token.add-collect-token", $data);
 	}
@@ -229,10 +229,70 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	{
 		$location_id = $request->input('location');
 		$bay = $request->input('bay');
-		$machines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getInventoryItem.getInventoryCapsule.item', 'getBay'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
-
-		return response()->json($machines);
+		$getmachines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getInventoryItem.getInventoryCapsule.item', 'getBay', 'getBaySelector'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
+		$getCollectTokenStatus = CollectRrTokens::where('location_id', $location_id)->where('bay_id', $bay)->first();
+		
+		if ((empty($getCollectTokenStatus) || $getCollectTokenStatus->statuses_id == 5) && $getmachines->isNotEmpty() && $getmachines->first()->bay_selected_by === null) {
+			GashaMachines::where('location_id', $location_id)
+					->where('bay', $bay)
+					->where('status', 'ACTIVE')
+					->update(['bay_select_status' => 1, 'bay_selected_by' => CRUDBooster::myId()]);
+			
+			if (GashaMachines::where('location_id', $location_id)
+					->where('bay', $bay)
+					->where('status', 'ACTIVE')
+					->where('bay_selected_by', CRUDBooster::myId())->exists()) {
+			}
+		}
+	
+		GashaMachines::where('location_id', $location_id)
+			->where('status', 'ACTIVE')
+			->where('bay_selected_by', CRUDBooster::myId())
+			->update(['bay_select_status' => 0, 'bay_selected_by' => null]);
+			
+			if ($getmachines->isNotEmpty()) {
+				if ($getmachines->first()->bay_selected_by === CRUDBooster::myId() && $getmachines->first()->bay_selected_by !== null) {	
+					GashaMachines::where('location_id', $location_id)
+						->where('bay', $bay)
+						->where('status', 'ACTIVE')
+						->update(['bay_select_status' => 1, 'bay_selected_by' => CRUDBooster::myId()]);
+				}
+				
+				else if ((empty($getCollectTokenStatus) || $getCollectTokenStatus->statuses_id == 5) && $getmachines->first()->bay_selected_by === null) {
+					GashaMachines::where('location_id', $location_id)
+						->where('bay', $bay)
+						->where('status', 'ACTIVE')
+						->update(['bay_select_status' => 1, 'bay_selected_by' => CRUDBooster::myId()]);
+				}
+			}
+			
+			$machines = GashaMachines::with(['getCollectTokenLines.collectTokenHeader.getCreatedBy', 'getInventoryItem.getInventoryCapsule.item', 'getBay', 'getBaySelector'])->where('location_id', $location_id)->where('bay', $bay)->where('status', 'ACTIVE')->get();
+			return response()->json($machines);
 	}
+
+	public function resetSelectedBay(Request $request){
+		$location_id = $request->input('location_id');
+		$bay_id = $request->input('bay_id');
+	
+		try {
+			$updated = GashaMachines::where('location_id', $location_id)
+				->where('bay', $bay_id)
+				->where('status', 'ACTIVE')
+				->update([
+					'bay_select_status' => 0, 
+					'bay_selected_by' => null
+				]);
+			
+			if ($updated) {
+				return response()->json(['message' => 'Bay selection has been reset successfully.'], 200);
+			} else {
+				return response()->json(['message' => 'No matching records found to reset.'], 404);
+			}
+		} catch (\Exception $e) {
+			return response()->json(['error' => 'An error occurred while resetting the bay selection.'], 500);
+		}
+	}
+	
 
 	public function postCollectToken(Request $request)
 	{
@@ -303,7 +363,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'created_at' => now(),
 			]);
 		}
-
+		GashaMachines::where('location_id', $validatedData['header_location_id'])->where('bay', $validatedData['header_bay_id'])->update(['bay_select_status' => 0, 'bay_selected_by' => null]);
 		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
 	}
 

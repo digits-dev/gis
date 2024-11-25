@@ -268,6 +268,9 @@
                         </select>
                     </div>
                 </div>
+                <div id="bay_bnt_container" style="margin-top: 20px; display:none; padding: 3px">
+                    {{-- dynamically load here if there's slected bay  --}}
+                </div>
                 
             </div>
           
@@ -304,7 +307,7 @@
                 <div class="remarks_aria">
                     <textarea name="remarks" id="remarks" rows="4" class="form-control" style="border-radius: 7px;" placeholder="Enter your remarks here..." required></textarea>
                 </div>
-
+                <div style="margin-top: 10px;"><b>Note:</b> <b style="color: red">UNDECLARED</b> or <b style="color: red">MISDECLARED</b> Tokens found after Token Collection should be kept inside the Gasha machine and declared the next day.</div>
             </div>
         </form>
         
@@ -381,27 +384,38 @@
             // check if bay is in locations bays
             let filteredBays = bays_data.filter(function(bay) {
                 return location_bays.includes(bay.id.toString()); 
-            });            
+            });  
             
             if (filteredBays.length > 0) {
                 filteredBays.forEach(function(bay) {
                     if (bay.get_collection_status && bay.get_collection_status.length > 0 && bay.get_collection_status[0]?.created_at) {
                         let get_created_at = bay.get_collection_status[0].created_at;
                         let created_at_date = new Date(get_created_at);
-                        let formatted_created_at_date = created_at_date.toISOString().split('T')[0]; // Format to "YYYY-MM-DD"
+                        let formatted_created_at_date = created_at_date.toISOString().split('T')[0]; 
 
                         let date_now = new Date();
-                        let formatted_date_now = date_now.toISOString().split('T')[0]; // Format today to "YYYY-MM-DD"
+                        let formatted_date_now = date_now.toISOString().split('T')[0];
 
                         // Check if the created_at date is today
                         if (formatted_created_at_date === formatted_date_now) {
                             // if today dont show the bay option
                         } else {
-                            $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                            if(bay.get_gasha_machine[0]?.bay_selected_by == {{CRUDBooster::myId()}}){
+                                $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                                $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selcted '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
+                            } else {
+                                $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                            }
                         }
 
                     } else {
-                        $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                        if(bay.get_gasha_machine[0]?.bay_selected_by == {{CRUDBooster::myId()}}){    
+                            $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                            $('#bay_bnt_container').empty();
+                            $('#bay_bnt_container').append('<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="'+ bay.id +'" data-toggle="tooltip" data-placement="top" title="You selcted '+ bay.name +', cancel it here if needed."> <i class="fa fa-times"></i> Cancel '+ bay.name +'</button>').show();                            
+                        } else {
+                            $('#bay').append('<option value="' + bay.id + '">' + bay.name + '</option>');
+                        }
                     }
                 });
             } else {
@@ -412,6 +426,10 @@
         }
 
         $('#header_location_id').val(location_id);
+    });
+
+    $('#ggg').on('click', function(){
+        alert('OH No.')
     });
 
     // request machines filteration on change bay 
@@ -437,6 +455,33 @@
 
                     // Loop each machine & append value to table
                     response.forEach(function(machine) {
+                        if (machine.bay_selected_by == {{ CRUDBooster::myId() }}) {
+                            $('#bay_bnt_container').empty();
+                            if (!$('#bay_bnt_container').find('[data-id="' + machine.bay + '"]').length) {
+                                $('#bay_bnt_container').append(
+                                    '<button type="button" class="btn btn-danger" id="cancel_bay_btn" data-id="' + machine.bay + '" data-toggle="tooltip" data-placement="top" title="You selected ' + machine.get_bay.name + ', cancel it here if needed."> <i class="fa fa-times"></i> Cancel ' + machine.get_bay.name + '</button>'
+                                ).show();
+                            }
+                        }
+                        
+                        if(machine.bay_select_status == 1 && machine.bay_selected_by != {{ CRUDBooster::myId() }}){
+                        
+                            Swal.fire({
+                                        icon: "warning",
+                                        title: `<strong class='text-warning'> Unavailable <br> bay is currently selected by <br> <b class="text-info">${machine.get_bay_selector.name}</b></strong>`,
+                                        showCloseButton: false,
+                                        allowOutsideClick: false,  
+                                        allowEscapeKey: false,
+                                        allowEnterKey: true,
+                                        confirmButtonText: `<i class="fa fa-thumbs- "></i> Got it!`,
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            $('#bay').val('');
+                                        }
+                                    });
+
+                            return; 
+                        }
                         if (machine.get_inventory_item[0]?.get_inventory_capsule?.item?.digits_code && machine.get_inventory_item[0]?.get_inventory_capsule?.item?.item_description) {
                             let append = `
                                 <tr data-location-id="${machine.location_id}" data-no-of-token="${machine.no_of_token}">
@@ -557,6 +602,51 @@
             }
         });
         $('#header_bay_id').val(bayValue);
+    });
+
+    $(document).on('click', '#cancel_bay_btn', function() {
+        let csrfToken = $('meta[name="csrf-token"]').attr('content');
+        let bay_id = $(this).data('id');
+        let location_id = $('#header_location_id').val();
+
+        $('#loading').show();
+
+        $.ajax({
+            url: '{{route("resetSelectedBay")}}',
+            method: 'POST',
+            data: { 
+                bay_id: bay_id,
+                location_id: location_id,
+                _token: csrfToken
+            },
+            success: function(response) {
+                $('#loading').hide(); 
+
+                if (response.message) {
+                    Swal.fire({
+                        title: 'Successfully Canceled',
+                        text: response.message,  
+                        icon: 'success',  
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false,  
+                        allowEscapeKey: false,
+                        allowEnterKey: true,
+                        confirmButtonText: `<i class="fa fa-thumbs- "></i> Okay`,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#bay').val('');
+                                location.reload();
+                            }
+                    });
+                } else {
+                    alert('Operation was successful!');
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('ERROR: Request error, Please check.');
+                $('#loading').hide();
+            }
+        });
     });
 
     // update total qty
