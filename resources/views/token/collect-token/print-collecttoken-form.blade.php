@@ -346,7 +346,7 @@
     </div>
 </form>
 
-<div class='panel panel-default print-data' id="print-form" style="display:show">
+<div class='panel panel-default print-data' id="print-form" style="display:none">
     <div class='panel-body' id="print-section">
         <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION FORM</b></h4>
         <div class="print-details" id="print-details">
