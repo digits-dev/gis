@@ -32,6 +32,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Id","name"=>"id"];
 			$this->col[] = ["label"=>"Status Description","name"=>"status_description"];
+			$this->col[] = ["label"=>"Style","name"=>"style"];
 			$this->col[] = ["label"=>"Type","name"=>"type"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
@@ -41,8 +42,9 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Status Description','name'=>'status_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Type','name'=>'type','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Status Description','name'=>'status_description','type'=>'text','validation'=>'required|min:1|max:255', 'width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Type','name'=>'type','type'=>'text','validation'=>'required|min:1|max:255', 'width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Style','name'=>'style','type'=>'wysiwyg','validation'=>'required', 'width'=>'col-md-5'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -200,6 +202,9 @@
 	        |
 	        */
 	        $this->style_css = '
+				.note-editable{
+					height: 100px !important;
+				}
 				.panel-heading{
 					background-color:#3c8dbc !important;
 					color:#fff !important;
@@ -208,11 +213,7 @@
 					background-color:#3c8dbc !important;
 					color:#fff !important;
 				}
-				@media (min-width:729px){
-				.panel-default{
-						width:40% !important; 
-						margin:auto !important;
-				}
+			
 			';
 	        /*
 	        | ---------------------------------------------------------------------- 

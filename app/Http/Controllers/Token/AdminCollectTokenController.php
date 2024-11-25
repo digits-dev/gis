@@ -57,7 +57,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		$this->col = [];
 		$this->col[] = ["label" => "Reference Number", "name" => "reference_number"];
-		$this->col[] = ["label" => "Status", "name" => "statuses_id", "join" => "statuses,status_description"];
+		$this->col[] = ["label" => "Status", "name" => "statuses_id", "join" => "statuses,style"];
 		$this->col[] = ["label" => "Location", "name" => "location_id", "join" => "locations,location_name"];
 		$this->col[] = ["label" => "Bay", "name" => "bay_id", "join" => "gasha_machines_bay,name"];
 		$this->col[] = ["label" => "Collected Qty", "name" => "collected_qty", 'callback_php' => 'number_format($row->collected_qty)'];
