@@ -62,7 +62,7 @@
     }
 
     .bay {
-        flex: 100px;
+        flex: 0 0 calc(33.333% - 10px);
         text-align: center;
         box-sizing: border-box;
         margin: 1px;
