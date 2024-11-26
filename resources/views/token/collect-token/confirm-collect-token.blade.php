@@ -500,7 +500,7 @@
                                         @if ($perLine->variance != 0)
                                             <input type="text" placeholder="Enter Quantity" class="ActualCapsuleInventory" name="actualCapsuleInventory[]" style="text-align: center; border-radius: 7px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
                                         @elseif ($perLine->variance == 0)
-                                            <input type="text" name="actualCapsuleInventory[]" class="ActualCapsuleInventory" style="text-align: center; border: none; outline:none; background:transparent;" value="{{$capsuleLine->qty}}" readonly>
+                                            <input type="text" name="actualCapsuleInventory[]" class="ActualCapsuleInventory" style="text-align: center; border: none; outline:none; background:transparent;" value="{{$capsuleLine->qty - $projectedCapsuleSales}}" readonly>
                                         @endif
                                     </td>
                                     <td>
