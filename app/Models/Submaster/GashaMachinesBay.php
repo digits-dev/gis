@@ -18,7 +18,7 @@ class GashaMachinesBay extends Model
     }
 
     public function getCollectionStatus() : HasMany {
-        return $this->hasMany(CollectRrTokens::class, 'bay_id');
+        return $this->hasMany(CollectRrTokens::class, 'bay_id')->where('statuses_id', '<>', 5);
         // ->where('statuses_id', '<>', 5) if need
     }
 

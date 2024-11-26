@@ -1,6 +1,8 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .print-details{
         display: flex;
@@ -404,8 +406,7 @@
 @endsection
 
 @push('bottom')
-<script src="{{ asset('plugins/sweetalert.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
     $('.content-header').hide();
     $(document).ready(function () {

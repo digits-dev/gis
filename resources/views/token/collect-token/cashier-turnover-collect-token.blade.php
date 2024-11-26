@@ -1,4 +1,5 @@
 @extends('crudbooster::admin_template')
+<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 @push('head')
 <style type="text/css">
     .form-content {
@@ -576,7 +577,6 @@
 @endsection
 
 @push('bottom')
-<script src="{{ asset('plugins/sweetalert.js') }}"></script>
 <script>
     $('.content-header').hide();
     $(document).ready(function() {
