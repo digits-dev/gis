@@ -479,9 +479,9 @@
                                     }).then((result) => {
                                         if (result.isConfirmed) {
                                             $('#bay').val('');
+                                            $('#bay_bnt_container').hide();
                                         }
                                     });
-
                             return; 
                         }
                         if (machine.get_inventory_item[0]?.get_inventory_capsule?.item?.digits_code && machine.get_inventory_item[0]?.get_inventory_capsule?.item?.item_description) {
