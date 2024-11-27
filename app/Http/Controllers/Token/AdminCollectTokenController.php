@@ -29,7 +29,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
-	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONSHEAD];
+	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::STOREHEAD];
 	private const CANPRINT = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
 	private const APPROVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::OPERATIONMANAGER];
 	private const EXPORTER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER, CmsPrivileges::CSA, CmsPrivileges::OPERATIONMANAGER, CmsPrivileges::STOREHEAD];
