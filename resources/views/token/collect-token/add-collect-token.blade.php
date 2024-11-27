@@ -509,47 +509,7 @@
                                 </tr>
                             `;
                         
-                            if(machine.get_collect_token_lines.length > 0) {
-                                if(machine.get_collect_token_lines[0].collect_token_header.statuses_id == 5){
-                                    $('#machine-table tbody').append(append);
-                                } else {
-                                    Swal.fire({
-                                        icon: "warning",
-                                        title: "<strong class='text-warning'> Unavailable <br> currently in collecting process.</strong>",
-                                        showCloseButton: false,
-                                        allowOutsideClick: false,  
-                                        allowEscapeKey: false,
-                                        allowEnterKey: true,
-                                        confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
-                                        html: `
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Location</th>
-                                                        <th>Bay</th>
-                                                        <th>Reference#</th>
-                                                        <th>Collector</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>${machine.location_name}</td>
-                                                        <td>${machine.get_bay.name}</td>
-                                                        <td>${machine.get_collect_token_lines[0].collect_token_header.reference_number}</td>
-                                                        <td>${machine.get_collect_token_lines[0].collect_token_header.get_created_by.name}</td>
-                                                    <tr>
-                                                </tbody>
-                                            </table>
-                                        `
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            $('#bay').val('');
-                                        }
-                                    });
-                                }
-                            } else {
-                                $('#machine-table tbody').append(append);
-                            }
+                            $('#machine-table tbody').append(append);
                         }
                     });
 

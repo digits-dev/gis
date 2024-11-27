@@ -9,6 +9,7 @@
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\GashaMachinesBay;
+	use App\Models\GashaMachinesLayer;
 	use App\Models\Submaster\Counter;
 	use Excel;
 
@@ -450,6 +451,7 @@
 				$data['locations'] = Locations::activeLocationPerUserPullout(CRUDBooster::myLocationId());
 			}
 			$data['gasha_machine_bay'] = GashaMachinesBay::active();
+			$data['gasha_machine_layer'] = GashaMachinesLayer::active();
 			return $this->view("submaster.gasha-machine.add-machine", $data);
 		}
 
