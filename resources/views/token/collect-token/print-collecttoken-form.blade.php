@@ -58,14 +58,30 @@
 
     .container {
         display: flex;
-        flex-wrap: wrap;
+        /* flex-wrap: wrap; */
+        flex-direction: column;
     }
 
+    
+
     .bay {
-        flex: 0 0 calc(33.333% - 10px);
+        /* flex: 0 0 calc(33.333% - 10px); */
+        flex: 1;
         text-align: center;
         box-sizing: border-box;
         margin: 1px;
+        height: 800px;
+    }
+
+    .container .bay:first-child table {
+        height: 700px;
+    }
+    .container .bay:last-child table {
+        height: 900px;
+    }
+
+    .container .bay table {
+        height: 800px;
     }
 
     table {
@@ -352,14 +368,14 @@
     <div class='panel-body' id="print-section">
         <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION FORM</b></h4>
         <div class="print-details" id="print-details">
-           {{-- APPEND HERE DETAILS --}}
+           {{-- APPEND DETAILS HERE --}}
         </div>
         <div class="container" id="container">
-            {{-- APPEND HERE --}}
+            {{-- APPEND TABLE HERE --}}
         </div>
 
         <div style=" margin: 20px;">
-            <table style="width: 100%; table-layout: fixed;">
+            <table style="width: 100%; table-layout: fixed; height:35px;">
                 <tr >
                     <td style="padding:5px;"><b>Total Token Collected</b></td>
                     <td id="total-tokens"></td>
@@ -525,9 +541,10 @@
                 });
 
                 response.collect_tokens.forEach(item => {
+
                     
                     let bayTable = `
-                        <div class="bay" style="font-size:5px;">
+                        <div class="bay">
                             <table>
                                 <thead>
                                     <tr>
@@ -541,13 +558,13 @@
                                         <td colspan="4"><b>Receiver: </b>${item.get_received_by.name}</td>
                                     </tr>
                                     <tr>
-                                        <td>Machine #</td>
-                                        <td>JAN #</td>
-                                        <td>Item Description</td>
-                                        <td>Qty</td>
+                                        <td><b>Machine #</b></td>
+                                        <td><b>JAN #</b></td>
+                                        <td><b>Item Description</b></td>
+                                        <td><b>Qty</b></td>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="table-tbody" style="${item.lines.length > 30 ? 'font-size:10px !important;' : item.lines.length > 20 ? 'font-size:12px !important;' : ''}">
                                     ${item.lines.map(machine => `
                                         <tr>
                                             <td>${machine.machine_serial.serial_number}</td>
@@ -556,7 +573,7 @@
                                             <td>${machine.qty}</td>
                                         </tr>
                                     `).join('')}
-                                    <tr>
+                                    <tr style="height: 35px;">
                                         <td colspan="3"><b>Total</b></td>
                                         <td><b>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
                                     </tr>
@@ -566,8 +583,13 @@
                     `;
 
                     container.append(bayTable);
+
+                  
+
+                   
                 });
 
+                
                 $('#spinner').hide();
             },
             error: function(xhr, status, error) {
