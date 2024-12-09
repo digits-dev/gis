@@ -469,19 +469,19 @@
 						'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $capsule->qty")
 				]);
 
-				if(abs($capsule->qty - $current_capsule_value)){
+				// if(abs($capsule->qty - $current_capsule_value)){
 
-					CapsuleSales::insert([
-						'reference_number' => $capsule->reference_number,
-						'item_code' => $capsule->item_code,
-						'gasha_machines_id' => $capsule->gasha_machines_id,
-						'sales_type_id' => SalesType::where('description', 'RETURN')->first()->id,
-						'locations_id' => $gasha_machines->location_id,
-						'qty' =>  abs($capsule->qty - $current_capsule_value),
-						'created_by' => CRUDBooster::myId(),
-						'created_at' => date('Y-m-d H:i:s')
-					]);
-				}
+				// 	CapsuleSales::insert([
+				// 		'reference_number' => $capsule->reference_number,
+				// 		'item_code' => $capsule->item_code,
+				// 		'gasha_machines_id' => $capsule->gasha_machines_id,
+				// 		'sales_type_id' => SalesType::where('description', 'RETURN')->first()->id,
+				// 		'locations_id' => $gasha_machines->location_id,
+				// 		'qty' =>  abs($capsule->qty - $current_capsule_value),
+				// 		'created_by' => CRUDBooster::myId(),
+				// 		'created_at' => date('Y-m-d H:i:s')
+				// 	]);
+				// }
 
 			}
 

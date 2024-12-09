@@ -390,6 +390,8 @@
 				return json_encode(['is_missing'=>true, 'missing'=>'Machine']);
 			}
 
+			//Update machine number base on item master
+			GashaMachines::where('serial_number',$machine_serial_number)->update(['no_of_token'=>$item->no_of_tokens]);
 			// checking if item and machine has the same no. of tokens
 			$is_tally = $item->no_of_tokens == $machine->no_of_token;
 
@@ -406,6 +408,29 @@
 				'inventory_capsules.id'
 			)->first();
 
+			// check if jan code, machine and location is exist
+			$isExistWithMorethanZero = InventoryCapsuleLine::where([
+				'inventory_capsules.locations_id' => $locations_id,
+				'inventory_capsule_lines.gasha_machines_id' => $machine->id
+			])
+			->where('inventory_capsule_lines.qty', '>', 0)
+			->leftJoin(
+				'inventory_capsules',
+				'inventory_capsule_lines.inventory_capsules_id',
+				'inventory_capsules.id'
+			)->exists();
+
+			$isExistJanCode = InventoryCapsuleLine::where([
+				'inventory_capsules.item_code' => $item->digits_code2,
+				'inventory_capsules.locations_id' => $locations_id,
+				'inventory_capsule_lines.gasha_machines_id' => $machine->id
+			])->where('inventory_capsule_lines.qty', '>', 0)
+			->leftJoin(
+				'inventory_capsules',
+				'inventory_capsule_lines.inventory_capsules_id',
+				'inventory_capsules.id'
+			)->exists();
+		
 			// returning if no. of tokens does not match
 			if (!$is_tally) {
 				return json_encode([
@@ -423,8 +448,14 @@
 				return json_encode([
 					'is_sufficient' => false,
 				]);
+			// returning if jan code, machine and location not exist
 			}
-
+			if ((!$isExistWithMorethanZero && $isExistJanCode) || ($isExistWithMorethanZero && !$isExistJanCode)) {
+				return json_encode([
+					'is_not_exist' => true,
+				]);
+			}
+		
 			// getting the 'refill' action type
 			$action_type = CapsuleActionType::where(DB::raw('UPPER(description)'), '=', 'REFILL')->first();
 			// generating a new reference number
@@ -513,6 +544,7 @@
 				]);
 
 			return json_encode(['item'=>$item, 'machine'=>$machine, 'is_tally'=>$is_tally, 'reference_number' => $reference_number]);
+			
 		}
 
 		public function getPartnerMachine(Request $request) {

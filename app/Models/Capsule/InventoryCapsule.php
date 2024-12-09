@@ -2,6 +2,7 @@
 
 namespace App\Models\Capsule;
 
+use App\Models\Submaster\Item;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use CRUDBooster;
@@ -10,6 +11,16 @@ class InventoryCapsule extends Model
 {
     use HasFactory;
     protected $table = 'inventory_capsules';
+
+    public function inventory_capsule_lines()
+    {
+        return $this->belongsTo(InventoryCapsuleLine::class, 'inventory_capsules_id', 'id');
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_code', 'digits_code2');
+    }
 
     public function scopeGetByLocation($query,$location_id) {
         return $query->where('inventory_capsules.locations_id', $location_id)

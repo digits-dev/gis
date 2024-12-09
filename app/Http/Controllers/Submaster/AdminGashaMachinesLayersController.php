@@ -5,17 +5,17 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminStatusesController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminGashaMachinesLayersController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "id";
+			$this->title_field = "name";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = true;
@@ -25,32 +25,39 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "statuses";
+			$this->table = "gasha_machines_layers";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Id","name"=>"id"];
-			$this->col[] = ["label"=>"Status Description","name"=>"status_description"];
-			$this->col[] = ["label"=>"Style","name"=>"style"];
-			$this->col[] = ["label"=>"Type","name"=>"type"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Name","name"=>"name"];
+			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Status Description','name'=>'status_description','type'=>'text','validation'=>'required|min:1|max:255', 'width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Type','name'=>'type','type'=>'text','validation'=>'required|min:1|max:255', 'width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Style','name'=>'style','type'=>'wysiwyg','validation'=>'required', 'width'=>'col-md-5'];
+			$this->form[] = ['label'=>'Name','name'=>'name','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-5','placeholder'=>'You can only enter the letter only'];
+			if(CRUDBooster::getCurrentMethod() == 'getEdit'){
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];		
+			}
+			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
+				$this->form[] = ["label"=>"Status","name"=>"status"];
+				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
+				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'text'];
+				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
+				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'text'];
+			}
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Status Description","name"=>"status_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Type","name"=>"type","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Name","name"=>"name","type"=>"text","required"=>TRUE,"validation"=>"required|string|min:3|max:70","placeholder"=>"You can only enter the letter only"];
+			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
@@ -152,9 +159,7 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-			$this->script_js = '
-				$(".panel-heading").css({"background-color":"#dd4b39","color":"#fff"});
-			';
+	        $this->script_js = NULL;
 
 
             /*
@@ -201,20 +206,10 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = '
-				.note-editable{
-					height: 100px !important;
-				}
-				.panel-heading{
-					background-color:#3c8dbc !important;
-					color:#fff !important;
-				}
-				input[name="submit"]{
-					background-color:#3c8dbc !important;
-					color:#fff !important;
-				}
-			
-			';
+	        $this->style_css = NULL;
+	        
+	        
+	        
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 

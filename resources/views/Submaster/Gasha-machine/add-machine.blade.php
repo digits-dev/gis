@@ -68,11 +68,23 @@
                 </div>
                 <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> Bay</label>
-                    <input type="text" class="form-control finput" style="" placeholder="Bay" name="bay" id="bay" autocomplete="off">
+                    <select selected data-placeholder="Choose Bay" validation-name="Bay" id="bay" name="bay" class="form-select select2" style="width:100%;">
+                        @foreach($gasha_machine_bay as $bay)
+                        <option value=""></option>
+                            <option value="{{ $bay->id }}">{{ $bay->name }}</option>
+                        @endforeach
+                    </select>
+                    {{-- <input type="text" class="form-control finput" style="" placeholder="Bay" name="bay" id="bay" autocomplete="off"> --}}
                 </div>
                 <div class="form-group">
                     <label class="require control-label"><span style="color:red">*</span> Layer</label>
-                    <input type="text" class="form-control finput" style="" placeholder="layer" name="layer" id="layer" autocomplete="off">
+                    <select selected data-placeholder="Choose Layer" validation-name="Layer" id="layer" name="layer" class="form-select select2" style="width:100%;">
+                        @foreach($gasha_machine_layer as $layer)
+                        <option value=""></option>
+                            <option value="{{ $layer->id }}">{{ $layer->name }}</option>
+                        @endforeach
+                    </select>
+                    {{-- <input type="text" class="form-control finput" style="" placeholder="layer" name="layer" id="layer" autocomplete="off"> --}}
                 </div>
 
                 <div class="form-group">
@@ -113,7 +125,7 @@
             null;
         };
         setTimeout("preventBack()", 0);
-        $('#location').select2();
+        $('.select2').select2();
 
         $('#no_of_tokens').on('paste', function(e) {
             e.preventDefault();

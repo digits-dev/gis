@@ -8,6 +8,8 @@
 	use CRUDBooster;
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\GashaMachinesBay;
+	use App\Models\GashaMachinesLayer;
 	use App\Models\Submaster\Counter;
 	use Excel;
 
@@ -40,8 +42,8 @@
 			//$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Location","name"=>"location_id","join"=>"locations,location_name"];
 			$this->col[] = ["label"=>"No Of Token","name"=>"no_of_token"];
-			$this->col[] = ["label"=>"Bay","name"=>"bay"];
-			$this->col[] = ["label"=>"Layer","name"=>"layer"];
+			$this->col[] = ["label"=>"Bay","name"=>"bay", "join"=>"gasha_machines_bay,name"];
+			$this->col[] = ["label"=>"Layer","name"=>"layer", "join"=>"gasha_machines_layers,name"];
 			$this->col[] = ["label"=>"Column","name"=>"column"];
 			$this->col[] = ["label"=>"Machine Status","name"=>"machine_statuses_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
@@ -57,8 +59,8 @@
 			//$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Location','name'=>'location_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'locations,location_name'];
 			$this->form[] = ['label'=>'No Of Token','name'=>'no_of_token','type'=>'number','validation'=>'required|integer|min:1','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Bay','name'=>'bay','type'=>'text','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Layer','name'=>'layer','type'=>'text','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Bay','name'=>'bay','type'=>'select2','width'=>'col-sm-10', 'validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines_bay,name','datatable_where'=>"status = 'ACTIVE'"];
+			$this->form[] = ['label'=>'Layer','name'=>'layer','type'=>'select2','width'=>'col-sm-10', 'validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'gasha_machines_layers,name','datatable_where'=>"status = 'ACTIVE'"];
 			
 			$this->form[] = ['label'=>'Machine Status','name'=>'machine_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'statuses,status_description','datatable_where'=>"status_description = 'GOOD' OR status_description = 'DEFECTIVE'"];
 			$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select2','validation'=>'required','width'=>'col-sm-10','dataenum'=>'ACTIVE;INACTIVE','value'=>'ACTIVE'];
@@ -448,7 +450,8 @@
 			}else{
 				$data['locations'] = Locations::activeLocationPerUserPullout(CRUDBooster::myLocationId());
 			}
-
+			$data['gasha_machine_bay'] = GashaMachinesBay::active();
+			$data['gasha_machine_layer'] = GashaMachinesLayer::active();
 			return $this->view("submaster.gasha-machine.add-machine", $data);
 		}
 

@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\CmsModels\CmsPrivileges;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -50,5 +53,13 @@ class CmsUsers extends Authenticatable
             ->where('cms_users.status', 'ACTIVE')
             ->where('cms_users.id', auth()->user()->id)
             ->first();
+    }
+
+    public function messages() : HasMany{
+        return $this->hasMany(CollectTokenMessage::class, 'created_by', 'id');
+    }
+
+    public function getPrivilege() : BelongsTo {
+        return $this->belongsTo(CmsPrivileges::class, 'id_cms_privileges', 'id');
     }
 }

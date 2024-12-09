@@ -431,6 +431,33 @@ class CmsModulSeeder extends Seeder
                 'controller'   => 'Capsule\AdminCapsuleAdjustmentsController',
                 'is_protected' => 0,
                 'is_active'    => 0
+            ],
+            [
+                'name'         => 'Collect Token New',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_token',
+                'table_name'   => 'collect_rr_tokens',
+                'controller'   => 'Token\AdminCollectTokenController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Gasha Machines Bay',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'gasha_machines_bay',
+                'table_name'   => 'gasha_machines_bay',
+                'controller'   => 'Submaster\AdminGashaMachinesBayController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
+                'name'         => 'Gasha Machine Layers',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'gasha_machines_layers',
+                'table_name'   => 'gasha_machines_layers',
+                'controller'   => 'Submaster\AdminGashaMachinesLayersController',
+                'is_protected' => 0,
+                'is_active'    => 0
             ]
         ];
 

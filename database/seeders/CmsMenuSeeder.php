@@ -282,6 +282,24 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 10
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Collect Token New',
+            ],
+            [
+                'name'              => 'Collect Token New',
+                'type'              => 'Route',
+                'path'              => 'Token\AdminCollectTokenControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 1
+            ]
+        );
     }
 
     public function capsuleMenu() {
@@ -796,6 +814,41 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 16
             ]
         );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Gasha Machines Bay',
+            ],
+            [
+                'name'              => 'Gasha Machines Bay',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminGashaMachinesBayControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 17
+            ]
+        );
+        DB::table('cms_menus')->updateOrInsert(
+            [
+                'name'              => 'Gasha Machine Layers',
+            ],
+            [
+                'name'              => 'Gasha Machine Layers',
+                'type'              => 'Route',
+                'path'              => 'Submaster\AdminGashaMachinesLayersControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 4,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 18
+            ]
+        );
     }
 
     public function historyMenu() {
@@ -959,5 +1012,6 @@ class CmsMenuSeeder extends Seeder
                 'sorting'           => 9
             ]
         );
+      
     }
 }

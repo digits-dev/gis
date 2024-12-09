@@ -2,8 +2,13 @@
 
 namespace App\Models\Audit;
 
+use App\Models\Capsule\CapsuleSales;
+use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\Submaster\GashaMachines;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CollectRrTokenLines extends Model
 {
@@ -14,12 +19,28 @@ class CollectRrTokenLines extends Model
         'line_status', 
         'collected_token_id', 
         'gasha_machines_id',
-        'gasha_machines_id',
+        'no_of_token',
+        'qty',
+        'variance',
+        'location_id',
+        'current_cash_value',
         'created_at	',
         'updated_at',
         'deleted_at	',
     ];
 
+    public function machineSerial() : BelongsTo {
+        return $this->belongsTo(GashaMachines::class, 'gasha_machines_id', 'id');
+    }
+    
+    public function inventory_capsule_lines() : HasMany {
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
+    }
+
+    public function collectTokenHeader() : BelongsTo {
+        return $this->belongsTo(CollectRrTokens::class, 'collected_token_id', 'id');
+    }
+    
     public function scopeDetailBody($query, $id){
         return $query->leftjoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
                      ->select('collect_rr_token_lines.id as id',
