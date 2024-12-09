@@ -327,7 +327,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,14])){
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1,4,6,14,16])){
 				$query->orderBy('gasha_machines.id', 'desc');
 			}else {
 				$query->where('gasha_machines.location_id', CRUDBooster::myLocationId())
