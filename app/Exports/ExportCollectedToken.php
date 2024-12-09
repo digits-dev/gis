@@ -3,6 +3,8 @@
 namespace App\Exports;
 
 use App\Models\Audit\CollectRrTokens;
+use App\Models\CmsModels\CmsPrivileges;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -48,11 +50,21 @@ class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
 
     public function collection()
     {
-        $query = CollectRrTokens::with([
-            'lines.inventory_capsule_lines.getInventoryCapsule.item',
-            'getLocation',
-            'getBay',
-        ]);
+
+        if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER])) {
+			$query = CollectRrTokens::with([
+                'lines.inventory_capsule_lines.getInventoryCapsule.item', 
+                'getLocation',
+                'getBay',
+            ]);
+		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
+			$query = CollectRrTokens::with([
+                'lines.inventory_capsule_lines.getInventoryCapsule.item',
+                'getLocation',
+                'getBay',
+            ])->where('location_id', CRUDBooster::myLocationId());
+		}
+        
 
         // dd($this->filterColumn);
 
