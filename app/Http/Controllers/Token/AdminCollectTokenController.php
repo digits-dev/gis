@@ -129,7 +129,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->orderBy('collect_rr_tokens.id', 'desc');
-		} else if (in_array(CRUDBooster::myPrivilegeId(), [3, 5, 6, 11, 12])) {
+		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->whereNull('collect_rr_tokens.deleted_at')
 				->orderBy('collect_rr_tokens.id', 'desc');
