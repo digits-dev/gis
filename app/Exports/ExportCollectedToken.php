@@ -54,38 +54,158 @@ class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
             'getBay',
         ]);
 
+        // dd($this->filterColumn);
+
         if ($this->filterColumn) {
             foreach ((array) $this->filterColumn as $key => $fc) {
-                $value = $fc['value'] ?? null;
-                $type = $fc['type'] ?? null;
+                if (!in_array($key, ['statuses.style','locations.location_name','gasha_machines_bay.name', 'cms_users.name', 'cms_users1.name'])){
 
-                if (!empty($value) && !empty($type)) {
-                    switch ($type) {
-                        case 'empty':
-                            $query->whereNull($key)->orWhere($key, '');
-                            break;
-                        case 'like':
-                        case 'not like':
-                            $query->where($key, $type, '%' . $value . '%');
-                            break;
-                        case 'in':
-                        case 'not in':
-                            $values = explode(',', $value);
-                            $type === 'in' ? $query->whereIn($key, $values) : $query->whereNotIn($key, $values);
-                            break;
-                        case 'between':
-                            $range = $value;
-   
-                            if (count($range) == 2) {
-                                $startDate = date('Y-m-d', strtotime($range[0]));
-                                $endDate = date('Y-m-d', strtotime($range[1]));
+                    $value = $fc['value'] ?? null;
+                    $type = $fc['type'] ?? null;
+    
+                    if (!empty($value) && !empty($type)) {
+                        switch ($type) {
+                            case 'empty':
+                                $query->whereNull($key)->orWhere($key, '');
+                                break;
+                            case 'like':
+                            case 'not like':
+                                $query->where($key, $type, '%' . $value . '%');
+                   
+                                break;
+                            case 'in':
+                            case 'not in':
+                                $values = explode(',', $value);
+                                $type === 'in' ? $query->whereIn($key, $values) : $query->whereNotIn($key, $values);
+                                break;
+                            case 'between':
+                                $range = $value;
+       
+                                if (count($range) == 2) {
+                                    $startDate = date('Y-m-d', strtotime($range[0]));
+                                    $endDate = date('Y-m-d', strtotime($range[1]));
+                                    
+                                    $query->whereBetween('collect_rr_tokens.created_at', [$startDate, $endDate]);
+                                }
+                                break;
+                            default:
+                                $query->where($key, $type, $value);
                                 
-                                $query->whereBetween('collect_rr_tokens.created_at', [$startDate, $endDate]);
-                            }
-                            break;
-                        default:
-                            $query->where($key, $type, $value);
-                            break;
+                                break;
+                        }
+                    }
+                }
+
+                else{
+                    $value = $fc['value'] ?? null;
+                    $type = $fc['type'] ?? null;
+    
+                    if (!empty($value) && !empty($type)) {
+                        switch ($type) {
+                            case 'empty':
+                                // $query->whereNull($key)->orWhere($key, '');
+                                $query->orWhereHas('getLocation', function ($w) use ($type,$value) {
+                                    $w->whereNull('location_name', '');
+                                })
+                                ->orWhereHas('getBay', function ($w) use ($type,$value) {
+                                    $w->whereNull('name', '');
+                                })
+                                ->orWhereHas('getStatus', function ($w) use ($type,$value) {
+                                    $w->whereNull('status_description', '');
+                                })
+                                ->orWhereHas('getReceivedBy', function ($w) use ($type,$value) {
+                                    $w->whereNull('name', '');
+                                })
+                                ->orWhereHas('getCreatedBy', function ($w) use ($type,$value) {
+                                    $w->whereNull('name', '');
+                                });
+                                break;
+                            case 'like':
+                            case 'not like':
+                                // $query->where($key, $type, '%' . $value . '%');
+                                $query->orWhereHas('getLocation', function ($w) use ($type,$value) {
+                                    $w->where('location_name', $type, $value);
+                                })
+                                ->orWhereHas('getBay', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                })
+                                ->orWhereHas('getStatus', function ($w) use ($type,$value) {
+                                    $w->where('status_description', $type, $value);
+                                })
+                                ->orWhereHas('getReceivedBy', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                })
+                                ->orWhereHas('getCreatedBy', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                });
+
+                                break;
+                            case 'in':
+                            case 'not in':
+                                $values = explode(',', $value);
+                                $type === 'in' 
+                                ? 
+                                // $query->whereIn($key, $values) 
+
+                                $query->orWhereHas('getLocation', function ($w) use ($type,$value) {
+                                    $w->whereIn('location_name', $type, $value);
+                                })
+                                ->orWhereHas('getBay', function ($w) use ($type,$value) {
+                                    $w->whereIn('name', $type, $value);
+                                })
+                                ->orWhereHas('getStatus', function ($w) use ($type,$value) {
+                                    $w->whereIn('status_description', $type, $value);
+                                })
+                                ->orWhereHas('getReceivedBy', function ($w) use ($type,$value) {
+                                    $w->whereIn('name', $type, $value);
+                                })
+                                ->orWhereHas('getCreatedBy', function ($w) use ($type,$value) {
+                                    $w->whereIn('name', $type, $value);
+                                })
+                                
+                                : 
+                                // $query->whereNotIn($key, $values);
+
+                                $query->orWhereHas('getLocation', function ($w) use ($type,$value) {
+                                    $w->whereNotIn('location_name', $type, $value);
+                                })
+                                ->orWhereHas('getBay', function ($w) use ($type,$value) {
+                                    $w->whereNotIn('name', $type, $value);
+                                })
+                                ->orWhereHas('getStatus', function ($w) use ($type,$value) {
+                                    $w->whereNotIn('status_description', $type, $value);
+                                })
+                                ->orWhereHas('getReceivedBy', function ($w) use ($type,$value) {
+                                    $w->whereNotIn('name', $type, $value);
+                                })
+                                ->orWhereHas('getCreatedBy', function ($w) use ($type,$value) {
+                                    $w->whereNotIn('name', $type, $value);
+                                });
+                                
+                                
+                                break;
+        
+                            default:
+                                // $query->where($key, $type, $value);
+
+                                $query->orWhereHas('getLocation', function ($w) use ($type,$value) {
+                                    $w->where('location_name', $type, $value);
+                                })
+                                ->orWhereHas('getBay', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                })
+                                ->orWhereHas('getStatus', function ($w) use ($type,$value) {
+                                    $w->where('status_description', $type, $value);
+                                })
+                                ->orWhereHas('getReceivedBy', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                })
+                                ->orWhereHas('getCreatedBy', function ($w) use ($type,$value) {
+                                    $w->where('name', $type, $value);
+                                });
+                                
+                                break;
+                        }
                     }
                 }
             }
