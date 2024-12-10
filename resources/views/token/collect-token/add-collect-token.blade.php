@@ -439,7 +439,7 @@
         const location = $('#location_id').val();
         const bayValue = $('#bay').val();
 
-        $('#loading').show();
+        $('#loadingBackdrop').show();
 
         $.ajax({
             url: '{{route("getMachines")}}',
@@ -556,11 +556,11 @@
 
                     updateTotalQuantity();
                 }
-                $('#loading').hide();
+                $('#loadingBackdrop').hide();
             },
             error: function() {
                 alert('Error Request!');
-                $('#loading').hide(); 
+                $('#loadingBackdrop').hide(); 
             }
         });
         $('#header_bay_id').val(bayValue);
