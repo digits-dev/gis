@@ -174,7 +174,7 @@
             const selectedLocationValue = $('#select_store_location').val();
             //$(this).attr('disabled', true);
             $.ajax({
-                url:"{{ route('getMachines')}}",
+                url:"{{ route('getMachinesAdj')}}",
                 type:"POST",
                 dataType:'json',
                 data:{
