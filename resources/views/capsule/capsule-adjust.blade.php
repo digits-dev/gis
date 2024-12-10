@@ -2,6 +2,7 @@
 @push('head')
     <link rel="stylesheet" href="{{ asset('css/capsule-adjustment.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="{{ asset('plugins/sweetalert.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/select2-custom.css') }}">
     <style>
@@ -133,7 +134,14 @@
 
 @endsection
 @push('bottom')
-<script>
+<script type="text/javascript">
+     function preventBack() {
+        window.history.forward();
+    }
+     window.onunload = function() {
+        null;
+    };
+    setTimeout("preventBack()", 0);
     $('.s-single').select2({
         width: '100%'
     });
