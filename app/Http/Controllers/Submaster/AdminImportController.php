@@ -73,12 +73,14 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         // Define headers and data for the second sheet
         $arrHeader2 = [
             "serial_number"  => "Serial Number",
+            "no_of_token"    => "No of token",
             "bay"            => "Bay",
             "layer"          => "Layer"
         ];
     
         $arrData2 = [
             "serial_number"  => "PH00001",
+            "no_of_token"    => "3",
             "bay"            => "Bay A",
             "layer"          => "layer 1"
         ];
