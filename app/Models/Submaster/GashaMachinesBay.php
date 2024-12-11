@@ -3,6 +3,7 @@
 namespace App\Models\Submaster;
 
 use App\Models\Audit\CollectRrTokens;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +19,7 @@ class GashaMachinesBay extends Model
     }
 
     public function getCollectionStatus() : HasMany {
-        return $this->hasMany(CollectRrTokens::class, 'bay_id')->orderBy('created_at', 'DESC');
+        return $this->hasMany(CollectRrTokens::class, 'bay_id')->where('location_id', CRUDBooster::myLocationId())->orderBy('created_at', 'DESC');
         // ->where('statuses_id', '<>', 5) if need
     }
 
