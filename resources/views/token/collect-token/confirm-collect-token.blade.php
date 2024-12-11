@@ -322,34 +322,7 @@
     }
 
     .swal2-popup {
-        width: 500px !important; /* Set a larger width */
-        height: 100% !important;
-    }
-    .swal2-title {
-        font-size: 24px !important; /* Customize the title size */
-    }
-    .swal2-html-container {
-        font-size: 16px !important; /* Customize the text size */
-        overflow: hidden !important;
-    }
-
-    .swal2-confirm {
-        font-size: 16px !important;
-        padding: 10px 20px !important;
-        border-radius: 5px !important;
-        color: white !important;
-    }
-    .swal2-cancel {
-        font-size: 16px !important;
-        padding: 10px 20px !important;
-        border-radius: 5px !important;
-        color: white !important;
-    }
-
-    .swal2-icon {
-        font-size: 16px !important; /* Customize the icon size */
-        width: 80px !important;
-        height: 80px !important;
+        font-size: unset !important;
     }
 
     /* The backdrop (gray transparent background) */
@@ -428,7 +401,7 @@
             </div>
             
             <div class="table-wrapper custom-scroll-x">
-                <table>
+                <table id="confirm_collecttoken_tbl">
                     <thead>
                         <tr>
                             <th>Machine #</th>
@@ -826,8 +799,63 @@
         e.preventDefault(); 
         const form = document.getElementById('confirm-details');
 
-        if (form.checkValidity()) {
+        let allFinalResults = [];
+        let allZero = true;
+        let errorRowDetails = ""; 
+
+        $('#confirm_collecttoken_tbl tbody tr').each(function() {
+            const actual_capsule_inventory = parseFloat($(this).find('input[name="actualCapsuleInventory[]"]').val());
+            const current_machine_inventory = parseFloat($(this).find('input[name="currentMachineInventory[]"]').val());
+            const machine_number = $(this).find('input[name="serial_number[]"]').val();
+
+            // Check if the inventory is less than 0 or greater than the current machine inventory
+            if (actual_capsule_inventory < 0 || actual_capsule_inventory > current_machine_inventory) {
+                allZero = false; 
+                
+                $(this).css('background', '#f8d7da');
+
+                errorRowDetails = `
+                    <tr>
+                        <td><b>${machine_number}</b></td>
+                        <td><b>${current_machine_inventory}</b></td>
+                        <td><b>${actual_capsule_inventory}</b></td>
+                    </tr>
+                `;
+                return false;
+            }
+        });
+
+        if (!allZero) {
             Swal.fire({
+                icon: "error",
+                title: "<strong class='text-danger'> Oops! <br> Invalid Data.</strong>",
+                showCloseButton: false,
+                allowOutsideClick: false,
+                confirmButtonColor: '#3C8DBC',
+                allowEscapeKey: false,
+                allowEnterKey: true,
+                confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                html: `
+                    <p>Insufficient capsule inventory</p>
+                    <small><b>Please ensure that you have completed Capsule Refill first</small></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Machine #</th>
+                                <th>Current Inventory</th>
+                                <th>Actual Inventory</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${errorRowDetails} 
+                        </tbody>
+                    </table>
+                    <br>
+                `
+            });
+        } else {
+            if (form.checkValidity()) {
+                Swal.fire({
                 title: "Are you sure you want to confirm collected token?",
                 icon: 'question',
                 showCancelButton: true,
@@ -843,8 +871,9 @@
                     form.submit(); 
                 }
             });
-        } else {
-            form.reportValidity();
+            } else {
+                form.reportValidity();
+            }
         }
     });
 
