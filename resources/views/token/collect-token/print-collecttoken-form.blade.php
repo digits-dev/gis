@@ -508,6 +508,7 @@
                 printDetails.empty();
                 receivedBy.empty();
                 collectedBy.empty();
+                totalTokens.empty();
 
                 let details = `
                     <h5><b>Store Name: </b><span>${response.store_name}</span></h5>
