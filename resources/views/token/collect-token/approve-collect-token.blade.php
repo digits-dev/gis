@@ -379,6 +379,8 @@
         <div class="content-panel">
                 <input type="hidden" name="collect_token_id" id="collect_token_id" value="{{$collected_tokens->id}}" readonly>
                 <input type="hidden" name="action_type" id="action_type" value="">
+                <input type="hidden" name="header_location_id" id="header_location_id" value="{{$collected_tokens->location_id}}">
+                <input type="hidden" name="total_collected_token" id="total_collected_token" value="{{$collected_tokens->collected_qty}}">
                 <input type="hidden" name="ref_number" value="{{$collected_tokens->reference_number}}" readonly>
                 <div class="inputs-container" style="margin-bottom: 10px;">
                     <div class="input-container">

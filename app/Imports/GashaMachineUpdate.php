@@ -25,31 +25,39 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
      * @return Users|null
      */
     public function collection(Collection $rows){
-        foreach ($rows->toArray() as $key => $row){
-            $location_name = DB::table('locations')->where('id',CRUDBooster::myLocationId())->first();
-            $bay           = GashaMachinesBay::where('name',trim($row['bay']))->first();
-            $layer         = GashaMachinesLayer::where('name',trim($row['layer']))->first();
-            // if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
-            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
-            // }
-            // if($row['no_of_token'] == 0){
-            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token required Or greater than zero at line ".($key+2),"danger");
-            // }
-            // if($row['no_of_token'] > 9){
-            //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token must be equal or less than 9! at line ".($key+2),"danger");
-            // }
-            if($location_name == NULL){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"No location tag! at line ".($key+2),"danger");
+        foreach ($rows->toArray() as $key => $row) {
+            $location_name = DB::table('locations')->where('id', CRUDBooster::myLocationId())->first();
+        
+            // Only query for bay and layer if they are provided in the row
+            $bay = !empty(trim($row['bay'] ?? '')) ? GashaMachinesBay::where('name', trim($row['bay']))->first() : null;
+            $layer = !empty(trim($row['layer'] ?? '')) ? GashaMachinesLayer::where('name', trim($row['layer']))->first() : null;
+            $token = isset($row['no_of_token']) && trim($row['no_of_token']) !== '' ? trim($row['no_of_token']) : null;
+        
+            if ($location_name == NULL) {
+                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), "No location tag! at line " . ($key + 2), "danger");
             }
-            GashaMachines::where('serial_number',$row['serial_number'])
-            ->update([
-                    'bay'            => $bay->id,
-                    'layer'          => $layer->id,
-                    'updated_by'	 => CRUDBooster::myId(),
-                    'updated_at'     => date('Y-m-d H:i:s')
-            ]);	
-
-
-        }
+        
+            // Build the update data array
+            $updateData = [
+                'updated_by'  => CRUDBooster::myId(),
+                'updated_at'  => date('Y-m-d H:i:s'),
+            ];
+        
+            // Add bay and layer to the update array only if they are present
+            if ($bay !== null) {
+                $updateData['bay'] = $bay->id;
+            }
+            if ($layer !== null) {
+                $updateData['layer'] = $layer->id;
+            }
+        
+            // Add no_of_token to the update array only if it's not null
+            if ($token !== null) {
+                $updateData['no_of_token'] = $token;
+            }
+        
+            GashaMachines::where('serial_number', $row['serial_number'])->update($updateData);
+        }        
+    
     }
 }

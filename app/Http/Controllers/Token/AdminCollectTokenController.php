@@ -19,8 +19,10 @@ use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\Locations;
 use App\Models\Submaster\TokenConversion;
+use App\Models\Token\TokenInventory;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -501,7 +503,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Review Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getCreatedBy', 'getConfirmedBy', 'getLocation', 'collectTokenMessages'])->find($id);
-
+		
 		return view("token.collect-token.approve-collect-token", $data);
 	}
 
@@ -523,6 +525,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 					'gasha_machines_id' => 'required',
 					'location_id' => 'required',
 					'actual_capsule_sales' => 'required',
+					'header_location_id' => 'required',
+					'total_collected_token' => 'required'
 				]);
 			} catch (ValidationException $e) {
 				$errors = $e->validator->errors()->all();
@@ -590,9 +594,20 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'approved_by' => CRUDBooster::myId(),
 				'approved_at' => now(),
 			]);
-
+			
 			$collectTokenHeader->lines()->update([
 				'line_status' => Statuses::COLLECTED
+			]);
+
+			// get current token iventory (specific location)
+			$get_current_Token_qty = TokenInventory::where('locations_id', $validatedData['header_location_id'])->first();
+			$new_total_qty = $get_current_Token_qty->qty + $validatedData['total_collected_token'];
+
+			// update token inventories 
+			TokenInventory::where('locations_id', $validatedData['header_location_id'])->update([
+				'qty' => $new_total_qty,
+				'updated_by' => CRUDBooster::myId(),
+				'updated_at' => now()
 			]);
 		}
 
