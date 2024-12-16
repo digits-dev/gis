@@ -34,16 +34,35 @@ class BulkAdjustCapsulesImport implements ToCollection, WithHeadingRow, WithVali
 			$action_by = CRUDBooster::myId();
             $qty = preg_replace('/,/', '', $row['qty']);
 			$action_type = 6;
-	
-            InventoryCapsule::leftjoin('inventory_capsule_lines','inventory_capsule_lines.inventory_capsules_id','inventory_capsules.id')
-				->where('inventory_capsules.item_code', $item->digits_code2)
-                ->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
+
+            $isExist = InventoryCapsuleLine::leftJoin('inventory_capsules', 'inventory_capsule_lines.inventory_capsules_id', 'inventory_capsules.id')
+                    ->where('inventory_capsules.item_code', $item->digits_code2)
+                    ->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
+                    ->where('inventory_capsules.locations_id', $location->id)
+					->exists();
+            if($isExist){
+                InventoryCapsuleLine::leftJoin('inventory_capsules', 'inventory_capsules.id', 'inventory_capsule_lines.inventory_capsules_id')
+                    ->where('inventory_capsules.item_code', $item->digits_code2)
+                    ->where('inventory_capsule_lines.gasha_machines_id', $machine->id)
+                    ->where('inventory_capsules.locations_id', $location->id)
+                    ->update([
+                    'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $qty"),
+                    'inventory_capsule_lines.updated_at' => $time_stamp,
+                    'inventory_capsule_lines.updated_by' => $action_by,
+                ]);
+            }else{
+                $header = InventoryCapsule::where('inventory_capsules.item_code', $item->digits_code2)
                 ->where('inventory_capsules.locations_id', $location->id)
-                ->update([
-                'qty' => DB::raw("qty + $qty"),
-                'inventory_capsule_lines.updated_at' => $time_stamp,
-                'inventory_capsule_lines.updated_by' => $action_by,
-            ]);
+                ->first();
+
+                InventoryCapsuleLine::insert([
+                    'inventory_capsules_id' => $header->id,
+                    'gasha_machines_id' => $machine->id,
+                    'qty' => DB::raw("qty + $qty"),
+                    'created_by' => $action_by,
+                    'created_at' => $time_stamp
+                ]);
+            }
 				
 			HistoryCapsule::insert([
 				'reference_number' => null,
