@@ -11,6 +11,13 @@
 	use App\Models\Submaster\GashaMachines;
 	use App\Models\Submaster\SubLocations;
 	use App\Models\Submaster\Item;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Excel;
+	use Maatwebsite\Excel\HeadingRowImport;
+	use App\Imports\BulkAdjustCapsulesImport;
 
 	class AdminCapsuleAdjustmentsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -127,6 +134,9 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Adjust capsule","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('adjust-capsule'),"color"=>"success"];
+			}
+			if(CRUDBooster::isSuperadmin() && CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"Bulk Adjust capsule","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('bulk-capsules-upload'),"color"=>"success"];
 			}
 
 	        /* 
@@ -642,5 +652,68 @@
 			DB::table('history_capsules')->insert($history);
 
 			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Your form submitted succesfully.',"success");
+		}
+
+		public function bulkUploadAdjustCapsules() {
+			$data['page_title']= 'Bulk Adjust Capsules Upload';
+			return view('import.capsules-import.bulk-adjust-capsules-upload', $data)->render();
+		}
+		function downloadBulkCapsulesTemplate() {
+			$arrHeader = [
+				"jan_no"             => "Jan No",
+				"machine_serial"     => "Machine Serial",
+				"location"           => "Location",
+				"qty"                => "Qty",
+			];
+
+			$arrData = [
+				"jan_no"             => "4570118023759",
+				"machine_serial"     => "PH00001",
+				"location"           => "GASHAPON.MITSUKOSHI.BGC.RTL",
+				"qty"                => "1",
+			];
+
+			$spreadsheet = new Spreadsheet();
+			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+			$filename = "capsules-template-".date('Y-m-d');
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = new Xlsx($spreadsheet);
+			$writer->save('php://output');
+		}
+
+		public function saveBulkUploadCapsules(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			$headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
+
+			if (count($headings) !== 4) {
+			    CRUDBooster::redirect(CRUDBooster::mainpath(), 'Template column not match, please refer to downloaded template.', 'danger');
+			} else {
+				try {
+
+					Excel::import(new BulkAdjustCapsulesImport, $path);
+					CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Upload Successfully!"), 'success');
+
+				} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+				    $failures = $e->failures();
+
+				    $error = [];
+				    foreach ($failures as $failure) {
+				        $line = $failure->row();
+				        foreach ($failure->errors() as $err) {
+				            $error[] = $err . " on line: " . $line;
+				        }
+				    }
+
+				    $errors = collect($error)->unique()->toArray();
+
+				}
+				CRUDBooster::redirect(CRUDBooster::mainpath(), $errors[0], 'danger');
+
+			}
+
 		}
 	}

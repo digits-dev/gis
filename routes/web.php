@@ -163,7 +163,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('admin/capsule_adjustments/getMachinesQty',[AdminCapsuleAdjustmentsController::class,'getMachinesQty'])->name('getMachinesQty');
     Route::post('admin/capsule_adjustments/getCapsuleInventory',[AdminCapsuleAdjustmentsController::class,'getCapsuleInventory'])->name('getCapsuleInventory');
     Route::post('admin/capsule_adjustments/submit-capsule-adjustment',[AdminCapsuleAdjustmentsController::class,'submitCapsuleAmount'])->name('submitCapsuleAmount');
-    
+    Route::get(config('crudbooster.ADMIN_PATH').'/capsule_adjustments/bulk-capsules-upload', [AdminCapsuleAdjustmentsController::class, 'bulkUploadAdjustCapsules']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/capsule_adjustments/bulk-upload-capsules',[AdminCapsuleAdjustmentsController::class, 'saveBulkUploadCapsules'])->name('bulk-upload-capsules');
+    Route::get(config('crudbooster.ADMIN_PATH').'/capsule_adjustments/download-bulk-capsules-template',[AdminCapsuleAdjustmentsController::class, 'downloadBulkCapsulesTemplate']);
     //CYCLE COUNT EXPORT
     Route::post('admin/cycle_counts/export', [AdminCycleCountsController::class, 'exportData'])->name('cycle_count_export');
 
