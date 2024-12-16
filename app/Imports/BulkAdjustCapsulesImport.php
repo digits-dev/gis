@@ -50,7 +50,7 @@ class BulkAdjustCapsulesImport implements ToCollection, WithHeadingRow, WithVali
 				'item_code' => $item->digits_code2,
 				'capsule_action_types_id' => $action_type,
 				'locations_id' => $location->id,
-				'from_machines_id' => $machine->id,
+				'to_machines_id' => $machine->id,
 				'to_sub_locations_id' => null,
 				'qty' => $qty,
 				'created_at' => $time_stamp,
