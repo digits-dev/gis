@@ -6,9 +6,10 @@ use App\Models\PosFrontend\SwapHistory;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Carbon\Carbon;
 
-class TokenSwapHistoryExport implements FromQuery, WithHeadings
+class TokenSwapHistoryExport implements FromQuery, WithHeadings, WithMapping
 {
     public $date_from;
     public $date_to;
@@ -37,7 +38,6 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
     }
 
     public function query() {
-
         $my_locations_id = CRUDBooster::myLocationId();
 
         $query = SwapHistory::query()
@@ -57,9 +57,9 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
                 'locations.location_name',
                 'creator.name as creator_name',
                 'swap_histories.created_at',
+                'updater.name as updater_name', // Fix updater_name
                 'swap_histories.updated_at',
-                'swap_histories.updated_at', 
-                'swap_histories.status',
+                'swap_histories.status'
             );
 
         if ($this->date_from && $this->date_to) {
@@ -73,7 +73,6 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
         return $query;
     }
 
-    // This method allows us to format data before exporting it
     public function map($swapHistory): array
     {
         return [
@@ -81,17 +80,15 @@ class TokenSwapHistoryExport implements FromQuery, WithHeadings
             $swapHistory->token_value,
             $swapHistory->total_value,
             $swapHistory->change_value,
-            $swapHistory->payment_description,
-            $swapHistory->payment_reference,
-            $swapHistory->description,
-            $swapHistory->location_name,
-            $swapHistory->creator_name,
-            // Explicitly parse created_at to Y-m-d H:i:s format
-            Carbon::createFromFormat('Y-m-d H:i:s', $swapHistory->created_at)->format('Y-m-d H:i:s'),
-            $swapHistory->updater_name,
-            // Explicitly parse updated_at to Y-m-d H:i:s format
-            Carbon::createFromFormat('Y-m-d H:i:s', $swapHistory->updated_at)->format('Y-m-d H:i:s'),
-            $swapHistory->status,
+            $swapHistory->payment_description ?? '',
+            $swapHistory->payment_reference ?? '',
+            $swapHistory->description ?? '',
+            $swapHistory->location_name ?? '',
+            $swapHistory->creator_name ?? '',
+            Carbon::parse($swapHistory->created_at)->format('Y-m-d H:i:s'),
+            $swapHistory->updater_name ?? '',
+            Carbon::parse($swapHistory->updated_at)->format('Y-m-d H:i:s'),
+            $swapHistory->status ?? '',
         ];
     }
 }
