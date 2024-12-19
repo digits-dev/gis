@@ -37,7 +37,14 @@ class GashaMachines extends Model
     }
 
     public function getInventoryItem() : HasMany {
-        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id')->orderBy('updated_at', 'DESC');
+        // return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id')->orderBy('updated_at', 'DESC');
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')
+            ->select('*')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('inventory_capsule_lines')
+                    ->groupBy('gasha_machines_id');
+        });
    }
 
     public function getBay() : BelongsTo {
