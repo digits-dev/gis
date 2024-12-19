@@ -306,9 +306,11 @@
 	    public function hook_query_index(&$query) {
 			if(in_array(CRUDBooster::myPrivilegeId(),[1,4,14])){
 				$query->whereNull('collect_rr_tokens.deleted_at')
+					  ->where('reference_number', 'LIKE', '%CLT-%')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,5,6,11,12])){
 				$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+					  ->where('reference_number', 'LIKE', '%CLT-%')
 					  ->whereNull('collect_rr_tokens.deleted_at')
 					  ->orderBy('collect_rr_tokens.id', 'desc');
 			}

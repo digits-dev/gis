@@ -34,7 +34,7 @@ class CollectRrTokenLines extends Model
     }
     
     public function inventory_capsule_lines() : HasMany {
-        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->orderBy('updated_at', 'DESC')->limit(1);
     }
 
     public function collectTokenHeader() : BelongsTo {
