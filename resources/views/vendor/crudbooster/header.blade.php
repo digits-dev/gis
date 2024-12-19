@@ -69,10 +69,15 @@
                         <li class="user-footer">
                             <div class="pull-{{ cbLang('left') }}">
                                 <a href="{{ route('AdminCmsUsersControllerGetProfile') }}" class="btn btn-default btn-border"><i
-                                            class='fa fa-user'></i> {{cbLang("label_button_profile")}}</a>
+                                    class='fa fa-user'></i> {{cbLang("label_button_profile")}}</a>
+                                
+                                <a href="{{ route('show-change-password') }}" class="btn btn-default btn-border">
+                                    <i class='fa fa-key text-success'></i> 
+                                        <small class="text-success"></small>
+                                </a>
                             </div>
                             <div class="pull-{{ cbLang('right') }}">
-                                <a title='Lock Screen' href="{{ route('getLockScreen') }}" class='btn btn-default btn-border'><i class='fa fa-key'></i></a>
+                                <a title='Lock Screen' href="{{ route('getLockScreen') }}" class='btn btn-default btn-border'><i class='fa fa-lock'></i></a>
                                 <a href="javascript:void(0)" onclick="swal({
                                         title: '{{cbLang('alert_want_to_logout')}}',
                                         type:'info',

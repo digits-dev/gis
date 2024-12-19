@@ -34,7 +34,14 @@ class CollectRrTokenLines extends Model
     }
     
     public function inventory_capsule_lines() : HasMany {
-        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->where('qty', '>', 0);
+        // return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')->orderBy('updated_at', 'DESC')->limit(1);
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id', 'gasha_machines_id')
+            ->select('*')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('inventory_capsule_lines')
+                    ->groupBy('gasha_machines_id');
+        });
     }
 
     public function collectTokenHeader() : BelongsTo {

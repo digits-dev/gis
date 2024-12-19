@@ -56,7 +56,16 @@ Route::get('/', function () {
     return redirect('admin/login');
 });
 
-Route::group(['middleware' => ['web']], function() {
+Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PATH')], function () {
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('view-change-password', [AdminCmsUsersController:: class, 'changePasswordView'])->name('show-change-password');
+        Route::post('change-password',[AdminCmsUsersController:: class, 'changePass']);
+        Route::post('waive-change-password', [AdminCmsUsersController:: class, 'waiveChangePass']);
+		Route::post('reset-password', [AdminCmsUsersController:: class, 'postSendEmailResetPassword'])->name('reset-password');
+    });
+});
+
+Route::group(['middleware' => ['web', '\crocodicstudio\crudbooster\middlewares\CBBackend','check.user']], function() {
     //Disburse Token
     Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
     Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');

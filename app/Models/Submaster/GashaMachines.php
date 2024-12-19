@@ -37,8 +37,8 @@ class GashaMachines extends Model
     }
 
     public function getInventoryItem() : HasMany {
-        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id')->where('qty', '>', 0);
-   }
+        return $this->hasMany(InventoryCapsuleLine::class, 'gasha_machines_id')->orderBy('updated_at', 'DESC');
+    }
 
     public function getBay() : BelongsTo {
         return $this->belongsTo(GashaMachinesBay::class, 'bay', 'id');

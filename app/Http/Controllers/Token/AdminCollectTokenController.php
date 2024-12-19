@@ -130,9 +130,11 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	{
 		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
+				->where('reference_number', 'LIKE', '%CLTN-%')
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
@@ -546,12 +548,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			}, $validatedData['jan_code'], $validatedData['item_code'], $validatedData['gasha_machines_id'], $validatedData['location_id'], $validatedData['actual_capsule_sales']);
 
 			// arrap map for inventory capsule lines
-			$ValidatedInventoryCapsuleLines = array_map(function ($inventory_capsule_lines_id, $actual_capsule_inventory) {
+			$ValidatedInventoryCapsuleLines = array_map(function ($inventory_capsule_lines_id, $actual_capsule_inventory, $actual_capsule_sales) {
 				return [
 					'inventory_capsule_lines_id' => $inventory_capsule_lines_id,
 					'actual_capsule_inventory' => $actual_capsule_inventory,
+					'actual_capsule_sales' => $actual_capsule_sales,
 				];
-			}, $validatedData['inventory_capsule_lines_id'], $validatedData['actual_capsule_inventory']);
+			}, $validatedData['inventory_capsule_lines_id'], $validatedData['actual_capsule_inventory'], $validatedData['actual_capsule_sales']);
 
 			// create capsule sales
 			foreach($ValidatedCapsuleSalesLines as $perCapsuleSale){
@@ -581,10 +584,15 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				}
 			}
 
-			// update inventory capsule lines qty
-			foreach($ValidatedInventoryCapsuleLines as $perLine){
+			// update inventory capsule li nes qty
+			foreach ($ValidatedInventoryCapsuleLines as $perLine) {
+				$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->first();
+				$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales']; 
+
 				InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
-					'qty' => $perLine['actual_capsule_inventory']
+					'qty' => $deducted_qty,
+					'updated_by' => CRUDBooster::myId(),
+					'updated_at' => now()
 				]);
 			}
 
