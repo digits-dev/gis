@@ -19,7 +19,7 @@ class GashaMachinesBay extends Model
     }
 
     public function getCollectionStatus() : HasMany {
-        return $this->hasMany(CollectRrTokens::class, 'bay_id')->where('location_id', CRUDBooster::myLocationId())->where('qty', '>', 0);
+        return $this->hasMany(CollectRrTokens::class, 'bay_id')->where('location_id', CRUDBooster::myLocationId())->orderBy('created_at', 'DESC');
         // ->where('statuses_id', '<>', 5) if need
     }
 
