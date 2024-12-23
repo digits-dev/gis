@@ -65,13 +65,7 @@ Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PAT
     });
 });
 
-Route::group(['middleware' => ['web', 'check.user']], function() {
-    //Disburse Token
-    Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
-    Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');
-    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
-    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
-
+Route::group(['middleware' => ['web']], function() {
     Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
     Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
     Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
@@ -89,8 +83,7 @@ Route::group(['middleware' => ['web', 'check.user']], function() {
     Route::get('pos_float_history/{id}/view', [POSFloatHistoryController::class, 'viewFloatHistory'])->name('view_float_history');
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
-    Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
-    
+
     //TOKEN DESPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
@@ -102,6 +95,45 @@ Route::group(['middleware' => ['web', 'check.user']], function() {
 
     //POS Setting
     Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
+});
+
+Route::group(['middleware' => ['web', 'check.user']], function() {
+    //Disburse Token
+    Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
+    Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');
+    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
+    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
+
+    // Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
+    // Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
+    // Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
+    // Route::get('pos_logout_account_eod', [POSLoginController::class, 'logoutEOD'])->name('logout_eod');
+    // Route::get('pos_logout_account_es', [POSLoginController::class, 'endSession'])->name('logout_end_session');
+    // Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
+    // Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
+    // Route::get('pos_token_swap/suggest_jan_number', [POSTokenSwapController::class, 'suggestJanNumber'])->middleware('auth')->name('suggest_jan_number');
+    // Route::post('pos_token_swap/swap', [POSTokenSwapController::class, 'store'])->middleware('auth')->name('swap');
+    // Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index'])->middleware('auth');
+    // Route::get('pos_swap_history/{id}', [POSSwapHistoryController::class, 'show'])->middleware('auth');
+    // Route::get('pos_swap_history/getDetails/{id}', [POSSwapHistoryController::class, 'getDetails'])->middleware('auth');
+    // Route::get('pos_swap_history/edit/{id}', [POSSwapHistoryController::class, 'edit'])->middleware('auth');
+    // Route::get('pos_float_history', [POSFloatHistoryController::class, 'index'])->middleware('auth');
+    // Route::get('pos_float_history/{id}/view', [POSFloatHistoryController::class, 'viewFloatHistory'])->name('view_float_history');
+    // Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
+    // Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
+    Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
+    
+    // //TOKEN DESPENSE
+    // Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
+    // Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
+    // //POS Dashboard
+    // Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
+
+    // //POS EOD
+    // Route::post('admin/pos_end_of_day/eod', [POSEndOfDayController::class, 'submitEOD'])->name('submitEOD');
+
+    // //POS Setting
+    // Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
 
     //Token Adjustment
     Route::post('admin/token_adjustments/view',[AdminTokenAdjustmentsController::class,'viewAmount'])->name('viewAmount');
