@@ -514,6 +514,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
 
+		if(in_array($collectTokenHeader->statuses_id,[5,12])){
+			CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " Record is already updated. ", 'warning');
+		}
+
 		if ($request->action_type == 'approve'){
 			
 			// validations 
