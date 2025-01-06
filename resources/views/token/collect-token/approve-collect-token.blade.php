@@ -369,6 +369,48 @@
     .chat-send:hover{
         background-color: #53bbf7;
     }
+
+    /* The backdrop (gray transparent background) */
+    .loading-backdrop {
+        position: fixed;    
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+        display: none;      /* Initially hidden */
+        justify-content: center;  /* Horizontally center the card */
+        align-items: center;     /* Vertically center the card */
+        z-index: 9999;      /* Ensure it's on top of other content */
+        display: flex;      /* Flexbox for centering */
+    }
+
+    /* Loading card styles */
+    .loading-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Slight shadow for card effect */
+        text-align: center;
+        width: 200px; /* Small fixed width for the card */
+    }
+
+    /* Spinner styles */
+    .spinner {
+        border: 5px solid lightgrey; /* Light border */
+        border-top: 5px solid #3498db; /* Blue color for the spinner */
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 10px;  /* Centered with margin below */
+        animation: spin2 0.7s linear infinite;  /* Rotation animation */
+    }
+
+    /* Animation for the spinner */
+    @keyframes spin2 {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 @endpush
 @section('content')
@@ -685,6 +727,7 @@ $('.content-header').hide();
             reverseButtons: true,
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#loadingBackdrop').show();
                 $('#collect_token_details').submit();
             }
         });
@@ -705,6 +748,7 @@ $('.content-header').hide();
             reverseButtons: true,
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#loadingBackdrop').show();
                 $('#collect_token_details').submit(); 
             }
         });
