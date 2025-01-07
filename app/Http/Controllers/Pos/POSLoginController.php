@@ -105,7 +105,7 @@ class POSLoginController extends Controller
             ->where('status', 'ACTIVE')
             ->first();
 
-        if(!in_array($user->id_cms_privileges, [1,3,5])){
+        if(!in_array($user->id_cms_privileges, [1,3,5,15])){
             return redirect('pos_login');
         }
 

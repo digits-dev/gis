@@ -7,6 +7,8 @@ use Session;
 	use CRUDBooster;
 	use App\Models\Capsule\HistoryCapsule;
 	use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\CmsModels\CmsPrivileges;
+use crocodicstudio\crudbooster\helpers\CRUDBooster as HelpersCRUDBooster;
 use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminSwapHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -106,7 +108,7 @@ use Maatwebsite\Excel\Facades\Excel;
 	        |
 	        */
 	        $this->addaction = array();
-			if (CRUDBooster::isUpdate() && CRUDBooster::isSuperadmin() ) {
+			if (CRUDBooster::isUpdate() && in_array(CRUDBooster::myPrivilegeId(),[1,15])) {
 				$this->addaction[] = [
 					'title'=>'Edit',
 					'url' => CRUDBooster::mainpath('requestVoid/[id]'),
