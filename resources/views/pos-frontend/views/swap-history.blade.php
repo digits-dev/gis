@@ -147,8 +147,8 @@
                     <th><a class="btn btn-details" href="/pos_swap_history/{{ $swap_history->id }}""><i class="fa-solid fa-eye"></i></a>
                         <a class="btn btn-void ajax-request-icon" data-id="{{ $swap_history}}" href="">
                             @if ($swap_history->status != "VOID" && date('Y-m-d', strtotime($swap_history->created_at)) == date('Y-m-d'))
-                                @if (auth()->user()->id_cms_privileges != 3)
-                                <i class="fa-solid fa-x"></i>
+                                @if (in_array(auth()->user()->id_cms_privileges, [1,5,15]))
+                                    <i class="fa-solid fa-x"></i>
                                 @endif
                             @endif
                         </a>
