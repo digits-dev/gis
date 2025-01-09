@@ -17,6 +17,7 @@ class CreateCollectTokenHistoriesTable extends Migration
             $table->id();
             $table->string('reference_number')->nullable();
             $table->integer('statuses_id')->nullable();
+            $table->integer('collect_token_remarks_id')->nullable();
             $table->integer('location_id')->nullable();
             $table->integer('bay_id')->nullable();
             $table->integer('collected_qty')->nullable();
