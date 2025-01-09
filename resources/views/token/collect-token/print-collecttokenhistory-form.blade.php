@@ -412,10 +412,10 @@
     </div>
 </div>
 
-{{-- <div class="spinner-overlay" id="spinner" style="display: none;">
+<div class="spinner-overlay" id="spinner" style="display: none;">
     <div class="spinner">
     </div>
-</div> --}}
+</div>
 
 
 @endsection

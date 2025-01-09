@@ -84,11 +84,17 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 
 	}
 
-	public function hook_query_index(&$query)
-	{
-		//Your code here
-
-	}
+	    public function hook_query_index(&$query) {
+	        if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER])) {
+				$query->whereNull('collect_token_histories.deleted_at')
+					->orderBy('collect_token_histories.id', 'desc');
+			} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
+				$query->where('collect_token_histories.location_id', CRUDBooster::myLocationId())
+					->whereNull('collect_token_histories.deleted_at')
+					->orderBy('collect_token_histories.id', 'desc');
+			}
+	            
+	    }
 
 // PRINT RECEIVE FORM
 
