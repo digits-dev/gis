@@ -269,7 +269,7 @@ Route::group(['middleware' => ['web','check.user']], function() {
     // NEW COLLECT TOKEN HISTORY
     Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token_histories')->group(function(){
         Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
-        Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrint');
+        Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrintHistory');
     });
 
     

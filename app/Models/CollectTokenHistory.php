@@ -49,4 +49,14 @@ class CollectTokenHistory extends Model
     public function history_lines() : HasMany {
         return $this->hasMany(CollectTokenHistoryLines::class, 'collect_token_id', 'id');
     }
+
+    public function getCreatedBy(): BelongsTo
+    {
+        return $this->belongsTo(CmsUsers::class, 'created_by', 'id');
+    }
+
+    public function getReceivedBy(): BelongsTo
+    {
+        return $this->belongsTo(CmsUsers::class, 'received_by', 'id');
+    }
 }

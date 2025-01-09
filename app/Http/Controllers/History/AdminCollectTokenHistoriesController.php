@@ -91,7 +91,7 @@
 	            
 	    }
 
-	    	// PRINT RECEIVE FORM
+	    // PRINT RECEIVE FORM
 
 		public function getPrintForm(Request $request){
 
@@ -101,6 +101,7 @@
 				$bays = [];
 				$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
 				$collect_tokens = CollectTokenHistory::whereDate('created_at', $request->date)
+				->with('history_lines.get_serial_number', 'history_lines.get_item_desc','getCreatedBy', 'getReceivedBy', 'getBay')
 				->where('location_id', CRUDBooster::myLocationId())
 				->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
 				->get()

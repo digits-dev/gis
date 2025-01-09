@@ -2,6 +2,7 @@
 @push('head')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .print-details{
         display: flex;
@@ -429,6 +430,9 @@
             window.print();
         });
 
+        $('#reference_numbers').select2({
+            placeholder: "Select Reference Number/s",
+        });
     });
 
     $('#btn-reset').on('click', function(event){
@@ -462,7 +466,7 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                // console.log(response);
+                console.log(response);
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();

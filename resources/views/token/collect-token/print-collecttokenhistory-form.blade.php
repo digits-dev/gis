@@ -412,10 +412,10 @@
     </div>
 </div>
 
-<div class="spinner-overlay" id="spinner" style="display: none;">
+{{-- <div class="spinner-overlay" id="spinner" style="display: none;">
     <div class="spinner">
     </div>
-</div>
+</div> --}}
 
 
 @endsection
@@ -455,14 +455,14 @@
         $('#spinner').show();
 
         $.ajax({
-            url: '{{route("postPrint")}}',
+            url: '{{route("postPrintHistory")}}',
             method: 'POST',
             data: {
                 date: date,
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                // console.log(response);
+                console.log(response);
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
@@ -539,7 +539,6 @@
 
                 response.collect_tokens.forEach(item => {
 
-                    
                     let bayTable = `
                         <div class="bay">
                             <table>
@@ -567,18 +566,18 @@
                                         <td><b>Qty</b></td>
                                     </tr>
                                 </thead>
-                                <tbody class="table-tbody" style="${item.lines.length > 30 ? 'font-size:10px !important;' : item.lines.length > 20 ? 'font-size:12px !important;' : ''}">
-                                    ${item.lines.map(machine => `
+                                <tbody class="table-tbody" style="${item.history_lines.length > 30 ? 'font-size:10px !important;' : item.history_lines.length > 20 ? 'font-size:12px !important;' : ''}">
+                                    ${item.history_lines.map(machine => `
                                         <tr>
-                                            <td>${machine.machine_serial.serial_number}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
+                                            <td>${machine.get_serial_number.serial_number}</td>
+                                            <td>${machine.jan_number}</td>
+                                            <td>${machine.get_item_desc.digits_code}</td>
                                             <td>${machine.qty}</td>
                                         </tr>
                                     `).join('')}
                                     <tr style="height: 35px;">
                                         <td colspan="3"><b>Total</b></td>
-                                        <td><b>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
+                                        <td><b>${item.history_lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
                                     </tr>
                                 </tbody>
                             </table>
