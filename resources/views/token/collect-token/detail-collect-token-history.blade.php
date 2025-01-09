@@ -392,7 +392,7 @@
                                     <td><span>{{$perLine->jan_number}}</span></td> 
                                     <td><span>{{$perLine->get_item_desc->item_description}}</span></td> 
                                     <td><span>{{$perLine->no_of_token}}</span></td>
-                                    <td><span>{{$perLine->qty}}</span></td>
+                                    <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
                                     <td class="@if($perLine->variance != 0) red @endif"><span class="variance">{{$perLine->variance}}</span></td>
                                     <td>
                                         @if(empty($collected_tokens_history->confirmed_by))
