@@ -2,7 +2,6 @@
 @push('head')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .print-details{
         display: flex;
@@ -430,9 +429,6 @@
             window.print();
         });
 
-        $('#reference_numbers').select2({
-            placeholder: "Select Reference Number/s",
-        });
     });
 
     $('#btn-reset').on('click', function(event){
@@ -466,7 +462,7 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
@@ -548,15 +544,21 @@
                         <div class="bay">
                             <table>
                                 <thead>
+                                    
                                     <tr>
                                         <td colspan="4"><b>${item.get_bay.name}</b></td>
                                     </tr>
-                                
+                                    <tr>
+                                        <td colspan="4"><b>Reference #: </b>${item.reference_number}</td>
+                                    </tr>
                                     <tr>
                                         <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="4"><b>Receiver: </b>${item.get_received_by.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4"><b>Date: </b>${response.date}</td>
                                     </tr>
                                     <tr>
                                         <td><b>Machine #</b></td>

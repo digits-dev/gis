@@ -1,10 +1,16 @@
 <?php namespace App\Http\Controllers\History;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use crocodicstudio\crudbooster\helpers\CRUDBooster;
 	use App\Models\CmsModels\CmsPrivileges;
+	use App\Models\CmsUsers;
+	use App\Models\CollectTokenHistory;
+	use App\Models\Submaster\GashaMachines;
+	use App\Models\Submaster\GashaMachinesBay;
+	use App\Models\Submaster\Locations;
+	use App\Models\Submaster\Statuses;
 
 	class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -73,11 +79,75 @@
 	            
 	    }
 
-	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
-	    }
+	    	// PRINT RECEIVE FORM
+
+		public function getPrintForm(Request $request){
+
+			if ($request->ajax()){
+
+				$collectors = [];
+				$bays = [];
+				$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
+				$collect_tokens = CollectTokenHistory::whereDate('created_at', $request->date)
+				->where('location_id', CRUDBooster::myLocationId())
+				->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
+				->get()
+				->sortBy('bay_id');
+
+				$collect_tokens = $collect_tokens->values();
+
+				$bay_ids = $collect_tokens->pluck('bay_id');
+				
+				foreach ($all_bays as $key => $bay) {
+					$explodedBays = explode(',', $bay);
+					foreach ($explodedBays as $index => $value) {
+						$bays[] = $value;
+					}
+				}
+
+				
+				foreach ($collect_tokens as $collected_token) {
+					$exists = false;
+
+					$name = $collected_token->getCreatedBy->name;
+					$privilege = $collected_token->getCreatedBy->getPrivilege->name;
+
+					foreach ($collectors as $collector) {
+						if ($collector['name'] === $name && $collector['privilege'] === $privilege) {
+							$exists = true;
+							break;
+						}
+					}
+				
+					if (!$exists) {
+						$collectors[] = [
+							'name' => $name,
+							'privilege' => $privilege
+						];
+					}
+				}
+
+				$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
+
+				return response()->json([
+					'missing_bays' => $missing_bay_ids,
+					'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
+					'date' => $request->date,
+					'total_tokens' => $collect_tokens->sum('received_qty'),
+					'collect_tokens' => $collect_tokens,
+					'collectors' => $collectors,
+					'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
+				]);
+			}
+			
+			$data = [];
+			$data['page_title'] = 'Collect Token Form';
+			$data['page_icon'] = 'fa fa-circle-o';
+			$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
 
 
 
+			return view("token.collect-token.print-collecttoken-form", $data);
+		}
 
 	}
