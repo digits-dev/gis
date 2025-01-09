@@ -17,7 +17,7 @@ class CreateCollectTokenHistoryLinesTable extends Migration
             $table->id();
             $table->integer('collect_token_id')->nullable();
             $table->integer('gasha_machines_id')->nullable();
-            $table->integer('jan_number')->nullable();
+            $table->string('jan_number')->nullable();
             $table->integer('no_of_token')->nullable();
             $table->integer('qty')->nullable();
             $table->string('variance')->nullable();
