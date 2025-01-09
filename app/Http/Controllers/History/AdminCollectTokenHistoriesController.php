@@ -73,7 +73,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens_history'] = CollectTokenHistory::with(['history_lines.get_item_desc', 'history_lines.get_serial_number'])->find($id);
+		$data['collected_tokens_history'] = CollectTokenHistory::with(['collectTokenMessages', 'history_lines.get_item_desc', 'history_lines.get_serial_number'])->find($id);
 
 		return view("token.collect-token.detail-collect-token-history", $data);
 	}

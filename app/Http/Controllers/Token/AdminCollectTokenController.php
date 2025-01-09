@@ -679,7 +679,11 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			]);
 
 			$collect_rr_token_header = CollectRrTokens::where('id', $validatedData['collect_token_id'])->first()->toArray();
-			$insert = CollectTokenHistory::create($collect_rr_token_header);
+			$dataToInsert = array_merge($collect_rr_token_header, [
+				'collect_token_remarks_id' => $validatedData['collect_token_id']
+			]);
+
+			$insert = CollectTokenHistory::create($dataToInsert);
 
 			if ($insert){
 				foreach ($ValidatedCollectTokenHistoryLines as $collectTokenPerLine) {

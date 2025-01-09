@@ -17,6 +17,7 @@ class CollectTokenHistory extends Model
     protected $fillable = [
         'reference_number',
         'statuses_id',
+        'collect_token_remarks_id',
         'location_id',
         'bay_id',
         'collected_qty',
@@ -73,6 +74,11 @@ class CollectTokenHistory extends Model
     public function getReceivedBy(): BelongsTo
     {
         return $this->belongsTo(CmsUsers::class, 'received_by', 'id');
+    }
+
+    public function collectTokenMessages(): HasMany
+    {
+        return $this->hasMany(CollectTokenMessage::class, 'collect_token_id', 'collect_token_remarks_id')->orderBy('created_at', 'desc');
     }
 
 }
