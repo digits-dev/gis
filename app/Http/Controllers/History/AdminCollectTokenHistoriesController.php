@@ -159,7 +159,7 @@
 
 
 
-			return view("token.collect-token.print-collecttoken-form", $data);
+			return view("token.collect-token.print-collecttokenhistory-form", $data);
 		}
 
 	}

@@ -38,6 +38,7 @@ use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 use App\Http\Controllers\Submaster\AdminItemsController;
 use App\Http\Controllers\AdminCmsUsersController;
+use App\Http\Controllers\History\AdminCollectTokenHistoriesController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
 
 /*
@@ -232,8 +233,6 @@ Route::group(['middleware' => ['web','check.user']], function() {
 
 
     // NEW COLLECT TOKEN
-
-    
     Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token')->group(function(){
 
         // COLLECT TOKEN STEP 1 - CREATION
@@ -265,6 +264,12 @@ Route::group(['middleware' => ['web','check.user']], function() {
 
         // RESET SELECTED BAY
         Route::post('/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');    
+    });
+
+    // NEW COLLECT TOKEN HISTORY
+    Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token_histories')->group(function(){
+        Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
+        Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrint');
     });
 
     
