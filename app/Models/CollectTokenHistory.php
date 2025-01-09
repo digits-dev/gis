@@ -36,12 +36,6 @@ class CollectTokenHistory extends Model
         'deleted_at',
     ];
 
-    
-    public function lines(): HasMany
-    {
-        return $this->hasMany(CollectTokenHistoryLines::class, 'collect_token_id');
-    }
-
     public function getLocation(): BelongsTo
     {
         return $this->belongsTo(Locations::class, 'location_id', 'id');
@@ -52,4 +46,7 @@ class CollectTokenHistory extends Model
         return $this->belongsTo(GashaMachinesBay::class, 'bay_id', 'id');
     }
 
+    public function history_lines() : HasMany {
+        return $this->hasMany(CollectTokenHistoryLines::class, 'collect_token_id', 'id');
+    }
 }

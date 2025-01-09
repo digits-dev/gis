@@ -571,7 +571,6 @@
 
 </div>
 
-
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">
         <i class="fa fa-edit" aria-hidden="true" style="font-weight: 700; font-size:18px; margin-right:5px;"></i>

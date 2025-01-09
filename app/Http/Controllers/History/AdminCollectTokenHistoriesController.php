@@ -69,6 +69,18 @@
 	        
 	    }
 
+		public function getDetail($id)
+		{
+			$data = [];
+			$data['page_title'] = 'Collect Token Details';
+			$data['page_icon'] = 'fa fa-circle-o';
+			$data['collected_tokens_history'] = CollectTokenHistory::with(['history_lines.get_item_desc', 'history_lines.get_serial_number'])->find($id);
+
+			// dd($data['collected_tokens_history']);
+
+			return view("token.collect-token.detail-collect-token-history", $data);
+		}
+
 	    public function actionButtonSelected($id_selected,$button_name) {
 	        //Your code here
 	            
