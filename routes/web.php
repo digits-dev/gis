@@ -261,15 +261,16 @@ Route::group(['middleware' => ['web','check.user']], function() {
 
         // EXPORT COLLECT TOKEN
         Route::get('/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
-
+        
         // RESET SELECTED BAY
         Route::post('/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');    
     });
-
+    
     // NEW COLLECT TOKEN HISTORY
     Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token_histories')->group(function(){
         Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
         Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrintHistory');
+        Route::get('/export_collected_token_history',[AdminCollectTokenHistoriesController::class,'exportCollectedTokenHistory'])->name('export_collected_token_history');
     });
 
     
