@@ -40,7 +40,7 @@ class SeedersJanuary092025 extends Seeder
             [
                 'name'              => 'New Collect Token History',
                 'type'              => 'Route',
-                'path'              => 'History\AdminCollectRrTokensHistoryControllerGetIndex',
+                'path'              => 'History\AdminCollectTokenHistoriesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 0,
