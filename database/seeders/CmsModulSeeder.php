@@ -289,6 +289,15 @@ class CmsModulSeeder extends Seeder
                 'is_active'    => 0
             ],
             [
+                'name'         => 'New Collect Token History',
+                'icon'         => 'fa fa-circle-o',
+                'path'         => 'collect_token_histories',
+                'table_name'   => 'collect_token_histories',
+                'controller'   => 'History\AdminCollectTokenHistoriesController',
+                'is_protected' => 0,
+                'is_active'    => 0
+            ],
+            [
                 'name'         => 'Capsule Sales',
                 'icon'         => 'fa fa-circle-o',
                 'path'         => 'capsule_sales',

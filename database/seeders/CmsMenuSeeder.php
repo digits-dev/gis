@@ -908,6 +908,24 @@ class CmsMenuSeeder extends Seeder
 
         DB::table('cms_menus')->updateOrInsert(
             [
+                'name'              => 'New Collect Token History',
+            ],
+            [
+                'name'              => 'New Collect Token History',
+                'type'              => 'Route',
+                'path'              => 'History\AdminCollectRrTokensHistoryControllerGetIndex',
+                'color'             => NULL,
+                'icon'              => 'fa fa-circle-o',
+                'parent_id'         => 0,
+                'is_active'         => 1,
+                'is_dashboard'      => 0,
+                'id_cms_privileges' => 1,
+                'sorting'           => 3
+            ]
+        );
+
+        DB::table('cms_menus')->updateOrInsert(
+            [
                 'name'              => 'Token Conversion History',
             ],
             [
