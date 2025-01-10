@@ -13,6 +13,7 @@ use App\Models\CmsUsers;
 use App\Models\CollectTokenHistory;
 use App\Models\CollectTokenHistoryLines;
 use App\Models\CollectTokenMessage;
+use App\Models\PosFrontend\SwapHistory;
 use App\Models\Submaster\CapsuleActionType;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
@@ -194,6 +195,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
 
+			// TOKEN COLLECTION REPORT
+
 			return response()->json([
 				'missing_bays' => $missing_bay_ids,
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
@@ -215,6 +218,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			->get();
 		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
 
+		
 
 		return view("token.collect-token.print-collecttoken-form", $data);
 	}

@@ -324,6 +324,27 @@
         font-weight: bold;
     }
 
+    @media print {
+        body {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .tcr-header {
+            background-color: #fefd01 !important;
+            color: #000000 !important;
+        }
+
+        .invisible-text {
+            color: transparent !important;
+        }
+
+     
+
+       
+    }
+
     
 </style>
 @endpush
@@ -358,11 +379,16 @@
                 <button class="btn-submit"  id="btn-reset" style="background:#e73131; border: 1px solid #d34040; margin-right: 5px;">Reset</button>
             </div>
             <div class="form-button" >
-                <button class="btn-submit" id="btn-submit">Filter</button>
+                <button class="btn-submit" id="btn-submit" style="margin-right:5px;">Generate Token Collection Form</button>
+            </div>
+            <div class="form-button" >
+                <button class="btn-submit" id="btn-collect-token-report"  style="background:#208013; border: 1px solid #208013; display: none">Generate Token Collection Report</button>
             </div>
         </div>
     </div>
 </form>
+
+{{-- TOKEN COLLECTION FORM --}}
 
 <div class='panel panel-default print-data' id="print-form" style="display:none">
     <div class='panel-body' id="print-section">
@@ -405,6 +431,260 @@
         </div>
 
 
+    </div>
+
+    <div class='panel-footer no-print'>
+        <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default no-print">{{ trans('message.form.back') }}</a>
+        <div class="btn btn-info no-print pull-right" id="print-button" style="background-color: #3C8DBC;">Print</div>
+    </div>
+</div>
+
+{{-- TOKEN COLLECTION REPORT --}}
+
+<div class='panel panel-default print-data' id="print-form" style="display:none">
+    <div class='panel-body' id="print-section" style="padding: 10px;">
+        <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION REPORT</b></h4>
+        <div class="print-details" id="print-details">
+            <h5><b>Store Name: </b><span>GASHAPON STORE</span></h5>
+            <h5><b>Date: </b><span>2025-01-04</span></h5>
+         </div>
+        <div class="print-details" id="token-collect-form" style="display: flex; flex-direction: column; gap: 10px; justify-content: center">
+            <table style=" margin-right: 20px;">
+                <thead class="tcr-header" style="background-color: #fefd01">
+                    <tr style="font-size: 10px;">
+                        <td colspan="1" style="padding: 10px;"><b>BAY</b></td>
+                        <td colspan="1" style="margin: 10px;"><b>FROM</b></td>
+                        <td colspan="1"><b>TO</b></td>
+                        <td colspan="1"><b>COLLECTED BY</b></td>
+                        <td colspan="1"><b>TOKENS COLLECTED</b></td>
+                        <td colspan="1"><b>TOKENS RECEIVED BY THE CASHIER</b></td>
+                        <td colspan="1"><b>VARIANCE</b></td>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr style="font-size: 12px;">
+                            <td>A</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td>B</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td>C</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td>D</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td>E</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td>F</td>
+                            <td>2361</td>
+                            <td>2430</td>
+                            <td>John Michael</td>
+                            <td>625</td>
+                            <td>625</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td colspan="5" style=" padding: 5px;"><b>TOTAL TOKENS COLLECTED</b></td>
+                            <td colspan="2">1000</td>
+                        </tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; flex-direction: row; gap: 20px; ">
+                <table >
+                    <thead>
+                        <tr style="font-size: 10px;">
+                            <td colspan="2" style="padding: 12px;"><b>STUCKED TOKEN</b></td>
+        
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <td colspan="1" style="padding: 5px;"><b>MACHINE #</b></td>
+                            <td colspan="1"><b>QTY</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                    </tbody>
+                </table>
+                <table >
+                    <thead>
+                        <tr style="font-size: 10px;">
+                            <td colspan="2" style="padding: 5px;"><b>UNAUTHORIZED TOKENS: The total count of tokens collected should exclude these unauthorized tokens</b></td>
+        
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <td colspan="1" style="padding: 5px;"><b>MACHINE #</b></td>
+                            <td colspan="1"><b>QTY</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 10px; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center">    
+                    <div style="width: 40%"><b>TOKEN SWAP FROM CASHIER REPORT:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;">January 04, 2025</span></div> 
+                    <div style="width: 20%; display: flex; align-items: center; "><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>MINUS: TOKEN COLLECTED TODAY</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;">January 04, 2025</span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center">    
+                    <div style="width: 40%"><b>TOTAL TOKEN BEG. BALANCE:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;">January 04, 2025</span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>CASHIER DRAWER BALANCE:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL SEALED TOKENS:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKEN COLLECTED:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKEN ON HAND:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;">January 04, 2025</span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKENS DELIVERED:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>MINUS: TOTAL TOKEN ON HAND</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+            
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style=" font-size: 12px;"><b>ISSUES FOUND: IF POSSIBLE, SUPPORTED BY A PICTURE OR ANY PROOF,</b></div> 
+                <div>OTHERS: SPECIFY ISSUES ENCOUNTERED DURING THE TOKEN COLLECTION & TURN OVER:</div> 
+                <div class="line" style="margin-top: 15px;"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+              
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style=" font-size: 12px;"><b>REMINDERS:</b></div> 
+                <div>1. THE BATCH OF COLLECTED TOKENS WITH VARIANCE MUST BE RECOUNTED USING THE COIN COUNTER. IF STILL NOT TALLY, THE TEAM LEADER MUST RECOUNT MANUALLY.</div>
+                <div>2. THE TEAM LEADER MUST ENSURE THAT ALL TOKENS COLLECTED ARE RECEIVED IN THE SYSTEM.</div>
+                <div>3. ALL TOKEN COLLECTION ISSUES FOUND WERE DISCUSSED WITH THE STORE PERSONNEL AND MUST BE REPORTED.</div>
+                <div>4. THE TEAM LEADER OR CASHIER OF THE DAY SHALL SEND PICTURES OF THE REPORT VIA VIBER <b>(TOKEN COLLECTION PER BAY AND TOTAL COLLECTION SUMMARY).</b></div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: row; font-size: 10px;">
+                <div style=" font-size: 12px; width: 50%">
+                    <b>TEAM LEADER:</b>
+                    <div style="margin-top: 25px; border-bottom: 1px solid black;  width: 300px;"></div>
+                    <i style="font-size: 9px;">Signature over Printed Full Name</i>
+                </div> 
+                <div style=" font-size: 12px; width: 50%">
+                    <b>CASHIER:</b>
+                    <div style="margin-top: 25px; border-bottom: 1px solid black;  width: 300px;"></div>
+                    <i style="font-size: 9px;">Signature over Printed Full Name</i>
+                </div> 
+            </div>
+        
+        </div>
+        
     </div>
 
     <div class='panel-footer no-print'>
