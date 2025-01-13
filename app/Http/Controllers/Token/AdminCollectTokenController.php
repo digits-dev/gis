@@ -22,7 +22,10 @@ use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\Locations;
 use App\Models\Submaster\TokenConversion;
+use App\Models\Token\PulloutToken;
+use App\Models\Token\StoreRrToken;
 use App\Models\Token\TokenInventory;
+use Carbon\Carbon;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -160,6 +163,24 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			->get()
 			->sortBy('bay_id');
 
+			// TOTAL TOKEN SWAP VALUE
+
+			$totalTokenSwapValue = SwapHistory::whereDate('created_at', Carbon::parse($request->date)->subDay())	
+				->where('locations_id', CRUDBooster::myLocationId())
+				->where('status', 'POSTED')
+				->sum('token_value');
+
+			// FOR TOTAL TOKENS DELIVERED
+
+			$totalDeliveredTokens = StoreRrToken::where('to_locations_id', CRUDBooster::myLocationId())
+			->sum('received_qty');
+
+			$totalPulloutTokens = PulloutToken::where('locations_id', CRUDBooster::myLocationId())
+			->sum('qty');
+
+			$totalReceivedQty = StoreRrToken::where('to_locations_id', 10)
+			->sum('received_qty');
+
 			$collect_tokens = $collect_tokens->values();
 
 			$bay_ids = $collect_tokens->pluck('bay_id');
@@ -195,6 +216,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
 
+			
+
 			// TOKEN COLLECTION REPORT
 
 			return response()->json([
@@ -202,6 +225,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
 				'date' => $request->date,
 				'total_tokens' => $collect_tokens->sum('received_qty'),
+				'token_swap_from_cashier_report' => $totalTokenSwapValue,
+				'token_swap_from_cashier_report_date' => Carbon::parse($request->date)->subDay()->format('F d, Y'),
+				'total_tokens_delivered' => $totalDeliveredTokens - $totalPulloutTokens,
+				'formatted_request_date' => Carbon::parse($request->date)->format('F d, Y'),
 				'collect_tokens' => $collect_tokens,
 				'collectors' => $collectors,
 				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
@@ -212,10 +239,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
-		$data ['reference_numbers'] = CollectRrTokens::with('getBay')->select('id','reference_number', 'bay_id')
-			->where('location_id', CRUDBooster::myLocationId())
-			->where('statuses_id', Statuses::COLLECTED)
-			->get();
+
+	
+
+
 		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
 
 		
