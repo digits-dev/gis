@@ -799,14 +799,16 @@
                                     </tr>
                                 </thead>
                                 <tbody class="table-tbody" style="${item.lines.length > 30 ? 'font-size:10px !important;' : item.lines.length > 20 ? 'font-size:12px !important;' : ''}">
-                                    ${item.lines.map(machine => `
-                                        <tr>
-                                            <td>${machine.machine_serial.serial_number}</td>
-                                            <td>${machine.jan_number ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
-                                            <td>${machine.item_description ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
-                                            <td>${machine.qty}</td>
-                                        </tr>
-                                    `).join('')}
+                                    ${item.lines
+                                        .filter(machine => machine.jan_number || machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code)
+                                        .map(machine => `
+                                            <tr>
+                                                <td>${machine.machine_serial.serial_number}</td>
+                                                <td>${machine.jan_number ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
+                                                <td>${machine.item_description ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
+                                                <td>${machine.qty}</td>
+                                            </tr>
+                                        `).join('')}
                                     <tr style="height: 35px;">
                                         <td colspan="3"><b>Total</b></td>
                                         <td><b>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
