@@ -418,12 +418,13 @@
     <form  method="POST" action="{{route('postCollectTokenApproval')}}" id="collect_token_details">
         @csrf
         <div class="panel-heading header-title text-center">Collect Token Details</div>
-        <div class="content-panel">
+            <div class="content-panel">
                 <input type="hidden" name="collect_token_id" id="collect_token_id" value="{{$collected_tokens->id}}" readonly>
                 <input type="hidden" name="action_type" id="action_type" value="">
                 <input type="hidden" name="header_location_id" id="header_location_id" value="{{$collected_tokens->location_id}}">
                 <input type="hidden" name="total_collected_token" id="total_collected_token" value="{{$collected_tokens->collected_qty}}">
                 <input type="hidden" name="ref_number" value="{{$collected_tokens->reference_number}}" readonly>
+                
                 <div class="inputs-container" style="margin-bottom: 10px;">
                     <div class="input-container">
                         <div style="font-weight: 600">Reference Number</div>
@@ -469,11 +470,13 @@
                         <tbody>
                             @foreach ($collected_tokens->lines as $perLine)
                                 @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
+
                                     <tr>
                                         <td>
                                             {{$perLine->machineSerial->serial_number}}
                                             <input type="hidden" name="gasha_machines_id[]" value="{{$perLine->machineSerial->id}}" readonly>
                                             <input type="hidden" name="location_id[]" value="{{$perLine->machineSerial->location_id}}" readonly>
+                                            <input type="hidden" name="collect_token_lines_ids[]" value="{{$perLine->id}}">
                                         </td>
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->digits_code}}
@@ -482,9 +485,16 @@
                                         </td> 
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->item_description}}
+                                            <input type="hidden" name="item_desc[]" id="item_desc" value="{{$capsuleLine->getInventoryCapsule->item->item_description}}">
                                         </td> 
-                                        <td>{{$perLine->no_of_token}}</td>
-                                        <td class="tokenCollected">{{$perLine->qty}}</td>
+                                        <td>
+                                            {{$perLine->no_of_token}}
+                                            <input type="hidden" name="no_of_tokens[]" id="no_of_tokens" value="{{$perLine->no_of_token}}">
+                                        </td>
+                                        <td class="tokenCollected">
+                                            {{$perLine->qty}}
+                                            <input type="hidden" name="collected_qty[]" id="collected_qty" value="{{$perLine->qty}}">
+                                        </td>
                                         <td
                                         @if($perLine->variance != 0)
                                             style="background-color: #f8d7da"
@@ -492,11 +502,17 @@
                                             class="variance"
                                         >
                                             {{$perLine->variance}}
+                                            <input type="hidden" name="variance[]" id="variance" value="{{$perLine->variance}}">
+                                            <input type="hidden" name="variance_type[]" id="variance_type" value="{{$perLine->variance_type}}">
                                         </td>
-                                        <td class="projectedCapsuleSales">{{$perLine->projected_capsule_sales}}</td>
+                                        <td class="projectedCapsuleSales">
+                                            {{$perLine->projected_capsule_sales}}
+                                            <input type="hidden" name="projected_capsule_sales[]" value="{{$perLine->projected_capsule_sales}}">
+                                        </td>
                                         <td class="currentMachineInventory">
                                             {{$perLine->current_capsule_inventory}}
                                             <input type="hidden" name="inventory_capsule_lines_id[]" value="{{$capsuleLine->id}}" readonly>
+                                            <input type="hidden" name="current_capsule_inventory[]" value="{{$perLine->current_capsule_inventory}}" readonly>
                                         </td>
                                         <td class="ActualCapsuleInventory">
                                                 {{$perLine->actual_capsule_inventory}}
@@ -525,6 +541,8 @@
                                                     Over
                                                 @endif
                                             </span>
+                                            <input type="hidden" name="line_created_at[]" value="{{$perLine->created_at}}">
+                                            <input type="hidden" name="line_updated_at[]" value="{{$perLine->updated_at}}">
                                         </td>
                                     </tr>
                                 @endforeach
@@ -554,7 +572,6 @@
     </div>
 
 </div>
-
 
     {{-- CHAT --}}
     <div class="chat-button" id="chat-button" style="display: show">

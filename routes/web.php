@@ -38,6 +38,7 @@ use App\Http\Controllers\Capsule\AdminHistoryCapsulesController;
 use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 use App\Http\Controllers\Submaster\AdminItemsController;
 use App\Http\Controllers\AdminCmsUsersController;
+use App\Http\Controllers\History\AdminCollectTokenHistoriesController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
 
 /*
@@ -83,7 +84,17 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('pos_float_history/{id}/view', [POSFloatHistoryController::class, 'viewFloatHistory'])->name('view_float_history');
     Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
     Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
+});
 
+Route::group(['middleware' => ['web','check.user']], function() {
+    //Disburse Token
+    Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
+    Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');
+    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
+    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
+
+    Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
+    
     //TOKEN DESPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
@@ -95,45 +106,6 @@ Route::group(['middleware' => ['web']], function() {
 
     //POS Setting
     Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
-});
-
-Route::group(['middleware' => ['web', 'check.user']], function() {
-    //Disburse Token
-    Route::post(config('crudbooster.ADMIN_PATH').'/get-inventory-token',[DisburseTokenRequestController::class, 'checkTokenInventory'])->name('disburse.get.token.inventory');
-    Route::post(config('crudbooster.ADMIN_PATH').'/receive_token',[DisburseTokenRequestController::class, 'checkReleasedToken'])->name('check-released-token');
-    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/getRequestForPrint/{id}',[AdminStoreRrTokenController::class, 'getRequestForPrint'])->name('for-print');
-    Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
-
-    // Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
-    // Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
-    // Route::get('pos_logout_account', [POSLoginController::class, 'logout'])->name('logout');
-    // Route::get('pos_logout_account_eod', [POSLoginController::class, 'logoutEOD'])->name('logout_eod');
-    // Route::get('pos_logout_account_es', [POSLoginController::class, 'endSession'])->name('logout_end_session');
-    // Route::get('pos_dashboard', [POSDashboardController::class, 'index'])->middleware('auth');
-    // Route::get('pos_token_swap', [POSTokenSwapController::class, 'index'])->middleware('auth');
-    // Route::get('pos_token_swap/suggest_jan_number', [POSTokenSwapController::class, 'suggestJanNumber'])->middleware('auth')->name('suggest_jan_number');
-    // Route::post('pos_token_swap/swap', [POSTokenSwapController::class, 'store'])->middleware('auth')->name('swap');
-    // Route::get('pos_swap_history', [POSSwapHistoryController::class, 'index'])->middleware('auth');
-    // Route::get('pos_swap_history/{id}', [POSSwapHistoryController::class, 'show'])->middleware('auth');
-    // Route::get('pos_swap_history/getDetails/{id}', [POSSwapHistoryController::class, 'getDetails'])->middleware('auth');
-    // Route::get('pos_swap_history/edit/{id}', [POSSwapHistoryController::class, 'edit'])->middleware('auth');
-    // Route::get('pos_float_history', [POSFloatHistoryController::class, 'index'])->middleware('auth');
-    // Route::get('pos_float_history/{id}/view', [POSFloatHistoryController::class, 'viewFloatHistory'])->name('view_float_history');
-    // Route::get('pos_settings', [POSSettingsController::class, 'index'])->middleware('auth');
-    // Route::get('pos_end_of_day', [POSEndOfDayController::class, 'index'])->middleware('auth');
-    Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
-    
-    // //TOKEN DESPENSE
-    // Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
-    // Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
-    // //POS Dashboard
-    // Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
-
-    // //POS EOD
-    // Route::post('admin/pos_end_of_day/eod', [POSEndOfDayController::class, 'submitEOD'])->name('submitEOD');
-
-    // //POS Setting
-    // Route::post('pos_settings/{id}/updatePassword', [POSSettingsController::class, 'updatePassword'])->name('update_password');
 
     //Token Adjustment
     Route::post('admin/token_adjustments/view',[AdminTokenAdjustmentsController::class,'viewAmount'])->name('viewAmount');
@@ -261,36 +233,59 @@ Route::group(['middleware' => ['web', 'check.user']], function() {
 
 
     // NEW COLLECT TOKEN
+    Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token')->group(function(){
 
-    // COLLECT TOKEN STEP 1 - CREATION
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/add_collect_token',[AdminCollectTokenController::class, 'getCollectToken']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_collected_token',[AdminCollectTokenController::class, 'postCollectToken'])->name('postCollectedToken');
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/get_machines',[AdminCollectTokenController::class, 'getMachines'])->name('getMachines');
+        // COLLECT TOKEN STEP 1 - CREATION
+        Route::get('/add_collect_token',[AdminCollectTokenController::class, 'getCollectToken']);
+        Route::post('/post_collected_token',[AdminCollectTokenController::class, 'postCollectToken'])->name('postCollectedToken');
+        Route::post('/get_machines',[AdminCollectTokenController::class, 'getMachines'])->name('getMachines');
 
-    // COLLECT TOKEN STEP 2 - FOR CASHIER TURNOVER / COLLECTION OF TOKEN
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_collect_token',[AdminCollectTokenController::class, 'postCashierTurnover'])->name('postCashierTurnover');
+        // COLLECT TOKEN STEP 2 - FOR CASHIER TURNOVER / COLLECTION OF TOKEN
+        Route::get('/cashier_turnover/{id}',[AdminCollectTokenController::class, 'getCashierTurnover']);
+        Route::post('/post_collect_token',[AdminCollectTokenController::class, 'postCashierTurnover'])->name('postCashierTurnover');
 
-    // COLLECT TOKEN STEP 3 - FOR CONFIRMATION
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/confirm_token/{id}',[AdminCollectTokenController::class, 'getConfirmToken']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_confirm_token',[AdminCollectTokenController::class, 'postConfirmToken'])->name('postConfirmToken');
+        // COLLECT TOKEN STEP 3 - FOR CONFIRMATION
+        Route::get('/confirm_token/{id}',[AdminCollectTokenController::class, 'getConfirmToken']);
+        Route::post('/post_confirm_token',[AdminCollectTokenController::class, 'postConfirmToken'])->name('postConfirmToken');
 
-    // COLLECT TOKEN STEP 4 - FOR STOREHEAD APPROVAL
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/review/{id}',[AdminCollectTokenController::class, 'getCollectTokenApproval']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_review',[AdminCollectTokenController::class, 'postCollectTokenApproval'])->name('postCollectTokenApproval');
+        // COLLECT TOKEN STEP 4 - FOR STOREHEAD APPROVAL
+        Route::get('/review/{id}',[AdminCollectTokenController::class, 'getCollectTokenApproval']);
+        Route::post('/post_review',[AdminCollectTokenController::class, 'postCollectTokenApproval'])->name('postCollectTokenApproval');
 
-    // PRINT COLLECT TOKEN FORM
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm']);
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/print_token_form',[AdminCollectTokenController::class, 'getPrintForm'])->name('postPrint');
+        // PRINT COLLECT TOKEN FORM
+        Route::get('/print_token_form',[AdminCollectTokenController::class, 'getPrintForm']);
+        Route::post('/print_token_form',[AdminCollectTokenController::class, 'getPrintForm'])->name('postPrint');
 
-    // FOR REMARKS - CHATBOX
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
+        // FOR REMARKS - CHATBOX
+        Route::post('/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
 
-    // EXPORT COLLECT TOKEN
-    Route::get(config('crudbooster.ADMIN_PATH').'/collect_token/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
+        // EXPORT COLLECT TOKEN
+        Route::get('/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
+        
+        // RESET SELECTED BAY
+        Route::post('/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');    
+    });
+    
+    // NEW COLLECT TOKEN HISTORY
+    Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token_histories')->group(function(){
+        Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
+        Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrintHistory');
+        Route::get('/export_collected_token_history',[AdminCollectTokenHistoriesController::class,'exportCollectedTokenHistory'])->name('export_collected_token_history'); 
+    });
 
-    //reset selected bay
-    Route::post(config('crudbooster.ADMIN_PATH').'/collect_token/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');
+    
+
+    
+
+
+
+    
+
+    
+
+    
+
+ 
 
     
 });

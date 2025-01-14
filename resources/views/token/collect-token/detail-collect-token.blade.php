@@ -400,8 +400,16 @@
                                 @endphp
                                 <tr>
                                     <td><span class="serial_number">{{$perLine->machineSerial->serial_number}}</span></td>
-                                    <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->digits_code}}</span></td> 
-                                    <td><span class="jan#">{{$capsuleLine->getInventoryCapsule->item->item_description}}</span></td> 
+                                    <td>
+                                        <span class="jan#">
+                                            {{ $perLine->jan_number ?? $capsuleLine->getInventoryCapsule->item->digits_code }}
+                                        </span>
+                                    </td>                                    
+                                    <td>
+                                        <span class="jan#">
+                                            {{ $perLine->item_description ?? $capsuleLine->getInventoryCapsule->item->item_description}}
+                                        </span>
+                                    </td> 
                                     <td><span class="no_of_token">{{$perLine->no_of_token}}</span></td>
                                     <td><span class="tokenCollected">{{$perLine->qty}}</span></td>
                                     <td class="@if($perLine->variance != 0) red @endif"><span class="variance">{{$perLine->variance}}</span></td>

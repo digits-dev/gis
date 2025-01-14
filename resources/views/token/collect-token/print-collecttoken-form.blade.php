@@ -1,8 +1,6 @@
 @extends('crudbooster::admin_template')
 @push('head')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="{{ asset('plugins/sweetalert.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .print-details{
         display: flex;
@@ -324,6 +322,27 @@
         font-weight: bold;
     }
 
+    @media print {
+        body {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .tcr-header {
+            background-color: #fefd01 !important;
+            color: #000000 !important;
+        }
+
+        .invisible-text {
+            color: transparent !important;
+        }
+
+     
+
+       
+    }
+
     
 </style>
 @endpush
@@ -358,11 +377,16 @@
                 <button class="btn-submit"  id="btn-reset" style="background:#e73131; border: 1px solid #d34040; margin-right: 5px;">Reset</button>
             </div>
             <div class="form-button" >
-                <button class="btn-submit" id="btn-submit">Filter</button>
+                <button class="btn-submit" id="btn-submit" style="margin-right:5px;">Generate Token Collection Form</button>
             </div>
+            {{-- <div class="form-button" >
+                <button class="btn-submit" id="btn-collect-token-report"  style="background:#208013; border: 1px solid #208013; display: show">Generate Token Collection Report</button>
+            </div> --}}
         </div>
     </div>
 </form>
+
+{{-- TOKEN COLLECTION FORM --}}
 
 <div class='panel panel-default print-data' id="print-form" style="display:none">
     <div class='panel-body' id="print-section">
@@ -377,8 +401,12 @@
         <div style=" margin: 20px;">
             <table style="width: 100%; table-layout: fixed; height:35px;">
                 <tr >
-                    <td style="padding:5px;"><b>Total Token Collected</b></td>
-                    <td id="total-tokens"></td>
+                    <td style="padding:5px;" colspan="2"><b>Store: </b><span id="total-tokens-store"></span></td>
+                    <td style="padding:5px;" colspan="2"><b>Date: </b><span id="total-tokens-date"></span></td>
+                </tr>
+                <tr >
+                    <td style="padding:5px;" colspan="2"><b>Total Token Collected</b></td>
+                    <td id="total-tokens" colspan="2"></td>
                 </tr>
             </table>
         </div>
@@ -413,6 +441,208 @@
     </div>
 </div>
 
+{{-- TOKEN COLLECTION REPORT --}}
+
+<div class='panel panel-default print-data' id="token-collection-report-form" style="display:none">
+    <div class='panel-body' id="print-section" style="padding: 10px;">
+        <h4 class="text-center" style="margin:30px 0;"><b>TOKEN COLLECTION REPORT</b></h4>
+        <div class="print-details" id="print-details">
+            <h5><b>Store Name: </b><span id="collection-report-store">GASHAPON STORE</span></h5>
+            <h5><b>Date: </b><span id="collection-report-date">2025-01-04</span></h5>
+         </div>
+        <div class="print-details" id="token-collect-form" style="display: flex; flex-direction: column; gap: 10px; justify-content: center">
+            <table style=" margin-right: 20px;">
+                <thead class="tcr-header" style="background-color: #fefd01">
+                    <tr style="font-size: 10px;">
+                        <td colspan="1" style="padding: 10px;"><b>BAY</b></td>
+                        <td colspan="1" style="margin: 10px;"><b>FROM</b></td>
+                        <td colspan="1"><b>TO</b></td>
+                        <td colspan="1"><b>COLLECTED BY</b></td>
+                        <td colspan="1"><b>TOKENS COLLECTED</b></td>
+                        <td colspan="1"><b>TOKENS RECEIVED BY THE CASHIER</b></td>
+                        <td colspan="1"><b>VARIANCE</b></td>
+                    </tr>
+                </thead>
+                <tbody id="collection-report-tbody">
+                        {{-- APPEND HERE --}}
+
+                </tbody>
+                <tr style="font-size: 12px;">
+                    <td colspan="5" style=" padding: 5px;"><b>TOTAL TOKENS COLLECTED</b></td>
+                    <td colspan="2" id="totaltokens-report-table"></td>
+                </tr>
+                </table>
+
+            <div style="display: flex; flex-direction: row; gap: 20px; ">
+                <table >
+                    <thead>
+                        <tr style="font-size: 10px;">
+                            <td colspan="2" style="padding: 12px;"><b>STUCKED TOKEN</b></td>
+        
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <td colspan="1" style="padding: 5px;"><b>MACHINE #</b></td>
+                            <td colspan="1"><b>QTY</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                    </tbody>
+                </table>
+                <table >
+                    <thead>
+                        <tr style="font-size: 10px;">
+                            <td colspan="2" style="padding: 5px;"><b>UNAUTHORIZED TOKENS: The total count of tokens collected should exclude these unauthorized tokens</b></td>
+        
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <td colspan="1" style="padding: 5px;"><b>MACHINE #</b></td>
+                            <td colspan="1"><b>QTY</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 10px; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center">    
+                    <div style="width: 40%"><b>TOKEN SWAP FROM CASHIER REPORT:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;" id="tswap-from-cashier-report-date"></span></div> 
+                    <div style="width: 20%; display: flex; align-items: center; "><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center" id="tswap-from-cashier-report-qty"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>MINUS: TOKEN COLLECTED TODAY</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;" id="token-collected-today-date"></span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center" id="token-collected-today-qty"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center" id="variance1-qty"></div></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center">    
+                    <div style="width: 40%"><b>TOTAL TOKEN BEG. BALANCE:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;" id="total-beggining-balance-date"></span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>CASHIER DRAWER BALANCE:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL SEALED TOKENS:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKEN COLLECTED:</b></div> 
+                    <div style="width: 30%; display: flex; align-items: center;"><b>QTY:</b> <div style="margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center" id="total-token-collected2"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKEN ON HAND:</b></div> 
+                    <div style="width: 30%"><b>DATE:</b> <span style="align-items: center;" id="total-token-onhand-date"></span></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b>QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>TOTAL TOKENS DELIVERED:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center" id="total-tokens-delivered"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>MINUS: TOTAL TOKEN ON HAND</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-top: 1px;">    
+                    <div style="width: 40%"><b>VARIANCE:</b></div> 
+                    <div style="width: 30%"></div> 
+                    <div style="width: 20%; display: flex; align-items: center;"><b class="invisible-text" style="color: transparent">QTY:</b> <div style=" margin-left: 5px; border: 0.5px solid black; font-size: 14px; width: 100px; height: 30px; justify-content: center; display:flex; align-items: center"></div></div>
+                </div>
+            
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style=" font-size: 12px;"><b>ISSUES FOUND: IF POSSIBLE, SUPPORTED BY A PICTURE OR ANY PROOF,</b></div> 
+                <div>OTHERS: SPECIFY ISSUES ENCOUNTERED DURING THE TOKEN COLLECTION & TURN OVER:</div> 
+                <div class="line" style="margin-top: 15px;"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+              
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; font-size: 10px;">
+                <div style=" font-size: 12px;"><b>REMINDERS:</b></div> 
+                <div>1. THE BATCH OF COLLECTED TOKENS WITH VARIANCE MUST BE RECOUNTED USING THE COIN COUNTER. IF STILL NOT TALLY, THE TEAM LEADER MUST RECOUNT MANUALLY.</div>
+                <div>2. THE TEAM LEADER MUST ENSURE THAT ALL TOKENS COLLECTED ARE RECEIVED IN THE SYSTEM.</div>
+                <div>3. ALL TOKEN COLLECTION ISSUES FOUND WERE DISCUSSED WITH THE STORE PERSONNEL AND MUST BE REPORTED.</div>
+                <div>4. THE TEAM LEADER OR CASHIER OF THE DAY SHALL SEND PICTURES OF THE REPORT VIA VIBER <b>(TOKEN COLLECTION PER BAY AND TOTAL COLLECTION SUMMARY).</b></div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: row; font-size: 10px;">
+                <div style=" font-size: 12px; width: 50%">
+                    <b>TEAM LEADER:</b>
+                    <div style="margin-top: 25px; border-bottom: 1px solid black;  width: 300px;"></div>
+                    <i style="font-size: 9px;">Signature over Printed Full Name</i>
+                </div> 
+                <div style=" font-size: 12px; width: 50%">
+                    <b>CASHIER:</b>
+                    <div style="margin-top: 25px; border-bottom: 1px solid black;  width: 300px;"></div>
+                    <i style="font-size: 9px;">Signature over Printed Full Name</i>
+                </div> 
+            </div>
+        
+        </div>
+        
+    </div>
+
+    <div class='panel-footer no-print'>
+        <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default no-print">{{ trans('message.form.back') }}</a>
+        <div class="btn btn-info no-print pull-right" id="print-button-clt-report" style="background-color: #3C8DBC;">Print</div>
+    </div>
+</div>
+
 <div class="spinner-overlay" id="spinner" style="display: none;">
     <div class="spinner">
     </div>
@@ -429,16 +659,17 @@
         $('#print-button').on('click', function(){
             window.print();
         });
-
-        $('#reference_numbers').select2({
-            placeholder: "Select Reference Number/s",
+        $('#print-button-clt-report').on('click', function(){
+            window.print();
         });
+
     });
 
     $('#btn-reset').on('click', function(event){
         event.preventDefault();
         $('#date').val(null).trigger('change');
         $('#print-form').hide();
+        $('#token-collection-report-form').hide();
         $('#date_required').hide();
 
     });
@@ -466,7 +697,7 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                console.log(response);
+
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
@@ -497,18 +728,23 @@
 
                 }
 
+                $('#token-collection-report-form').hide();
                 $('#print-form').show();
                 const container = $('#container');
                 const printDetails = $('#print-details');
                 const receivedBy = $('#received-by');
                 const collectedBy = $('#collected-by');
                 const totalTokens = $('#total-tokens');
+                const totalTokensStore = $('#total-tokens-store');
+                const totalTokensDate = $('#total-tokens-date');
 
                 container.empty();
                 printDetails.empty();
                 receivedBy.empty();
                 collectedBy.empty();
                 totalTokens.empty();
+                totalTokensStore.empty();
+                totalTokensDate.empty();
 
                 let details = `
                     <h5><b>Store Name: </b><span>${response.store_name}</span></h5>
@@ -528,6 +764,9 @@
                 printDetails.append(details);
                 receivedBy.append(receiver);
                 totalTokens.append(total_tokens);
+                totalTokensStore.append(response.store_name);
+                totalTokensDate.append(response.formatted_request_date);
+
 
                 response.collectors.forEach(collector => {
 
@@ -542,21 +781,27 @@
                 });
 
                 response.collect_tokens.forEach(item => {
-
+                    
                     
                     let bayTable = `
                         <div class="bay">
                             <table>
                                 <thead>
+                                    
                                     <tr>
                                         <td colspan="4"><b>${item.get_bay.name}</b></td>
                                     </tr>
-                                
+                                    <tr>
+                                        <td colspan="4"><b>Reference #: </b>${item.reference_number}</td>
+                                    </tr>
                                     <tr>
                                         <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="4"><b>Receiver: </b>${item.get_received_by.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4"><b>Date: </b>${response.date}</td>
                                     </tr>
                                     <tr>
                                         <td><b>Machine #</b></td>
@@ -566,14 +811,16 @@
                                     </tr>
                                 </thead>
                                 <tbody class="table-tbody" style="${item.lines.length > 30 ? 'font-size:10px !important;' : item.lines.length > 20 ? 'font-size:12px !important;' : ''}">
-                                    ${item.lines.map(machine => `
-                                        <tr>
-                                            <td>${machine.machine_serial.serial_number}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
-                                            <td>${machine.qty}</td>
-                                        </tr>
-                                    `).join('')}
+                                    ${item.lines
+                                        .filter(machine => machine.jan_number || machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code)
+                                        .map(machine => `
+                                            <tr>
+                                                <td>${machine.machine_serial.serial_number}</td>
+                                                <td>${machine.jan_number ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
+                                                <td>${machine.item_description ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
+                                                <td>${machine.qty}</td>
+                                            </tr>
+                                        `).join('')}
                                     <tr style="height: 35px;">
                                         <td colspan="3"><b>Total</b></td>
                                         <td><b>${item.lines.reduce((sum, machine) => sum + machine.qty, 0)}</b></td>
@@ -590,6 +837,180 @@
                    
                 });
 
+                
+                $('#spinner').hide();
+            },
+            error: function(xhr, status, error) {
+                alert('Error fetching data:', error);
+                $('#spinner').hide();
+            }
+        });
+    });
+
+    $('#btn-collect-token-report').on('click', function(event) {
+        event.preventDefault();
+        let date = $('#date').val();
+
+
+        if (date === null || date.length === 0) {
+            $('#date_required').show();
+            return;
+        }
+        else{
+            $('#date_required').hide();
+        }
+
+        $('#spinner').show();
+        
+        
+        $.ajax({
+            url: '{{route("postPrint")}}',
+            method: 'POST',
+            data: {
+                date: date,
+                _token: '{{ csrf_token() }}',
+            },
+            success: function(response) {
+                
+                if (response.missing_bays.length != 0){
+                    $('#spinner').hide();
+                    Swal.fire({
+                        icon: "error",
+                        title: "<strong class='text-warning'> Unable to Filter, </br> There are missing Bays</strong>",
+                        showCloseButton: false,
+                        confirmButtonText: `<i class="fa fa-thumbs-up"></i> Got it!`,
+                        confirmButtonColor: '#3C8DBC',
+                        html: `
+                        <table style="font-size:12px; width: 100%; border-collapse: collapse; margin: 20px 0;">
+                            <thead>
+                                <tr>
+                                    <th style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">Location</th>
+                                    <th style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">Bay</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;" rowspan="${response.missing_bays.length + 1}">${response.store_name}</td>
+                                            </tr>
+                                            ${response.missing_bays.map(item => `<tr><td style=" border: 1px solid #3C8DBC; padding: 12px; text-align: center;">${item.name}</td></tr>`).join('')}
+                                            </tbody>
+                                            </table>
+                                            `
+                                        });
+                    return;
+                    
+                }
+                
+                $('#print-form').hide();
+                $('#token-collection-report-form').show();
+
+                // DETAILS AND TABLE
+                const collectionReportDate = $('#collection-report-date');
+                const collectionReportStore = $('#collection-report-store');
+                const collectionReportTbody = $('#collection-report-tbody');
+                const totalTokensReportTable = $('#totaltokens-report-table');
+
+                collectionReportDate.empty();
+                collectionReportStore.empty();
+                collectionReportTbody.empty();
+                totalTokensReportTable.empty();
+
+                collectionReportDate.append(response.formatted_request_date);
+                collectionReportStore.append(response.store_name);
+
+                // OTHER DETAILS
+                
+                // TOKEN SWAP FROM CASHIER REPORT
+
+                const tswapCashierReportDate = $('#tswap-from-cashier-report-date');
+                const tswapCashierReportQty = $('#tswap-from-cashier-report-qty');
+                
+                tswapCashierReportDate.empty();
+                tswapCashierReportQty.empty();
+
+                tswapCashierReportDate.append(response.token_swap_from_cashier_report_date);
+                tswapCashierReportQty.append(response.token_swap_from_cashier_report);
+
+                // MINUS: TOKEN COLLECTED TODAY
+
+                const minusTokenCollectedTodayDate = $('#token-collected-today-date');
+                const minusTokenCollectedTodayQty = $('#token-collected-today-qty');
+                
+                minusTokenCollectedTodayDate.empty();
+                minusTokenCollectedTodayQty.empty();
+                
+                minusTokenCollectedTodayDate.append(response.formatted_request_date);
+                minusTokenCollectedTodayQty.append(response.total_tokens);
+
+                // VARIANCE
+
+                const variance1Qty = $('#variance1-qty');
+                variance1Qty.empty();
+                variance1Qty.append(Math.abs(response.token_swap_from_cashier_report - response.total_tokens));
+                
+                // TOTAL BEGINNING BALANCE
+                
+                const totalBegginingBalanceDate = $('#total-beggining-balance-date');
+
+                totalBegginingBalanceDate.empty();
+
+                totalBegginingBalanceDate.append(response.token_swap_from_cashier_report_date);
+
+                // TOTAL TOKEN COLLECTED
+
+                const totalTokenCollected2 = $('#total-token-collected2');
+
+                totalTokenCollected2.empty();
+
+                totalTokenCollected2.append(response.total_tokens);
+
+                // TOTAL TOKEN ON HAND
+
+                const totalTokenOnHandDate = $('#total-token-onhand-date');
+
+                totalTokenOnHandDate.empty();
+
+                totalTokenOnHandDate.append(response.formatted_request_date);
+
+                // TOTAL TOKENS DELIVERED
+
+                const totalTokensDelivered = $('#total-tokens-delivered');
+
+                totalTokensDelivered.empty();
+
+                totalTokensDelivered.append(response.total_tokens_delivered);
+
+
+                // TABLE APPEND
+
+                response.collect_tokens.forEach(item => {
+
+                    const bayLetter = item.get_bay.name.split(' ').pop();
+                    const collectedQty = item.collected_qty;
+                    const receivedQty = item.received_qty;
+                    const MachineFrom = parseInt(item.lines[0]?.machine_serial.serial_number.match(/\d+/)[0],10);
+                    const MachineTo = parseInt(item.lines[item.lines.length - 1]?.machine_serial.serial_number.match(/\d+/)[0],10);
+                    const MachineVariance = Math.abs(collectedQty - receivedQty);
+
+                    
+                    let collectionReportBody = `
+                        <tr style="font-size: 12px;">
+                            <td>${bayLetter}</td>
+                            <td>${MachineFrom}</td>
+                            <td>${MachineTo}</td>
+                            <td>${item.get_created_by.name}</td>
+                            <td>${collectedQty}</td>
+                            <td>${receivedQty}</td>
+                            <td>${MachineVariance == 0 ? "" : MachineVariance}</td> 
+                        </tr>
+                    `;
+
+                    collectionReportTbody.append(collectionReportBody);
+
+                });
+
+                totalTokensReportTable.append(response.total_tokens);
+                
                 
                 $('#spinner').hide();
             },

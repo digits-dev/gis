@@ -10,7 +10,10 @@ use App\Models\Capsule\HistoryCapsule;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CmsUsers;
+use App\Models\CollectTokenHistory;
+use App\Models\CollectTokenHistoryLines;
 use App\Models\CollectTokenMessage;
+use App\Models\PosFrontend\SwapHistory;
 use App\Models\Submaster\CapsuleActionType;
 use App\Models\Submaster\Counter;
 use App\Models\Submaster\Statuses;
@@ -19,7 +22,10 @@ use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\Locations;
 use App\Models\Submaster\TokenConversion;
+use App\Models\Token\PulloutToken;
+use App\Models\Token\StoreRrToken;
 use App\Models\Token\TokenInventory;
+use Carbon\Carbon;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +128,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy', 'collectTokenMessages'])->find($id);
 
-
 		return view("token.collect-token.detail-collect-token", $data);
 	}
 
@@ -131,11 +136,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
+				->where('statuses_id', '!=', Statuses::COLLECTED)
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
+				->where('statuses_id', '!=', Statuses::COLLECTED)
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}
@@ -156,6 +163,24 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
 			->get()
 			->sortBy('bay_id');
+
+			// TOTAL TOKEN SWAP VALUE
+
+			$totalTokenSwapValue = SwapHistory::whereDate('created_at', Carbon::parse($request->date)->subDay())	
+				->where('locations_id', CRUDBooster::myLocationId())
+				->where('status', 'POSTED')
+				->sum('token_value');
+
+			// FOR TOTAL TOKENS DELIVERED
+
+			$totalDeliveredTokens = StoreRrToken::where('to_locations_id', CRUDBooster::myLocationId())
+			->sum('received_qty');
+
+			$totalPulloutTokens = PulloutToken::where('locations_id', CRUDBooster::myLocationId())
+			->sum('qty');
+
+			$totalReceivedQty = StoreRrToken::where('to_locations_id', 10)
+			->sum('received_qty');
 
 			$collect_tokens = $collect_tokens->values();
 
@@ -192,11 +217,19 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
 
+			
+
+			// TOKEN COLLECTION REPORT
+
 			return response()->json([
 				'missing_bays' => $missing_bay_ids,
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
 				'date' => $request->date,
 				'total_tokens' => $collect_tokens->sum('received_qty'),
+				'token_swap_from_cashier_report' => $totalTokenSwapValue,
+				'token_swap_from_cashier_report_date' => Carbon::parse($request->date)->subDay()->format('F d, Y'),
+				'total_tokens_delivered' => $totalDeliveredTokens - $totalPulloutTokens,
+				'formatted_request_date' => Carbon::parse($request->date)->format('F d, Y'),
 				'collect_tokens' => $collect_tokens,
 				'collectors' => $collectors,
 				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
@@ -207,12 +240,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
-		$data ['reference_numbers'] = CollectRrTokens::with('getBay')->select('id','reference_number', 'bay_id')
-			->where('location_id', CRUDBooster::myLocationId())
-			->where('statuses_id', Statuses::COLLECTED)
-			->get();
+
+	
+
+
 		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
 
+		
 
 		return view("token.collect-token.print-collecttoken-form", $data);
 	}
@@ -511,7 +545,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function postCollectTokenApproval(Request $request)
 	{
-
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
 
 		if(in_array($collectTokenHeader->statuses_id,[5,12])){
@@ -523,22 +556,45 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			// validations 
 			try {
 				$validatedData = $request->validate([
-					'inventory_capsule_lines_id' => 'required',
-					'actual_capsule_inventory' => 'required',
 					'ref_number' => 'required',
+					'header_location_id' => 'required',
+					'total_collected_token' => 'required',
+					'collect_token_id' => 'required',
+
+					'collect_token_lines_ids' => 'required',
+					'location_id' => 'required',
 					'jan_code' => 'required',
+					'item_desc' => 'required',
 					'item_code' => 'required',
 					'gasha_machines_id' => 'required',
-					'location_id' => 'required',
+
+					'no_of_tokens' => 'required',
+					'collected_qty' => 'required',
+					'variance' => 'required',
+					'variance_type' => 'required',
+					'projected_capsule_sales' => 'required',
 					'actual_capsule_sales' => 'required',
-					'header_location_id' => 'required',
-					'total_collected_token' => 'required'
+					'current_capsule_inventory' => 'required',
+					'actual_capsule_inventory' => 'required',
+					'line_created_at' => 'required',
+					'line_updated_at' => 'required',
+
+					'inventory_capsule_lines_id' => 'required',
 				]);
 			} catch (ValidationException $e) {
 				$errors = $e->validator->errors()->all();
 				$errorMessage = implode('<br>', $errors);
 				CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 			}
+
+			// arrap map for collected lines
+			$ValidatedCollectedLines = array_map(function ($collected_lines_ids, $jan_number, $item_description) {
+				return [
+					'collect_token_lines_ids' => $collected_lines_ids,
+					'jan_code' => $jan_number,
+					'item_desc' => $item_description,
+				];
+			}, $validatedData['collect_token_lines_ids'], $validatedData['jan_code'], $validatedData['item_desc']);
 
 			// array map for capsule sales && capsule history
 			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $item_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
@@ -621,6 +677,14 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'updated_by' => CRUDBooster::myId(),
 				'updated_at' => now()
 			]);
+
+			foreach ($ValidatedCollectedLines as $perCollectTokenLine) {
+				$collectTokenHeader->lines()->where('id', $perCollectTokenLine['collect_token_lines_ids'])->update([
+					'jan_number' => $perCollectTokenLine['jan_code'],
+					'item_description' => $perCollectTokenLine['item_desc'],
+				]);
+			}
+
 		}
 
 		else {
