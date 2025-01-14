@@ -128,7 +128,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy', 'collectTokenMessages'])->find($id);
 
-
 		return view("token.collect-token.detail-collect-token", $data);
 	}
 
@@ -137,11 +136,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
+				->where('statuses_id', '!=', Statuses::COLLECTED)
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
+				->where('statuses_id', '!=', Statuses::COLLECTED)
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}
@@ -560,8 +561,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 					'total_collected_token' => 'required',
 					'collect_token_id' => 'required',
 
+					'collect_token_lines_ids' => 'required',
 					'location_id' => 'required',
 					'jan_code' => 'required',
+					'item_desc' => 'required',
 					'item_code' => 'required',
 					'gasha_machines_id' => 'required',
 
@@ -584,48 +587,14 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 			}
 
-			// array map for collect token history lines
-			$ValidatedCollectTokenHistoryLines = array_map(function (
-				$gashamachine_id, 
-				$jan_code, 
-				$no_of_tokens, 
-				$collected_qty, 
-				$variance, 
-				$variance_type, 
-				$projected_capsule_sales,
-				$actual_capsule_sales,
-				$current_capsule_inventory,
-				$actual_capsule_inventory,
-				$line_created_at,
-				$line_updated_at
-				) {
-
+			// arrap map for collected lines
+			$ValidatedCollectedLines = array_map(function ($collected_lines_ids, $jan_number, $item_description) {
 				return [
-					'gasha_machines_id' => $gashamachine_id,
-					'jan_code' => $jan_code,
-					'no_of_tokens' => $no_of_tokens,
-					'collected_qty' => $collected_qty,
-					'variance' => $variance,
-					'variance_type' => $variance_type,
-					'projected_capsule_sales' => $projected_capsule_sales,
-					'actual_capsule_sales' => $actual_capsule_sales,
-					'current_capsule_inventory' => $current_capsule_inventory,
-					'actual_capsule_inventory' => $actual_capsule_inventory,
-					'line_created_at' => $line_created_at,
-					'line_updated_at' => $line_updated_at,
+					'collect_token_lines_ids' => $collected_lines_ids,
+					'jan_code' => $jan_number,
+					'item_desc' => $item_description,
 				];
-
-			}, 	$validatedData['gasha_machines_id'], $validatedData['jan_code'], 
-				$validatedData['no_of_tokens'], 
-				$validatedData['collected_qty'], 
-				$validatedData['variance'], 
-				$validatedData['variance_type'], 
-				$validatedData['projected_capsule_sales'],
-				$validatedData['actual_capsule_sales'],
-				$validatedData['current_capsule_inventory'],
-				$validatedData['actual_capsule_inventory'],
-				$validatedData['line_created_at'],
-				$validatedData['line_updated_at']);
+			}, $validatedData['collect_token_lines_ids'], $validatedData['jan_code'], $validatedData['item_desc']);
 
 			// array map for capsule sales && capsule history
 			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $item_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
@@ -709,33 +678,12 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'updated_at' => now()
 			]);
 
-			$collect_rr_token_header = CollectRrTokens::where('id', $validatedData['collect_token_id'])->first()->toArray();
-			$dataToInsert = array_merge($collect_rr_token_header, [
-				'collect_token_remarks_id' => $validatedData['collect_token_id']
-			]);
-
-			$insert = CollectTokenHistory::create($dataToInsert);
-
-			if ($insert){
-				foreach ($ValidatedCollectTokenHistoryLines as $collectTokenPerLine) {
-	
-					CollectTokenHistoryLines::create([
-						'collect_token_id' => $insert->id,
-						'gasha_machines_id' => $collectTokenPerLine['gasha_machines_id'],
-						'jan_number' => $collectTokenPerLine['jan_code'],
-						'no_of_token' => $collectTokenPerLine['no_of_tokens'],
-						'qty' => $collectTokenPerLine['collected_qty'],
-						'variance' => $collectTokenPerLine['variance'],
-						'variance_type' => $collectTokenPerLine['variance_type'],
-						'projected_capsule_sales' => $collectTokenPerLine['projected_capsule_sales'],
-						'actual_capsule_sales' => $collectTokenPerLine['actual_capsule_sales'],
-						'current_capsule_inventory' => $collectTokenPerLine['current_capsule_inventory'],
-						'actual_capsule_inventory' => $collectTokenPerLine['actual_capsule_inventory'],
-						'created_at' => $collectTokenPerLine['line_created_at'],
-						'updated_at' => $collectTokenPerLine['line_updated_at'],
-					]);
-				}
-			} 
+			foreach ($ValidatedCollectedLines as $perCollectTokenLine) {
+				$collectTokenHeader->lines()->where('id', $perCollectTokenLine['collect_token_lines_ids'])->update([
+					'jan_number' => $perCollectTokenLine['jan_code'],
+					'item_description' => $perCollectTokenLine['item_desc'],
+				]);
+			}
 
 		}
 

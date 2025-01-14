@@ -476,6 +476,7 @@
                                             {{$perLine->machineSerial->serial_number}}
                                             <input type="hidden" name="gasha_machines_id[]" value="{{$perLine->machineSerial->id}}" readonly>
                                             <input type="hidden" name="location_id[]" value="{{$perLine->machineSerial->location_id}}" readonly>
+                                            <input type="hidden" name="collect_token_lines_ids[]" value="{{$perLine->id}}">
                                         </td>
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->digits_code}}
@@ -484,6 +485,7 @@
                                         </td> 
                                         <td>
                                             {{$capsuleLine->getInventoryCapsule->item->item_description}}
+                                            <input type="hidden" name="item_desc[]" id="item_desc" value="{{$capsuleLine->getInventoryCapsule->item->item_description}}">
                                         </td> 
                                         <td>
                                             {{$perLine->no_of_token}}

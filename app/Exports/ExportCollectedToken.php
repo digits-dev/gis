@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Audit\CollectRrTokens;
 use App\Models\CmsModels\CmsPrivileges;
+use App\Models\Submaster\Statuses;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -56,15 +57,17 @@ class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
                 'lines.inventory_capsule_lines.getInventoryCapsule.item', 
                 'getLocation',
                 'getBay',
-            ]);
+            ])->where('reference_number', 'LIKE', '%CLTN-%')
+              ->where('statuses_id', '!=', Statuses::COLLECTED);
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query = CollectRrTokens::with([
                 'lines.inventory_capsule_lines.getInventoryCapsule.item',
                 'getLocation',
                 'getBay',
-            ])->where('location_id', CRUDBooster::myLocationId());
+            ])->where('location_id', CRUDBooster::myLocationId())
+              ->where('reference_number', 'LIKE', '%CLTN-%')
+              ->where('statuses_id', '!=', Statuses::COLLECTED);
 		}
-        
 
         // dd($this->filterColumn);
 
@@ -236,16 +239,16 @@ class ExportCollectedToken implements FromCollection, WithHeadings, WithStyles
                     'Reference Number' => $perCollectedToken->reference_number,
                     'Status' => $perCollectedToken->getStatus->status_description,
                     'Location' => $perCollectedToken->getLocation->location_name,
-                    'JAN #' => $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
+                    'JAN #' => $lines[$i]->jan_number ?? $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
                         return optional(optional($capsuleLine->getInventoryCapsule)->item)->digits_code;
                     })->join(', '),
-                    'Item Description' => $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
+                    'Item Description' => $lines[$i]->item_description ?? $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
                         return optional(optional($capsuleLine->getInventoryCapsule)->item)->item_description;
                     })->join(', '),
                     'Bay' => $perCollectedToken->getBay->name,
                     'Machine #' => $lines[$i]->machineSerial->serial_number ?? 'N/A',
                     'No of Token' => $lines[$i]->no_of_token,
-                    'Token Collected' => $lines[$i]->qty,
+                    'Token Collected' => $lines[$i]->qty == 0 ? '0' : $lines[$i]->qty,
                     'Variance' => $lines[$i]->variance,
                     'Projected Capsule Sales' => $lines[$i]->projected_capsule_sales == 0 ? '0' : $lines[$i]->projected_capsule_sales,
                     'Current Capsule Inventory' => $lines[$i]->current_capsule_inventory == 0 ? '0' : $lines[$i]->current_capsule_inventory,

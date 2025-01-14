@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\History;
 
 use App\Exports\ExportCollectedTokenHistory;
+use App\Models\Audit\CollectRrTokens;
 use Session;
 use Illuminate\Http\Request;
 use DB;
@@ -41,7 +42,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$this->button_filter = true;
 		$this->button_import = false;
 		$this->button_export = false;
-		$this->table = "collect_token_histories";
+		$this->table = "collect_rr_tokens";
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 		# START COLUMNS DO NOT REMOVE THIS LINE
@@ -73,9 +74,9 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$data = [];
 		$data['page_title'] = 'Collect Token Details';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data['collected_tokens_history'] = CollectTokenHistory::with(['collectTokenMessages', 'history_lines.get_item_desc', 'history_lines.get_serial_number'])->find($id);
+		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy', 'collectTokenMessages'])->find($id);
 
-		return view("token.collect-token.detail-collect-token-history", $data);
+		return view("token.collect-token.detail-collect-token", $data);
 	}
 
 	public function actionButtonSelected($id_selected, $button_name)
@@ -84,20 +85,23 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 
 	}
 
-	    public function hook_query_index(&$query) {
-	        if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER])) {
-				$query->whereNull('collect_token_histories.deleted_at')
-					->orderBy('collect_token_histories.id', 'desc');
-			} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
-				$query->where('collect_token_histories.location_id', CRUDBooster::myLocationId())
-					->whereNull('collect_token_histories.deleted_at')
-					->orderBy('collect_token_histories.id', 'desc');
-			}
-	            
-	    }
+	public function hook_query_index(&$query)
+	{
+		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER])) {
+			$query->whereNull('collect_rr_tokens.deleted_at')
+				->where('reference_number', 'LIKE', '%CLTN-%')
+				->where('statuses_id', Statuses::COLLECTED)
+				->orderBy('collect_rr_tokens.id', 'desc');
+		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
+			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+				->where('reference_number', 'LIKE', '%CLTN-%')
+				->whereNull('collect_rr_tokens.deleted_at')
+				->where('statuses_id', Statuses::COLLECTED)
+				->orderBy('collect_rr_tokens.id', 'desc');
+		}
+	}
 
-// PRINT RECEIVE FORM
-
+	// PRINT RECEIVE FORM
 	public function getPrintForm(Request $request)
 	{
 
@@ -107,7 +111,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 			$bays = [];
 			$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
 			$collect_tokens = CollectTokenHistory::whereDate('created_at', $request->date)
-				->with('history_lines.get_serial_number', 'history_lines.get_item_desc','getCreatedBy', 'getReceivedBy', 'getBay')
+				->with('history_lines.get_serial_number', 'history_lines.get_item_desc', 'getCreatedBy', 'getReceivedBy', 'getBay')
 				->where('location_id', CRUDBooster::myLocationId())
 				->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
 				->get()
@@ -163,10 +167,11 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['store_name'] = Locations::find(CRUDBooster::myLocationId());
 
-			return view("token.collect-token.print-collecttokenhistory-form", $data);
-		}
+		return view("token.collect-token.print-collecttokenhistory-form", $data);
+	}
 
-	public function exportCollectedTokenHistory(Request $request){
+	public function exportCollectedTokenHistory(Request $request)
+	{
 		$filter_column = $request->get('filter_column');
 
 		return Excel::download(new ExportCollectedTokenHistory($filter_column), 'Export-Collected-Token- ' . now()->format('Ymd h_i_sa') . '.xlsx');

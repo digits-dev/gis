@@ -2,8 +2,10 @@
 
 namespace App\Exports;
 
+use App\Models\Audit\CollectRrTokens;
 use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CollectTokenHistory;
+use App\Models\Submaster\Statuses;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -51,9 +53,20 @@ class ExportCollectedTokenHistory implements FromCollection, WithHeadings, WithS
     public function collection()
     {
         if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER])) {
-			$query = CollectTokenHistory::with(['history_lines.get_item_desc', 'history_lines.get_serial_number']);
+			$query = CollectRrTokens::with([
+                'lines.inventory_capsule_lines.getInventoryCapsule.item', 
+                'getLocation',
+                'getBay',
+            ])->where('reference_number', 'LIKE', '%CLTN-%')
+              ->where('statuses_id', Statuses::COLLECTED);
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
-			$query = CollectTokenHistory::with(['history_lines.get_item_desc', 'history_lines.get_serial_number'])->where('location_id', CRUDBooster::myLocationId());
+			$query = CollectRrTokens::with([
+                'lines.inventory_capsule_lines.getInventoryCapsule.item',
+                'getLocation',
+                'getBay',
+            ])->where('location_id', CRUDBooster::myLocationId())
+              ->where('reference_number', 'LIKE', '%CLTN-%')
+              ->where('statuses_id', Statuses::COLLECTED);
 		}
 
         // dd($this->filterColumn);
@@ -87,7 +100,7 @@ class ExportCollectedTokenHistory implements FromCollection, WithHeadings, WithS
                                     $startDate = date('Y-m-d', strtotime($range[0]));
                                     $endDate = date('Y-m-d', strtotime($range[1]));
                                     
-                                    $query->whereBetween('collect_token_histories.created_at', [$startDate, $endDate]);
+                                    $query->whereBetween('collect_rr_tokens.created_at', [$startDate, $endDate]);
                                 }
                                 break;
                             default:
@@ -218,26 +231,30 @@ class ExportCollectedTokenHistory implements FromCollection, WithHeadings, WithS
         $collection = collect();
 
         foreach ($collectedToken as $perCollectedToken) {
-            $history_lines = $perCollectedToken->history_lines;
-            $maxLines = $history_lines->count();
+            $lines = $perCollectedToken->lines;
+            $maxLines = $lines->count();
 
             for ($i = 0; $i < $maxLines; $i++) {
                 $collection->push([
                     'Reference Number' => $perCollectedToken->reference_number,
                     'Status' => $perCollectedToken->getStatus->status_description,
                     'Location' => $perCollectedToken->getLocation->location_name,
-                    'JAN #' => $history_lines[$i]->jan_number,
-                    'Item Description' => $history_lines[$i]->get_item_desc->item_description,
+                    'JAN #' => $lines[$i]->jan_number ?? $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
+                        return optional(optional($capsuleLine->getInventoryCapsule)->item)->digits_code;
+                    })->join(', '),
+                    'Item Description' => $lines[$i]->item_description ?? $lines[$i]->inventory_capsule_lines->map(function ($capsuleLine) {
+                        return optional(optional($capsuleLine->getInventoryCapsule)->item)->item_description;
+                    })->join(', '),
                     'Bay' => $perCollectedToken->getBay->name,
-                    'Machine #' => $history_lines[$i]->get_serial_number->serial_number ?? 'N/A',
-                    'No of Token' => $history_lines[$i]->no_of_token,
-                    'Token Collected' => $history_lines[$i]->qty == 0 ? '0' : $history_lines[$i]->qty,
-                    'Variance' => $history_lines[$i]->variance,
-                    'Projected Capsule Sales' => $history_lines[$i]->projected_capsule_sales == 0 ? '0' : $history_lines[$i]->projected_capsule_sales,
-                    'Current Capsule Inventory' => $history_lines[$i]->current_capsule_inventory == 0 ? '0' : $history_lines[$i]->current_capsule_inventory,
-                    'Actual Capsule Inventory' => $history_lines[$i]->actual_capsule_inventory == 0 ? '0' : $history_lines[$i]->actual_capsule_inventory,
-                    'Actual Capsule Sales' => $history_lines[$i]->actual_capsule_sales == 0 ? '0' : $history_lines[$i]->actual_capsule_sales,
-                    'Variance Type' => $history_lines[$i]->variance_type,
+                    'Machine #' => $lines[$i]->machineSerial->serial_number ?? 'N/A',
+                    'No of Token' => $lines[$i]->no_of_token,
+                    'Token Collected' => $lines[$i]->qty == 0 ? '0' : $lines[$i]->qty,
+                    'Variance' => $lines[$i]->variance,
+                    'Projected Capsule Sales' => $lines[$i]->projected_capsule_sales == 0 ? '0' : $lines[$i]->projected_capsule_sales,
+                    'Current Capsule Inventory' => $lines[$i]->current_capsule_inventory == 0 ? '0' : $lines[$i]->current_capsule_inventory,
+                    'Actual Capsule Inventory' => $lines[$i]->actual_capsule_inventory == 0 ? '0' : $lines[$i]->actual_capsule_inventory,
+                    'Actual Capsule Sales' => $lines[$i]->actual_capsule_sales == 0 ? '0' : $lines[$i]->actual_capsule_sales,
+                    'Variance Type' => $lines[$i]->variance_type,
                     'Confirmed By' => $perCollectedToken->getConfirmedBy->name,
                     'Confirmed Date' => $perCollectedToken->confirmed_at,
                     'Approved By' => $perCollectedToken->getApprovedBy->name,
