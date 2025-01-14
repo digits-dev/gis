@@ -34,7 +34,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AdminCollectTokenController extends \crocodicstudio\crudbooster\controllers\CBController
 {
-
 	private const CANCREATE = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CSA];
 	private const FORCASHIERTURNOVER = [CmsPrivileges::SUPERADMIN, CmsPrivileges::CASHIER];
 	private const FORCONFIRMATION = [CmsPrivileges::SUPERADMIN, CmsPrivileges::STOREHEAD];
@@ -119,7 +118,27 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'showIf' => "[statuses_id] == '" . Statuses::FOROMAPPROVAL . "'"
 			];
 		}
+
+		// if (CRUDBooster::isSuperadmin()) {
+		// 	$this->addaction[] = [
+		// 		'title' => 'For Approval',
+		// 		'url' => CRUDBooster::mainpath('getEdit/[id]'),
+		// 		'icon' => 'fa fa-pencil',
+		// 		'color' => 'danger',
+		// 	];
+		// }
 	}
+
+	// public function getEdit($id){
+	// 	if (CRUDBooster::isSuperadmin()) {
+	// 		$data = [];
+	// 		$data['page_title'] = 'Collect Token Details';
+	// 		$data['page_icon'] = 'fa fa-circle-o';
+	// 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+
+	// 		return view("token.collect-token.super_admin_get_edit", $data);
+	// 	}
+	// }
 
 	public function getDetail($id)
 	{
@@ -133,7 +152,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function hook_query_index(&$query)
 	{
-		if (in_array(CRUDBooster::myPrivilegeId(), [1, 4, 14])) {
+		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->where('statuses_id', '!=', Statuses::COLLECTED)
