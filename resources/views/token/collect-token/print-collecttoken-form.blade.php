@@ -379,9 +379,9 @@
             <div class="form-button" >
                 <button class="btn-submit" id="btn-submit" style="margin-right:5px;">Generate Token Collection Form</button>
             </div>
-            <div class="form-button" >
+            {{-- <div class="form-button" >
                 <button class="btn-submit" id="btn-collect-token-report"  style="background:#208013; border: 1px solid #208013; display: show">Generate Token Collection Report</button>
-            </div>
+            </div> --}}
         </div>
     </div>
 </form>
@@ -401,8 +401,12 @@
         <div style=" margin: 20px;">
             <table style="width: 100%; table-layout: fixed; height:35px;">
                 <tr >
-                    <td style="padding:5px;"><b>Total Token Collected</b></td>
-                    <td id="total-tokens"></td>
+                    <td style="padding:5px;" colspan="2"><b>Store: </b><span id="total-tokens-store"></span></td>
+                    <td style="padding:5px;" colspan="2"><b>Date: </b><span id="total-tokens-date"></span></td>
+                </tr>
+                <tr >
+                    <td style="padding:5px;" colspan="2"><b>Total Token Collected</b></td>
+                    <td id="total-tokens" colspan="2"></td>
                 </tr>
             </table>
         </div>
@@ -693,6 +697,7 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
+
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
@@ -730,12 +735,16 @@
                 const receivedBy = $('#received-by');
                 const collectedBy = $('#collected-by');
                 const totalTokens = $('#total-tokens');
+                const totalTokensStore = $('#total-tokens-store');
+                const totalTokensDate = $('#total-tokens-date');
 
                 container.empty();
                 printDetails.empty();
                 receivedBy.empty();
                 collectedBy.empty();
                 totalTokens.empty();
+                totalTokensStore.empty();
+                totalTokensDate.empty();
 
                 let details = `
                     <h5><b>Store Name: </b><span>${response.store_name}</span></h5>
@@ -755,6 +764,9 @@
                 printDetails.append(details);
                 receivedBy.append(receiver);
                 totalTokens.append(total_tokens);
+                totalTokensStore.append(response.store_name);
+                totalTokensDate.append(response.formatted_request_date);
+
 
                 response.collectors.forEach(collector => {
 
