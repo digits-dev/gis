@@ -769,7 +769,7 @@
                 });
 
                 response.collect_tokens.forEach(item => {
-
+                    
                     
                     let bayTable = `
                         <div class="bay">
@@ -802,8 +802,8 @@
                                     ${item.lines.map(machine => `
                                         <tr>
                                             <td>${machine.machine_serial.serial_number}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
-                                            <td>${machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
+                                            <td>${machine.jan_number ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.digits_code}</td>
+                                            <td>${machine.item_description ?? machine.inventory_capsule_lines[0]?.get_inventory_capsule.item.item_description}</td>
                                             <td>${machine.qty}</td>
                                         </tr>
                                     `).join('')}
@@ -857,7 +857,6 @@
                 _token: '{{ csrf_token() }}',
             },
             success: function(response) {
-                // console.log(response);
                 
                 if (response.missing_bays.length != 0){
                     $('#spinner').hide();
