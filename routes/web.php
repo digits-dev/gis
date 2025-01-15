@@ -66,6 +66,7 @@ Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PAT
     });
 });
 
+
 Route::group(['middleware' => ['web']], function() {
     Route::get('pos_login', [POSLoginController::class, 'index'])->name('login_page');
     Route::post('pos_login_account', [POSLoginController::class, 'authenticate'])->name('login');
