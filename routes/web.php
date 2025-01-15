@@ -263,7 +263,11 @@ Route::group(['middleware' => ['web','check.user']], function() {
         Route::get('/export_collected_token',[AdminCollectTokenController::class,'exportCollectedToken'])->name('export_collected_token');
         
         // RESET SELECTED BAY
-        Route::post('/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');    
+        Route::post('/reset_selected_bay',[AdminCollectTokenController::class,'resetSelectedBay'])->name('resetSelectedBay');  
+        
+        // SUPER ADMIN EDIT
+        Route::get('/getEdit/{id}',[AdminCollectTokenController::class, 'getEdit']);
+        Route::post('/postSaveEdit',[AdminCollectTokenController::class, 'saveEdit'])->name('postSuperAdminEdit');
     });
     
     // NEW COLLECT TOKEN HISTORY
