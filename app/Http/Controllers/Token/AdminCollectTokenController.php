@@ -223,7 +223,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Updated successfully!", 'success');
 	}
 
-
 	public function getDetail($id)
 	{
 		$data = [];
