@@ -119,26 +119,110 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			];
 		}
 
-		// if (CRUDBooster::isSuperadmin()) {
-		// 	$this->addaction[] = [
-		// 		'title' => 'For Approval',
-		// 		'url' => CRUDBooster::mainpath('getEdit/[id]'),
-		// 		'icon' => 'fa fa-pencil',
-		// 		'color' => 'danger',
-		// 	];
-		// }
+		if (CRUDBooster::isSuperadmin()) {
+			$this->addaction[] = [
+				'title' => 'For Approval',
+				'url' => CRUDBooster::mainpath('getEdit/[id]'),
+				'icon' => 'fa fa-pencil',
+				'color' => 'danger',
+			];
+		}
 	}
 
-	// public function getEdit($id){
-	// 	if (CRUDBooster::isSuperadmin()) {
-	// 		$data = [];
-	// 		$data['page_title'] = 'Collect Token Details';
-	// 		$data['page_icon'] = 'fa fa-circle-o';
-	// 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
+	public function getEdit($id){
+		if (CRUDBooster::isSuperadmin()) {
+			$data = [];
+			$data['page_title'] = 'Collect Token Details';
+			$data['page_icon'] = 'fa fa-circle-o';
+			$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getLocation', 'collectTokenMessages'])->where('id', $id)->get();
 
-	// 		return view("token.collect-token.super_admin_get_edit", $data);
-	// 	}
-	// }
+			return view("token.collect-token.super_admin_get_edit", $data);
+		}
+	}
+
+	public function saveEdit(Request $request) {
+		// validations 
+		try {
+			$validated_data = $request->validate([
+				//header
+				'collected_token_header_id' => 'required',
+				'header_collected_qty' => 'required',
+				'header_received_qty' => 'nullable',
+				'header_variace' => 'required',
+				//lines
+				'collect_token_lines_id' => 'required|array',
+				'collect_token_lines_no_of_token' => 'array',
+				'collect_token_lines_collected_qty' => 'array',
+				'collect_token_lines_variance' => 'array',
+				'collect_token_lines_variance_type' => 'array',
+				'collect_token_lines_projected_capsule_sales' => 'array',
+				'collect_token_lines_current_capsule_inventory' => 'array',
+				'collect_token_lines_actual_capsule_inventory' => 'array',
+				'collect_token_lines_actual_capsule_sales' => 'array',
+			]);
+		} catch (ValidationException $e) {
+			$errors = $e->validator->errors()->all();
+			$errorMessage = implode('<br>', $errors);
+			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
+		}
+
+		// collect token lines to mapping each array 
+		$Validated_lines = array_map(function ($collect_token_lines_id, $lines_no_of_token, $lines_collected_qty, $lines_variance, 
+			$lines_variance_type, $lines_projected_capsule_sales, $lines_current_capsule_inventory,
+			$lines_actual_capsule_inventory, $lines_actual_capsule_sales) 
+		{
+			return [
+				'collect_token_lines_id' => $collect_token_lines_id,
+				'collect_token_lines_no_of_token' => $lines_no_of_token,
+				'collect_token_lines_collected_qty' => $lines_collected_qty,
+				'collect_token_lines_variance' => $lines_variance,
+				'collect_token_lines_variance_type' => $lines_variance_type,
+				'collect_token_lines_projected_capsule_sales' => $lines_projected_capsule_sales,
+				'collect_token_lines_current_capsule_inventory' => $lines_current_capsule_inventory,
+				'collect_token_lines_actual_capsule_inventory' => $lines_actual_capsule_inventory,
+				'collect_token_lines_actual_capsule_sales' => $lines_actual_capsule_sales,
+			];
+		},  $validated_data['collect_token_lines_id'], $validated_data['collect_token_lines_no_of_token'], $validated_data['collect_token_lines_collected_qty'], 
+			$validated_data['collect_token_lines_variance'], $validated_data['collect_token_lines_variance_type'], 
+			$validated_data['collect_token_lines_projected_capsule_sales'], $validated_data['collect_token_lines_current_capsule_inventory'], 
+			$validated_data['collect_token_lines_actual_capsule_inventory'], $validated_data['collect_token_lines_actual_capsule_sales']);
+
+			$collectTokenHeader = CollectRrTokens::find($validated_data['collected_token_header_id']);
+			if (!$collectTokenHeader) {
+				CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
+			}
+
+			// update collect token header
+			$collectTokenHeader->update([
+				'collected_qty' => $validated_data['header_collected_qty'],
+				'received_qty' => $validated_data['header_received_qty'],
+				'variance' => $validated_data['header_variace'],
+				'updated_at' => now()
+			]);
+
+			// update collect tokens lines
+			$updatedCount = 0;
+			foreach ($Validated_lines as $per_item) {
+				$updated = $collectTokenHeader->lines()->where('id', $per_item['collect_token_lines_id'])->update([
+					'no_of_token' => $per_item['collect_token_lines_no_of_token'],
+					'qty' => $per_item['collect_token_lines_collected_qty'],
+					'variance' => $per_item['collect_token_lines_variance'],
+					'variance_type' => $per_item['collect_token_lines_variance_type'],
+					'projected_capsule_sales' => $per_item['collect_token_lines_projected_capsule_sales'],
+					'actual_capsule_sales' => $per_item['collect_token_lines_actual_capsule_sales'],
+					'current_capsule_inventory' => $per_item['collect_token_lines_current_capsule_inventory'],
+					'actual_capsule_inventory' => $per_item['collect_token_lines_actual_capsule_inventory'],
+					'updated_at' => now(),
+				]);
+
+				if ($updated) {
+					$updatedCount++;
+				}
+			}
+			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Updated successfully!", 'success');
+	}
+
 
 	public function getDetail($id)
 	{
@@ -359,6 +443,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$validatedData = $request->validate([
 				'total_qty' => 'required',
 				'gasha_machines_id' => 'required',
+				'jan_number' => 'required',
+				'item_desc' => 'required',
 				'no_of_token' => 'required',
 				'qty' => 'required',
 				'variance' => 'required',
@@ -373,15 +459,17 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		// collect token lines to map each array 
-		$ValidatedLines = array_map(function ($gasha_machines_id, $no_of_token, $qty, $variance, $location_id) {
+		$ValidatedLines = array_map(function ($gasha_machines_id, $jan_number, $item_desc, $no_of_token, $qty, $variance, $location_id) {
 			return [
 				'gasha_machines_id' => $gasha_machines_id,
+				'jan_number' => $jan_number,
+				'item_desc' => $item_desc,
 				'no_of_token' => $no_of_token,
 				'qty' => $qty,
 				'variance' => $variance,
 				'location_id' => $location_id,
 			];
-		}, $validatedData['gasha_machines_id'], $validatedData['no_of_token'], $validatedData['qty'], $validatedData['variance'], $validatedData['location_id']);
+		}, $validatedData['gasha_machines_id'], $validatedData['jan_number'], $validatedData['item_desc'], $validatedData['no_of_token'], $validatedData['qty'], $validatedData['variance'], $validatedData['location_id']);
 
 		// for collect token header if there's variance in the set
 		$header_variance = (count(array_filter($validatedData['variance'], fn($value) => $value != 0)) > 0) ? 'Yes' : 'No';
@@ -413,6 +501,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'line_status' => Statuses::FORCASHIERTURNOVER,
 				'collected_token_id' => $collectTokenHeader->id,
 				'gasha_machines_id' => $item['gasha_machines_id'],
+				'jan_number' => $item['jan_number'],
+				'item_description' => $item['item_desc'],
 				'no_of_token' => $item['no_of_token'],
 				'qty' => $item['qty'],
 				'variance' => $item['variance'],
@@ -606,15 +696,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 			}
 
-			// arrap map for collected lines
-			$ValidatedCollectedLines = array_map(function ($collected_lines_ids, $jan_number, $item_description) {
-				return [
-					'collect_token_lines_ids' => $collected_lines_ids,
-					'jan_code' => $jan_number,
-					'item_desc' => $item_description,
-				];
-			}, $validatedData['collect_token_lines_ids'], $validatedData['jan_code'], $validatedData['item_desc']);
-
 			// array map for capsule sales && capsule history
 			$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $item_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
 				return [
@@ -663,7 +744,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				}
 			}
 
-			// update inventory capsule li nes qty
+			// update inventory capsule lines qty
 			foreach ($ValidatedInventoryCapsuleLines as $perLine) {
 				$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->first();
 				$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales']; 
@@ -696,13 +777,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'updated_by' => CRUDBooster::myId(),
 				'updated_at' => now()
 			]);
-
-			foreach ($ValidatedCollectedLines as $perCollectTokenLine) {
-				$collectTokenHeader->lines()->where('id', $perCollectTokenLine['collect_token_lines_ids'])->update([
-					'jan_number' => $perCollectTokenLine['jan_code'],
-					'item_description' => $perCollectTokenLine['item_desc'],
-				]);
-			}
 
 		}
 

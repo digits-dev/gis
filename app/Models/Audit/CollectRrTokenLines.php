@@ -19,6 +19,8 @@ class CollectRrTokenLines extends Model
         'line_status', 
         'collected_token_id', 
         'gasha_machines_id',
+        'jan_number',
+        'item_description',
         'no_of_token',
         'qty',
         'variance',

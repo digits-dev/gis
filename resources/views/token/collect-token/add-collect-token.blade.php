@@ -493,9 +493,12 @@
                                     </td>
                                     <td>
                                         ${machine.get_inventory_item[0]?.get_inventory_capsule.item.digits_code ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
+                                        <input type="hidden" name="jan_number[]" value="${machine.get_inventory_item[0]?.get_inventory_capsule.item.digits_code}" readonly>
+
                                     </td>
                                     <td>
                                         ${machine.get_inventory_item[0]?.get_inventory_capsule.item.item_description ?? '<span style="color: darkorange"><i class="fa fa-warning"></i> Machine don`t have capsule</span>'}
+                                        <input type="hidden" name="item_desc[]" value="${machine.get_inventory_item[0]?.get_inventory_capsule.item.item_description}" readonly>
                                     </td>
                                     <td>
                                         ${machine.no_of_token}
