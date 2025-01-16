@@ -121,7 +121,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		if (CRUDBooster::isSuperadmin()) {
 			$this->addaction[] = [
-				'title' => 'For Approval',
+				'title' => 'Super Admin Edit',
 				'url' => CRUDBooster::mainpath('getEdit/[id]'),
 				'icon' => 'fa fa-pencil',
 				'color' => 'danger',
@@ -222,7 +222,6 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			
 			CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Updated successfully!", 'success');
 	}
-
 
 	public function getDetail($id)
 	{

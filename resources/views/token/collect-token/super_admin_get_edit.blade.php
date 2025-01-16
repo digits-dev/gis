@@ -351,6 +351,7 @@
                                         "
                                         >{{$perLine->variance_type}}</span>
                                         <select style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC; display:none;" name="collect_token_lines_variance_type[]" class="collect_token_lines_variance_type">
+                                            <option value="" {{ is_null($perLine->variance_type) || $perLine->variance_type === '' ? 'selected' : '' }}>-- Select --</option>
                                             <option value="No Variance" {{ $perLine->variance_type == 'No Variance' ? 'selected' : '' }}>No Variance</option>
                                             <option value="Short" {{ $perLine->variance_type == 'Short' ? 'selected' : '' }}>Short</option>
                                             <option value="Over" {{ $perLine->variance_type == 'Over' ? 'selected' : '' }}>Over</option>
@@ -557,6 +558,8 @@
             $input.prop('disabled', true).hide();
         } else {
             $input.prop('disabled', false).show();
+
+            //Sample
         }
     }
 
