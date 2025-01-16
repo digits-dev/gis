@@ -416,7 +416,8 @@
 @section('content')
 <div class="panel panel-default form-content" style="overflow: hidden">
     <form  method="POST" action="{{route('postCollectTokenApproval')}}" id="collect_token_details">
-        @csrf
+        {{-- @csrf --}}
+        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
         <div class="panel-heading header-title text-center">Collect Token Details</div>
             <div class="content-panel">
                 <input type="hidden" name="collect_token_id" id="collect_token_id" value="{{$collected_tokens->id}}" readonly>

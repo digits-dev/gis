@@ -80,7 +80,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$data['page_icon'] = 'fa fa-circle-o';
 		$data['collected_tokens'] = CollectRrTokens::with(['lines', 'getBay', 'getLocation', 'getCreatedBy', 'getConfirmedBy', 'getApprovedBy', 'getReceivedBy', 'collectTokenMessages'])->find($id);
 
-		return view("token.collect-token.detail-collect-token", $data);
+		return view("token.collect-token.detail-collect-token-history", $data);
 	}
 
 	public function actionButtonSelected($id_selected, $button_name)
