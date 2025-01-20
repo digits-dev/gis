@@ -23,6 +23,7 @@ class CmsPrivileges extends Model
     public const AUDITAPPROVER = 14;
     public const STOREHEAD = 15;
     public const OPERATIONMANAGER = 16;
+    public const OPERATIONVIEWER = 17;
 
     use HasFactory;
     protected $guarded = [];
