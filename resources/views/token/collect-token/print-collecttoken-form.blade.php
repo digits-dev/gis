@@ -787,21 +787,22 @@
                         <div class="bay">
                             <table>
                                 <thead>
-                                    
                                     <tr>
-                                        <td colspan="4"><b>${item.get_bay.name}</b></td>
+                                        <td colspan="4" style="padding: 0;">
+                                            <div style="display:flex; justify-content: center;">
+                                                <p style="flex: 1; padding: 3px; margin: 0; border-right: 1px solid black;"><b>${item.get_bay.name}</b></p>
+                                                <p style="flex: 1; padding: 3px; margin: 0; border-right: 1px solid black;"><b>Reference #: </b>${item.reference_number}</p>
+                                                <p style="flex: 1; padding: 3px; margin: 0;"><b>Date: </b>${response.date}</p>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4"><b>Reference #: </b>${item.reference_number}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4"><b>Collector: </b>${item.get_created_by.name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4"><b>Receiver: </b>${item.get_received_by.name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4"><b>Date: </b>${response.date}</td>
+                                        <td colspan="4" style="padding: 0;">
+                                            <div style="display:flex; justify-content: center;">
+                                                <p style="flex: 1; padding: 3px; margin: 0; border-right: 1px solid black;"><b>Collector: </b>${item.get_created_by.name}</p>
+                                                <p style="flex: 1; padding: 3px; margin: 0;"><b>Receiver: </b>${item.get_received_by.name}</p>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td><b>Machine #</b></td>

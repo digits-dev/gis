@@ -235,7 +235,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function hook_query_index(&$query)
 	{
-		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER])) {
+		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER, CmsPrivileges::OPERATIONVIEWER])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->where('statuses_id', '!=', Statuses::COLLECTED)
