@@ -1,200 +1,241 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{cbLang("page_title_login")}} : {{Session::get('appname')}}</title>
-    <meta name='generator' content='CRUDBooster'/>
-    <meta name='robots' content='noindex,nofollow'/>
-    <link rel="shortcut icon" href="{{ CRUDBooster::getSetting('favicon')?asset(CRUDBooster::getSetting('favicon')):asset('vendor/crudbooster/assets/logo_crudbooster.png') }}">
-
-    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-    <!-- Bootstrap 3.3.2 -->
-    {{-- <link href="{{asset('vendor/crudbooster/assets/adminlte/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css"/> --}}
-    <!-- Font Awesome Icons -->
-    {{-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/> --}}
-    <!-- Theme style -->
-    {{-- <link href="{{asset('vendor/crudbooster/assets/adminlte/dist/css/AdminLTE.min.css')}}" rel="stylesheet" type="text/css"/> --}}
-    {{-- CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/pos-frontend.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/crudbooster/assets/adminlte/font-awesome/css/font-awesome.min.css') }}">
-    <!-- support rtl-->
-    {{-- @if (in_array(App::getLocale(), ['ar', 'fa']))
-        <link rel="stylesheet" href="//cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css">
-        <link href="{{ asset("vendor/crudbooster/assets/rtl.css")}}" rel="stylesheet" type="text/css"/>
-    @endif --}}
-
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-
-    <link rel='stylesheet' href='{{asset("vendor/crudbooster/assets/css/main.css")}}'/>
-    <style type="text/css">
-        /* .login-page, .register-page {
-            background: {{ CRUDBooster::getSetting("login_background_color")?:'#dddddd'}} url('{{ CRUDBooster::getSetting("login_background_image")?asset(CRUDBooster::getSetting("login_background_image")):asset('vendor/crudbooster/assets/bg_blur3.jpg') }}');
-            color: {{ CRUDBooster::getSetting("login_font_color")?:'#ffffff' }}  !important;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
-        }
-
-        .login-box, .register-box {
-            margin: 2% auto;
-        }
-
-        .login-box-body {
-            box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.8);
-            background: rgba(255, 255, 255, 0.9);
-            color: {{ CRUDBooster::getSetting("login_font_color")?:'#666666' }}  !important;
-        }
-
-        html, body {
-            overflow: hidden;
-        } */
-        
-    </style>
-</head>
-
-<body>
-{{-- 
-<div class="login-box">
-    <div class="login-logo">
-        <a href="{{url('/')}}">
-            <img title='{!!(Session::get('appname') == 'CRUDBooster')?"<b>CRUD</b>Booster":CRUDBooster::getSetting('appname')!!}'
-                src='{{ CRUDBooster::getSetting("logo")?asset(CRUDBooster::getSetting('logo')):asset('vendor/crudbooster/assets/logo_crudbooster.png') }}'
-                style='max-width: 100%;max-height:170px'/>
-        </a>
-    </div><!-- /.login-logo -->
-    <div class="login-box-body">
-
-        @if ( Session::get('message') != '' )
-            <div class='alert alert-warning'>
-                {{ Session::get('message') }}
-            </div>
-        @endif
-
-        <p class='login-box-msg'>{{cbLang("login_message")}}</p>
-        <form autocomplete='off' action="{{ route('postLogin') }}" method="post">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-            
-            @if(!empty(config('services.google')))
-
-                <div style="margin-bottom:10px" class='row'>
-                    <div class='col-xs-12'>
-
-                        <a href='{{route("redirect", 'google')}}' class="btn btn-primary btn-block btn-flat"><i class='fa fa-google'></i>
-                            Google Login</a>
-
-                        <hr>
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="{{ asset('img/logo.png') }}">
+        <title>Gashapon POS Login Page</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ asset('css/pos-frontend.css') }}">
+        <link rel="stylesheet" href="{{ asset('vendor/crudbooster/assets/adminlte/font-awesome/css/font-awesome.min.css') }}">
+        {{-- SWEET ALERT --}}
+        <script src="{{ asset('plugins/sweetalert.js') }}"></script>
+        <style type="text/css">
+            .checkbox-wrapper-12 {
+                position: relative;
+            }
+            .checkbox-wrapper-12 > svg {
+                position: absolute;
+                top: -130%;
+                left: -170%;
+                width: 110px;
+                pointer-events: none;
+            }
+            .checkbox-wrapper-12 * {
+                box-sizing: border-box;
+            }
+            .checkbox-wrapper-12 input[type="checkbox"] {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                -webkit-tap-highlight-color: transparent;
+                cursor: pointer;
+                margin: 0;
+            }
+            .checkbox-wrapper-12 input[type="checkbox"]:focus {
+                outline: 0;
+            }
+            .checkbox-wrapper-12 .cbx {
+                width: 18px;
+                height: 18px;
+                top: calc(50vh - 12px);
+                left: calc(50vw - 12px);
+            }
+            .checkbox-wrapper-12 .cbx input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 18px;
+                height: 18px;
+                border: 2px solid #bfbfc0;
+                border-radius: 50%;
+            }
+            .checkbox-wrapper-12 .cbx label {
+                width: 18px;
+                height: 18px;
+                background: none;
+                border-radius: 50%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                -webkit-filter: url("#goo-12");
+                filter: url("#goo-12");
+                transform: trasnlate3d(0, 0, 0);
+                pointer-events: none;
+            }
+            .checkbox-wrapper-12 .cbx svg {
+                position: absolute;
+                top: 4.5px;
+                left: 3.6px;
+                z-index: 1;
+                pointer-events: none;
+            }
+            .checkbox-wrapper-12 .cbx svg path {
+                stroke: #fff;
+                stroke-width: 3;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-dasharray: 19;
+                stroke-dashoffset: 19;
+                transition: stroke-dashoffset 0.3s ease;
+                transition-delay: 0.2s;
+            }
+            .checkbox-wrapper-12 .cbx input:checked + label {
+                animation: splash-12 0.6s ease forwards;
+            }
+            .checkbox-wrapper-12 .cbx input:checked + label + svg path {
+                stroke-dashoffset: 0;
+            }
+            @-moz-keyframes splash-12 {
+                40% {
+                background: #3b76f2;
+                box-shadow: 0 -18px 0 -8px #3b76f2, 16px -8px 0 -8px #3b76f2, 16px 8px 0 -8px #3b76f2, 0 18px 0 -8px #3b76f2, -16px 8px 0 -8px #3b76f2, -16px -8px 0 -8px #3b76f2;
+                }
+                100% {
+                background: #3b76f2;
+                box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
+                }
+            }
+            @-webkit-keyframes splash-12 {
+                40% {
+                background: #3b76f2;
+                box-shadow: 0 -18px 0 -8px #3b76f2, 16px -8px 0 -8px #3b76f2, 16px 8px 0 -8px #3b76f2, 0 18px 0 -8px #3b76f2, -16px 8px 0 -8px #3b76f2, -16px -8px 0 -8px #3b76f2;
+                }
+                100% {
+                background: #3b76f2;
+                box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
+                }
+            }
+            @-o-keyframes splash-12 {
+                40% {
+                background: #3b76f2;
+                box-shadow: 0 -18px 0 -8px #3b76f2, 16px -8px 0 -8px #3b76f2, 16px 8px 0 -8px #3b76f2, 0 18px 0 -8px #3b76f2, -16px 8px 0 -8px #3b76f2, -16px -8px 0 -8px #3b76f2;
+                }
+                100% {
+                background: #3b76f2;
+                box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
+                }
+            }
+            @keyframes splash-12 {
+                40% {
+                background: #3b76f2;
+                box-shadow: 0 -18px 0 -8px #3b76f2, 16px -8px 0 -8px #3b76f2, 16px 8px 0 -8px #3b76f2, 0 18px 0 -8px #3b76f2, -16px 8px 0 -8px #3b76f2, -16px -8px 0 -8px #3b76f2;
+                }
+                100% {
+                background: #3b76f2;
+                box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
+                }
+            }
+    
+        </style>
+    </head>
+    <body style="height: 100% !important">
+        <section class="login">
+            <form autocomplete='off' action="{{ route('postLogin') }}" method="post">
+                @csrf
+                <div class="login-box">
+                    <div class="store-logo-box">
+                        <div class="store-logo-box-content">
+                            <div class="store-logo-brand">
+                                <img src="{{ asset('img/gashapon_logo_blue.png') }}" alt="">
+                            </div>
+                            <div class="store-logo-link-to-frontend">
+                                <a href="/pos_login">Link to Frontend</a>
+                            </div>
+                            <div class="store-logo-description primary-color">
+                                <p class="fs-40 fw-bold">Inventory System</p>
+                                <p class="fs-30 fw-bold">Backend</p>
+                            </div>
+                            <div class="store-logo-official">
+                                <img src="{{ asset('img/gashapon_official.png') }}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="store-login-box store-login-box-bgc-b">
+                        <div class="store-login-content">
+                            <div class="store-login-title">
+                                <p class="fs-30 fw-bold">Login</p>
+                            </div>
+                            <div class="store-login-inputs">
+                                <input type="email" id="username" autocomplete="off" placeholder="Email" name="email" required>
+                                <label for="username">
+                                    <i class="fa fa-user"></i>
+                                </label>
+                            </div>
+                            <div class="store-login-inputs">
+                                <input type="password" id="lock" autocomplete="off" placeholder="Password" name="password" required>
+                                <label for="lock">
+                                    <i class="fa fa-lock"></i>
+                                </label>
+                            </div>
+                            
+                            <div class="checkbox-container" style="display: flex; gap: 5px; align-items: center; justify-content: flex-end; margin-left: 220px; margin-bottom: 10px;">
+                                <div class="checkbox-wrapper-12">
+                                    <div class="cbx">
+                                        <input id="checkbox-show-pass" type="checkbox"/>
+                                        <label for="checkbox-show-pass"></label>
+                                        <svg width="10" height="9" viewbox="0 0 15 14" fill="none">
+                                        <path d="M2 8.36364L6.23077 12L13 2"></path>
+                                        </svg>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                        <defs>
+                                        <filter id="goo-12">
+                                            <fegaussianblur in="SourceGraphic" stddeviation="4" result="blur"></fegaussianblur>
+                                            <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -7" result="goo-12"></fecolormatrix>
+                                            <feblend in="SourceGraphic" in2="goo-12"></feblend>
+                                        </filter>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <p style="font-size: 13px;">Show Password</p>
+                            </div>
+                            
+                            <div>
+                                <button type="submit" class="login-btn fw-bold">Login</button>
+                            </div>
+                            <div class="fw-bold title-color fs-15">
+                                <p>Forgot the password? 
+                                    <!--<a href="/admin/forgot" class="primary-color cursor-p">Click here</a>-->
+                                     <a id="forgot_pass" class="primary-color cursor-p">{{cbLang("click_here")}}</a>
+                                </p>
+                            </div>
+                            <div class="fw-bold title-color fs-15" style="color: #fe3e3e">
+                                @if ( Session::get('message') != '' )
+                                    <br>
+                                    <p>{{ Session::get('message') }}</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
-            @endif
-            
-            <div class="form-group has-feedback">
-                <input autocomplete='off' type="text" class="form-control" name='email' required placeholder="Email"/>
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input autocomplete='off' type="password" class="form-control" name='password' required placeholder="Password"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-            <div style="margin-bottom:10px" class='row'>
-                <div class='col-xs-12'>
-                    <button type="submit" class="btn btn-primary btn-block btn-flat"><i class='fa fa-lock'></i> {{cbLang("button_sign_in")}}</button>
-                </div>
-            </div>
+            </form>
+        </section>
+        <script>
+            window.onpageshow = function(event) {
+            if (event.persisted) {
+                    location.reload();
+                }
+            };
+            $('#forgot_pass').click(function(event) {
+                Swal.fire({
+                    type: 'info',
+                    text: 'Please contact ISD department!',
+                    title:'Forgot Password',
+                    icon: 'info',
+                    confirmButtonColor: '#3c8dbc',
+                });
+            });
 
-            <div class='row'>
-                <div class='col-xs-12' align="center"><p style="padding:10px 0px 10px 0px">{{cbLang("text_forgot_password")}} <a
-                                href='{{route("getForgot")}}'>{{cbLang("click_here")}}</a></p></div>
-            </div>
-        </form>
+            $('#checkbox-show-pass').on('change', function() {
+                const passwordField = $('#lock');
 
-
-        <br/>
-        <!--a href="#">I forgot my password</a-->
-
-    </div><!-- /.login-box-body -->
-
-</div><!-- /.login-box --> --}}
-
-<section class="login">
-    <form autocomplete='off' action="{{ route('postLogin') }}" method="post">
-        @csrf
-        <div class="login-box">
-            <div class="store-logo-box">
-                <div class="store-logo-box-content">
-                    <div class="store-logo-brand">
-                        <img src="{{ asset('img/gashapon_logo_blue.png') }}" alt="">
-                    </div>
-                    <div class="store-logo-link-to-frontend">
-                        <a href="/pos_login">Link to Frontend</a>
-                    </div>
-                    <div class="store-logo-description primary-color">
-                        <p class="fs-40 fw-bold">Inventory System</p>
-                        <p class="fs-30 fw-bold">Backend</p>
-                    </div>
-                    <div class="store-logo-official">
-                        <img src="{{ asset('img/gashapon_official.png') }}" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="store-login-box store-login-box-bgc-b">
-                <div class="store-login-content">
-                    <div class="store-login-title">
-                        <p class="fs-30 fw-bold">Login</p>
-                    </div>
-                    <div class="store-login-inputs">
-                        <input type="email" id="username" autocomplete="off" placeholder="Email" name="email" required>
-                        <label for="username">
-                            <i class="fa fa-user"></i>
-                        </label>
-                    </div>
-                    <div class="store-login-inputs">
-                        <input type="password" id="lock" autocomplete="off" placeholder="Password" name="password" required>
-                        <label for="lock">
-                            <i class="fa fa-lock"></i>
-                        </label>
-                    </div>
-                    <div>
-                        <button type="submit" class="login-btn fw-bold">Login</button>
-                    </div>
-                    <div class="fw-bold title-color fs-15">
-                        <p>Forgot the password? 
-                            <!--<a href="/admin/forgot" class="primary-color cursor-p">Click here</a>-->
-                             <a id="forgot_pass" class="primary-color cursor-p">{{cbLang("click_here")}}</a>
-                        </p>
-                    </div>
-                    <div class="fw-bold title-color fs-15" style="color: #fe3e3e">
-                        @if ( Session::get('message') != '' )
-                            <br>
-                            <p>{{ Session::get('message') }}</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</section>
-
-<!-- jQuery 2.2.3 -->
-<script src="{{ asset('plugins/sweetalert.js') }}"></script>
-<script src="{{asset('vendor/crudbooster/assets/adminlte/plugins/jQuery/jquery-2.2.3.min.js')}}"></script>
-<!-- Bootstrap 3.4.1 JS -->
-{{-- <script src="{{asset('vendor/crudbooster/assets/adminlte/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script> --}}
-</body>
+                if ($(this).is(':checked')){
+                    passwordField.attr('type', 'text'); // Show password
+                } else {
+                    passwordField.attr('type', 'password'); // Hide password
+                }
+            });
+        </script>
+    </body>
 </html>
-
-<script type="text/javascript">
-    $('#forgot_pass').click(function(event) {
-        Swal.fire({
-            type: 'info',
-            text: 'Please contact ISD department!',
-            title:'Forgot Password',
-            icon: 'info',
-            confirmButtonColor: '#3c8dbc',
-        });
-    });
-</script>
