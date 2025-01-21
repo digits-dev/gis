@@ -19,6 +19,8 @@
 	use Excel;
 	use Maatwebsite\Excel\HeadingRowImport;
 	use App\Imports\CapsulesImport;
+use App\Models\Audit\CollectRrTokenLines;
+use Carbon\Carbon;
 
 	class AdminCapsuleRefillsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -372,6 +374,26 @@
 
 		public function submitCapsuleRefill(Request $request) {
 			$data = $request->all();
+
+			// restriction for capsule refill if machine is in collect token progress
+			$get_serial_number = GashaMachines::where('serial_number', $data['machine_code'])
+				->where('location_id', CRUDBooster::myLocationId())
+				->first();
+
+			$check_machince_in_collect_token = CollectRrTokenLines::with('collectTokenHeader.getBay','collectTokenHeader.getStatus','machineSerial')
+				->where('gasha_machines_id', $get_serial_number->id)
+				->where('line_status', '!=', 13)
+				->whereDate('created_at', Carbon::now()->format('Y-m-d'))
+				->first();
+
+			if (!empty($check_machince_in_collect_token) && in_array($check_machince_in_collect_token->line_status, ['10', '12', '11'])) {
+				return response()->json([
+					'invalid_capsule_refill' => 'Collect Token is in progress, Please contact your immediate head to VOID the ongoing transaction of 
+												 Collect Token for you to proceed in Capsule Refill if this is urgent. If not please wait until the Collect Token is completed.',
+					'collect_token_details' => $check_machince_in_collect_token
+				]);
+			}
+
 			$item_code = $data['item_code'];
 			$machine_serial_number = $data['machine_code'];
 			$machine = GashaMachines::where('serial_number',$machine_serial_number)->first();

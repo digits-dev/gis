@@ -269,6 +269,9 @@ Route::group(['middleware' => ['web','check.user']], function() {
         // SUPER ADMIN EDIT
         Route::get('/getEdit/{id}',[AdminCollectTokenController::class, 'getEdit']);
         Route::post('/postSaveEdit',[AdminCollectTokenController::class, 'saveEdit'])->name('postSuperAdminEdit');
+
+        // void collect token
+        Route::post('/post_void_collect_token',[AdminCollectTokenController::class, 'postVoidCollectToken'])->name('post.void.collectToken');
     });
     
     // NEW COLLECT TOKEN HISTORY

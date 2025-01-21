@@ -22,5 +22,6 @@ class Statuses extends Model
     public const FORCASHIERTURNOVER = 10;
     public const FOROMAPPROVAL = 11;
     public const FORCHECKING = 12;
+    public const VOIDED = 13;
 
 }

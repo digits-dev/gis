@@ -58,7 +58,8 @@ class ExportCollectedTokenHistory implements FromCollection, WithHeadings, WithS
                 'getLocation',
                 'getBay',
             ])->where('reference_number', 'LIKE', '%CLTN-%')
-              ->where('statuses_id', Statuses::COLLECTED);
+              ->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED]);
+            
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query = CollectRrTokens::with([
                 'lines.inventory_capsule_lines.getInventoryCapsule.item',
@@ -66,7 +67,7 @@ class ExportCollectedTokenHistory implements FromCollection, WithHeadings, WithS
                 'getBay',
             ])->where('location_id', CRUDBooster::myLocationId())
               ->where('reference_number', 'LIKE', '%CLTN-%')
-              ->where('statuses_id', Statuses::COLLECTED);
+              ->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED]);
 		}
 
         // dd($this->filterColumn);

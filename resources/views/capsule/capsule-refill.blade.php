@@ -265,7 +265,7 @@
 
     function populateInput(text) {
         $(`input[input-for="${selectedInput}"]`).val(text);
-        console.log(selectedInput, text)
+        // console.log(selectedInput, text)
         if (selectedInput == 'capsule') checkMachinePartner(text);
     }
 
@@ -312,7 +312,7 @@
     }
 
     function processResult(data) {
-        console.log(data);
+        // console.log(data);
         if (data.is_missing) {
             Swal.fire({
                 title: `${data.missing} code not found.`,
@@ -382,7 +382,7 @@
             },
             success: function(res) {
                 const data = JSON.parse(res);
-                console.log(data);
+                // console.log(data);
                 showMachines(data);
             },
             error: function(err) {
@@ -473,8 +473,54 @@
             url: "{{ route('submit_capsule_refill') }}",
             data: formData,
             success: function(res) {
-                const data = JSON.parse(res);
-                processResult(data);
+                if (res.invalid_capsule_refill) {
+                    Swal.fire({
+                        title: `Capsule Refill is Unavailable`,
+                        html: `${res.invalid_capsule_refill}
+                            <br><br>
+                            <small><b>COLLECT TOKEN REFERENCE</b></small>
+                                <table class="table table-bordered" style="font-size: 70%; text-align:center;border-radius: 10px;">
+                                    <thead style="background-color:#3c8dbc;color:white;">
+                                        <tr>
+                                            <th style="text-align:center;font-weight:normal">
+                                                Reference_#
+                                            </th>
+                                            <th style="text-align:center;font-weight:normal">
+                                                Bay
+                                            </th>
+                                            <th style="text-align:center;font-weight:normal">
+                                                Serial_#
+                                            </th>
+                                            <th style="text-align:center;font-weight:normal">
+                                                Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="background-color:#E9DCC9;"">
+                                        <tr>
+                                            <td>
+                                                ${res.collect_token_details.collect_token_header.reference_number}
+                                            </td>
+                                            <td>
+                                                ${res.collect_token_details.collect_token_header.get_bay.name}
+                                            </td>
+                                            <td>
+                                                ${res.collect_token_details.machine_serial.serial_number}
+                                            </td>
+                                            <td>
+                                                ${res.collect_token_details.collect_token_header.get_status.status_description}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `,
+                        icon: 'error',
+                        returnFocus: false,
+                    });
+                } else {
+                    const data = JSON.parse(res);
+                    processResult(data);
+                }
                 $('#save-btn').attr('disabled', false);
             },
             error: function(err) {

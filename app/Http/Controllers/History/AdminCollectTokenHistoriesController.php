@@ -94,13 +94,13 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER, CmsPrivileges::OPERATIONVIEWER])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
-				->where('statuses_id', Statuses::COLLECTED)
+				->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
-				->where('statuses_id', Statuses::COLLECTED)
+				->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}
