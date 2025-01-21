@@ -60,6 +60,8 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$this->col[] = ["label" => "Variance", "name" => "variance"];
 		$this->col[] = ["label" => "Received By", "name" => "received_by", "join" => "cms_users,name"];
 		$this->col[] = ["label" => "Received Date", "name" => "received_at"];
+		$this->col[] = ["label" => "Approved By", "name" => "approved_by", "join" => "cms_users,name"];
+		$this->col[] = ["label" => "Approved Date", "name" => "approved_at"];
 		$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 		$this->col[] = ["label" => "Created Date", "name" => "created_at"];
 		# END COLUMNS DO NOT REMOVE THIS LINE
