@@ -444,11 +444,13 @@ a:hover, a:focus {
             const maxAmount = Number($(e).attr('max-value').replace(/\D/g, ''));
             const currentValue = Number($(e).val().replace(/\D/g, ''));
             
-            const isCorrect = maxAmount >= currentValue;
+            const isCorrect = maxAmount == currentValue;
             if (!isCorrect) {
                 $(e).css('border', '2px solid red');
+                $('#invalid_inv_qty').show();
             } else {
                 $(e).css('border', '');
+                $('#invalid_inv_qty').hide();
             }
             return a && isCorrect;
         }, true)
@@ -484,10 +486,19 @@ a:hover, a:focus {
         $('.swal2-close').trigger('click');
     });
 
+    let max_inv_qty;
+
     $(document).on('submit', '#swal_form', function(){
         event.preventDefault();
 
+        const inputed_qty = $('.qty_input').val();
+        if(inputed_qty != max_inv_qty){
+            alert('Quantity must be equal to current Machine Inventory!');
+            return;
+        }
+        
         const formData = $('form').serialize();
+
         $.ajax({
             type: 'POST',
             url: "{{ route('submit_capsule_return') }}",
@@ -556,6 +567,8 @@ a:hover, a:focus {
                             let swal_content = $('.return_quantity_content').prop('outerHTML');
                             let additionalContent = $(`
                                 <form type="POST" id="swal_form">
+                                    
+                                    <p> <small id="invalid_inv_qty" style="display: none; color:red; font-weight: 600">Quantity must be equal to current Machine Inventory!</small></p>
                                     <input class="hidden" value="{{ csrf_token() }}">
                                     <div class="swal-inputs">
                                         <label>Jan #</label>
@@ -587,6 +600,9 @@ a:hover, a:focus {
                                     clonedInput.attr({'name':'qty_'+ic.item_code, 'max-value': maxAmount});
                                     clonedDiv.append(clonedLabel, clonedInput);
                                     additionalContent.append(clonedDiv);
+
+                                    max_inv_qty = maxAmount;
+
                                 })
                             }else{
                                 const no_item_found = $(`

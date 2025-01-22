@@ -408,7 +408,7 @@
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Bay</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->getBay->name}}" disabled>
+                    <input type="text" id="bay_header" style="border-radius: 5px;" value="{{$detail->getBay->name}}" disabled>
                 </div>
                 
             </div>
@@ -904,10 +904,18 @@
     $('#void_btn').on('click', function(e) {
         e.preventDefault(); 
         const form = document.getElementById('void_cashier_turnover_collect_token');
+        const bay_header = $('#bay_header').val();
 
         if (form.checkValidity()) {
             Swal.fire({
-                title: "Are you sure you want to VOID this Collect Token?",
+                title: `<h3>Are you sure you want to <b>VOID</b> ${bay_header} <br> Collect Token? </h3>`,
+                html: `
+                        <p>
+                            <b style="color:darkorange"> <i class="fa fa-exclamation-circle"></i> NOTE:</b> Before Voiding Collect Token transaction please make sure that
+                            your are advised to do it, this is only an emergency action to take if
+                            there's an isuue that needed to be solve. If none please don't VOID the transaction.
+                        </p>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#FF5733',

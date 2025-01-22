@@ -209,7 +209,7 @@
 
     .swal2-popup {
         width: 500px !important; /* Set a larger width */
-        height: 300px !important;
+        /* height: 300px !important; */
     }
     .swal2-title {
         font-size: 24px !important; /* Customize the title size */
@@ -458,7 +458,7 @@
                     </div>
                     <div class="input-container">
                         <div style="font-weight: 600">Bay</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getBay->name}}" disabled>
+                        <input type="text" id="bay_header" style="border-radius: 5px;" value="{{$collected_tokens->getBay->name}}" disabled>
                     </div>
                     
                 </div>
@@ -757,7 +757,7 @@ $('.content-header').hide();
     $('#btn-approve').on('click', function () {
         $('#action_type').val('approve');
         Swal.fire({
-            title: "Are you sure you want to Approve?",
+            title: "Are you sure you want <br> to Approve? <br><br>",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#15a321',
@@ -778,7 +778,7 @@ $('.content-header').hide();
     $('#btn-reject').on('click', function () {
         $('#action_type').val('reject');
         Swal.fire({
-            title: "Are you sure you want to Return to CSA?",
+            title: "Are you sure you want to Return <br> this to CSA? <br> <br>",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#da2404',
@@ -799,10 +799,18 @@ $('.content-header').hide();
     $('#void_btn').on('click', function(e) {
         e.preventDefault(); 
         const form = document.getElementById('void_cashier_turnover_collect_token');
+        const bay_header = $('#bay_header').val();
 
         if (form.checkValidity()) {
             Swal.fire({
-                title: "Are you sure you want to VOID this Collect Token?",
+                title: `<h3>Are you sure you want to <b>VOID</b> ${bay_header} <br> Collect Token? </h3>`,
+                html: `
+                        <p>
+                            <b style="color:darkorange"> <i class="fa fa-exclamation-circle"></i> NOTE:</b> Before Voiding Collect Token transaction please make sure that
+                            your are advised to do it, this is only an emergency action to take if
+                            there's an isuue that needed to be solve. <br> If none please don't VOID the transaction.
+                        </p>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#FF5733',
