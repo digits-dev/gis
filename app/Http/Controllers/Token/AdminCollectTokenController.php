@@ -119,19 +119,19 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			];
 		}
 
-		if (CRUDBooster::isSuperadmin() || in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CASHIER,CmsPrivileges::STOREHEAD])) {
+		if (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == CmsPrivileges::CSA) {
 			$this->addaction[] = [
 				'title' => 'Edit',
 				'url' => CRUDBooster::mainpath('getEdit/[id]'),
 				'icon' => 'fa fa-pencil',
 				'color' => 'danger',
-				'showIf' => "[statuses_id] == '" . Statuses::FORCHECKING . "' || [statuses_id] == '" . Statuses::FORCASHIERTURNOVER . "'"
+				'showIf' => "[statuses_id] == '" . Statuses::FORCSAEDIT . "'"
 			];
 		}
 	}
 
 	public function getEdit($id){
-		if (CRUDBooster::isSuperadmin() || in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
+		if (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == CmsPrivileges::CSA) {
 			$data = [];
 			$data['page_title'] = 'Collect Token Details';
 			$data['page_icon'] = 'fa fa-circle-o';
@@ -195,6 +195,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			// update collect token header
 			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FORCASHIERTURNOVER,
 				'collected_qty' => $validated_data['header_collected_qty'],
 				'received_qty' => $validated_data['header_received_qty'],
 				'variance' => $validated_data['header_variace'],
@@ -205,6 +206,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$updatedCount = 0;
 			foreach ($Validated_lines as $per_item) {
 				$updated = $collectTokenHeader->lines()->where('id', $per_item['collect_token_lines_id'])->update([
+				'line_status' => Statuses::FORCASHIERTURNOVER,
 					'no_of_token' => $per_item['collect_token_lines_no_of_token'],
 					'qty' => $per_item['collect_token_lines_collected_qty'],
 					'variance' => $per_item['collect_token_lines_variance'],
@@ -783,7 +785,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		else {
 			// rejected
 			$collectTokenHeader->update([
-				'statuses_id' => Statuses::FORCHECKING,
+				'statuses_id' => Statuses::FORCSAEDIT,
 				'rejected_by' => CRUDBooster::myId(),
 				'rejected_at' => now(),
 			]);

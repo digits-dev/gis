@@ -582,7 +582,7 @@
     <div class="form-button panel-footer" style="margin-top: 15px;" >
         <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
         <button class="btn-approve pull-right" id="btn-approve"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Approve</button>
-        <button class="btn-reject pull-right" id="btn-reject"  style="margin-right: 10px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Retrun To Cashier</button>
+        <button class="btn-reject pull-right" id="btn-reject"  style="margin-right: 10px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Retrun To CSA</button>
         <form method="POST" action="{{route('post.void.collectToken')}}" id="void_cashier_turnover_collect_token">
             @csrf
             <input type="hidden" name="collected_token_header_id" id="collected_token_header_id" value="{{$collected_tokens->id}}" readonly>
@@ -778,7 +778,7 @@ $('.content-header').hide();
     $('#btn-reject').on('click', function () {
         $('#action_type').val('reject');
         Swal.fire({
-            title: "Are you sure you want to Return to Cashier?",
+            title: "Are you sure you want to Return to CSA?",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#da2404',

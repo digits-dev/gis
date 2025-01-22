@@ -23,5 +23,6 @@ class Statuses extends Model
     public const FOROMAPPROVAL = 11;
     public const FORCHECKING = 12;
     public const VOIDED = 13;
+    public const FORCSAEDIT = 14;
 
 }

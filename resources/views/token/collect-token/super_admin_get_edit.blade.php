@@ -262,19 +262,15 @@
             <div class="inputs-container" style="margin-bottom: 10px;">
                 <div class="input-container">
                     <div style="font-weight: 600">Collected Qty</div>
-                    <input type="text" name="header_collected_qty" style="border-radius: 5px;" value="{{$detail->collected_qty}}">
+                    <input type="text" readonly name="header_collected_qty" class="header_collected_qty" style="border-radius: 5px;" value="{{$detail->collected_qty}}">
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Received Qty</div>
-                    <input type="text" name="header_received_qty" style="border-radius: 5px;" value="{{$detail->received_qty}}">
+                    <input type="text" readonly name="header_received_qty" class="header_received_qty" style="border-radius: 5px;" value="{{$detail->received_qty}}">
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Variance</div>
-                        <select style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC" name="header_variace">
-                            <option value="Yes" {{ $detail->variance == 'Yes' ? 'selected' : '' }}>Yes</option>
-                            <option value="No" {{ $detail->variance == 'No' ? 'selected' : '' }}>No</option>
-                        </select>
-                        
+                        <input type="text" style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC" name="header_variace" class="header_variace" value="{{$detail->variance}}" readonly> 
                 </div>
                 
             </div>
@@ -300,7 +296,7 @@
                     <tbody>
                         @foreach ($detail->lines as $perLine)
                             @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
-                                <tr>
+                                <tr data-collect_token_lines_no_of_token="{{$perLine->no_of_token}}">
                                     <td>
                                         <span class="serial_number">{{$perLine->machineSerial->serial_number}}</span>
                                     </td>
@@ -321,23 +317,23 @@
                                     </td>
                                     <td>
                                         <span class="variance">{{$perLine->variance}}</span>
-                                        <input type="text" value="{{$perLine->variance}}" name="collect_token_lines_variance[]" class="collect_token_lines_variance" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->variance}}" name="collect_token_lines_variance[]" class="collect_token_lines_variance" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="projectedCapsuleSales">{{$perLine->projected_capsule_sales}}</span>
-                                        <input type="text" value="{{$perLine->projected_capsule_sales}}" name="collect_token_lines_projected_capsule_sales[]" class="collect_token_lines_projected_capsule_sales" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->projected_capsule_sales}}" name="collect_token_lines_projected_capsule_sales[]" class="collect_token_lines_projected_capsule_sales" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="currentMachineInventory">{{$perLine->current_capsule_inventory}}</span>
-                                        <input type="text" value="{{$perLine->current_capsule_inventory}}" name="collect_token_lines_current_capsule_inventory[]" class="collect_token_lines_current_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->current_capsule_inventory}}" name="collect_token_lines_current_capsule_inventory[]" class="collect_token_lines_current_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="ActualCapsuleInventory">{{$perLine->actual_capsule_inventory}}</span>
-                                        <input type="text" value="{{$perLine->actual_capsule_inventory}}" name="collect_token_lines_actual_capsule_inventory[]" class="collect_token_lines_actual_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->actual_capsule_inventory}}" name="collect_token_lines_actual_capsule_inventory[]" class="collect_token_lines_actual_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="actualCapsuleSales">{{$perLine->actual_capsule_sales}}</span>
-                                        <input type="text" value="{{$perLine->actual_capsule_sales}}" name="collect_token_lines_actual_capsule_sales[]" class="collect_token_lines_actual_capsule_sales" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->actual_capsule_sales}}" name="collect_token_lines_actual_capsule_sales[]" class="collect_token_lines_actual_capsule_sales" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="variance_type
@@ -350,12 +346,7 @@
                                             @endif
                                         "
                                         >{{$perLine->variance_type}}</span>
-                                        <select style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC; display:none;" name="collect_token_lines_variance_type[]" class="collect_token_lines_variance_type">
-                                            <option value="" {{ is_null($perLine->variance_type) || $perLine->variance_type === '' ? 'selected' : '' }}>-- Select --</option>
-                                            <option value="No Variance" {{ $perLine->variance_type == 'No Variance' ? 'selected' : '' }}>No Variance</option>
-                                            <option value="Short" {{ $perLine->variance_type == 'Short' ? 'selected' : '' }}>Short</option>
-                                            <option value="Over" {{ $perLine->variance_type == 'Over' ? 'selected' : '' }}>Over</option>
-                                        </select>
+                                        <input type="text" style="display: none; border-radius: 10px; text-align:center; background: transparent; border: none;outline:none" name="collect_token_lines_variance_type[]" class="collect_token_lines_variance_type" value="{{$perLine->variance_type}}">
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-success edit-btn" style="border-radius: 20%"> 
@@ -432,6 +423,27 @@
         });
     });
 
+    $('#confirm_collecttoken_tbl').on('input', '.collect_token_lines_collected_qty', function() {
+        const tokenCollected = $(this).val();
+        const NoOfToken = $(this).closest('tr').data('collect_token_lines_no_of_token');
+        
+        // variance computations
+        const divisionResult = tokenCollected / NoOfToken;
+        const ceilingResult = Math.ceil(divisionResult);
+        const multiplicationResult = ceilingResult * NoOfToken;
+        const finalResult = tokenCollected - multiplicationResult;
+
+        console.log('new variance: ' finalResult);
+        
+        //projected sales computation
+        const ps_division_result = tokenCollected / NoOfToken;
+        const ps_projected_sales = Math.ceil(ps_division_result);
+
+        console.log('new projected sales: ' ps_projected_sales);
+
+        
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
 
         function updateTotals() {
@@ -465,7 +477,21 @@
                 totalActualCapsuleSales += actualCapsuleSales;
             });
 
+
             // Update the footer with the totals
+            document.querySelector('.header_collected_qty').value = totalTokenCollected.toFixed();
+            if ($('.header_received_qty').val() != null && $('.header_received_qty').val() != "") {
+                document.querySelector('.header_received_qty').value = totalTokenCollected.toFixed();
+            }
+
+            if(totalVariance > 0){
+                document.querySelector('.header_variace').value = 'Yes';
+            }
+
+            if(totalVariance == 0){
+                document.querySelector('.header_variace').value = 'No';
+            }
+
             document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
             document.querySelector('.total_variance').textContent = totalVariance.toFixed();
             document.querySelector('.total_projected_capsule_sale').textContent = totalProjectedCapsuleSales.toFixed();
@@ -558,8 +584,6 @@
             $input.prop('disabled', true).hide();
         } else {
             $input.prop('disabled', false).show();
-
-            //Sample
         }
     }
 
