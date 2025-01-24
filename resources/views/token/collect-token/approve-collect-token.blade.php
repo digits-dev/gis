@@ -808,7 +808,7 @@ $('.content-header').hide();
                         <p>
                             <b style="color:darkorange"> <i class="fa fa-exclamation-circle"></i> NOTE:</b> Before Voiding Collect Token transaction please make sure that
                             your are advised to do it, this is only an emergency action to take if
-                            there's an isuue that needed to be solve. <br> If none please don't VOID the transaction.
+                            there's an issue that needed to be solve. <br> If none please don't VOID the transaction.
                         </p>
                 `,
                 icon: 'warning',
