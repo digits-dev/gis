@@ -387,16 +387,16 @@ a:hover, a:focus {
         (decodedText, decodedResult) => {
             html5QrCode.stop();
             // html5QrCode = null;
-            console.log(decodedText);
+            // console.log(decodedText);
             populateInput(decodedText);
             $('#reader-wrapper').hide();
             
         },
         (errorMessage) => {
-            console.log(errorMessage);
+            alert(errorMessage);
         })
         .catch((err) => {
-            console.log(err);
+            alert(err);
         });
 
     }
@@ -444,11 +444,13 @@ a:hover, a:focus {
             const maxAmount = Number($(e).attr('max-value').replace(/\D/g, ''));
             const currentValue = Number($(e).val().replace(/\D/g, ''));
             
-            const isCorrect = maxAmount >= currentValue;
+            const isCorrect = maxAmount == currentValue;
             if (!isCorrect) {
                 $(e).css('border', '2px solid red');
+                $('#invalid_inv_qty').show();
             } else {
                 $(e).css('border', '');
+                $('#invalid_inv_qty').hide();
             }
             return a && isCorrect;
         }, true)
@@ -484,16 +486,25 @@ a:hover, a:focus {
         $('.swal2-close').trigger('click');
     });
 
+    let max_inv_qty;
+
     $(document).on('submit', '#swal_form', function(){
         event.preventDefault();
 
+        const inputed_qty = $('.qty_input').val();
+        if(inputed_qty != max_inv_qty){
+            alert('Quantity must be equal to current Machine Inventory!');
+            return;
+        }
+        
         const formData = $('form').serialize();
+
         $.ajax({
             type: 'POST',
             url: "{{ route('submit_capsule_return') }}",
             data: formData,
             success: function(res) {
-                console.log(res.fail);
+                // console.log(res.fail);
 
                 if(res.fail){
                     Swal.fire({
@@ -514,7 +525,7 @@ a:hover, a:focus {
 
             },
             error: function(err) {
-                console.log(err);
+                alert(err);
             }
         });
     })
@@ -556,6 +567,8 @@ a:hover, a:focus {
                             let swal_content = $('.return_quantity_content').prop('outerHTML');
                             let additionalContent = $(`
                                 <form type="POST" id="swal_form">
+                                    
+                                    <p> <small id="invalid_inv_qty" style="display: none; color:red; font-weight: 600">Quantity must be equal to current Machine Inventory!</small></p>
                                     <input class="hidden" value="{{ csrf_token() }}">
                                     <div class="swal-inputs">
                                         <label>Jan #</label>
@@ -587,6 +600,9 @@ a:hover, a:focus {
                                     clonedInput.attr({'name':'qty_'+ic.item_code, 'max-value': maxAmount});
                                     clonedDiv.append(clonedLabel, clonedInput);
                                     additionalContent.append(clonedDiv);
+
+                                    max_inv_qty = maxAmount;
+
                                 })
                             }else{
                                 const no_item_found = $(`
@@ -611,7 +627,7 @@ a:hover, a:focus {
                         }
                     },
                     error: function(err) {
-                        console.log(err);
+                        alert(err);
                     }
                 });
 
@@ -619,8 +635,54 @@ a:hover, a:focus {
         });
 
         function validateGashaMachines(data){
-            console.log(data);
-            if(data.not_exist && ($('#gasha_machine').val() != '' )){
+            // console.log(data);
+            if(data.invalid_capsule_return && ($('#gasha_machine').val() != '' )){
+                
+                Swal.fire({
+                    title: `Capsule Return is Unavailable`,
+                    html: `${data.invalid_capsule_return}
+                           <br><br>
+                           <small><b>COLLECT TOKEN REFERENCE</b></small>
+                            <table class="table table-bordered" style="font-size: 70%; text-align:center;border-radius: 10px;">
+                                <thead style="background-color:#3c8dbc;color:white;">
+                                    <tr>
+                                        <th style="text-align:center;font-weight:normal">
+                                            Reference_#
+                                        </th>
+                                        <th style="text-align:center;font-weight:normal">
+                                            Bay
+                                        </th>
+                                        <th style="text-align:center;font-weight:normal">
+                                            Serial_#
+                                        </th>
+                                        <th style="text-align:center;font-weight:normal">
+                                            Status
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody style="background-color:#E9DCC9;"">
+                                    <tr>
+                                        <td>
+                                            ${data.collect_token_details.collect_token_header.reference_number}
+                                        </td>
+                                        <td>
+                                            ${data.collect_token_details.collect_token_header.get_bay.name}
+                                        </td>
+                                        <td>
+                                            ${data.collect_token_details.machine_serial.serial_number}
+                                        </td>
+                                        <td>
+                                            ${data.collect_token_details.collect_token_header.get_status.status_description}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                           `,
+                    icon: 'error',
+                    returnFocus: false,
+                });
+                $('#save-btn').attr('disabled', true)
+            }else if(data.not_exist && ($('#gasha_machine').val() != '' )){
                 Swal.fire({
                     title: `Gasha Machine not existing.`,
                     icon: 'error',

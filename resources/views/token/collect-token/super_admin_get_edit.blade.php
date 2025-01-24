@@ -262,19 +262,15 @@
             <div class="inputs-container" style="margin-bottom: 10px;">
                 <div class="input-container">
                     <div style="font-weight: 600">Collected Qty</div>
-                    <input type="text" name="header_collected_qty" style="border-radius: 5px;" value="{{$detail->collected_qty}}">
+                    <input type="text" readonly name="header_collected_qty" class="header_collected_qty" style="border-radius: 5px;" value="{{$detail->collected_qty}}">
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Received Qty</div>
-                    <input type="text" name="header_received_qty" style="border-radius: 5px;" value="{{$detail->received_qty}}">
+                    <input type="text" readonly name="header_received_qty" class="header_received_qty" style="border-radius: 5px;" value="{{$detail->received_qty}}">
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Variance</div>
-                        <select style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC" name="header_variace">
-                            <option value="Yes" {{ $detail->variance == 'Yes' ? 'selected' : '' }}>Yes</option>
-                            <option value="No" {{ $detail->variance == 'No' ? 'selected' : '' }}>No</option>
-                        </select>
-                        
+                        <input type="text" style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC" name="header_variace" class="header_variace" value="{{$detail->variance}}" readonly> 
                 </div>
                 
             </div>
@@ -283,6 +279,7 @@
                 <table id="confirm_collecttoken_tbl">
                     <thead>
                         <tr>
+                            <th>-</th>
                             <th>Machine #</th>
                             <th>JAN #</th>
                             <th>Item Description</th>
@@ -294,13 +291,20 @@
                             <th>Actual Capsule Inventory</th>
                             <th>Actual Capsule Sales</th>
                             <th>Variance Type</th>
-                            <th>-</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($detail->lines as $perLine)
                             @foreach ($perLine->inventory_capsule_lines as $capsuleLine)
-                                <tr>
+                                <tr 
+                                    data-collect_token_lines_no_of_token="{{$perLine->no_of_token}}"
+                                    data-collect_token_lines_current_capsule_inventory="{{$perLine->current_capsule_inventory}}"
+                                >
+                                    <td>
+                                        <button type="button" class="btn btn-success edit-btn" style="border-radius: 20%"> 
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                    </td>
                                     <td>
                                         <span class="serial_number">{{$perLine->machineSerial->serial_number}}</span>
                                     </td>
@@ -312,32 +316,37 @@
                                     </td> 
                                     <td>
                                         <span class="no_of_token">{{$perLine->no_of_token}}</span>
-                                        <input type="text" value="{{$perLine->no_of_token}}" name="collect_token_lines_no_of_token[]" class="collect_token_lines_no_of_token" style="border-radius: 7px; text-align:center;display:none;">
+                                        @if(CRUDBooster::isSuperadmin())
+                                            <input type="text" value="{{$perLine->no_of_token}}" name="collect_token_lines_no_of_token[]" class="collect_token_lines_no_of_token" style="border-radius: 7px; text-align:center;display:none;">
+                                        @elseif(!CRUDBooster::isSuperadmin())
+                                            <input type="text" value="{{$perLine->no_of_token}}" name="collect_token_lines_no_of_token[]" class="collect_token_lines_no_of_token" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none;" readonly>
+                                        @endif
                                         <input type="hidden" value="{{$perLine->id}}" name="collect_token_lines_id[]" class="collect_token_lines_no_of_token" style="border-radius: 7px; text-align:center;display:none;" readonly>
                                     </td>
                                     <td>
                                         <span class="tokenCollected">{{$perLine->qty}}</span>
-                                        <input type="text" value="{{$perLine->qty}}" name="collect_token_lines_collected_qty[]" class="collect_token_lines_collected_qty" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="hidden" class="default_token_collected_value" value="{{$perLine->qty}}" >
+                                        <input type="text" value="{{$perLine->qty}}" name="collect_token_lines_collected_qty[]" class="collect_token_lines_collected_qty" style="border-radius: 7px; text-align:center;display:none;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" autocomplete="off" required>
                                     </td>
                                     <td>
                                         <span class="variance">{{$perLine->variance}}</span>
-                                        <input type="text" value="{{$perLine->variance}}" name="collect_token_lines_variance[]" class="collect_token_lines_variance" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->variance}}" name="collect_token_lines_variance[]" class="collect_token_lines_variance" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="projectedCapsuleSales">{{$perLine->projected_capsule_sales}}</span>
-                                        <input type="text" value="{{$perLine->projected_capsule_sales}}" name="collect_token_lines_projected_capsule_sales[]" class="collect_token_lines_projected_capsule_sales" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->projected_capsule_sales}}" name="collect_token_lines_projected_capsule_sales[]" class="collect_token_lines_projected_capsule_sales" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="currentMachineInventory">{{$perLine->current_capsule_inventory}}</span>
-                                        <input type="text" value="{{$perLine->current_capsule_inventory}}" name="collect_token_lines_current_capsule_inventory[]" class="collect_token_lines_current_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->current_capsule_inventory}}" name="collect_token_lines_current_capsule_inventory[]" class="collect_token_lines_current_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="ActualCapsuleInventory">{{$perLine->actual_capsule_inventory}}</span>
-                                        <input type="text" value="{{$perLine->actual_capsule_inventory}}" name="collect_token_lines_actual_capsule_inventory[]" class="collect_token_lines_actual_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->actual_capsule_inventory}}" name="collect_token_lines_actual_capsule_inventory[]" class="collect_token_lines_actual_capsule_inventory" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="actualCapsuleSales">{{$perLine->actual_capsule_sales}}</span>
-                                        <input type="text" value="{{$perLine->actual_capsule_sales}}" name="collect_token_lines_actual_capsule_sales[]" class="collect_token_lines_actual_capsule_sales" style="border-radius: 7px; text-align:center;display:none;">
+                                        <input type="text" value="{{$perLine->actual_capsule_sales}}" name="collect_token_lines_actual_capsule_sales[]" class="collect_token_lines_actual_capsule_sales" style="border-radius: 7px; text-align:center;display:none;background: transparent; border: none;outline:none" readonly>
                                     </td>
                                     <td>
                                         <span class="variance_type
@@ -350,17 +359,17 @@
                                             @endif
                                         "
                                         >{{$perLine->variance_type}}</span>
-                                        <select style="border-radius: 5px;width: 100%;padding: 8px;box-sizing: border-box;border: 1px solid #3C8DBC;outline-color: #3C8DBC; display:none;" name="collect_token_lines_variance_type[]" class="collect_token_lines_variance_type">
-                                            <option value="" {{ is_null($perLine->variance_type) || $perLine->variance_type === '' ? 'selected' : '' }}>-- Select --</option>
-                                            <option value="No Variance" {{ $perLine->variance_type == 'No Variance' ? 'selected' : '' }}>No Variance</option>
-                                            <option value="Short" {{ $perLine->variance_type == 'Short' ? 'selected' : '' }}>Short</option>
-                                            <option value="Over" {{ $perLine->variance_type == 'Over' ? 'selected' : '' }}>Over</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-success edit-btn" style="border-radius: 20%"> 
-                                            <i class="fa fa-pencil"></i>
-                                        </button>
+                                        <input type="text" style="display: none; border-radius: 10px; text-align:center;" 
+                                                name="collect_token_lines_variance_type[]" 
+                                                class="collect_token_lines_variance_type 
+                                                        @if ($perLine->variance_type == 'No Variance') 
+                                                            no-variance-type
+                                                        @elseif ($perLine->variance_type == 'Short') 
+                                                            short-type
+                                                        @elseif ($perLine->variance_type == 'Over') 
+                                                            over-type
+                                                        @endif" 
+                                                value="{{$perLine->variance_type}}">
                                     </td>
                                 </tr>
                             @endforeach
@@ -368,7 +377,7 @@
                     </tbody>
                     <tfoot style="font-weight:700">
                         <tr>
-                            <td colspan="4"><b>Total</b></td>
+                            <td colspan="5"><b>Total</b></td>
                             <td class="total_token_collected"></td>
                             <td class="total_variance"></td>
                             <td class="total_projected_capsule_sale"></td>
@@ -405,8 +414,8 @@
         });
 
         $('#auto-resize-textarea').on('input', function() {
-            $(this).css('height', 'auto'); // Reset height
-            $(this).css('height', this.scrollHeight + 'px'); // Set to scroll height
+            $(this).css('height', 'auto'); 
+            $(this).css('height', this.scrollHeight + 'px'); 
         });
     });
 
@@ -432,74 +441,133 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    $('#confirm_collecttoken_tbl').on('input', '.collect_token_lines_collected_qty', function() {
+        const tokenCollected = parseFloat($(this).val()) || 0;  
+        const NoOfToken = $(this).closest('tr').data('collect_token_lines_no_of_token');
+        const current_machine_inventory = $(this).closest('tr').data('collect_token_lines_current_capsule_inventory');
 
-        function updateTotals() {
-            let totalTokenCollected = 0;
-            let totalVariance = 0;
-            let totalProjectedCapsuleSales = 0;
-            let totalCurrentCapsuleInventory = 0;
-            let totalActualCapsuleInventory = 0;
-            let totalActualCapsuleSales = 0;
+        // Variance computation
+        const divisionResult = tokenCollected / NoOfToken;
+        const ceilingResult = Math.ceil(divisionResult);
+        const multiplicationResult = ceilingResult * NoOfToken;
+        const finalResult = tokenCollected - multiplicationResult;
+        
+        // Projected sales computation
+        const ps_division_result = tokenCollected / NoOfToken;
+        const ps_projected_sales = Math.ceil(ps_division_result);
 
-            let rows = document.querySelectorAll('table tbody tr');
-            
-            rows.forEach(row => {
-                let tokenCollected = parseFloat(row.querySelector('.collect_token_lines_collected_qty')?.value || 0);
-                let variance = parseFloat(row.querySelector('.collect_token_lines_variance')?.value || 0);
-                let projectedCapsuleSales = parseFloat(row.querySelector('.collect_token_lines_projected_capsule_sales')?.value || 0);
-                let currentMachineInventory = parseFloat(row.querySelector('.collect_token_lines_current_capsule_inventory')?.value || 0);
-                let actualCapsuleInventory = parseFloat(row.querySelector('.collect_token_lines_actual_capsule_inventory')?.value || 0);
-                let actualCapsuleSales = parseFloat(row.querySelector('.collect_token_lines_actual_capsule_sales')?.value || 0);
+        // Actual capsule inventory computation
+        const actual_capsule_inventory = current_machine_inventory - ps_projected_sales;
 
-                // If actualCapsuleSales is 0, use projectedCapsuleSales for calculation
-                if (variance === 0 && actualCapsuleSales === 0) {
-                    actualCapsuleSales = projectedCapsuleSales;
-                }
+        // Actual capsule sales computation
+        const as_actual_capsule_sales = current_machine_inventory - actual_capsule_inventory;
+        
+        // Update each row values
+        $(this).closest('tr').find('.collect_token_lines_variance').val(finalResult);
+        $(this).closest('tr').find('.collect_token_lines_projected_capsule_sales').val(ps_projected_sales);
+        $(this).closest('tr').find('.collect_token_lines_actual_capsule_inventory').val(actual_capsule_inventory);
+        $(this).closest('tr').find('.collect_token_lines_actual_capsule_sales').val(as_actual_capsule_sales);
 
-                totalTokenCollected += tokenCollected;
-                totalVariance += variance;
-                totalProjectedCapsuleSales += projectedCapsuleSales;
-                totalCurrentCapsuleInventory += currentMachineInventory;
-                totalActualCapsuleInventory += actualCapsuleInventory;
-                totalActualCapsuleSales += actualCapsuleSales;
-            });
-
-            // Update the footer with the totals
-            document.querySelector('.total_token_collected').textContent = totalTokenCollected.toFixed();
-            document.querySelector('.total_variance').textContent = totalVariance.toFixed();
-            document.querySelector('.total_projected_capsule_sale').textContent = totalProjectedCapsuleSales.toFixed();
-            document.querySelector('.total_current_capsule_inventory').textContent = totalCurrentCapsuleInventory.toFixed();
-            document.querySelector('.total_actual_capsule_inventory').textContent = totalActualCapsuleInventory.toFixed();
-            document.querySelector('.total_actual_capsule_sales').textContent = totalActualCapsuleSales.toFixed();
+        // Update variance type
+        let statusText = "";
+        if (finalResult == 0) {
+            statusText = "No Variance";
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('short-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('over-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').addClass('no-variance-type');
+        } else if (tokenCollected < (as_actual_capsule_sales * NoOfToken)) {
+            statusText = "Short";
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('no-variance-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('over-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').addClass('short-type');
+        } else if (tokenCollected > (as_actual_capsule_sales * NoOfToken)) {
+            statusText = "Over";
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('no-variance-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').removeClass('short-type');
+            $(this).closest('tr').find('.collect_token_lines_variance_type').addClass('over-type');
         }
+        $(this).closest('tr').find('.collect_token_lines_variance_type').val(statusText);
 
+        // Update totals after the row changes
         updateTotals();
+    });
 
-        let debounceTimer;
-        function debouncedUpdateTotals() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(updateTotals, 100); 
-        }
+    // Function to update the totals in footer
+    function updateTotals() {
+        let totalTokenCollected = 0;
+        let totalVariance = 0;
+        let totalProjectedCapsuleSales = 0;
+        let totalCurrentCapsuleInventory = 0;
+        let totalActualCapsuleInventory = 0;
+        let totalActualCapsuleSales = 0;
+        let varianceArray = [];
 
-        document.querySelectorAll('.collect_token_lines_collected_qty').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
+        $('#confirm_collecttoken_tbl tbody tr').each(function() {
+            let tokenCollected = parseFloat($(this).find('.collect_token_lines_collected_qty').val()) || 0;
+            let variance = parseFloat($(this).find('.collect_token_lines_variance').val()) || 0;
+            let projectedCapsuleSales = parseFloat($(this).find('.collect_token_lines_projected_capsule_sales').val()) || 0;
+            let currentMachineInventory = parseFloat($(this).find('.collect_token_lines_current_capsule_inventory').val()) || 0;
+            let actualCapsuleInventory = parseFloat($(this).find('.collect_token_lines_actual_capsule_inventory').val()) || 0;
+            let actualCapsuleSales = parseFloat($(this).find('.collect_token_lines_actual_capsule_sales').val()) || 0;
+
+            // If actualCapsuleSales is 0, use projectedCapsuleSales for calculation
+            if (variance === 0 && actualCapsuleSales === 0) {
+                actualCapsuleSales = projectedCapsuleSales;
+            }
+
+            varianceArray.push(variance);
+
+            totalTokenCollected += tokenCollected;
+            totalVariance += variance;
+            totalProjectedCapsuleSales += projectedCapsuleSales;
+            totalCurrentCapsuleInventory += currentMachineInventory;
+            totalActualCapsuleInventory += actualCapsuleInventory;
+            totalActualCapsuleSales += actualCapsuleSales;
         });
-        document.querySelectorAll('.collect_token_lines_variance').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
-        });
-        document.querySelectorAll('.collect_token_lines_projected_capsule_sales').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
-        });
-        document.querySelectorAll('.collect_token_lines_current_capsule_inventory').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
-        });
-        document.querySelectorAll('.collect_token_lines_actual_capsule_inventory').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
-        });
-        document.querySelectorAll('.collect_token_lines_actual_capsule_sales').forEach(input => {
-            input.addEventListener('input', debouncedUpdateTotals);
-        });
+
+        // Update the footer with the totals
+        $('.total_token_collected').text(totalTokenCollected.toFixed());
+        $('.total_variance').text(totalVariance.toFixed());
+        $('.total_projected_capsule_sale').text(totalProjectedCapsuleSales.toFixed());
+        $('.total_current_capsule_inventory').text(totalCurrentCapsuleInventory.toFixed());
+        $('.total_actual_capsule_inventory').text(totalActualCapsuleInventory.toFixed());
+        $('.total_actual_capsule_sales').text(totalActualCapsuleSales.toFixed());
+        
+        // Update headers fields
+        $('.header_collected_qty').val(totalTokenCollected.toFixed());
+        $('.header_received_qty').val(totalTokenCollected.toFixed());
+        $('.header_variace').val(varianceArray.some(value => value !== 0) ? 'Yes' : 'No');
+        
+    }
+
+    // Trigger to update total on page load by default 
+    updateTotals();
+
+    // debounce to reduce the number of times the totals are recalculated when inputs are updated
+    let debounceTimer;
+    function debouncedUpdateTotals() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updateTotals, 100); 
+    }
+
+    // Add event listeners for all inputs
+    document.querySelectorAll('.collect_token_lines_collected_qty').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
+    });
+    document.querySelectorAll('.collect_token_lines_variance').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
+    });
+    document.querySelectorAll('.collect_token_lines_projected_capsule_sales').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
+    });
+    document.querySelectorAll('.collect_token_lines_current_capsule_inventory').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
+    });
+    document.querySelectorAll('.collect_token_lines_actual_capsule_inventory').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
+    });
+    document.querySelectorAll('.collect_token_lines_actual_capsule_sales').forEach(input => {
+        input.addEventListener('input', debouncedUpdateTotals);
     });
 
     $(document).on('click', '.edit-btn', function () {
@@ -507,6 +575,7 @@
 
         if ($row.hasClass('highlight')) {
             $row.removeClass('highlight').css('background-color', 'transparent');
+            
             $row.find('.collect_token_lines_no_of_token').hide();
             $row.find('.collect_token_lines_collected_qty').hide();
             $row.find('.collect_token_lines_variance').hide();
@@ -558,8 +627,6 @@
             $input.prop('disabled', true).hide();
         } else {
             $input.prop('disabled', false).show();
-
-            //Sample
         }
     }
 

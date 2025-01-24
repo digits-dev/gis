@@ -93,7 +93,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$this->addaction[] = [
 				'title' => 'Cashier Turnover',
 				'url' => CRUDBooster::mainpath('cashier_turnover/[id]'),
-				'icon' => 'fa fa-pencil',
+				'icon' => 'fa fa-share',
 				'color' => 'warning',
 				'showIf' => "[statuses_id]=='" . Statuses::FORCASHIERTURNOVER . "'"
 			];
@@ -119,18 +119,19 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			];
 		}
 
-		if (CRUDBooster::isSuperadmin()) {
+		if (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == CmsPrivileges::CSA) {
 			$this->addaction[] = [
-				'title' => 'Super Admin Edit',
+				'title' => 'Edit',
 				'url' => CRUDBooster::mainpath('getEdit/[id]'),
 				'icon' => 'fa fa-pencil',
 				'color' => 'danger',
+				'showIf' => "[statuses_id] == '" . Statuses::FORCSAEDIT . "'"
 			];
 		}
 	}
 
 	public function getEdit($id){
-		if (CRUDBooster::isSuperadmin()) {
+		if (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == CmsPrivileges::CSA) {
 			$data = [];
 			$data['page_title'] = 'Collect Token Details';
 			$data['page_icon'] = 'fa fa-circle-o';
@@ -194,6 +195,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 			// update collect token header
 			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FORCASHIERTURNOVER,
 				'collected_qty' => $validated_data['header_collected_qty'],
 				'received_qty' => $validated_data['header_received_qty'],
 				'variance' => $validated_data['header_variace'],
@@ -204,6 +206,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$updatedCount = 0;
 			foreach ($Validated_lines as $per_item) {
 				$updated = $collectTokenHeader->lines()->where('id', $per_item['collect_token_lines_id'])->update([
+				'line_status' => Statuses::FORCASHIERTURNOVER,
 					'no_of_token' => $per_item['collect_token_lines_no_of_token'],
 					'qty' => $per_item['collect_token_lines_collected_qty'],
 					'variance' => $per_item['collect_token_lines_variance'],
@@ -238,13 +241,13 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER, CmsPrivileges::OPERATIONVIEWER])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
-				->where('statuses_id', '!=', Statuses::COLLECTED)
+				->whereNotIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
-				->where('statuses_id', '!=', Statuses::COLLECTED)
+				->whereNotIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}
@@ -261,7 +264,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
 			$collect_tokens = CollectRrTokens::whereDate('created_at', $request->date)
 			->where('location_id', CRUDBooster::myLocationId())
-			->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
+			->where('statuses_id', '=', Statuses::COLLECTED)
 			->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
 			->get()
 			->sortBy('bay_id');
@@ -782,7 +785,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		else {
 			// rejected
 			$collectTokenHeader->update([
-				'statuses_id' => Statuses::FORCHECKING,
+				'statuses_id' => Statuses::FORCSAEDIT,
 				'rejected_by' => CRUDBooster::myId(),
 				'rejected_at' => now(),
 			]);
@@ -790,6 +793,40 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
 		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
+	}
+
+	public function postVoidCollectToken(Request $request){
+		// validations 
+		try {
+			$validated_data = $request->validate([
+				'collected_token_header_id' => 'required',
+			]);
+		} catch (ValidationException $e) {
+			$errors = $e->validator->errors()->all();
+			$errorMessage = implode('<br>', $errors);
+			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
+		}
+
+		// another validations if the header exists
+		$collectTokenHeader = CollectRrTokens::find($validated_data['collected_token_header_id']);
+		if (!$collectTokenHeader) {
+			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
+		}
+
+		//update header to voided
+		$collectTokenHeader->update([
+			'statuses_id' => Statuses::VOIDED,
+			'voided_by' => CRUDBooster::myId(),
+			'voided_at' => now()
+		]);
+
+		//update lines to vided
+		$collectTokenHeader->lines()->update([
+			'line_status' => Statuses::VOIDED,
+		]);
+
+		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Voided successfully!", 'success');
+
 	}
 
 	public function exportCollectedToken(Request $request){

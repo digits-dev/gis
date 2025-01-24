@@ -60,6 +60,8 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		$this->col[] = ["label" => "Variance", "name" => "variance"];
 		$this->col[] = ["label" => "Received By", "name" => "received_by", "join" => "cms_users,name"];
 		$this->col[] = ["label" => "Received Date", "name" => "received_at"];
+		$this->col[] = ["label" => "Approved By", "name" => "approved_by", "join" => "cms_users,name"];
+		$this->col[] = ["label" => "Approved Date", "name" => "approved_at"];
 		$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 		$this->col[] = ["label" => "Created Date", "name" => "created_at"];
 		# END COLUMNS DO NOT REMOVE THIS LINE
@@ -94,13 +96,13 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER, CmsPrivileges::OPERATIONVIEWER])) {
 			$query->whereNull('collect_rr_tokens.deleted_at')
 				->where('reference_number', 'LIKE', '%CLTN-%')
-				->where('statuses_id', Statuses::COLLECTED)
+				->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
 			$query->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
 				->where('reference_number', 'LIKE', '%CLTN-%')
 				->whereNull('collect_rr_tokens.deleted_at')
-				->where('statuses_id', Statuses::COLLECTED)
+				->whereIn('statuses_id', [Statuses::COLLECTED, Statuses::VOIDED])
 				->orderBy('collect_rr_tokens.id', 'desc');
 		}
 	}

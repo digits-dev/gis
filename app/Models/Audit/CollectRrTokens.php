@@ -32,11 +32,13 @@ class CollectRrTokens extends Model
         'confirmed_by',
         'approved_by',
         'rejected_by',
+        'voided_by',
         'updated_by',
         'created_at',
         'confirmed_at',
         'approved_at',
         'rejected_at',
+        'voided_at',
         'updated_at',
         'deleted_at',
     ];

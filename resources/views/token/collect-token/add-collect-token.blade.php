@@ -398,7 +398,7 @@
                         let formatted_date_now = date_now.toISOString().split('T')[0];
 
                         // Check if the created_at date is today
-                        if (formatted_created_at_date === formatted_date_now) {
+                        if (formatted_created_at_date === formatted_date_now && bay.get_collection_status[0].statuses_id != 13) {
                             // if today dont show the bay option
                         } else {
                             if(bay.get_gasha_machine[0]?.bay_selected_by == {{CRUDBooster::myId()}}){

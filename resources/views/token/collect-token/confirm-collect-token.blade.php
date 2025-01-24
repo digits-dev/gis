@@ -45,6 +45,19 @@
         opacity: 0.7;
     }
 
+    .form-button .btn-void {
+        padding: 9px 15px;
+        margin-right: 10px;
+        background: #FF5733;
+        border: 1.5px solid #FF5733;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .form-button .btn-void:hover {
+        opacity: 0.7;
+    }
+
     /* TABLE */
 
     .table-wrapper {
@@ -395,7 +408,7 @@
                 </div>
                 <div class="input-container">
                     <div style="font-weight: 600">Bay</div>
-                    <input type="text" style="border-radius: 5px;" value="{{$detail->getBay->name}}" disabled>
+                    <input type="text" id="bay_header" style="border-radius: 5px;" value="{{$detail->getBay->name}}" disabled>
                 </div>
                 
             </div>
@@ -540,6 +553,17 @@
     <div class="form-button panel-footer" style="margin-top: 15px;" >
         <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Cancel</a>
         <button type="submit" class="btn-submit pull-right" id="btn-confirm-details">Confirm</button>
+        <form method="POST" action="{{route('post.void.collectToken')}}" id="void_cashier_turnover_collect_token">
+            @csrf
+            <input type="hidden" name="collected_token_header_id" id="collected_token_header_id" value="{{$detail->id}}" readonly>
+            @php
+                $created_date = date('Y-m-d', strtotime($detail->created_at));
+            @endphp
+
+            @if ($created_date == date('Y-m-d', strtotime(now())))
+                <button type="submit" class="btn-void pull-right" id="void_btn"> <i class="fa fa-times"></i> Void Collect Token</button>
+            @endif
+        </form>
     </div>
 </div>
 
@@ -874,6 +898,40 @@
             } else {
                 form.reportValidity();
             }
+        }
+    });
+
+    $('#void_btn').on('click', function(e) {
+        e.preventDefault(); 
+        const form = document.getElementById('void_cashier_turnover_collect_token');
+        const bay_header = $('#bay_header').val();
+
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: `<h3>Are you sure you want to <b>VOID</b> ${bay_header} <br> Collect Token? </h3>`,
+                html: `
+                        <p>
+                            <b style="color:darkorange"> <i class="fa fa-exclamation-circle"></i> NOTE:</b> Before Voiding Collect Token transaction please make sure that
+                            your are advised to do it, this is only an emergency action to take if
+                            there's an issue that needed to be solve. If none please don't VOID the transaction.
+                        </p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#FF5733',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Void',
+                iconColor: '#FF5733',
+                returnFocus: false,
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingBackdrop').show();
+                    form.submit(); 
+                }
+            });
+        } else {
+            form.reportValidity();
         }
     });
 

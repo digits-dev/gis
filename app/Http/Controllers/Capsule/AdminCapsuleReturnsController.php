@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Capsule;
 
-	use App\Models\Capsule\CapsuleReturn;
+use App\Models\Audit\CollectRrTokenLines;
+use App\Models\Capsule\CapsuleReturn;
 	use App\Models\Capsule\CapsuleSales;
 	use App\Models\Capsule\HistoryCapsule;
 	use App\Models\Capsule\InventoryCapsule;
@@ -12,7 +13,8 @@
 	use App\Models\Submaster\Locations;
 	use App\Models\Submaster\SalesType;
 	use App\Models\Submaster\SubLocations;
-	use Session;
+use Carbon\Carbon;
+use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -491,6 +493,24 @@
 		public function validateGashaMachine(Request $request){
 
 			$return_inputs = Request::all();
+
+			$get_serial_number = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])
+				->where('location_id', CRUDBooster::myLocationId())
+				->first();
+
+			$check_machince_in_collect_token = CollectRrTokenLines::with('collectTokenHeader.getBay','collectTokenHeader.getStatus','machineSerial')
+				->where('gasha_machines_id', $get_serial_number->id)
+				->where('line_status', '!=', 13)
+				->whereDate('created_at', Carbon::now()->format('Y-m-d'))
+				->first();
+
+			if (!empty($check_machince_in_collect_token) && in_array($check_machince_in_collect_token->line_status, ['10', '12', '11'])) {
+				return response()->json([
+					'invalid_capsule_return' => 'Collect Token is in progress, Please contact your immediate head to VOID the ongoing transaction of 
+												 Collect Token for you to proceed in Capsule Return if this is urgent. If not please wait until the Collect Token is completed.',
+					'collect_token_details' => $check_machince_in_collect_token
+				]);
+			}
 
 			$gasha_machines = GashaMachines::where('serial_number', $return_inputs['gasha_machine'])->first();
 			$inventory_capsule_lines = InventoryCapsuleLine::get();

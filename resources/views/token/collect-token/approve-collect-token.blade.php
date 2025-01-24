@@ -69,6 +69,19 @@
         opacity: 0.7;
     }
 
+    .form-button .btn-void {
+        padding: 9px 15px;
+        margin-right: 10px;
+        background: #FF5733;
+        border: 1.5px solid #FF5733;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .form-button .btn-void:hover {
+        opacity: 0.7;
+    }
+
     /* TABLE */
 
     .table-wrapper {
@@ -196,7 +209,7 @@
 
     .swal2-popup {
         width: 500px !important; /* Set a larger width */
-        height: 300px !important;
+        /* height: 300px !important; */
     }
     .swal2-title {
         font-size: 24px !important; /* Customize the title size */
@@ -445,7 +458,7 @@
                     </div>
                     <div class="input-container">
                         <div style="font-weight: 600">Bay</div>
-                        <input type="text" style="border-radius: 5px;" value="{{$collected_tokens->getBay->name}}" disabled>
+                        <input type="text" id="bay_header" style="border-radius: 5px;" value="{{$collected_tokens->getBay->name}}" disabled>
                     </div>
                     
                 </div>
@@ -569,7 +582,18 @@
     <div class="form-button panel-footer" style="margin-top: 15px;" >
         <a class="btn-submit pull-left" href="{{ CRUDBooster::mainpath() }}" style="background:#838383; border: 1px solid #838383">Back</a>
         <button class="btn-approve pull-right" id="btn-approve"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Approve</button>
-        <button class="btn-reject pull-right" id="btn-reject"  style="margin-right: 5px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Reject</button>
+        <button class="btn-reject pull-right" id="btn-reject"  style="margin-right: 10px;"><i class="fa fa-thumbs-down" aria-hidden="true"></i> Retrun To CSA</button>
+        <form method="POST" action="{{route('post.void.collectToken')}}" id="void_cashier_turnover_collect_token">
+            @csrf
+            <input type="hidden" name="collected_token_header_id" id="collected_token_header_id" value="{{$collected_tokens->id}}" readonly>
+            @php
+                $created_date = date('Y-m-d', strtotime($collected_tokens->created_at));
+            @endphp
+
+            @if ($created_date == date('Y-m-d', strtotime(now())))
+                <button type="submit" class="btn-void pull-right" id="void_btn"> <i class="fa fa-times"></i> Void Collect Token</button>
+            @endif
+        </form>
     </div>
 
 </div>
@@ -733,7 +757,7 @@ $('.content-header').hide();
     $('#btn-approve').on('click', function () {
         $('#action_type').val('approve');
         Swal.fire({
-            title: "Are you sure you want to Approve?",
+            title: "Are you sure you want <br> to Approve? <br><br>",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#15a321',
@@ -754,12 +778,12 @@ $('.content-header').hide();
     $('#btn-reject').on('click', function () {
         $('#action_type').val('reject');
         Swal.fire({
-            title: "Are you sure you want to Reject?",
+            title: "Are you sure you want to Return <br> this to CSA? <br> <br>",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#da2404',
             cancelButtonColor: '#838383',
-            confirmButtonText: 'Reject',
+            confirmButtonText: 'Return',
             iconHtml: '<i class="fa fa-thumbs-down"></i>',
             iconColor: '#da2404',
             returnFocus: false,
@@ -770,6 +794,40 @@ $('.content-header').hide();
                 $('#collect_token_details').submit(); 
             }
         });
+    });
+
+    $('#void_btn').on('click', function(e) {
+        e.preventDefault(); 
+        const form = document.getElementById('void_cashier_turnover_collect_token');
+        const bay_header = $('#bay_header').val();
+
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: `<h3>Are you sure you want to <b>VOID</b> ${bay_header} <br> Collect Token? </h3>`,
+                html: `
+                        <p>
+                            <b style="color:darkorange"> <i class="fa fa-exclamation-circle"></i> NOTE:</b> Before Voiding Collect Token transaction please make sure that
+                            your are advised to do it, this is only an emergency action to take if
+                            there's an issue that needed to be solve. <br> If none please don't VOID the transaction.
+                        </p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#FF5733',
+                cancelButtonColor: '#838383',
+                confirmButtonText: 'Void',
+                iconColor: '#FF5733',
+                returnFocus: false,
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingBackdrop').show();
+                    form.submit(); 
+                }
+            });
+        } else {
+            form.reportValidity();
+        }
     });
 
     // compute subtotals
