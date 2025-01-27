@@ -393,10 +393,10 @@ a:hover, a:focus {
             
         },
         (errorMessage) => {
-            alert(errorMessage);
+            // alert(errorMessage);
         })
         .catch((err) => {
-            alert(err);
+            // alert(err);
         });
 
     }
