@@ -822,6 +822,8 @@
     $('#btn-confirm-details').on('click', function(e) {
         e.preventDefault(); 
         const form = document.getElementById('confirm-details');
+        const submitButton = $(this);
+        submitButton.prop('disabled', true); 
 
         let allFinalResults = [];
         let allZero = true;
@@ -903,10 +905,12 @@
 
     $('#void_btn').on('click', function(e) {
         e.preventDefault(); 
-        const form = document.getElementById('void_cashier_turnover_collect_token');
+        const void_form = document.getElementById('void_cashier_turnover_collect_token');
+        const submitButton = $(this);
+        submitButton.prop('disabled', true); 
         const bay_header = $('#bay_header').val();
 
-        if (form.checkValidity()) {
+        if (void_form.checkValidity()) {
             Swal.fire({
                 title: `<h3>Are you sure you want to <b>VOID</b> ${bay_header} <br> Collect Token? </h3>`,
                 html: `
@@ -927,11 +931,11 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#loadingBackdrop').show();
-                    form.submit(); 
+                    void_form.submit(); 
                 }
             });
         } else {
-            form.reportValidity();
+            void_form.reportValidity();
         }
     });
 
