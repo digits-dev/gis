@@ -384,7 +384,7 @@
 @endpush
 @section('content')
 <div class="panel panel-default form-content">
-<form id="confirm-details" method="POST" action="{{route('postConfirmToken')}}" id="collect_token_details">
+<form id="confirm-details" method="POST" action="{{route('postConfirmToken')}}">
     @csrf
     <div class="panel-heading header-title text-center">Collect Token Details</div>
     <div class="content-panel">
