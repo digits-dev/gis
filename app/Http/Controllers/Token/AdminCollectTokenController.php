@@ -85,9 +85,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
 		}
 		
-		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
-			$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
-		}
+		// if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
+		// 	$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
+		// }
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 			$this->addaction[] = [
@@ -564,8 +564,8 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function postConfirmToken(Request $request)
 	{
-		// Validate
 		try {
+			// Validate
 			$validatedData = $request->validate([
 				'collectedTokenHeader_id' => 'required',
 				'lines_ids' => 'required',
@@ -576,57 +576,62 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'actualCapsuleInventory' => 'required',
 				'actualCapsuleSales' => 'required',
 			]);
-		} catch (ValidationException $e) {
-			$errors = $e->validator->errors()->all();
-			$errorMessage = implode('<br>', $errors);
-			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
-		}
 
-		// collect token lines to map each array 
-		$ValidatedLines = array_map(function ($lines_ids, $variance_type, $variance, $projectedCapsuleSales, $currentMachineInventory, $actualCapsuleInventory, $actualCapsuleSales) {
-			return [
-				'lines_ids' => $lines_ids,
-				'variance_type' => $variance_type,
-				'variance' => $variance,
-				'projectedCapsuleSales' => $projectedCapsuleSales,
-				'currentMachineInventory' => $currentMachineInventory,
-				'actualCapsuleInventory' => $actualCapsuleInventory,
-				'actualCapsuleSales' => $actualCapsuleSales,
-			];
-		}, $validatedData['lines_ids'], $validatedData['variance_type'], $validatedData['variance'], $validatedData['projectedCapsuleSales'], $validatedData['currentMachineInventory'], $validatedData['actualCapsuleInventory'], $validatedData['actualCapsuleSales']);
+			// collect token lines to map each array 
+			$ValidatedLines = array_map(function ($lines_ids, $variance_type, $variance, $projectedCapsuleSales, $currentMachineInventory, $actualCapsuleInventory, $actualCapsuleSales) {
+				return [
+					'lines_ids' => $lines_ids,
+					'variance_type' => $variance_type,
+					'variance' => $variance,
+					'projectedCapsuleSales' => $projectedCapsuleSales,
+					'currentMachineInventory' => $currentMachineInventory,
+					'actualCapsuleInventory' => $actualCapsuleInventory,
+					'actualCapsuleSales' => $actualCapsuleSales,
+				];
+			}, $validatedData['lines_ids'], $validatedData['variance_type'], $validatedData['variance'], $validatedData['projectedCapsuleSales'], $validatedData['currentMachineInventory'], $validatedData['actualCapsuleInventory'], $validatedData['actualCapsuleSales']);
 
-		$collectTokenHeader = CollectRrTokens::find($validatedData['collectedTokenHeader_id']);
-		if (!$collectTokenHeader) {
-			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
-		}
+			$collectTokenHeader = CollectRrTokens::find($validatedData['collectedTokenHeader_id']);
+			if (!$collectTokenHeader) {
+				CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
+			}
 
-		// update collect token header
-		$collectTokenHeader->update([
-			'statuses_id' => Statuses::FOROMAPPROVAL,
-			'confirmed_by' => CRUDBooster::myId(),
-			'confirmed_at' => now()
-		]);
-
-		// update each collect token line
-		$updatedCount = 0;
-		foreach ($ValidatedLines as $perItem) {
-			$updated = $collectTokenHeader->lines()->where('id', $perItem['lines_ids'])->update([
-				'line_status' => Statuses::FOROMAPPROVAL,
-				'variance' => $perItem['variance'],
-				'variance_type' => $perItem['variance_type'],
-				'projected_capsule_sales' => $perItem['projectedCapsuleSales'],
-				'actual_capsule_sales' => $perItem['actualCapsuleSales'],
-				'current_capsule_inventory' => $perItem['currentMachineInventory'],
-				'actual_capsule_inventory' => $perItem['actualCapsuleInventory'],
-				'updated_at' => now(),
+			// update collect token header
+			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FOROMAPPROVAL,
+				'confirmed_by' => CRUDBooster::myId(),
+				'confirmed_at' => now()
 			]);
 
-			if ($updated) {
-				$updatedCount++;
+			// update each collect token line
+			$updatedCount = 0;
+			foreach ($ValidatedLines as $perItem) {
+				$updated = $collectTokenHeader->lines()->where('id', $perItem['lines_ids'])->update([
+					'line_status' => Statuses::FOROMAPPROVAL,
+					'variance' => $perItem['variance'],
+					'variance_type' => $perItem['variance_type'],
+					'projected_capsule_sales' => $perItem['projectedCapsuleSales'],
+					'actual_capsule_sales' => $perItem['actualCapsuleSales'],
+					'current_capsule_inventory' => $perItem['currentMachineInventory'],
+					'actual_capsule_inventory' => $perItem['actualCapsuleInventory'],
+					'updated_at' => now(),
+				]);
+
+				if ($updated) {
+					$updatedCount++;
+				}
 			}
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
+		} catch (\Exception $e) {
+			
+			\Log::error('Error in postConfirmToken: ' . $e->getMessage(), [
+				'exception' => $e,
+				'stack_trace' => $e->getTraceAsString(),
+			]);
+
+			// Handle any errors here
+			CRUDBooster::redirect(CRUDBooster::mainpath(), 'An error occurred: ' . $e->getMessage(), 'danger');
 		}
-		
-		CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} Confirmed successfully!", 'success');
 	}
 
 	public function postNewRemarks(Request $request)
