@@ -117,7 +117,7 @@ class CreateSodVsEodVarianceReportView extends Migration
                     ) AS Variance,
 
                     -- Calculate the Variance_2 (Token_Bal_SOD - Total_SOD)
-                    (t1.token_drawer + t1.token_sealed) - t1.token_bal AS Variance_2
+                    t1.token_bal - (t1.token_drawer + t1.token_sealed) AS Variance_2
 
                 FROM 
                     cash_float_histories AS t1
