@@ -281,8 +281,8 @@
     }
 
     .swal2-popup {
-        width: 500px !important; 
-        height: 80% !important;
+        width: 500px !important;
+        font-size: unset !important;
     }
     .swal2-title {
         font-size: 24px !important; 
@@ -297,12 +297,14 @@
         padding: 10px 20px !important;
         border-radius: 5px !important;
         color: white !important;
+        margin-bottom: 10px !important;
     }
     .swal2-cancel {
         font-size: 16px !important;
         padding: 10px 20px !important;
         border-radius: 5px !important;
         color: white !important;
+        margin-bottom: 10px !important;
     }
 
     .swal2-icon {
