@@ -53,6 +53,10 @@ class POSEndOfDayController extends Controller
 
     }
     public function submitEOD(Request $request){
+
+        $cashierDrawerBal = str_replace(',', '', $request->input('cashier_drawer_bal'));
+        $tokenSealed = str_replace(',', '', $request->input('total_sealed_tokens'));
+    
         $data = $request->all();
         $locations_id = auth()->user()->location_id;
         $entry_date = $request->input('entry_date');
@@ -80,6 +84,8 @@ class POSEndOfDayController extends Controller
             'float_types_id' => $float_types_id,
             'conversion_rate' => $token_price,
             'token_bal' => $current_token_bal,
+            'token_drawer' => $cashierDrawerBal,
+            'token_sealed' => $tokenSealed,
             'entry_date' => $entry_date,
             'created_by' => $created_by,
             'created_at' => $time_stamp,

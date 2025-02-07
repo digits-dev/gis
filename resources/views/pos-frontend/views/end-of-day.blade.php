@@ -24,6 +24,34 @@
     .total_value, .cash_value_CASH {
         background: #ddd;
     }
+
+    .custom-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -15px; 
+        margin-right: -15px; 
+    }
+
+    /* Column styling */
+    .custom-col {
+        padding-left: 15px; 
+        padding-right: 15px;
+        box-sizing: border-box; 
+        margin-top: 10px;
+    }
+
+    @media (min-width: 768px) {
+        .custom-col {
+            width: 25%; 
+        }
+    }
+
+    @media (max-width: 767px) {
+        .custom-col {
+            width: 100%; 
+        }
+    }
+
 </style>
 @endsection
 
@@ -74,15 +102,39 @@
                     </table>
                 </div>
                 <div class="eod-v-q">
-                    <div class="d-flex-al-c flex-wrap">
-                        <p class="max-w-75">Total Value</p>
-                        <input type="text" class="input-design total_value" name="total_value" style="width:165px;" placeholder="Total value">
-                        {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
-                    </div>
-                    <div class="d-flex-al-c flex-wrap m-top-10">
-                        <p class="max-w-75">Token qty</p>
-                        <input type="text" class="input-design total_token" name="total_token" placeholder="Token qty" style="width:165px;" onkeypress="withoutLeadingZeros()" required>
-                        {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                    <div class="custom-row">
+                        <div class="custom-col m-top-10">
+                            <div class="d-flex-al-c flex-wrap">
+                                <p class="max-w-75">Total Value</p>
+                                <input type="text" class="input-design total_value" name="total_value" style="width:165px;" placeholder="Total value">
+                                {{-- <input type="text" class="input-design total_value" placeholder="Total value" onkeypress="inputIsNumber()"> --}}
+                            </div>
+                            
+                            <div class="d-flex-al-c flex-wrap m-top-10">
+                                <p class="max-w-75">Token qty</p>
+                                <input type="text" class="input-design total_token" id="total_token_hidden" name="total_token" placeholder="Token qty" style="width:165px;background-color:#ddd;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required readonly>
+                                {{-- <input type="text" class="input-design" placeholder="Token qty" onkeypress="inputIsNumber()"> --}}
+                            </div>
+                        </div>
+
+                        <div class="custom-col" style="margin-top: 0px">
+                            <div class="custom-row">
+                                <div class="custom-col" style="width: 160px; margin-top: 15px;">
+                                    <p style="width: 370px">Token qty (Drawer)</p>
+                                </div>
+                                <div class="custom-col">
+                                    <input type="text" class="input-design total_token" id="cashier_drawer_bal" name="cashier_drawer_bal" placeholder="Cashier drawer bal." style="width:165px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
+                                </div>
+                            </div>
+                            <div class="custom-row">
+                                <div class="custom-col" style="width: 160px; margin-top: 15px;">
+                                    <p style="width: 370px">Token qty (Sealed)</p>
+                                </div>
+                                <div class="custom-col">
+                                    <input type="text" class="input-design total_token" id="total_sealed_tokens" name="total_sealed_tokens" placeholder="Total sealed tokens" style="width:165px;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex-jcc-col m-bottom-15">
@@ -145,7 +197,9 @@
     $('input').on('input', function(event) {
         const totalValue = Number($('.total_value').val().replace(/[^0-9.]/g, ''));
         const totalToken = Number($('.total_token').val().replace(/[^0-9.]/g, ''));
-        if (totalValue <= 0 || totalToken  <= 0) {
+        const drawer = Number($('#cashier_drawer_bal').val().replace(/[^0-9.]/g, ''));
+        const sealed = Number($('#total_sealed_tokens').val().replace(/[^0-9.]/g, ''));
+        if (totalValue <= 0 || totalToken  <= 0 || drawer <= 0 || sealed <= 0) {
             $("#end_of_day").prop('disabled', true);
             $("#end_of_day").css('background-color', '#3333');
         } else{
@@ -257,5 +311,27 @@
         });
     });
 
+</script>
+
+<script>
+    $(document).ready(function() {
+        function updateTotalTokenQty() {
+            const drawerBal = parseFloat($('#cashier_drawer_bal').val().replace(/[^0-9.-]/g, '')) || 0;
+            const sealedTokens = parseFloat($('#total_sealed_tokens').val().replace(/[^0-9.-]/g, '')) || 0;
+            
+            // compute total Qty
+            const overallTotal = drawerBal + sealedTokens;
+
+            $('#total_token_hidden').val(overallTotal.toFixed(0));
+        }
+
+        $('#cashier_drawer_bal, #total_sealed_tokens').on('input', function() {
+            updateTotalTokenQty();
+        });
+
+        updateTotalTokenQty();
+
+
+    });
 </script>
 @endsection

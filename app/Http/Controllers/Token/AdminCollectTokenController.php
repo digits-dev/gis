@@ -581,23 +581,20 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$errorMessage = implode('<br>', $errors);
 			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
 		}
-		try{
-			// collect token lines to map each array 
-			$ValidatedLines = array_map(function ($lines_ids, $variance_type, $variance, $projectedCapsuleSales, $currentMachineInventory, $actualCapsuleInventory, $actualCapsuleSales) {
-				return [
-					'lines_ids' => $lines_ids,
-					'variance_type' => $variance_type,
-					'variance' => $variance,
-					'projectedCapsuleSales' => $projectedCapsuleSales,
-					'currentMachineInventory' => $currentMachineInventory,
-					'actualCapsuleInventory' => $actualCapsuleInventory,
-					'actualCapsuleSales' => $actualCapsuleSales,
-				];
-			}, $validatedData['lines_ids'], $validatedData['variance_type'], $validatedData['variance'], $validatedData['projectedCapsuleSales'], $validatedData['currentMachineInventory'], $validatedData['actualCapsuleInventory'], $validatedData['actualCapsuleSales']);
-		}
-		catch(\Exception $ex){
-			\Log::debug($ex->getMessage());
-		}
+
+		// collect token lines to map each array 
+		$ValidatedLines = array_map(function ($lines_ids, $variance_type, $variance, $projectedCapsuleSales, $currentMachineInventory, $actualCapsuleInventory, $actualCapsuleSales) {
+			return [
+				'lines_ids' => $lines_ids,
+				'variance_type' => $variance_type,
+				'variance' => $variance,
+				'projectedCapsuleSales' => $projectedCapsuleSales,
+				'currentMachineInventory' => $currentMachineInventory,
+				'actualCapsuleInventory' => $actualCapsuleInventory,
+				'actualCapsuleSales' => $actualCapsuleSales,
+			];
+		}, $validatedData['lines_ids'], $validatedData['variance_type'], $validatedData['variance'], $validatedData['projectedCapsuleSales'], $validatedData['currentMachineInventory'], $validatedData['actualCapsuleInventory'], $validatedData['actualCapsuleSales']);
+
 		$collectTokenHeader = CollectRrTokens::find($validatedData['collectedTokenHeader_id']);
 		if (!$collectTokenHeader) {
 			CRUDBooster::redirect(CRUDBooster::mainpath(), 'Collect Token Header not found.', 'danger');
