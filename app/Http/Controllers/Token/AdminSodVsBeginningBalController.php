@@ -16,7 +16,7 @@ class AdminSodVsBeginningBalController extends \crocodicstudio\crudbooster\contr
 		# START CONFIGURATION DO NOT REMOVE THIS LINE
 		$this->title_field = "id";
 		$this->limit = "20";
-		$this->orderby = "start_date,desc";
+		$this->orderby = "Created_at_SOD,desc";
 		$this->global_privilege = false;
 		$this->button_table_action = false;
 		$this->button_bulk_action = false;
