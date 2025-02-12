@@ -132,7 +132,7 @@ class CreateSodVsEodVarianceReportView extends Migration
                                         LIMIT 1) = u2.id  -- Join for EOD created_by to get user name
                 WHERE 
                     t1.float_types_id = 1  -- SOD records
-                    AND t1.entry_date >= '2025-02-07'
+                    AND t1.entry_date >= '2025-02-12'
                 ORDER BY 
                     t1.entry_date;
         ");
