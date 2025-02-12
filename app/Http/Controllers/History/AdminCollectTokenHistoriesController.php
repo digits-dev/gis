@@ -12,12 +12,15 @@ use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CmsUsers;
 use App\Models\CollectTokenHistory;
 use App\Models\PosFrontend\SwapHistory;
+use App\Models\Submaster\CashFloatHistory;
 use App\Models\Submaster\GashaMachines;
 use App\Models\Submaster\GashaMachinesBay;
 use App\Models\Submaster\Locations;
 use App\Models\Submaster\Statuses;
+use App\Models\Token\BeginningBalVsTokenOnHand;
 use App\Models\Token\PulloutToken;
 use App\Models\Token\StoreRrToken;
+use App\Models\Token\TokenInventory;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -108,43 +111,35 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 	}
 
 	// PRINT RECEIVE FORM
+
 	public function getPrintForm(Request $request)
 	{
 
-		if ($request->ajax()){
+		if ($request->ajax()) {
 
 			$collectors = [];
 			$bays = [];
 			$all_bays = GashaMachines::getMachineWithBay()->where('location_id', CRUDBooster::myLocationId())->pluck('bays')->toArray();
 			$collect_tokens = CollectRrTokens::whereDate('created_at', $request->date)
-			->where('location_id', CRUDBooster::myLocationId())
-			->where('statuses_id', '!=', Statuses::FORCASHIERTURNOVER)
-			->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
-			->get()
-			->sortBy('bay_id');
+				->where('location_id', CRUDBooster::myLocationId())
+				->where('statuses_id', '=', Statuses::COLLECTED)
+				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
+				->get()
+				->sortBy('bay_id');
 
 			// TOTAL TOKEN SWAP VALUE
-
-			$totalTokenSwapValue = SwapHistory::whereDate('created_at', Carbon::parse($request->date)->subDay())	
+			$totalTokenSwapValue = SwapHistory::whereDate('created_at', Carbon::parse($request->date)->subDay())
 				->where('locations_id', CRUDBooster::myLocationId())
 				->where('status', 'POSTED')
 				->sum('token_value');
 
 			// FOR TOTAL TOKENS DELIVERED
-
-			$totalDeliveredTokens = StoreRrToken::where('to_locations_id', CRUDBooster::myLocationId())
-			->sum('received_qty');
-
-			$totalPulloutTokens = PulloutToken::where('locations_id', CRUDBooster::myLocationId())
-			->sum('qty');
-
-			$totalReceivedQty = StoreRrToken::where('to_locations_id', 10)
-			->sum('received_qty');
-
+			$totalDeliveredTokens = StoreRrToken::where('to_locations_id', CRUDBooster::myLocationId())->sum('received_qty');
+			$totalPulloutTokens = PulloutToken::where('locations_id', CRUDBooster::myLocationId())->sum('qty');
+			$totalReceivedQty = StoreRrToken::where('to_locations_id', 10)->sum('received_qty');
 			$collect_tokens = $collect_tokens->values();
-
 			$bay_ids = $collect_tokens->pluck('bay_id');
-			
+
 			foreach ($all_bays as $key => $bay) {
 				$explodedBays = explode(',', $bay);
 				foreach ($explodedBays as $index => $value) {
@@ -152,7 +147,6 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 				}
 			}
 
-			
 			foreach ($collect_tokens as $collected_token) {
 				$exists = false;
 
@@ -165,7 +159,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 						break;
 					}
 				}
-			
+
 				if (!$exists) {
 					$collectors[] = [
 						'name' => $name,
@@ -173,13 +167,9 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 					];
 				}
 			}
-
 			$missing_bay_ids = GashaMachinesBay::whereIn('id', collect($bays)->diff($bay_ids))->get();
 
-			
-
 			// TOKEN COLLECTION REPORT
-
 			return response()->json([
 				'missing_bays' => $missing_bay_ids,
 				'store_name' => Locations::where('id', CRUDBooster::myLocationId())->value('location_name'),
@@ -191,23 +181,83 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 				'formatted_request_date' => Carbon::parse($request->date)->format('F d, Y'),
 				'collect_tokens' => $collect_tokens,
 				'collectors' => $collectors,
-				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId())
+				'receiver' => CmsUsers::with('getPrivilege')->find(CRUDBooster::myId()),
+				'token_invetory' => TokenInventory::where('locations_id', CRUDBooster::myLocationId())->pluck('qty')->first(),
+				'token_drawer_sod' => CashFloatHistory::where('entry_date', $request->date)
+					->where('locations_id', CRUDBooster::myLocationId())
+					->where('float_types_id', 1)
+					->pluck('token_drawer')->first(),
+				'token_sealed_sod' => CashFloatHistory::where('entry_date', $request->date)
+					->where('locations_id', CRUDBooster::myLocationId())
+					->where('float_types_id', 1)
+					->pluck('token_sealed')->first(),
+				'token_drawer_eod' => CashFloatHistory::where('entry_date', $request->date)
+					->where('locations_id', CRUDBooster::myLocationId())
+					->where('float_types_id', 2)
+					->pluck('token_drawer')->first(),
+				'token_sealed_eod' => CashFloatHistory::where('entry_date', $request->date)
+					->where('locations_id', CRUDBooster::myLocationId())
+					->where('float_types_id', 2)
+					->pluck('token_sealed')->first(),
 			]);
 		}
-		
+
 		$data = [];
 		$data['page_title'] = 'Collect Token Form';
 		$data['page_icon'] = 'fa fa-circle-o';
-		$data ['store_name'] = Locations::find(CRUDBooster::myLocationId());
-
-	
-
-
-		$data ['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
-
-		
+		$data['store_name'] = Locations::find(CRUDBooster::myLocationId());
+		$data['receiver'] = CmsUsers::select('id', 'name')->where('id_cms_privileges', CmsPrivileges::CASHIER)->where('location_id', CRUDBooster::myLocationId())->get();
+		$data['report_generated_at'] = BeginningBalVsTokenOnHand::where('locations_id', CRUDBooster::myLocationId())->orderBy('created_at', 'DESC')->pluck('created_at')->first();
 
 		return view("token.collect-token.print-collecttoken-form", $data);
+	}
+
+	public function postReport(Request $request)
+	{
+		try {
+			
+			$validated_data = $request->validate([
+				'store_name' => 'required',
+				'beginning_bal' => 'required',
+				'token_on_hand' => 'required',
+				'variance' => 'required',
+				'generated_date' => 'required',
+			]);
+
+			$is_generated = BeginningBalVsTokenOnHand::where('locations_id', CRUDBooster::myLocationId())
+			    ->where('generated_date', $validated_data['generated_date'])->first();
+
+			if($is_generated){
+				return response()->json([
+				    'already_generated' => 'This report is generated already. 
+					 Double check your date entry if it is the date today, if not,
+					 please select the date today to generate todays report.
+					 And please strictly remember that this works only once per day. Thank You.'
+				]);
+			}
+
+			$post_save = BeginningBalVsTokenOnHand::insert([
+				'locations_id' => CRUDBooster::myLocationId(),
+				'location_name' => $validated_data['store_name'],
+				'total_beginning_bal' => $validated_data['beginning_bal'],
+				'total_token_on_hand' => $validated_data['token_on_hand'],
+				'variance' => $validated_data['variance'],
+				'generated_date' => $validated_data['generated_date'],
+				'created_by' => CRUDBooster::myId(),
+				'created_at' => now(),
+			]);
+
+			if ($post_save) {
+				return response()->json([
+					'success' => 'Form printed successfully'
+				]);
+			}
+
+		} catch (\Exception $e) {
+			return response()->json([
+				'error' => 'Error respose:' . $e->getMessage()
+			]);
+		}
 	}
 
 	public function exportCollectedTokenHistory(Request $request)

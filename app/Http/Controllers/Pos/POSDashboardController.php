@@ -75,6 +75,10 @@ class POSDashboardController extends Controller
     }
 
     public function submitSOD(Request $request){
+
+        $cashierDrawerBal = str_replace(',', '', $request->input('cashier_drawer_bal'));
+        $tokenSealed = str_replace(',', '', $request->input('total_sealed_tokens'));
+
         $data = $request->all();
         $locations_id = auth()->user()->location_id;
         $entry_date = $request->input('entry_date');
@@ -113,6 +117,8 @@ class POSDashboardController extends Controller
             'float_types_id' => $float_types_id,
             'conversion_rate' => $token_price,
             'token_bal' => $current_token_bal,
+            'token_drawer' => $cashierDrawerBal,
+            'token_sealed' => $tokenSealed,
             'entry_date' => date('Y-m-d'),
             'created_by' => $created_by,
             'created_at' => $time_stamp,

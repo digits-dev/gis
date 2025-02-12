@@ -85,9 +85,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
 		}
 		
-		if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
-			$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
-		}
+		// if (in_array(CRUDBooster::myPrivilegeId(), self::CANPRINT)) {
+		// 	$this->index_button[] = ["label" => "Print Token Collection Form", "icon" => "fa fa-print", "url" => CRUDBooster::mainpath('print_token_form'), "color" => "info"];
+		// }
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::FORCASHIERTURNOVER)) {
 			$this->addaction[] = [

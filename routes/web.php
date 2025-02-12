@@ -254,8 +254,9 @@ Route::group(['middleware' => ['web','check.user']], function() {
         Route::post('/post_review',[AdminCollectTokenController::class, 'postCollectTokenApproval'])->name('postCollectTokenApproval');
 
         // PRINT COLLECT TOKEN FORM
-        Route::get('/print_token_form',[AdminCollectTokenController::class, 'getPrintForm']);
-        Route::post('/print_token_form',[AdminCollectTokenController::class, 'getPrintForm'])->name('postPrint');
+        Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
+        Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrint');
+        Route::post('/post_report_form',[AdminCollectTokenHistoriesController::class, 'postReport'])->name('postPrintedReport');
 
         // FOR REMARKS - CHATBOX
         Route::post('/post_new_remarks',[AdminCollectTokenController::class, 'postNewRemarks'])->name('postNewRemarks');
