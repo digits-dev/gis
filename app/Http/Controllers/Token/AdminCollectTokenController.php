@@ -28,6 +28,7 @@ use App\Models\Token\TokenInventory;
 use Carbon\Carbon;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -457,81 +458,126 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function postCollectToken(Request $request)
 	{
-		// validations 
+		$lockKey = 'collect_token_lock_' . $request->input('header_location_id') . '_' . $request->input('header_bay_id');
+    
+		// Lock expires in 5 sec
+		$lock = Cache::lock($lockKey, 5);
+
+		if (!$lock->get()) {
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this location and bay.', 'danger');
+		}
+
 		try {
-			$validatedData = $request->validate([
-				'total_qty' => 'required',
-				'gasha_machines_id' => 'required',
-				'jan_number' => 'required',
-				'item_desc' => 'required',
-				'no_of_token' => 'required',
-				'qty' => 'required',
-				'variance' => 'required',
-				'location_id' => 'required',
-				'header_location_id' => 'required',
-				'header_bay_id' => 'required'
+			DB::beginTransaction();
+
+			// Validation for duplacate entry
+			$existingRecord = CollectRrTokens::where('location_id', $request->input('header_location_id'))
+				->where('bay_id', $request->input('header_bay_id'))
+				->whereDate('created_at', now()->toDateString())
+				->first();
+
+			if ($existingRecord) {
+				DB::rollBack();
+				$lock->release();
+				return CRUDBooster::redirect(CRUDBooster::mainpath(), "Sorry, this (" . $existingRecord->getBay->name . ") is already created today!", 'danger');
+			}
+
+			// Fields validations
+			try {
+				$validatedData = $request->validate([
+					'total_qty' => 'required',
+					'gasha_machines_id' => 'required',
+					'jan_number' => 'required',
+					'item_desc' => 'required',
+					'no_of_token' => 'required',
+					'qty' => 'required',
+					'variance' => 'required',
+					'location_id' => 'required',
+					'header_location_id' => 'required',
+					'header_bay_id' => 'required'
+				]);
+			} catch (ValidationException $e) {
+				$errors = $e->validator->errors()->all();
+				$errorMessage = implode('<br>', $errors);
+				return CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
+			}
+
+			// Collect token lines
+			$ValidatedLines = array_map(function ($gasha_machines_id, $jan_number, $item_desc, $no_of_token, $qty, $variance, $location_id) {
+				return [
+					'gasha_machines_id' => $gasha_machines_id,
+					'jan_number' => $jan_number,
+					'item_desc' => $item_desc,
+					'no_of_token' => $no_of_token,
+					'qty' => $qty,
+					'variance' => $variance,
+					'location_id' => $location_id,
+				];
+			},
+				$validatedData['gasha_machines_id'],
+				$validatedData['jan_number'],
+				$validatedData['item_desc'],
+				$validatedData['no_of_token'],
+				$validatedData['qty'],
+				$validatedData['variance'],
+				$validatedData['location_id']
+			);
+
+			// Check variance
+			$header_variance = (count(array_filter($validatedData['variance'], fn($value) => $value != 0)) > 0) ? 'Yes' : 'No';
+
+			// Collect tokens header
+			$collectTokenHeader = CollectRrTokens::firstOrCreate([
+				'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
+				'statuses_id' => Statuses::FORCASHIERTURNOVER,
+				'location_id' => $validatedData['header_location_id'],
+				'bay_id' => $validatedData['header_bay_id'],
+				'collected_qty' => $validatedData['total_qty'],
+				'variance' => $header_variance,
+				'created_by' => CRUDBooster::myId()
 			]);
-		} catch (ValidationException $e) {
-			$errors = $e->validator->errors()->all();
-			$errorMessage = implode('<br>', $errors);
-			CRUDBooster::redirect(CRUDBooster::mainpath(), $errorMessage, 'danger');
-		}
 
-		// collect token lines to map each array 
-		$ValidatedLines = array_map(function ($gasha_machines_id, $jan_number, $item_desc, $no_of_token, $qty, $variance, $location_id) {
-			return [
-				'gasha_machines_id' => $gasha_machines_id,
-				'jan_number' => $jan_number,
-				'item_desc' => $item_desc,
-				'no_of_token' => $no_of_token,
-				'qty' => $qty,
-				'variance' => $variance,
-				'location_id' => $location_id,
-			];
-		}, $validatedData['gasha_machines_id'], $validatedData['jan_number'], $validatedData['item_desc'], $validatedData['no_of_token'], $validatedData['qty'], $validatedData['variance'], $validatedData['location_id']);
+			// Save remarks if provided
+			if ($request->has('remarks') && !empty($request->input('remarks'))) {
+				$collectTokenHeader->collectTokenMessages()->create([
+					'collect_token_id' => $collectTokenHeader->id,
+					'message' => $request->input('remarks'),
+					'created_by' => CRUDBooster::myId(),
+					'created_at' => now(),
+				]);
+			}
 
-		// for collect token header if there's variance in the set
-		$header_variance = (count(array_filter($validatedData['variance'], fn($value) => $value != 0)) > 0) ? 'Yes' : 'No';
+			// Collect tokens lines
+			foreach ($ValidatedLines as $item) {
+				$collectTokenHeader->lines()->create([
+					'line_status' => Statuses::FORCASHIERTURNOVER,
+					'collected_token_id' => $collectTokenHeader->id,
+					'gasha_machines_id' => $item['gasha_machines_id'],
+					'jan_number' => $item['jan_number'],
+					'item_description' => $item['item_desc'],
+					'no_of_token' => $item['no_of_token'],
+					'qty' => $item['qty'],
+					'variance' => $item['variance'],
+					'location_id' => $item['location_id'],
+					'current_cash_value' => TokenConversion::where('status', 'ACTIVE')->first()->current_cash_value,
+					'created_at' => now(),
+				]);
+			}
 
-		// collect tokens headers
-		$collectTokenHeader = CollectRrTokens::firstOrCreate([
-			'reference_number' => Counter::getNextReference(CRUDBooster::getCurrentModule()->id),
-			'statuses_id' => Statuses::FORCASHIERTURNOVER,
-			'location_id' => $validatedData['header_location_id'],
-			'bay_id' => $validatedData['header_bay_id'],
-			'collected_qty' => $validatedData['total_qty'],
-			'variance' => $header_variance,
-			'created_by' => CRUDBooster::myId()
-		]);
-
-		// Save remarks if provided
-		if ($request->has('remarks') && !empty($request->input('remarks'))) {
-			$collectTokenHeader->collectTokenMessages()->create([
-				'collect_token_id' => $collectTokenHeader->id,
-				'message' => $request->input('remarks'),
-				'created_by' => CRUDBooster::myId(),
-				'created_at' => now(),
+			// Update Gasha Machine
+			GashaMachines::where('location_id', $validatedData['header_location_id'])
+			->where('bay', $validatedData['header_bay_id'])
+			->update([
+				'bay_select_status' => 0,
+				'bay_selected_by' => null
 			]);
-		}
 
-		// collect tokens lines
-		foreach ($ValidatedLines as $item) {
-			$collectTokenHeader->lines()->create([
-				'line_status' => Statuses::FORCASHIERTURNOVER,
-				'collected_token_id' => $collectTokenHeader->id,
-				'gasha_machines_id' => $item['gasha_machines_id'],
-				'jan_number' => $item['jan_number'],
-				'item_description' => $item['item_desc'],
-				'no_of_token' => $item['no_of_token'],
-				'qty' => $item['qty'],
-				'variance' => $item['variance'],
-				'location_id' => $item['location_id'],
-				'current_cash_value' => TokenConversion::where('status', 'ACTIVE')->first()->current_cash_value,
-				'created_at' => now(),
-			]);
+			DB::commit(); // Commit Transaction
+			CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
+		} catch (\Exception $e) {
+			DB::rollBack(); // Rollback Transaction 
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), "An error occurred: " . $e->getMessage(), 'danger');
 		}
-		GashaMachines::where('location_id', $validatedData['header_location_id'])->where('bay', $validatedData['header_bay_id'])->update(['bay_select_status' => 0, 'bay_selected_by' => null]);
-		CRUDBooster::redirect(CRUDBooster::mainpath(), "Token collected successfully!", 'success');
 	}
 
 	//STEP 2
@@ -682,7 +728,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		if ($request->action_type == 'approve') {
 
 			// Start Transaction
-			\DB::beginTransaction();
+			DB::beginTransaction();
 
 			try {
 				// Validations
@@ -795,10 +841,10 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				]);
 
 				// Commit Transactions
-				\DB::commit();
+				DB::commit();
 			} catch (\Exception $e) {
 				// Rollback Transactions
-				\DB::rollBack();
+				DB::rollBack();
 				CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
 			}
 		} else {
