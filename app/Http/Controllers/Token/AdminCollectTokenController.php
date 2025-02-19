@@ -473,6 +473,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			// Validation for duplacate entry
 			$existingRecord = CollectRrTokens::where('location_id', $request->input('header_location_id'))
 				->where('bay_id', $request->input('header_bay_id'))
+				->where('statuses_id', '!=', Statuses::VOIDED)	
 				->whereDate('created_at', now()->toDateString())
 				->first();
 
