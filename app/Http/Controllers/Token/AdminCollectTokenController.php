@@ -464,7 +464,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$lock = Cache::lock($lockKey, 5);
 
 		if (!$lock->get()) {
-			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this '. $request->input('header_bay_id') .'.', 'danger');
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this '. GashaMachinesBay::where('id',$request->input('header_bay_id'))->pluck('name')->first() .'.', 'danger');
 		}
 
 		try {
@@ -479,7 +479,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			if ($existingRecord) {
 				DB::rollBack();
 				$lock->release();
-				return CRUDBooster::redirect(CRUDBooster::mainpath(), "Sorry, this (" . $existingRecord->getBay->name . ") is already created today!", 'danger');
+				return CRUDBooster::redirect(CRUDBooster::mainpath(), "Sorry, this " . $existingRecord->getBay->name . " is already created today!", 'danger');
 			}
 
 			// Fields validations
