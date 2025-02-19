@@ -123,6 +123,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 			$collect_tokens = CollectRrTokens::whereDate('created_at', $request->date)
 				->where('location_id', CRUDBooster::myLocationId())
 				->where('statuses_id', '=', Statuses::COLLECTED)
+				->whereNull('deleted_at')
 				->with('lines.machineSerial', 'getCreatedBy.getPrivilege', 'getReceivedBy', 'getBay', 'lines.inventory_capsule_lines.getInventoryCapsule.item')
 				->get()
 				->sortBy('bay_id');
