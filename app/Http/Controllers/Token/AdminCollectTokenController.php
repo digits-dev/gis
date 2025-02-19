@@ -719,14 +719,26 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 	public function postCollectTokenApproval(Request $request)
 	{
-		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
+		$approval_lockKey = 'collect_token_header_lock_' . $request['collect_token_id'];
+    
+		// Lock expires in 5 sec
+		$approval_lock = Cache::lock($approval_lockKey, 5);
 
-		if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
-			CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " Record is already approved.", 'warning');
+		// validation for multiple entry at the same time
+		if (!$approval_lock->get()) {
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this '. CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() .'.', 'danger');
 		}
 
+		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
+		
+		// Validation for duplacate entry
+		if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
+			$approval_lock->release();
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " Record is already approved.", 'danger');
+		}
+		
 		if ($request->action_type == 'approve') {
-
+			
 			// Start Transaction
 			DB::beginTransaction();
 
