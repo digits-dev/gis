@@ -16,12 +16,14 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
 {
     use Exportable;
     protected $filter_column;
-    
-    public function __construct($fields){
+
+    public function __construct($fields)
+    {
         $this->filter_column  = $fields;
     }
 
-    public function headings(): array {
+    public function headings(): array
+    {
         return [
             'REFERENCE #',
             'JAN #',
@@ -35,10 +37,10 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
             'CREATED BY',
             'CREATED DATE',
         ];
-
     }
 
-    public function map($history_capsules): array {
+    public function map($history_capsules): array
+    {
         return [
             $history_capsules->reference_number,
             $history_capsules->digits_code,
@@ -55,12 +57,14 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
         ];
     }
 
-    public function query() {
+    public function query()
+    {
 
         $my_locations_id = CRUDBooster::myLocationId();
 
         $history_capsules = HistoryCapsule::leftJoin('items', 'items.digits_code2', 'history_capsules.item_code')
             ->where('history_capsules.status', 'ACTIVE')
+            ->whereNull('history_capsules.deleted_at')
             ->select(
                 'history_capsules.reference_number',
                 'items.digits_code',
@@ -73,7 +77,7 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
                 'history_capsules.qty',
                 'cms_users.name',
                 'history_capsules.created_at',
-                )
+            )
             ->leftJoin('capsule_action_types as cat', 'cat.id', 'history_capsules.capsule_action_types_id')
             ->leftJoin('locations', 'locations.id', 'history_capsules.locations_id')
             ->leftJoin('history_capsule_view as hcv', 'hcv.history_capsules_id', 'history_capsules.id')
@@ -86,63 +90,61 @@ class HistoryCapsuleExport implements FromQuery, WithHeadings, WithMapping, With
         if ($this->filter_column) {
             $filter_column = $this->filter_column;
 
-            $history_capsules->where(function($w) use ($filter_column) {
-                foreach($filter_column as $key=>$fc) {
+            $history_capsules->where(function ($w) use ($filter_column) {
+                foreach ($filter_column as $key => $fc) {
 
                     $value = @$fc['value'];
                     $type  = @$fc['type'];
 
-                    if($type == 'empty') {
-                        $w->whereNull($key)->orWhere($key,'');
+                    if ($type == 'empty') {
+                        $w->whereNull($key)->orWhere($key, '');
                         continue;
                     }
 
-                    if($value=='' || $type=='') continue;
+                    if ($value == '' || $type == '') continue;
 
-                    if($type == 'between') continue;
+                    if ($type == 'between') continue;
 
-                    switch($type) {
+                    switch ($type) {
                         default:
-                            if($key && $type && $value) $w->where($key,$type,$value);
-                        break;
+                            if ($key && $type && $value) $w->where($key, $type, $value);
+                            break;
                         case 'like':
                         case 'not like':
-                            $value = '%'.$value.'%';
-                            if($key && $type && $value) $w->where($key,$type,$value);
-                        break;
+                            $value = '%' . $value . '%';
+                            if ($key && $type && $value) $w->where($key, $type, $value);
+                            break;
                         case 'in':
                         case 'not in':
-                            if($value) {
-                                if($key && $value) $w->whereIn($key,$value);
+                            if ($value) {
+                                if ($key && $value) $w->whereIn($key, $value);
                             }
-                        break;
+                            break;
                     }
                 }
             });
 
-            foreach($filter_column as $key=>$fc) {
+            foreach ($filter_column as $key => $fc) {
                 $value = @$fc['value'];
                 $type  = @$fc['type'];
                 $sorting = @$fc['sorting'];
 
-                if($sorting!='') {
-                    if($key) {
-                        $history_capsules->orderby($key,$sorting);
+                if ($sorting != '') {
+                    if ($key) {
+                        $history_capsules->orderby($key, $sorting);
                         $filter_is_orderby = true;
                     }
                 }
 
-                if ($type=='between') {
+                if ($type == 'between') {
                     // if($key && $value) $history_capsules->whereBetween($key,$value);
-                    if($key && $value && is_array($value) && count($value) == 2) {
+                    if ($key && $value && is_array($value) && count($value) == 2) {
                         // Assuming $value is an array with start and end date
                         $start_date = date('Y-m-d', strtotime($value[0]));
                         $end_date = date('Y-m-d', strtotime($value[1]));
                         $history_capsules->whereBetween($key, [$start_date, $end_date]);
                     }
-                }
-
-                else {
+                } else {
                     continue;
                 }
             }
