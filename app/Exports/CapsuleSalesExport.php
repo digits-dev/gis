@@ -58,6 +58,7 @@ class CapsuleSalesExport implements FromQuery, WithHeadings, WithMapping
 
         $capsule_sales = CapsuleSales::leftJoin('items', 'items.digits_code', 'capsule_sales.item_code')
             ->where('capsule_sales.status', 'ACTIVE')
+            ->whereNull('capsule_sales.deleted_at')
             ->select(
                 'capsule_sales.reference_number',
                 'items.digits_code',

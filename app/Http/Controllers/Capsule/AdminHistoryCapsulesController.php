@@ -2,9 +2,7 @@
 
 	use App\Exports\HistoryCapsuleExport;
 	use App\Models\Capsule\HistoryCapsule;
-	use Session;
 	use Illuminate\Http\Request;
-	use DB;
 	use CRUDBooster;
 	use Excel;
 
@@ -400,8 +398,7 @@
 		}
 
 		public function exportData(Request $request) {
-			$fields = $request->filter_column;
 			$filename = $request->input('filename');
-			return Excel::download(new HistoryCapsuleExport($fields), $filename.'.csv');
+			return Excel::download(new HistoryCapsuleExport($request->filter_column), $filename.'.csv');
 		}
 	}
