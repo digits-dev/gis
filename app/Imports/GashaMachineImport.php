@@ -26,7 +26,7 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows){
         foreach ($rows->toArray() as $key => $row){
-            $location_name = DB::table('locations')->where('id',CRUDBooster::myLocationId())->first();
+            $location_name = DB::table('locations')->where('location_name', trim($row['location']))->first();
             $bay           = GashaMachinesBay::where('name',trim($row['bay']))->first();
             $layer         = GashaMachinesLayer::where('name',trim($row['layer']))->first();
             if($row['no_of_token'] == '' || $row['no_of_token'] == NULL){
