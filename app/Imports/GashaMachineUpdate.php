@@ -34,7 +34,7 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
             $token = isset($row['no_of_token']) && trim($row['no_of_token']) !== '' ? trim($row['no_of_token']) : null;
         
             if ($location_name == NULL) {
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), "No location tag! at line " . ($key + 2), "danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'), "Location not exist! at line " . ($key + 2), "danger");
             }
         
             // Build the update data array

@@ -39,7 +39,7 @@ class GashaMachineImport implements ToCollection, WithHeadingRow
             //     return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Token must be equal or less than 9! at line ".($key+2),"danger");
             // }
             if($location_name == NULL){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"No location tag! at line ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('gasha_machines'),"Location not exist! at line ".($key+2),"danger");
             }
             GashaMachines::Create(
                 [
