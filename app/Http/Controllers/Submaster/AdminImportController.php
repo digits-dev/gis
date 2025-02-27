@@ -75,14 +75,16 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
             "serial_number"  => "Serial Number",
             "no_of_token"    => "No of token",
             "bay"            => "Bay",
-            "layer"          => "Layer"
+            "layer"          => "Layer",
+            "location"       => "Location"
         ];
     
         $arrData2 = [
             "serial_number"  => "PH00001",
             "no_of_token"    => "3",
             "bay"            => "Bay A",
-            "layer"          => "layer 1"
+            "layer"          => "layer 1",
+            'location'       => "sample location"
         ];
     
         // Create a new Spreadsheet

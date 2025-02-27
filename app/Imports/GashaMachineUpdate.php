@@ -26,7 +26,7 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows){
         foreach ($rows->toArray() as $key => $row) {
-            $location_name = DB::table('locations')->where('id', CRUDBooster::myLocationId())->first();
+            $location_name = DB::table('locations')->where('location_name', trim($row['location']))->first();
         
             // Only query for bay and layer if they are provided in the row
             $bay = !empty(trim($row['bay'] ?? '')) ? GashaMachinesBay::where('name', trim($row['bay']))->first() : null;
@@ -41,6 +41,9 @@ class GashaMachineUpdate implements ToCollection, WithHeadingRow
             $updateData = [
                 'updated_by'  => CRUDBooster::myId(),
                 'updated_at'  => date('Y-m-d H:i:s'),
+                'location_name' => $location_name->location_name,
+                'location_id' => $location_name->id
+
             ];
         
             // Add bay and layer to the update array only if they are present
