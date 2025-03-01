@@ -724,19 +724,17 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$globalLockKey = 'collect_token_global_lock';
 		$approvalLockKey = 'collect_token_header_lock_' . $request['collect_token_id'];
 
-		// Global lock waiting mechanism (max 5 sec)
-		$globalLock = Cache::lock($globalLockKey, 10)->block(5);
+		// Global lock (waiting mechanism)
+		while (!Cache::lock($globalLockKey, 10)->get()) {
+			usleep(100000);
+		}
 
-		// Approval lock waiting mechanism (max 5 sec)
+		// prevents duplicate submissions of same transaction
 		$approvalLock = Cache::lock($approvalLockKey, 10)->block(5);
-
 		if (!$approvalLock->get()) {
-			$globalLock->release();
-			return CRUDBooster::redirect(
-				CRUDBooster::mainpath(),
-				'Sorry, another process is already running for this ' .
-				CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() . '.',
-				'danger'
+			Cache::lock($globalLockKey)->release(); 
+			return CRUDBooster::redirect(CRUDBooster::mainpath(),'Sorry, another process is already running for this ' .
+				CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() .'.', 'danger'
 			);
 		}
 
@@ -745,7 +743,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		// Validation for duplicate entry
 		if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
 			$approvalLock->release();
-			$globalLock->release();
+			Cache::lock($globalLockKey)->release();
 			return CRUDBooster::redirect(
 				CRUDBooster::mainpath(),
 				$collectTokenHeader->reference_number . " Record is already approved.",
@@ -853,7 +851,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			} catch (\Exception $e) {
 				DB::rollBack();
 				$approvalLock->release();
-				$globalLock->release();
+				Cache::lock($globalLockKey)->release();
 				return CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
 			}
 		} else {
@@ -865,11 +863,12 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		$approvalLock->release();
-		$globalLock->release();
+		Cache::lock($globalLockKey)->release();
 
 		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
 		return CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
 	}
+
 
 	public function postVoidCollectToken(Request $request)
 	{
