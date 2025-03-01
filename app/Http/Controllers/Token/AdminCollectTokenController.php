@@ -730,7 +730,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		}
 
 		// prevents duplicate submissions of same transaction
-		$approvalLock = Cache::lock($approvalLockKey, 10)->block(5);
+		$approvalLock = Cache::lock($approvalLockKey, 10);
 		if (!$approvalLock->get()) {
 			Cache::lock($globalLockKey)->release(); 
 			return CRUDBooster::redirect(CRUDBooster::mainpath(),'Sorry, another process is already running for this ' .
