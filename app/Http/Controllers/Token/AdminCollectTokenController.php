@@ -723,25 +723,25 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	public function postCollectTokenApproval(Request $request)
 	{
 		$approval_lockKey = 'collect_token_header_lock_' . $request['collect_token_id'];
-    
-		// Lock expires in 5 sec
-		$approval_lock = Cache::lock($approval_lockKey, 5);
+
+		// Lock expires in 10 sec
+		$approval_lock = Cache::lock($approval_lockKey, 10);
 
 		// validation for multiple entry at the same time
 		if (!$approval_lock->get()) {
-			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this '. CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() .'.', 'danger');
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this ' . 
+			CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() . '.', 'danger');
 		}
 
 		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
-		
+
 		// Validation for duplacate entry
 		if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
 			$approval_lock->release();
 			return CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " Record is already approved.", 'danger');
 		}
-		
+
 		if ($request->action_type == 'approve') {
-			
 			// Start Transaction
 			DB::beginTransaction();
 
@@ -825,13 +825,15 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				// Update Inventory Capsule Lines
 				foreach ($ValidatedInventoryCapsuleLines as $perLine) {
 					$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->lockForUpdate()->first();
-					$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales'];
 
-					InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
-						'qty' => $deducted_qty,
-						'updated_by' => CRUDBooster::myId(),
-						'updated_at' => now()
-					]);
+					if ($inventoryLine) {
+						$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales'];
+						InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
+							'qty' => $deducted_qty,
+							'updated_by' => CRUDBooster::myId(),
+							'updated_at' => now()
+						]);
+					}
 				}
 
 				// Update Approval Status
@@ -847,21 +849,30 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 				// Update Token Inventory
 				$get_current_Token_qty = TokenInventory::where('locations_id', $validatedData['header_location_id'])->lockForUpdate()->first();
-
+				
 				if ($get_current_Token_qty) {
-					$get_current_Token_qty->increment('qty', $validatedData['total_collected_token'], [
+					$is_updated = $get_current_Token_qty->increment('qty', $validatedData['total_collected_token'], [
 						'updated_by' => CRUDBooster::myId(),
 						'updated_at' => now()
 					]);
+
+					if (!$is_updated) {
+						Log::error("Failed to update Token Inventory for location ID: {$validatedData['header_location_id']}, 
+							Total Collected Tokens: {$validatedData['total_collected_token']}", [
+							'validatedData' => $validatedData,
+							'user_id' => CRUDBooster::myId(),
+						]);
+
+						throw new \Exception("Failed to update Token Inventory");
+					}
 				}
 
-				// Commit Transactions
+				// Commit 
 				DB::commit();
 			} catch (\Exception $e) {
-				// Rollback Transactions
-				DB::rollBack();
-				// Release Lock
+				// Rollback & release lock
 				$approval_lock->release();
+				DB::rollBack();
 				CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
 			}
 		} else {
@@ -872,13 +883,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 			]);
 		}
 
-		// Release Lock
-		$approval_lock->release();
-
 		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
 		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
 	}
-
 
 	public function postVoidCollectToken(Request $request)
 	{
