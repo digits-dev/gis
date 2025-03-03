@@ -824,7 +824,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 
 				// Update Inventory Capsule Lines
 				foreach ($ValidatedInventoryCapsuleLines as $perLine) {
-					$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->first();
+					$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->lockForUpdate()->first();
 					$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales'];
 
 					InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
@@ -846,20 +846,22 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				]);
 
 				// Update Token Inventory
-				$get_current_Token_qty = TokenInventory::where('locations_id', $validatedData['header_location_id'])->first();
-				$new_total_qty = $get_current_Token_qty->qty + $validatedData['total_collected_token'];
+				$get_current_Token_qty = TokenInventory::where('locations_id', $validatedData['header_location_id'])->lockForUpdate()->first();
 
-				TokenInventory::where('locations_id', $validatedData['header_location_id'])->update([
-					'qty' => $new_total_qty,
-					'updated_by' => CRUDBooster::myId(),
-					'updated_at' => now()
-				]);
+				if ($get_current_Token_qty) {
+					$get_current_Token_qty->increment('qty', $validatedData['total_collected_token'], [
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => now()
+					]);
+				}
 
 				// Commit Transactions
 				DB::commit();
 			} catch (\Exception $e) {
 				// Rollback Transactions
 				DB::rollBack();
+				// Release Lock
+				$approval_lock->release();
 				CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
 			}
 		} else {
@@ -869,6 +871,9 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				'rejected_at' => now(),
 			]);
 		}
+
+		// Release Lock
+		$approval_lock->release();
 
 		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
 		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
