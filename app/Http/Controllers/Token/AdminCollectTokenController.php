@@ -30,6 +30,7 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -722,84 +723,99 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 	public function postCollectTokenApproval(Request $request)
 	{
 		$approval_lockKey = 'collect_token_header_lock_' . $request['collect_token_id'];
-
+    
 		// Lock expires in 5 sec
 		$approval_lock = Cache::lock($approval_lockKey, 5);
 
-		// Prevent simultaneous execution
+		// validation for multiple entry at the same time
 		if (!$approval_lock->get()) {
-			return CRUDBooster::redirect(
-				CRUDBooster::mainpath(),
-				'Sorry, another process is already running for this ' .
-				CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() . '.',
-				'danger'
-			);
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sorry, another process is already running for this '. CollectRrTokens::where('id', $request['collect_token_id'])->pluck('reference_number')->first() .'.', 'danger');
 		}
 
-		try {
-			$collectTokenHeader = CollectRrTokens::findOrFail($request['collect_token_id']);
+		$collectTokenHeader = CollectRrTokens::find($request['collect_token_id']);
+		
+		// Validation for duplacate entry
+		if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
+			$approval_lock->release();
+			return CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " Record is already approved.", 'danger');
+		}
+		
+		if ($request->action_type == 'approve') {
+			
+			// Start Transaction
+			DB::beginTransaction();
 
-			// Prevent duplicate approval
-			if (in_array($collectTokenHeader->statuses_id, [5, 12])) {
-				$approval_lock->release();
-				return CRUDBooster::redirect(
-					CRUDBooster::mainpath(),
-					"{$collectTokenHeader->reference_number} Record is already approved.",
-					'danger'
-				);
-			}
-
-			if ($request->action_type == 'approve') {
-				DB::beginTransaction();
-
-				// Validate input
+			try {
+				// Validations
 				$validatedData = $request->validate([
 					'ref_number' => 'required',
 					'header_location_id' => 'required',
-					'total_collected_token' => 'required|numeric|min:1',
+					'total_collected_token' => 'required',
 					'collect_token_id' => 'required',
-					'collect_token_lines_ids' => 'required|array',
-					'location_id' => 'required|array',
-					'jan_code' => 'required|array',
-					'item_desc' => 'required|array',
-					'item_code' => 'required|array',
-					'gasha_machines_id' => 'required|array',
-					'no_of_tokens' => 'required|array',
-					'collected_qty' => 'required|array',
-					'variance' => 'required|array',
-					'variance_type' => 'required|array',
-					'projected_capsule_sales' => 'required|array',
-					'actual_capsule_sales' => 'required|array',
-					'current_capsule_inventory' => 'required|array',
-					'actual_capsule_inventory' => 'required|array',
-					'line_created_at' => 'required|array',
-					'line_updated_at' => 'required|array',
-					'inventory_capsule_lines_id' => 'required|array',
+
+					'collect_token_lines_ids' => 'required',
+					'location_id' => 'required',
+					'jan_code' => 'required',
+					'item_desc' => 'required',
+					'item_code' => 'required',
+					'gasha_machines_id' => 'required',
+
+					'no_of_tokens' => 'required',
+					'collected_qty' => 'required',
+					'variance' => 'required',
+					'variance_type' => 'required',
+					'projected_capsule_sales' => 'required',
+					'actual_capsule_sales' => 'required',
+					'current_capsule_inventory' => 'required',
+					'actual_capsule_inventory' => 'required',
+					'line_created_at' => 'required',
+					'line_updated_at' => 'required',
+
+					'inventory_capsule_lines_id' => 'required',
 				]);
 
-				// Process Capsule Sales
-				foreach ($validatedData['jan_code'] as $index => $jan_code) {
-					$capsuleSalesData = [
-						'reference_number' => $validatedData['ref_number'],
-						'item_code' => $jan_code,
-						'gasha_machines_id' => $validatedData['gasha_machines_id'][$index],
-						'locations_id' => $validatedData['location_id'][$index],
-						'qty' => $validatedData['actual_capsule_sales'][$index],
-						'sales_type_id' => SalesType::COLLECTTOKEN,
-						'created_by' => CRUDBooster::myId(),
-						'created_at' => now()
+				// Map Capsule Sales Data
+				$ValidatedCapsuleSalesLines = array_map(function ($jan_code, $item_code, $gasha_machines_id, $location_id, $actual_capsule_sales) {
+					return [
+						'jan_code' => $jan_code,
+						'item_code' => $item_code,
+						'gasha_machines_id' => $gasha_machines_id,
+						'location_id' => $location_id,
+						'actual_capsule_sales' => $actual_capsule_sales,
 					];
+				}, $validatedData['jan_code'], $validatedData['item_code'], $validatedData['gasha_machines_id'], $validatedData['location_id'], $validatedData['actual_capsule_sales']);
 
-					if ($capsuleSalesData['qty'] > 0) {
-						CapsuleSales::firstOrCreate($capsuleSalesData);
+				// Map Inventory Capsule Lines
+				$ValidatedInventoryCapsuleLines = array_map(function ($inventory_capsule_lines_id, $actual_capsule_inventory, $actual_capsule_sales) {
+					return [
+						'inventory_capsule_lines_id' => $inventory_capsule_lines_id,
+						'actual_capsule_inventory' => $actual_capsule_inventory,
+						'actual_capsule_sales' => $actual_capsule_sales,
+					];
+				}, $validatedData['inventory_capsule_lines_id'], $validatedData['actual_capsule_inventory'], $validatedData['actual_capsule_sales']);
+
+				// Create Capsule Sales
+				foreach ($ValidatedCapsuleSalesLines as $perCapsuleSale) {
+					if ($perCapsuleSale['actual_capsule_sales'] > 0) {
+						CapsuleSales::firstOrCreate([
+							'reference_number' => $validatedData['ref_number'],
+							'item_code' => $perCapsuleSale['jan_code'],
+							'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
+							'locations_id' => $perCapsuleSale['location_id'],
+							'qty' => $perCapsuleSale['actual_capsule_sales'],
+							'sales_type_id' => SalesType::COLLECTTOKEN,
+							'created_by' => CRUDBooster::myId(),
+							'created_at' => now()
+						]);
+
 						HistoryCapsule::firstOrCreate([
 							'reference_number' => $validatedData['ref_number'],
-							'item_code' => $capsuleSalesData['item_code'],
+							'item_code' => $perCapsuleSale['item_code'],
 							'capsule_action_types_id' => CapsuleActionType::COLLECTTOKEN,
-							'locations_id' => $capsuleSalesData['locations_id'],
-							'gasha_machines_id' => $capsuleSalesData['gasha_machines_id'],
-							'qty' => -abs($capsuleSalesData['qty']),
-							'to_machines_id' => $capsuleSalesData['gasha_machines_id'],
+							'locations_id' => $perCapsuleSale['location_id'],
+							'gasha_machines_id' => $perCapsuleSale['gasha_machines_id'],
+							'qty' => -abs($perCapsuleSale['actual_capsule_sales']),
+							'to_machines_id' => $perCapsuleSale['gasha_machines_id'],
 							'created_by' => $collectTokenHeader->created_by,
 							'created_at' => now()
 						]);
@@ -807,18 +823,15 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 				}
 
 				// Update Inventory Capsule Lines
-				foreach ($validatedData['inventory_capsule_lines_id'] as $index => $lineId) {
-					$inventoryLine = InventoryCapsuleLine::where('id', $lineId)->lockForUpdate()->first();
+				foreach ($ValidatedInventoryCapsuleLines as $perLine) {
+					$inventoryLine = InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->first();
+					$deducted_qty = $inventoryLine->qty - $perLine['actual_capsule_sales'];
 
-					if ($inventoryLine) {
-						$deducted_qty = max(0, $inventoryLine->qty - $validatedData['actual_capsule_sales'][$index]);
-
-						InventoryCapsuleLine::where('id', $lineId)->update([
-							'qty' => $deducted_qty,
-							'updated_by' => CRUDBooster::myId(),
-							'updated_at' => now()
-						]);
-					}
+					InventoryCapsuleLine::where('id', $perLine['inventory_capsule_lines_id'])->update([
+						'qty' => $deducted_qty,
+						'updated_by' => CRUDBooster::myId(),
+						'updated_at' => now()
+					]);
 				}
 
 				// Update Approval Status
@@ -832,43 +845,35 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 					'line_status' => Statuses::COLLECTED
 				]);
 
-				// Update Token Inventory 
-				$tokenInventory = TokenInventory::where('locations_id', $validatedData['header_location_id'])
-					->lockForUpdate()
-					->first();
+				// Update Token Inventory
+				$get_current_Token_qty = TokenInventory::where('locations_id', $validatedData['header_location_id'])->first();
+				$new_total_qty = $get_current_Token_qty->qty + $validatedData['total_collected_token'];
 
-				if ($tokenInventory) {
-					$tokenInventory->increment('qty', $validatedData['total_collected_token'], [
-						'updated_by' => CRUDBooster::myId(),
-						'updated_at' => now()
-					]);
-				}
-
-				DB::commit();
-			} else {
-				$collectTokenHeader->update([
-					'statuses_id' => Statuses::FORCSAEDIT,
-					'rejected_by' => CRUDBooster::myId(),
-					'rejected_at' => now(),
+				TokenInventory::where('locations_id', $validatedData['header_location_id'])->update([
+					'qty' => $new_total_qty,
+					'updated_by' => CRUDBooster::myId(),
+					'updated_at' => now()
 				]);
+
+				// Commit Transactions
+				DB::commit();
+			} catch (\Exception $e) {
+				// Rollback Transactions
+				DB::rollBack();
+				CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
 			}
-
-			// Release Lock
-			$approval_lock->release();
-
-			$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
-			return CRUDBooster::redirect(CRUDBooster::mainpath(), "{$collectTokenHeader->reference_number} has been {$actionType}!", 'success');
-		} catch (\Exception $e) {
-			// Rollback Transactions
-			DB::rollBack();
-			\Log::error('Approval failed: ' . $e->getMessage());
-
-			// Release Lock 
-			$approval_lock->release();
-
-			return CRUDBooster::redirect(CRUDBooster::mainpath(), "Transaction failed: " . $e->getMessage(), 'danger');
+		} else {
+			$collectTokenHeader->update([
+				'statuses_id' => Statuses::FORCSAEDIT,
+				'rejected_by' => CRUDBooster::myId(),
+				'rejected_at' => now(),
+			]);
 		}
+
+		$actionType = $request->action_type == 'approve' ? "Approved" : "Rejected";
+		CRUDBooster::redirect(CRUDBooster::mainpath(), $collectTokenHeader->reference_number . " has been " . $actionType . "!", 'success');
 	}
+
 
 	public function postVoidCollectToken(Request $request)
 	{
