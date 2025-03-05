@@ -105,6 +105,35 @@
                     </div>
                     <div class="reason_input_div">
                         <label><span style="color:red">*</span>Memo:</label>
+                        <div style="padding: 10px; border-radius: 10px; background:skyblue; margin-bottom:2%">
+                            <p>
+                                <b style="color:blue"> <i class="fa fa-info-circle"></i> NOTE:</b> 
+                                Please select or copy from the list below for your memo. 
+                                Anything not on the list will not be accepted. <b>(Click copy icon for easy copy.)</b>
+                            </p>
+                        </div>
+                        <ul style="list-style: none; margin:0; padding:0; margin-left: 7px; margin-bottom: 7px;">
+                            <li>
+                                <i class="fa fa-file-text copy-icon" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon" style="display: none; color:limegreen;"></i>
+                                Capsule Inventory Loss (ATD)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon" style="display: none; color:limegreen;"></i>
+                                Capsule Inventory Adjustment (Process Error)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon" style="display: none; color:limegreen;"></i>
+                                Marketing Expense (MKTG)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon" style="display: none; color:limegreen;"></i>
+                                Daily Sales Report (DSR) Adjustment
+                            </li>
+                        </ul>
                         <textarea name="reason_add" id="textarea_add" cols="50" rows="1" required></textarea>
                     </div>
                 </div>
@@ -120,6 +149,35 @@
                     </div>
                     <div class="reason_input_div">
                         <label><span style="color:red">*</span>Memo:</label>
+                        <div style="padding: 10px; border-radius: 10px; background:skyblue; margin-bottom:2%">
+                            <p>
+                                <b style="color:blue"> <i class="fa fa-info-circle"></i> NOTE:</b> 
+                                Please select or copy from the list below for your memo. 
+                                Anything not on the list will not be accepted. <b>(Click copy icon for easy copy.)</b>
+                            </p>
+                        </div>
+                        <ul style="list-style: none; margin:0; padding:0; margin-left: 7px; margin-bottom: 7px;">
+                            <li>
+                                <i class="fa fa-file-text copy-icon2" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon2" style="display: none; color:limegreen;"></i>
+                                Capsule Inventory Loss (ATD)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon2" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon2" style="display: none; color:limegreen;"></i>
+                                Capsule Inventory Adjustment (Process Error)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon2" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon2" style="display: none; color:limegreen;"></i>
+                                Marketing Expense (MKTG)
+                            </li>
+                            <li>
+                                <i class="fa fa-file-text copy-icon2" style="color: #4292c6; cursor: pointer;"></i>
+                                <i class="fa fa-check check-icon2" style="display: none; color:limegreen;"></i>
+                                Daily Sales Report (DSR) Adjustment
+                            </li>
+                        </ul>
                         <textarea name="reason_deduct" id="textarea_deduct" cols="50" rows="1" required></textarea>
                     </div>
                 </div>
@@ -426,5 +484,61 @@
         input.value = input.value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(".copy-icon").click(function() {
+            var $li = $(this).parent(); // Get parent <li>
+            var textToCopy = $li.text().trim(); // Get the text inside the <li>
+
+            // Create a temporary textarea element
+            var tempTextarea = $("<textarea>");
+            $("body").append(tempTextarea);
+            tempTextarea.val(textToCopy).select();
+            document.execCommand("copy");
+            tempTextarea.remove();
+
+            var $copyIcon = $(this); 
+            var $checkIcon = $li.find(".check-icon"); 
+
+            // Hide copy icon and show check icon
+            $copyIcon.hide();
+            $checkIcon.show();
+
+            // Restore copy icon after 3 seconds
+            setTimeout(function() {
+                $checkIcon.hide();
+                $copyIcon.show();
+            }, 3000);
+        });
+    });
+
+    $(document).ready(function() {
+        $(".copy-icon2").click(function() {
+            var $li2 = $(this).parent(); // Get parent <li>
+            var textToCopy2 = $li2.text().trim(); // Get the text inside the <li>
+
+            // Create a temporary textarea element
+            var tempTextarea2 = $("<textarea>");
+            $("body").append(tempTextarea2);
+            tempTextarea2.val(textToCopy2).select();
+            document.execCommand("copy");
+            tempTextarea2.remove();
+
+            var $copyIcon2 = $(this); 
+            var $checkIcon2 = $li2.find(".check-icon2"); 
+
+            // Hide copy icon and show check icon
+            $copyIcon2.hide();
+            $checkIcon2.show();
+
+            // Restore copy icon after 3 seconds
+            setTimeout(function() {
+                $checkIcon2.hide();
+                $copyIcon2.show();
+            }, 3000);
+        });
+    });
 </script>
 @endpush
