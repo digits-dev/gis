@@ -39,6 +39,7 @@ use App\Http\Controllers\Capsule\AdminCapsuleAdjustmentsController;
 use App\Http\Controllers\Submaster\AdminItemsController;
 use App\Http\Controllers\AdminCmsUsersController;
 use App\Http\Controllers\History\AdminCollectTokenHistoriesController;
+use App\Http\Controllers\History\AdminNewCashFloatHistoriesController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
 
 /*
@@ -282,19 +283,8 @@ Route::group(['middleware' => ['web','check.user']], function() {
         Route::get('/export_collected_token_history',[AdminCollectTokenHistoriesController::class,'exportCollectedTokenHistory'])->name('export_collected_token_history'); 
     });
 
-    
-
-    
-
-
-
-    
-
-    
-
-    
-
- 
-
+    Route::prefix(config('crudbooster.ADMIN_PATH').'/new_cash_float_histories')->group(function(){
+        Route::get('/getView/{id}',[AdminNewCashFloatHistoriesController::class, 'getView']);
+    });
     
 });
