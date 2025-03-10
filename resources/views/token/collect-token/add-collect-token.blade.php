@@ -251,12 +251,12 @@
                 <div class="input-container">
                     <div style="font-weight: 600">Location</div>
                     <div class="">
-                        @foreach ($gasha_machines as $location)
-                            @if($location->location_id == CRUDBooster::myLocationId()) 
+                        {{-- @foreach ($gasha_machines as $location)
+                            @if($location->location_id === CRUDBooster::myLocationId())  --}}
                                 <input type="text" class="form-control" style="border-radius: 5px; padding: 19px 10px 19px 10px;" name="location" id="location" value="{{ $location->location_name }}" readonly>
-                                <input type="hidden" class="form-control" style="border-radius: 5px; padding: 19px 10px 19px 10px;" name="location_id" id="location_id" value="{{ $location->location_id }}" readonly>
-                            @endif
-                        @endforeach                 
+                                <input type="hidden" class="form-control" style="border-radius: 5px; padding: 19px 10px 19px 10px;" name="location_id" id="location_id" value="{{ $location->id }}" readonly>
+                            {{-- @endif
+                        @endforeach                  --}}
                     </div>
                 </div>
 
