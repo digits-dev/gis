@@ -382,6 +382,7 @@ class AdminCollectTokenController extends \crocodicstudio\crudbooster\controller
 		$data = [];
 		$data['page_title'] = 'Collect Token';
 		$data['page_icon'] = 'fa fa-circle-o';
+		$data['location'] = Locations::where('id', CRUDBooster::myLocationId())->first();
 		$data['gasha_machines'] = GashaMachines::getMachineWithBay()->get();
 		$data['gasha_machine_bay'] = GashaMachinesBay::with(['getCollectionStatus', 'getGashaMachine'])->get();
 
