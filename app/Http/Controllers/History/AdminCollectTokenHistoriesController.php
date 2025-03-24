@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\History;
 
+use Session;
 use App\Exports\ExportCollectedTokenHistory;
 use App\Models\Audit\CollectRrTokens;
-use Session;
 use Illuminate\Http\Request;
-use DB;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use App\Models\CmsModels\CmsPrivileges;
 use App\Models\CmsUsers;
@@ -22,7 +21,11 @@ use App\Models\Token\PulloutToken;
 use App\Models\Token\StoreRrToken;
 use App\Models\Token\TokenInventory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Rap2hpoutre\FastExcel\FastExcel;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController
 {
@@ -74,8 +77,31 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		}
 
 		if (in_array(CRUDBooster::myPrivilegeId(), self::EXPORTER)) {
-			$this->index_button[] = ["label" => "Export Collected Token", "icon" => "fa fa-download", "url" => route('export_collected_token_history') . '?' . urldecode(http_build_query(@$_GET)), "color" => "success"];
+			$this->index_button[] = [
+				"label" => "Generate Collected Token Export",
+				"icon" => "fa fa-refresh",
+				"url" => "javascript:generateExportCollectToken('" . urldecode(http_build_query(@$_GET)) . "')",
+				"color" => "success"
+			];
 		}
+
+		$this->post_index_html = '
+			<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+			<script src="' . asset('js/collect-token-export-generator.js') . '"></script>
+		';
+
+		$this->script_js = '
+			function generateExportCollectToken(filters) {
+				handleExportGenerator(filters);
+			}
+		';
+
+		$this->style_css = "
+			.swal2-popup {
+				font-size: unset !important;
+				border-radius: 10px !important;
+			}
+		";
 	}
 
 	public function getDetail($id)
@@ -216,7 +242,7 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 	public function postReport(Request $request)
 	{
 		try {
-			
+
 			$validated_data = $request->validate([
 				'store_name' => 'required',
 				'beginning_bal' => 'required',
@@ -226,11 +252,11 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 			]);
 
 			$is_generated = BeginningBalVsTokenOnHand::where('locations_id', CRUDBooster::myLocationId())
-			    ->where('generated_date', $validated_data['generated_date'])->first();
+				->where('generated_date', $validated_data['generated_date'])->first();
 
-			if($is_generated){
+			if ($is_generated) {
 				return response()->json([
-				    'already_generated' => 'This report is generated already. 
+					'already_generated' => 'This report is generated already. 
 					 Double check your date entry if it is the date today, if not,
 					 please select the date today to generate todays report.
 					 And please strictly remember that this works only once per day. Thank You.'
@@ -253,7 +279,6 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 					'success' => 'Form printed successfully'
 				]);
 			}
-
 		} catch (\Exception $e) {
 			return response()->json([
 				'error' => 'Error respose:' . $e->getMessage()
@@ -261,10 +286,214 @@ class AdminCollectTokenHistoriesController extends \crocodicstudio\crudbooster\c
 		}
 	}
 
+	// Generate Export
 	public function exportCollectedTokenHistory(Request $request)
-	{
-		$filter_column = $request->get('filter_column');
+	{		
+		$raw_filters = $request->input('filters');
+		$filters = [];
+		parse_str($raw_filters, $filters);
 
-		return Excel::download(new ExportCollectedTokenHistory($filter_column), 'Export-Collected-Token- ' . now()->format('Ymd h_i_sa') . '.xlsx');
+		if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::SUPERADMIN, CmsPrivileges::AUDIT, CmsPrivileges::AUDITAPPROVER, CmsPrivileges::OPERATIONMANAGER])) {
+			$query = DB::table('collect_rr_tokens')
+				->leftJoin('collect_rr_token_lines', 'collect_rr_tokens.id', '=', 'collect_rr_token_lines.collected_token_id')
+				->leftJoin('cms_users as cu1', 'collect_rr_tokens.confirmed_by', '=', 'cu1.id')
+				->leftJoin('cms_users as cu2', 'collect_rr_tokens.approved_by', '=', 'cu2.id')
+				->leftJoin('cms_users as cu3', 'collect_rr_tokens.received_by', '=', 'cu3.id')
+				->leftJoin('cms_users as cu4', 'collect_rr_tokens.created_by', '=', 'cu4.id')
+				->leftJoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')
+				->leftJoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
+				->leftJoin('locations', 'collect_rr_tokens.location_id', '=', 'locations.id')
+				->leftJoin('gasha_machines_bay', 'collect_rr_tokens.bay_id', '=', 'gasha_machines_bay.id')
+				->select(
+					'collect_rr_tokens.*',
+					'collect_rr_token_lines.jan_number',
+					'collect_rr_token_lines.item_description',
+					'collect_rr_token_lines.no_of_token',
+					'collect_rr_token_lines.qty',
+					'collect_rr_token_lines.variance',
+					'collect_rr_token_lines.projected_capsule_sales',
+					'collect_rr_token_lines.current_capsule_inventory',
+					'collect_rr_token_lines.actual_capsule_inventory',
+					'collect_rr_token_lines.actual_capsule_sales',
+					'collect_rr_token_lines.variance_type',
+					'statuses.status_description',
+					'gasha_machines.serial_number',
+					'locations.location_name',
+					'gasha_machines_bay.name',
+					'cu1.name as confirmed_by_name',
+					'cu2.name as approved_by_name',
+					'cu3.name as received_by_name',
+					'cu4.name as created_by_name',
+				)
+				->where('collect_rr_tokens.reference_number', 'LIKE', '%CLTN-%')
+				->whereIn('collect_rr_tokens.statuses_id', [Statuses::COLLECTED, Statuses::VOIDED]);
+		} else if (in_array(CRUDBooster::myPrivilegeId(), [CmsPrivileges::CSA, CmsPrivileges::CASHIER, CmsPrivileges::STOREHEAD])) {
+			$query = DB::table('collect_rr_tokens')
+				->leftJoin('collect_rr_token_lines', 'collect_rr_tokens.id', '=', 'collect_rr_token_lines.collected_token_id')
+				->leftJoin('cms_users as cu1', 'collect_rr_tokens.confirmed_by', '=', 'cu1.id')
+				->leftJoin('cms_users as cu2', 'collect_rr_tokens.approved_by', '=', 'cu2.id')
+				->leftJoin('cms_users as cu3', 'collect_rr_tokens.received_by', '=', 'cu3.id')
+				->leftJoin('cms_users as cu4', 'collect_rr_tokens.created_by', '=', 'cu4.id')
+				->leftJoin('statuses', 'collect_rr_tokens.statuses_id', '=', 'statuses.id')
+				->leftJoin('gasha_machines', 'collect_rr_token_lines.gasha_machines_id', '=', 'gasha_machines.id')
+				->leftJoin('locations', 'collect_rr_tokens.location_id', '=', 'locations.id')
+				->leftJoin('gasha_machines_bay', 'collect_rr_tokens.bay_id', '=', 'gasha_machines_bay.id')
+				->select(
+					'collect_rr_tokens.*',
+					'collect_rr_token_lines.jan_number',
+					'collect_rr_token_lines.item_description',
+					'collect_rr_token_lines.no_of_token',
+					'collect_rr_token_lines.qty',
+					'collect_rr_token_lines.variance',
+					'collect_rr_token_lines.projected_capsule_sales',
+					'collect_rr_token_lines.current_capsule_inventory',
+					'collect_rr_token_lines.actual_capsule_inventory',
+					'collect_rr_token_lines.actual_capsule_sales',
+					'collect_rr_token_lines.variance_type',
+					'statuses.status_description',
+					'gasha_machines.serial_number',
+					'locations.location_name',
+					'gasha_machines_bay.name',
+					'cu1.name as confirmed_by_name',
+					'cu2.name as approved_by_name',
+					'cu3.name as received_by_name',
+					'cu4.name as created_by_name',
+				)
+				->where('collect_rr_tokens.location_id', CRUDBooster::myLocationId())
+				->where('collect_rr_tokens.reference_number', 'LIKE', '%CLTN-%')
+				->whereIn('collect_rr_tokens.statuses_id', [Statuses::COLLECTED, Statuses::VOIDED]);
+		}
+
+		if ($filters['filter_column']) {
+            foreach ((array) $filters['filter_column'] as $key => $fc) {
+				$value = $fc['value'] ?? null;
+				$type = $fc['type'] ?? null;
+
+				if (!empty($value) && !empty($type)) {
+					switch ($type) {
+						case 'empty':
+							$query->whereNull($key)->orWhere($key, '');
+							break;
+						case 'like':
+						case 'not like':
+							$query->where($key, $type, '%' . $value . '%');
+				
+							break;
+						case 'in':
+						case 'not in':
+							$values = explode(',', $value);
+							$type === 'in' ? $query->whereIn($key, $values) : $query->whereNotIn($key, $values);
+							break;
+						case 'between':
+							$range = $value;
+	
+							if (count($range) == 2) {
+								$startDate = date('Y-m-d', strtotime($range[0]));
+								$endDate = date('Y-m-d', strtotime($range[1]));
+								
+								$query->whereBetween('collect_rr_tokens.created_at', [$startDate, $endDate]);
+							}
+							break;
+						default:
+							$query->where($key, $type, $value);
+							
+							break;
+					}
+				}
+			}
+		}
+
+		$directory = 'tc_history/exports';
+		$fileName = CRUDBooster::myId() . '_Collect_Token_History_' . date('Y-m-d_H-i-s') . '.csv';
+		$filePath = storage_path('app/' . $directory . '/' . $fileName);
+		Storage::makeDirectory(storage_path('app/' . $directory), 0777, true, true);
+
+		// Open file for writing
+		$file = fopen($filePath, 'w');
+
+		// headers
+		fputcsv($file, [
+			'Reference Number', 'Status', 'Location', 'JAN #', 'Item Description', 'Bay', 
+			'Machine #', 'No of Token', 'Token Collected', 'Variance', 
+			'Projected Capsule Sales', 'Current Capsule Inventory', 'Actual Capsule Inventory', 
+			'Actual Capsule Sales', 'Variance Type', 'Confirmed By', 'Confirmed Date', 
+			'Approved By', 'Approved Date', 'Received By', 'Received Date', 
+			'Created By', 'Created Date'
+		]);
+
+		// Process data using cursor
+		foreach ($query->cursor() as $per_collect_token) {
+			fputcsv($file, [
+				$per_collect_token->reference_number ?? 'NULL',
+				$per_collect_token->status_description ?? 'NULL',
+				$per_collect_token->location_name ?? 'NULL',
+				$per_collect_token->jan_number ?? 'NULL',
+				$per_collect_token->item_description ?? 'NULL',
+				$per_collect_token->name ?? 'NULL',
+				$per_collect_token->serial_number ?? 'NULL',
+				$per_collect_token->no_of_token ?? 0,
+				$per_collect_token->qty ?? 0,
+				$per_collect_token->variance ?? 0,
+				$per_collect_token->projected_capsule_sales ?? 0,
+				$per_collect_token->current_capsule_inventory ?? 0,
+				$per_collect_token->actual_capsule_inventory ?? 0,
+				$per_collect_token->actual_capsule_sales ?? 0,
+				$per_collect_token->variance_type ?? 'NULL',
+				$per_collect_token->confirmed_by_name ?? 'NULL',
+				$per_collect_token->confirmed_at ?? 'NULL',
+				$per_collect_token->approved_by_name ?? 'NULL',
+				$per_collect_token->approved_at ?? 'NULL',
+				$per_collect_token->received_by_name ?? 'NULL',
+				$per_collect_token->received_at ?? 'NULL',
+				$per_collect_token->created_by_name ?? 'NULL',
+				$per_collect_token->created_at ?? 'NULL',
+			]);
+		}
+
+		// Close the file after writing
+		fclose($file);
+
+		return response()->json([
+			'success' => true,
+			'message' => 'CSV file has been generated successfully.',
+			'file_name' => $fileName,
+		]);
+
+	}
+
+	// Download generated export
+	public function downloadFile(Request $request)
+	{
+		try {
+			$filename = $request->input('file_name'); 
+			$filePath = "tc_history/exports/{$filename}";
+
+			// Check if the file exists
+			if (!Storage::exists($filePath)) {
+				return response()->json(['error' => 'File not found'], 404);
+			}
+
+			// StreamedResponse to download file
+			$response = new StreamedResponse(function () use ($filePath) {
+				$stream = Storage::readStream($filePath); 
+				fpassthru($stream);
+				fclose($stream);
+			}, 200, [
+				'Content-Type' => Storage::mimeType($filePath),
+				'Content-Disposition' => 'attachment; filename="'.basename($filePath).'"',
+			]);
+
+			// Delete file after response has been sent
+			$response->send();
+			Storage::delete($filePath); 
+
+			return $response;
+
+		} catch (\Exception $e) {
+			return response()->json([
+				'error' => 'An error occurred while downloading the file.',
+				'message' => $e->getMessage(),
+			], 500);
+		}
 	}
 }
