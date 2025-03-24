@@ -29,7 +29,8 @@ class GashaMachines extends Model
         'machine_statuses_id',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'updated_by'
     ];
 
     public function getCollectTokenLines() : HasMany {
