@@ -413,7 +413,7 @@ use Carbon\Carbon;
 			}
 
 			//Update machine number base on item master
-			GashaMachines::where('serial_number',$machine_serial_number)->update(['no_of_token'=>$item->no_of_tokens]);
+			// GashaMachines::where('serial_number',$machine_serial_number)->update(['no_of_token'=>$item->no_of_tokens]);
 			// checking if item and machine has the same no. of tokens
 			$is_tally = $item->no_of_tokens == $machine->no_of_token;
 

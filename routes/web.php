@@ -280,11 +280,12 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::prefix(config('crudbooster.ADMIN_PATH').'/collect_token_histories')->group(function(){
         Route::get('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm']);
         Route::post('/print_token_form',[AdminCollectTokenHistoriesController::class, 'getPrintForm'])->name('postPrintHistory');
-        Route::get('/export_collected_token_history',[AdminCollectTokenHistoriesController::class,'exportCollectedTokenHistory'])->name('export_collected_token_history'); 
+        Route::post('/export_collected_token_history',[AdminCollectTokenHistoriesController::class,'exportCollectedTokenHistory'])->name('export_collected_token_history'); 
+        Route::get('/download_generated_collected_token_history',[AdminCollectTokenHistoriesController::class,'downloadFile']); 
     });
 
     Route::prefix(config('crudbooster.ADMIN_PATH').'/new_cash_float_histories')->group(function(){
         Route::get('/getView/{id}',[AdminNewCashFloatHistoriesController::class, 'getView']);
-    });
+    });   
     
 });
