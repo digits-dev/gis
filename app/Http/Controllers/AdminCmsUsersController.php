@@ -64,6 +64,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 		if((CRUDBooster::isSuperadmin()) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
 		    $this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"ACTIVE;INACTIVE",'required'=>true, 'width'=>'col-sm-5');
+			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","datatable"=>"locations,location_name", 'datatable_where'=>"status = 'ACTIVE'",'width'=>'col-sm-5','disabled'=>true);
 		}
 
 
