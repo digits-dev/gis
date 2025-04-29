@@ -7,7 +7,6 @@
             </a>
         </div>
         <ul>
-          
             <li>
                 <a class="nav-module {{ Request::Segment(1) == 'pos_dashboard' ? 'active' : '' }}" href="/pos_dashboard">
                     <i class="fa fa-home {{ Request::Segment(1) == 'pos_dashboard' ? 'active_i' : '' }}"></i>
@@ -21,8 +20,14 @@
                 </a>
             </li>
             <li>
+                <a class="nav-module {{ Request::Segment(1) == 'item_pos' ? 'active' : '' }}" href="/item_pos">
+                    <i class="fa-solid fa-cash-register {{ Request::Segment(1) == 'item_pos' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'item_pos' ? 'active_span' : '' }}">Item POS</span>
+                </a>
+            </li>
+            <li>
                 <a data-item="token-dispense" class="nav-module {{ Request::Segment(1) == 'pos_token_dispense' ? 'active' : '' }}" href="/pos_token_dispense">
-                    <i class="fa-solid fa-cash-register {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
+                    <i class="fa-solid fa-coins {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_span_dispense' : '' }}">Token Dispense</span>
                 </a>
             </li>

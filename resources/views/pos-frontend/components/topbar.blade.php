@@ -10,6 +10,8 @@
                     <p>Token Swap</p>
                     @elseif(Request::Segment(1) == 'pos_token_dispense')
                     <p>Token Dispense</p>
+                    @elseif(Request::Segment(1) == 'item_pos')
+                    <p>Item POS</p>
                     @elseif(Request::Segment(1) == 'pos_swap_history')
                     <p>Swap History</p>
                     @elseif(Request::Segment(1) == 'pos_float_history')

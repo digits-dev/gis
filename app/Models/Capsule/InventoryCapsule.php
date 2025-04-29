@@ -17,6 +17,10 @@ class InventoryCapsule extends Model
         return $this->belongsTo(InventoryCapsuleLine::class, 'inventory_capsules_id', 'id');
     }
 
+    public function item_stockroom_data(){
+        return $this->hasOne(InventoryCapsuleLine::class, 'inventory_capsules_id', 'id');
+    }
+
     public function item()
     {
         return $this->belongsTo(Item::class, 'item_code', 'digits_code2');
