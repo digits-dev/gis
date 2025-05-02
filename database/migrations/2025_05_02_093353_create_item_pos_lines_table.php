@@ -16,6 +16,7 @@ class CreateItemPosLinesTable extends Migration
         Schema::create('item_pos_lines', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('item_pos_id')->nullable();
+            $table->string('digits_code')->nullable();
             $table->string('jan_number')->nullable();
             $table->string('item_description')->nullable();
             $table->integer('qty')->nullable();
