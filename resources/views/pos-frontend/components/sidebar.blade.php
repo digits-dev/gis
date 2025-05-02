@@ -26,6 +26,12 @@
                 </a>
             </li>
             <li>
+                <a class="nav-module {{ Request::Segment(1) == 'item_pos_transactions' ? 'active' : '' }}" href="/item_pos_transactions">
+                    <i class="fa-solid fa-history {{ Request::Segment(1) == 'item_pos_transactions' ? 'active_i' : '' }}"></i>
+                    <span class="nav-item {{ Request::Segment(1) == 'item_pos_transactions' ? 'active_span' : '' }}">Item POS Transactions</span>
+                </a>
+            </li>
+            <li>
                 <a data-item="token-dispense" class="nav-module {{ Request::Segment(1) == 'pos_token_dispense' ? 'active' : '' }}" href="/pos_token_dispense">
                     <i class="fa-solid fa-coins {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_span_dispense' : '' }}">Token Dispense</span>

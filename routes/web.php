@@ -41,6 +41,7 @@ use App\Http\Controllers\AdminCmsUsersController;
 use App\Http\Controllers\History\AdminCollectTokenHistoriesController;
 use App\Http\Controllers\History\AdminNewCashFloatHistoriesController;
 use App\Http\Controllers\Pos\POSItemPointofSaleController;
+use App\Http\Controllers\Pos\POSItemTransactionsHistoryController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
 
 /*
@@ -101,7 +102,9 @@ Route::group(['middleware' => ['web','check.user']], function() {
     // ITEM POS 
     Route::get('item_pos', [POSItemPointofSaleController::class, 'index'])->middleware('auth');
     Route::post('/check_jan_code', [POSItemPointofSaleController::class, 'check'])->name('check.jan.code');
-    
+    Route::get('item_pos_transactions', [POSItemTransactionsHistoryController::class, 'index'])->middleware('auth');
+    Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');
+    Route::get('item_pos_transactions/void/{id}', [POSItemTransactionsHistoryController::class, 'void'])->middleware('auth');
     //TOKEN DISPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
