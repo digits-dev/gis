@@ -43,6 +43,7 @@ use App\Http\Controllers\History\AdminNewCashFloatHistoriesController;
 use App\Http\Controllers\Pos\POSItemPointofSaleController;
 use App\Http\Controllers\Pos\POSItemTransactionsHistoryController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
+use App\Http\Controllers\ItemPos\AdminItemPosTransactionsBackendController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,7 +108,9 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');
     Route::get('item_pos_transactions/void/{id}', [POSItemTransactionsHistoryController::class, 'void'])->middleware('auth');
     Route::get('item_pos_transactions/show/{id}', [POSItemTransactionsHistoryController::class, 'show'])->middleware('auth');
-    
+    //ITEM POS BACKEND CONTROLLER
+    Route::get(config('crudbooster.ADMIN_PATH').'/void-transaction/{id}', [AdminItemPosTransactionsBackendController::class, 'voidTransaction'])->middleware('auth');
+
     //TOKEN DISPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
