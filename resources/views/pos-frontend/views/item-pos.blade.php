@@ -25,9 +25,9 @@
                         </button>
                     </div>
                     <div class="scanner-container-child2">
-                        <div style="flex:1;">
+                        <div  style="flex:1;">
                             <input id="jan-code-input" class="scan-input" type="text" placeholder="Enter JAN Code Here"/>
-                            <div style="display: flex; justify-content: space-between">
+                            <div style="display: flex; justify-content: space-between" class="scanner-qty">
                                 <p style="font-size: 12px; font-weight: 500; color: #747474;">For Manual Code Input use only</p>
                                 <div class="quantity-wrapper">
                                     <span style="font-size: 14px; font-weight: 500">Quantity</span>
@@ -391,9 +391,9 @@
 
             if (cartItems.length === 0) {
                 html = `
-                    <div style="display: flex; flex-direction: column; gap:10px; user-select: none; justify-content: center; align-items: center; border: 1px solid #c7c7c7; height: 100%; border-style: dashed; border-radius: 8px;">
-                        <img style="width: 80px; height: auto; opacity: .7;" src="{{ asset('img/item-pos/item-pos-out-of-stock.png') }}" alt="">
-                        <p style="font-size: 18px; font-weight: 500; color: #c7c7c7;">Scanned items will go here</p>
+                    <div class="empty-cart-wrapper" style="display: flex; flex-direction: column; gap:10px; user-select: none; justify-content: center; align-items: center; border: 1px solid #c7c7c7; height: 100%; border-style: dashed; border-radius: 8px;">
+                        <img class="empty-icon" style="width: 80px; height: auto; opacity: .7;" src="{{ asset('img/item-pos/item-pos-out-of-stock.png') }}" alt="">
+                        <p class="empty-text" style="font-size: 18px; font-weight: 500; color: #c7c7c7;">Scanned items will go here</p>
                     </div>
                 `;
 
