@@ -17,6 +17,7 @@ class CreateItemPosTable extends Migration
             $table->id();
             $table->string('reference_number', 255)->nullable();
             $table->decimal('total_value', 8, 2)->nullable();
+            $table->decimal('amount_value', 8, 2)->nullable();
             $table->decimal('change_value', 8, 2)->nullable();
             $table->unsignedInteger('mode_of_payments_id')->nullable();
             $table->integer('locations_id')->nullable();

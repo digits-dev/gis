@@ -100,8 +100,9 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
 
     // ITEM POS 
-    Route::get('item_pos', [POSItemPointofSaleController::class, 'index'])->middleware('auth');
+    Route::get('item_pos', [POSItemPointofSaleController::class, 'index'])->middleware('auth')->name('item_pos');
     Route::post('/check_jan_code', [POSItemPointofSaleController::class, 'check'])->name('check.jan.code');
+    Route::post('/item_pos/submit', [POSItemPointofSaleController::class, 'submitTransaction'])->name('submit.item.transaction');
     Route::get('item_pos_transactions', [POSItemTransactionsHistoryController::class, 'index'])->middleware('auth');
     Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');
     Route::get('item_pos_transactions/void/{id}', [POSItemTransactionsHistoryController::class, 'void'])->middleware('auth');

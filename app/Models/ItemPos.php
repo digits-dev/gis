@@ -7,13 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\Locations;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
+
 class ItemPos extends Model
 {
     use HasFactory;
 
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function($model)
+        {
+            $model->created_by = CRUDBooster::myId() ?? auth()->user()->id;
+            $model->updated_at = null;
+        });
+        static::updating(function($model)
+        {
+            $model->updated_by = CRUDBooster::myId() ?? auth()->user()->id;
+        });
+    }
+
     protected $fillable = [
         'reference_number',
         'total_value',
+        'amount_value',
         'change_value',
         'mode_of_payments_id',
         'locations_id',
@@ -28,6 +45,7 @@ class ItemPos extends Model
     protected $filterable = [
         'reference_number',
         'total_value',
+        'amount_value',
         'change_value',
         'mode_of_payments_id',
         'locations_id',
