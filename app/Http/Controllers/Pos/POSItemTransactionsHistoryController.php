@@ -78,7 +78,7 @@ class POSItemTransactionsHistoryController extends Controller
 
     public function getDetail($id){
         $data = [];
-        $data['items'] = ItemPos::with(['creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
+        $data['items'] = ItemPos::with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
         return response()->json($data);
     }
 

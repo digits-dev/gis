@@ -10,6 +10,17 @@
 {{-- Your CSS --}}
 @section('css')
 <style>
+      :root {
+        --primary: #e53e3e;
+        --primary-dark: #c53030;
+        --gray-100: #f7fafc;
+        --gray-200: #edf2f7;
+        --gray-300: #e2e8f0;
+        --gray-600: #718096;
+        --gray-800: #2d3748;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --radius: 0.5rem;
+    }
     .display {
         display: none;
     }
@@ -110,13 +121,214 @@
         font-size: 12px;
     }
 
+    /* MODAL */
+    .custom-modal {
+        display: none; /* hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .custom-modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        position: relative;
+    }
+
+    .custom-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 22px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .custom-modal-footer {
+        text-align: right;
+        margin-top: 15px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+   
+    
+    .items-section {
+        margin-top: 20px;
+    }
+    
+    .items-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .custom-modal-content {
+            width: 80%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .custom-modal-content {
+            width: 90%;
+            margin: 10% auto;
+            padding: 20px;
+        }
+        
+    }
+
+    @media (max-width: 576px) {
+        .custom-modal-content {
+            width: 95%;
+            margin: 5% auto;
+            padding: 15px;
+        }
+        
+        .custom-modal h3 {
+            font-size: 18px;
+        }
+        
+    }
+
+    .transaction-header {
+        margin-bottom: 2rem;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .transaction-title {
+        background-color: var(--primary);
+        color: white;
+        padding: 1rem 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .transaction-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .detail-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .detail-label {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        font-weight: 500;
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .styled-table-items{
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+    .styled-table-items thead {
+        background-color: var(--primary);
+        color: white;
+    }
+    .styled-table-items th {
+        text-align: left;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .styled-table-items td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--gray-200);
+        font-size: 0.7rem;
+    }
+
+    .styled-table-items tbody tr:nth-child(even) {
+        background-color: var(--gray-100);
+    }
+
+    .styled-table-items tbody tr:hover {
+        background-color: var(--gray-200);
+    }
+
+    .styled-table-items tfoot {
+        background-color: white;
+    }
+
+    .styled-table-items tfoot td {
+        padding: 1rem;
+        border-bottom: none;
+    }
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: white;
+        color: var(--gray-800);
+        border: 1px solid var(--gray-300);
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-confirm {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--primary);
+        color: var(--gray-100);
+        border: 1px solid var(--gray-300);
+        padding: 0.75rem 0.5rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .items-section{
+        display: none;
+    }
+    #showDetails, #hideDetails {
+        cursor: pointer;
+    }
 </style>
 @endsection
 
 @section('content')
 
 <div class="responsive_table">
-
     <form action="/item_pos_transactions">
         <div class="search-container">
             <input
@@ -190,6 +402,21 @@
     </table>
     {{ $item_pos->links() }}
 </div>
+<!-- Void Confirmation Modal -->
+<div id="customVoidModal" class="custom-modal hidden">
+    <div class="custom-modal-content">
+        <div id="customModalBody">
+            <!-- Dynamic content inserted here -->
+        </div>
+        <div class="custom-modal-footer">
+            <button class="btn-back" id="cancelModal">
+               <i class="fa fa-circle-arrow-left"></i>
+                Cancel</button>
+            <button class="btn btn-confirm" id="confirmVoidBtn"><i class="fa fa-thumbs-up"></i>Confirm Void</button>
+        </div>
+    </div>
+</div>
+  
 @endsection
 
 {{-- Your Script --}}
@@ -207,73 +434,160 @@
     });
 
     $(document).ready(function() {
+        let currentVoidId = null;
+
         $(document).on('click', '#btnVoid', function (e) {
             e.preventDefault();
-            const currentId = $(this).data('id');
-            const itemId = JSON.parse(currentId);
+
+            currentVoidId = $(this).data('id');
             $.ajax({
                 type: 'GET',
-                url: `item_pos_transactions/getDetail/${itemId}`,
-                data: {},
+                url: `item_pos_transactions/getDetail/${currentVoidId}`,
                 success: function (res) {
-                    const data = res;
-                    let htmlContent = `
-                        <div class="swal-table-container">
-                            <table class="styled-table-void">
-                                <tr><td>Reference Number</td><td>${data.items.reference_number}</td></tr>
-                                <tr><td>Mode of Payments</td><td>${data.items.mode_of_payments.payment_description}</td></tr>
-                                <tr><td>Total Value</td><td>${data.items.total_value}</td></tr>
-                                 <tr><td>Change Value</td><td>${data.items.change_value}</td></tr>
-                            </table>
+                    console.log(res.items);
+                    const data = res.items;
+                    
+                    // Transaction details table
+                    const detailsHtml = `
+                     <div class="transaction-header">
+                        <div class="transaction-title">
+                           <i class="fa fa-exclamation-circle"></i> Please check transaction details before voiding
+                        </div>
+                        <div class="transaction-details">
+                        <div class="detail-group">
+                            <div class="detail-item">
+                            <span class="detail-label">Reference #</span>
+                            <span class="detail-value">${data.reference_number}</span>
+                            </div>
+                            <div class="detail-item">
+                            <span class="detail-label">Total Value</span>
+                            <span class="detail-value highlight">${data.total_value}</span>
+                            </div>
+                            
+                        </div>
+                          <div class="detail-group">
+                            <div class="detail-item">
+                                <span class="detail-label">Change Value</span>
+                                <span class="detail-value">${data.change_value}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Mode of Payment</span>
+                                <span class="detail-value">${data.mode_of_payments.payment_description}</span>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
                     `;
+                    
+                    // Check if item_lines exists and has items
+                    let itemsHtml = '';
+                    if (data.item_lines && data.item_lines.length > 0) {
+                        // Keys to exclude from display
+                        const excludedKeys = ['item_pos_id', 'id', 'locations_id','status','created_by','created_at','updated_by','updated_at','deleted_at'];
 
-                    htmlContent += '</div>';
+                        // Filter headers to exclude specific keys
+                        const headers = Object.keys(data.item_lines[0]).filter(key => !excludedKeys.includes(key));
+                        
+                        // Build table headers
+                        let tableHeaders = '';
+                        headers.forEach(header => {
+                            const formattedHeader = header.split('_')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ');
+                            tableHeaders += `<th>${formattedHeader}</th>`;
+                        });
 
-                    Swal.fire({
-                        title: "Are you sure you want to void this transaction?",
-                        icon: 'warning',
-                        reverseButtons: true,
-                        allowOutsideClick: false,
-                        html: htmlContent,
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes',
-                        denyButtonText: `Don't save`,
-                        customClass: {
-                            confirmButton: 'swal2-confirm-red' // custom class for confirm button
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                type: 'GET',
-                                url: `item_pos_transactions/void/${itemId}`,
-                                success: function (res) {
-                                    const response = res;
-                                    if (response.type == 'success') {
-                                        Swal.fire({
-                                            icon: response.type,
-                                            title:  response.message,   
-                                            confirmButtonText: 'Ok',
-                                        }).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: response.message,
-                                            confirmButtonText: 'Ok',
-                                        });
-                                    }
-                                },
-                                error: function (err) {
-                                    console.error(err);
-                                }
+                        // Build table rows using only allowed headers
+                        let tableRows = '';
+                        data.item_lines.forEach(item => {
+                            let row = '<tr>';
+                            headers.forEach(key => {
+                                row += `<td>${item[key] || ''}</td>`;
                             });
-                        }
-                    });
+                            row += '</tr>';
+                            tableRows += row;
+                        });
+
+                        // Final HTML
+                        itemsHtml = `
+                            <div id="showDetails"><i class="fa fa-circle-chevron-down"></i> View details</div>
+                            <div id="hideDetails" style="display: none;"><i class="fa fa-circle-chevron-up"></i> Hide details</div>
+                            <div class="items-section" style="overflow-x: auto;">
+                                <table class="styled-table-items">
+                                    <thead>
+                                        <tr>${tableHeaders}</tr>
+                                    </thead>
+                                    <tbody>
+                                        ${tableRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+
+                    // Combine both tables
+                    $('#customModalBody').html(detailsHtml + itemsHtml);
+                    $('#customVoidModal').show();
                 },
                 error: function (err) {
                     console.error(err);
                 }
+            });
+        });
+
+        $('#customModalClose, #cancelModal').on('click', function () {
+            $('#customVoidModal').hide();
+        });
+
+        $(document).on('click', '#showDetails', function () {
+            $('.items-section').show();
+            $('#showDetails').hide();
+            $('#hideDetails').show();
+        });
+
+        $(document).on('click', '#hideDetails', function () {
+            $('.items-section').hide();
+            $('#showDetails').show();
+            $('#hideDetails').hide();
+        });
+       
+        $('#confirmVoidBtn').on('click', function () {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to void this transaction.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "Cancel",
+                reverseButtons: true,
+                allowOutsideClick: false,
+                customClass: {
+                    confirmButton: 'swal2-confirm-red'
+                }
+            }).then((result) => {
+                if (result.isConfirmed && currentVoidId) {
+                    $.ajax({
+                        type: 'GET',
+                        url: `item_pos_transactions/void/${currentVoidId}`,
+                        success: function (res) {
+                            if (res.type === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: res.message,
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: res.message,
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+                $('#customVoidModal').hide();
             });
         });
 
