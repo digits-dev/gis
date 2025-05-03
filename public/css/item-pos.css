@@ -413,3 +413,15 @@
     background-color: #f9f9f9;
     width: 40%;
 }
+
+
+#qr-reader {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: white;
+}
+
+
+
+

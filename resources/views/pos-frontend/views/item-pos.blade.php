@@ -7,6 +7,8 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/item-pos.css') }}">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 </head>
 
 
@@ -19,7 +21,7 @@
                 <form class="scanner-container" id="scanner_form">
                     <div class="scanner-container-child1">
                         <p>Scan JAN Code</p>
-                        <button class="active-scanner-button">
+                        <button type="button" class="active-scanner-button" id="open-scanner-btn">
                             <img class="scanner-icon" src="{{ asset('img/item-pos/item-pos-scanner.png') }}" alt="">
                             <p>Open Camera Scanner</p>
                         </button>
@@ -132,6 +134,34 @@
             <div class="spinner"></div>
         </div>
     </div>
+
+    {{-- SCANNER --}}
+    <div id="scannerModal" style="display: none;">
+        <div style="
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        ">
+             <div style="background: #fff; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px;">
+                <p><strong>Scan JAN Code</strong></p>
+                <p style="color: #999; font-size: 12px;" >Please present the barcode in front of the camera for scanning.</p>
+               
+                <div style="margin-top: 10px">
+                    <div id="qr-reader" style="width: 100%; height: 250px; overflow: hidden;">
+                    </div>
+                </div>
+                
+                <button id="close-scanner" style="margin-top: 10px;" class="scan-button">Close Scanner</button>
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 
 {{-- Your Script --}}
@@ -796,6 +826,61 @@
             }
 
         });
+
+
+        let html5QrCode;
+        let scannerRunning = false;
+
+        $('#open-scanner-btn').on('click', function () {
+            $('#scannerModal').fadeIn();
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    const cameraId = devices[0].id;
+
+                    html5QrCode.start(
+                        cameraId,
+                        {
+                            fps: 10,
+                            qrbox: { width: 300, height: 300 }
+                        },
+                        janCode => {
+                            $('#jan-code-input').val(janCode);
+                            $('#scannerModal').fadeOut();
+                            $('#scan-btn').trigger('click');
+
+                            html5QrCode.stop().then(() => {
+                                scannerRunning = false;
+                            });
+                        },
+                        errorMessage => {
+                            // Optional: handle scan errors
+                        }
+                    );
+                    scannerRunning = true;
+                }
+            }).catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Camera Error',
+                    text: 'Unable to access your camera.',
+                });
+            });
+        });
+
+        $('#close-scanner').on('click', function () {
+            $('#scannerModal').fadeOut();
+            if (scannerRunning && html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    scannerRunning = false;
+                });
+            }
+        });
+
 
     });
 
