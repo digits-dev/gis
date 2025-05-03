@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ItemPos;
 use App\Models\ItemPosLines;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Models\Submaster\SalesType;
+use App\Http\Controllers\Pos\POSDashboardController;
+use App\Models\Capsule\HistoryCapsule;
+use App\Models\Capsule\InventoryCapsuleLine;
+use App\Models\Capsule\CapsuleSales;
 
 class POSItemTransactionsHistoryController extends Controller
 {
@@ -89,11 +95,13 @@ class POSItemTransactionsHistoryController extends Controller
         $capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
         $sales_types_id = SalesType::where(DB::raw('UPPER(description)'), 'ITEMS')
 				->where('status', 'ACTIVE')
-				->pluck('id');
+				->pluck('id')
+                ->first();
+
         $sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
         foreach($lines ?? [] as $key => $value){
             HistoryCapsule::insert([
-                'reference_number' => $value->reference_number,
+                'reference_number' => $header->reference_number,
                 'item_code' => $value->digits_code,
                 'capsule_action_types_id' => $capsule_type_id,
                 'locations_id' => $value->locations_id,
@@ -113,8 +121,8 @@ class POSItemTransactionsHistoryController extends Controller
             ]);
 
             CapsuleSales::insert([
-                'reference_number' => $value->reference_number,
-                'item_code' => $value->digits_code,
+                'reference_number' => $header->reference_number,
+                'item_code' => $value->jan_number,
                 'locations_id' => $value->locations_id,
                 'qty' => $value->qty * -1,
                 'sales_type_id' => $sales_types_id,
@@ -124,5 +132,12 @@ class POSItemTransactionsHistoryController extends Controller
         }
         $header->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
         return response()->json(['message'=>'Void successfully!', 'type'=>'success' ]);
+    }
+
+    public function show($id){
+        $data = [];
+        $data['page_title'] = 'View Item POS Transactions';
+        $data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
+        return view('pos-frontend.views.item-pos-transaction-show',$data);
     }
 }

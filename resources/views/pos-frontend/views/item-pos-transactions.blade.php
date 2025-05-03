@@ -78,6 +78,7 @@
         padding: 1px 5.5px;
         border-radius: 2px;
         color: #fff;
+        cursor: pointer;
     }
 
     .btn-void{
@@ -86,6 +87,7 @@
         border-radius: 2px;
         color: #fff;
         font-size: 14px;
+        cursor: pointer;
     }
 
     .swal2-confirm-red {
@@ -148,20 +150,17 @@
             @foreach($item_pos as $item)
                 <tr>
                     {{-- View button --}}
-                    <td style="display: flex;">
-                        <a class="btn btn-details" href="/pos_swap_history/{{ $item['id'] }}""><i class="fa-solid fa-eye"></i></a>
-                        @if($item['status'] != "VOID")
+                    <td style="display: flex; align-items:center; justify-content: center">
+                        <a class="btn btn-details" href="item_pos_transactions/show/{{ $item['id'] }}""><i class="fa-solid fa-eye"></i></a>
+                        @if($item['status'] != "VOID" && date('Y-m-d', strtotime($item['created_at'])) == date('Y-m-d'))
                             <a class="btn btn-void" data-id={{$item['id']}} id="btnVoid">
-                                @if ($item['status'] != "VOID" && date('Y-m-d', strtotime($item['created_at'])) == date('Y-m-d'))
-                                    @if (in_array(auth()->user()->id_cms_privileges, [1,5,15]))
-                                        <i class="fa-solid fa-times-circle"></i>
-                                    @endif
-                                @endif
+                                @if (in_array(auth()->user()->id_cms_privileges, [1,5,15]))
+                                    <i class="fa-solid fa-times-circle"></i>
+                                @endif            
                             </a>
                         @endif
                     </td>
 
-                    {{-- Loop through visible columns --}}
                     @foreach($item as $key => $value)
                         @if(!in_array($key, ['id']))
                             <td>
@@ -249,7 +248,7 @@
                                 url: `item_pos_transactions/void/${itemId}`,
                                 success: function (res) {
                                     const response = res;
-                                    if (response.message === 'success') {
+                                    if (response.type == 'success') {
                                         Swal.fire({
                                             icon: response.type,
                                             title:  response.message,   

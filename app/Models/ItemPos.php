@@ -11,6 +11,20 @@ class ItemPos extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'reference_number',
+        'total_value',
+        'change_value',
+        'mode_of_payments_id',
+        'locations_id',
+        'status',
+        'payment_reference',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     protected $filterable = [
         'reference_number',
         'total_value',
