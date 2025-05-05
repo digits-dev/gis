@@ -144,7 +144,8 @@
 					'item_code' => $value->digits_code,
 					'capsule_action_types_id' => $capsule_type_id,
 					'locations_id' => $value->locations_id,
-					'qty' => $value->qty * -1,
+					'to_sub_locations_id' => $sub_location_id,
+					'qty' => $value->qty,
 					'created_at' => date('Y-m-d H:i:s'),
 					'created_by' => Auth::user()->id
 				]);

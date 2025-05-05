@@ -173,7 +173,9 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 						'digits_code2' => $value['digits_code'] ?? null,
 						'item_description' => $value['item_description'] ?? null,
 						'no_of_tokens' => $value['no_of_tokens'] ?? null,
-						'current_srp' => $value['current_srp'] ?? null
+						'current_srp' => $value['current_srp'] ?? null,
+						'category_id' => $value['gacha_categories_id'] ?? null,
+						'product_type_id' => $value['gacha_product_types_id'] ?? null
 					];
 				}
 
@@ -217,7 +219,9 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 					Item::where('digits_code', $value['digits_code'])->update([
 						'item_description' => $value['item_description'] ?? null,
 						'no_of_tokens' => $value['no_of_tokens'] ?? null,
-						'current_srp' => $value['current_srp'] ?? null
+						'current_srp' => $value['current_srp'] ?? null,
+						'category_id' => $value['gacha_categories_id'] ?? null,
+						'product_type_id' => $value['gacha_product_types_id'] ?? null
 					]);
 				}
 			}
