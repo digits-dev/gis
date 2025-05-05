@@ -97,16 +97,17 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 				if(in_array(CRUDBooster::myPrivilegeId(),[1,5,15])){
-					$this->addaction[] = ['title'=>'Void Transaction',
-					'url'=>CRUDBooster::adminpath('void-transaction/[id]'),
-					'icon'=>'fa fa-times', 
+					$this->addaction[] = ['title'=>'View Void Transaction',
+					'url'=>CRUDBooster::mainpath('void-transaction/[id]'),
+					'icon'=>'fa fa-times-circle', 
 					"showIf"=>"[status] == 'POSTED'",
-					'confirmation'=>'yes',
-					'confirmation_title'=>'Confirm Voiding',
-					'confirmation_text'=>'Are you sure to VOID this request?','color'=>'danger',];
+					'confirmation'=>'Yes',
+					'confirmation_title'=>'Confirm void',
+					'confirmation_text'=>'Are you sure to void this transaction?',
+					'color'=>'danger'
+				];
 				}
 			}
-
 	    }
 
 	    public function hook_row_index($column_index,&$column_value) {	        
@@ -123,10 +124,10 @@
 			
 			$header = ItemPos::where('id',$id)->first();
 			if (date('Y-m-d', strtotime($header->created_at)) != date('Y-m-d')){
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("not allowed to void"), 'danger');
+				CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("not allowed to void"), 'danger');
 			}
 			if ($header->status == 'VOID') {
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Already voided"), 'danger');
+				CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Already voided"), 'danger');
 			}
 			
 			$lines = ItemPosLines::where('item_pos_id',$id)->get();
@@ -169,7 +170,7 @@
 				]);
 			}
 			$header->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Void successfully!"), 'success');
+			CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Void successfully!"), 'success');
 		}
 
 		public function getDetail($id){
