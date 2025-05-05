@@ -9,6 +9,7 @@ use App\Models\Capsule\InventoryCapsule;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\ItemPos;
 use App\Models\ItemPosLines;
+use App\Models\ItemPosReservedQuantity;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\SubLocations;
@@ -36,26 +37,92 @@ class POSItemPointofSaleController extends Controller
     {
         $code = $request->input('jan_code');
         $location_id = auth()->user()->location_id;
+        $user_id = auth()->user()->id;
         $sub_location = SubLocations::where('location_id', $location_id)->where('description', 'STOCK ROOM')->first();
-
+        $requestQuantity = intval($request->input('scan_qty'));
+        
         $item = InventoryCapsule::whereHas('item', function ($query) use ($code) {
             $query->where('digits_code', $code);
         })->with(['item', 'item_stockroom_data' => function ($query) use ($sub_location) {
-        $query->where('sub_locations_id', $sub_location->id);
+            $query->where('sub_locations_id', $sub_location->id);
         }])->where('locations_id', $location_id)->first();
         
+        $itemReserved = ItemPosReservedQuantity::where('jan_number', $code)
+        ->where('locations_id', $location_id);
+
+        $stockQty = optional($item->item_stockroom_data)->qty ?? 0;
+
         if ($item) {
+
+            if ($itemReserved->exists()) {
+
+                $specificReservedItem = ItemPosReservedQuantity::where('jan_number', $code)
+                ->where('locations_id', $location_id)
+                ->where('user_id', $user_id)
+                ->first();
+
+
+                $totalQty = $itemReserved->sum('qty');
+
+                if ($stockQty - $totalQty < $requestQuantity) {
+                    return response()->json([
+                        'status' => 'insufficient stock',
+                        'available_stock' => $stockQty - $totalQty,
+                    ]);
+                }
+
+                else{
+                    
+                    if ($specificReservedItem){
+                        $specificReservedItem->qty = $specificReservedItem->qty + $requestQuantity;
+                        $specificReservedItem->save();
+                    }
+                    else{
+                        
+                        ItemPosReservedQuantity::create([
+                            'user_id' => $user_id,
+                            'locations_id' => $location_id,
+                            'digits_code' => $item->item->digits_code2,
+                            'jan_number' => $item->item->digits_code,
+                            'item_description' => $item->item->item_description,
+                            'qty' => $requestQuantity,
+                        ]);
+                    }
+                }
+
+                $totalQty = $itemReserved->sum('qty');
+                
+            } else {
+
+                $totalQty = $requestQuantity;
+
+                if ($stockQty - $totalQty < $requestQuantity) {
+                    return response()->json([
+                        'status' => 'insufficient stock',
+                        'available_stock' => $stockQty - $totalQty,
+                    ]);
+                }
+                else{
+                    ItemPosReservedQuantity::create([
+                        'user_id' => $user_id,
+                        'locations_id' => $location_id,
+                        'digits_code' => $item->item->digits_code2,
+                        'jan_number' => $item->item->digits_code,
+                        'item_description' => $item->item->item_description,
+                        'qty' => $requestQuantity,
+                    ]);
+                }
+
+                
+            }
+
+
             if (is_null($item->current_srp) && $item->current_srp < 0){
                 return response()->json([
                     'status' => 'item has no current srp',
                 ]);
             }
 
-            if ($item->item_stockroom_data->qty < intval($request->input('scan_qty'))) {
-                return response()->json([
-                    'status' => 'insufficient stock',
-                ]);
-            }
 
             return response()->json([
                 'status' => 'found',
@@ -65,8 +132,8 @@ class POSItemPointofSaleController extends Controller
                     'code' => $item->item->digits_code,
                     'digits_code' => $item->item->digits_code2,
                     'price' => $item->item->current_srp,
-                    'quantity' => intval($request->input('scan_qty')),
-                    'item_stock_qty' => $item->item_stockroom_data->qty,
+                    'quantity' => $requestQuantity,
+                    'item_stock_qty' => $stockQty - $totalQty,
                 ],
             ]);
             
@@ -78,8 +145,90 @@ class POSItemPointofSaleController extends Controller
         }
     }
 
-    public function submitTransaction(Request $request){
+    public function itemOption(Request $request){
 
+        $code = $request->input('jan_number');
+        $item_action = $request->input('item_action');
+        $location_id = auth()->user()->location_id;
+        $user_id = auth()->user()->id;
+        $sub_location = SubLocations::where('location_id', $location_id)->where('description', 'STOCK ROOM')->first();
+
+        $item = InventoryCapsule::whereHas('item', function ($query) use ($code) {
+            $query->where('digits_code', $code);
+        })->with(['item', 'item_stockroom_data' => function ($query) use ($sub_location) {
+            $query->where('sub_locations_id', $sub_location->id);
+        }])->where('locations_id', $location_id)->first();
+        
+        $stockQty = optional($item->item_stockroom_data)->qty ?? 0;
+
+        $itemReserved = ItemPosReservedQuantity::where('jan_number', $code)
+        ->where('locations_id', $location_id);
+
+        $specificReservedItem = ItemPosReservedQuantity::where('jan_number', $code)
+        ->where('locations_id', $location_id)
+        ->where('user_id', $user_id)
+        ->first();
+
+        if ($item_action == "add"){
+
+            $totalQty = $itemReserved->sum('qty');
+
+            if ($stockQty - $totalQty == 0){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'insufficient stock',
+                ]);
+            }
+            else{
+
+                $specificReservedItem->qty = $specificReservedItem->qty + 1;
+                $specificReservedItem->save();
+    
+                $totalQty = $itemReserved->sum('qty');
+    
+                return response()->json([
+                    'status' => 'quantity added',
+                    'item_stock_qty' => $stockQty - $totalQty,
+                    'jan_number' => $code,
+                    'action' => 'add',
+                ]);
+            }
+        }
+        elseif($item_action == "minus"){
+
+            $specificReservedItem->qty = $specificReservedItem->qty - 1;
+            $specificReservedItem->save();
+
+            $totalQty = $itemReserved->sum('qty');
+
+            return response()->json([
+                'status' => 'quantity deduct',
+                'item_stock_qty' => $stockQty - $totalQty,
+                'jan_number' => $code,
+            ]);
+        }
+        elseif($item_action == "remove"){
+            if ($specificReservedItem) {
+                $specificReservedItem->delete();
+            }
+            else{
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'insufficient stock',
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'item reservation removed',
+                'jan_number' => $code,
+            ]);
+        }
+        else{
+
+        }
+    }
+
+    public function submitTransaction(Request $request){
 
         $items = $request->input('items');
         $mode_of_payment = $request->input('mode_of_payment');
@@ -92,6 +241,7 @@ class POSItemPointofSaleController extends Controller
 
         $transactionReferenceNumber = 'PS-' . str_pad(ItemPos::count() + 1, 8, '0', STR_PAD_LEFT);
         
+        $user_id = auth()->user()->id;
         $location_id = auth()->user()->location_id;
         $sub_location = SubLocations::where('location_id', $location_id)->where('description', 'STOCK ROOM')->first();
         $capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('id', 16)->value('id');
@@ -163,6 +313,10 @@ class POSItemPointofSaleController extends Controller
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
             }
+
+            ItemPosReservedQuantity::where('locations_id', $location_id)
+            ->where('user_id', $user_id)
+            ->delete();
 
             DB::commit();
 

@@ -241,6 +241,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: response.status === 'not_found' ? 'Item Not Found' : 'Item Insufficient Stock',
+                            text: response.status === 'insufficient stock' && `Available stock: ${response.available_stock}`,
                             confirmButtonText: 'OK',
                             customClass: {
                                 confirmButton: 'my-swal-btn'
@@ -360,6 +361,7 @@
                 showCancelButton: true,
                 confirmButtonText: 'Yes, clear it!',
                 cancelButtonText: 'Cancel',
+                reverseButtons: true,
                 customClass: {
                     confirmButton: 'my-swal-btn',
                 }
@@ -388,19 +390,8 @@
         function addToCart(newItem) {
             const existingItem = cartItems.find(item => item.code === newItem.code);
             if (existingItem) {
-                if (existingItem.quantity + newItem.quantity > existingItem.item_stock_qty){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Item Insufficient Stock',
-                        text: `Quantity exceeds available stock. Max stock: ${existingItem.item_stock_qty}`,
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'my-swal-btn'
-                        },
-                    });
-                    return;
-                }
 
+                existingItem.item_stock_qty = newItem.item_stock_qty;
                 existingItem.quantity += newItem.quantity;
                 existingItem.subtotal = existingItem.quantity * existingItem.price;
             } else {
@@ -434,7 +425,7 @@
                     const formattedSubtotal = formatCurrency(item.subtotal);
 
                     html += `
-                        <div class="cart-item" data-id="${item.id}" data-stock="${item.item_stock_qty}">
+                        <div class="cart-item" data-id="${item.id}" data-stock="${item.item_stock_qty}" data-code="${item.code}">
                             <div class="cart-item-wrapper1">
                                 <div class="item-details">
                                     <p style="font-size:12px; font-weight: 600;">${item.name}</p>
@@ -509,29 +500,89 @@
             $('.amount-value').text(formatCurrency(amount));
         }
 
-        function attachEvents() {
-            $('.qty-plus').off('click').on('click', function(){
-                const parent = $(this).closest('.cart-item');
-                const qtyInput = parent.find('.qty');
-                const quantity = parseInt(qtyInput.val());
-                const itemStockQty = parseInt(parent.data('stock'));
+        function updateQtyItemAddMinusPerItem(action, jan_number){
 
-                if (quantity + 1 > itemStockQty) {
+            if (isSubmitting) return;
+            isSubmitting = true;
 
+            showSpinner();
+
+            $.ajax({
+                url: "{{ route('item.pos.item.option') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    item_action: action,
+                    jan_number: jan_number,
+                },
+                success: function (response) {
+                    if (response.status == 'error'){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Stock',
+                            customClass: {
+                                confirmButton: 'my-swal-btn'
+                            },
+                        });
+
+                        return;
+                    }
+                    else if(response.status == 'item reservation removed')
+                    {
+
+                    }
+                    else{
+                        updateCartItemQty(response);
+                    }
+
+                },
+                error: function (xhr) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Item Insufficient Stock',
-                        text: `Quantity exceeds available stock. Max stock: ${itemStockQty}`,
-                        confirmButtonText: 'OK',
+                        title: 'Error',
+                        text: 'There was an error please try again.',
                         customClass: {
                             confirmButton: 'my-swal-btn'
                         },
                     });
+
+                    return;
+                },
+                complete: function () {
+                    hideSpinner();
+                    isSubmitting = false;
                     return;
                 }
+            });
 
-                qtyInput.val(quantity + 1);
-                updateSubtotal(parent);
+        }
+
+        function updateCartItemQty(response) {
+            const existingItem = cartItems.find(item => item.code === response.jan_number);
+
+            if (response.action === 'add'){
+                existingItem.item_stock_qty = response.item_stock_qty;
+                existingItem.quantity = existingItem.quantity + 1;
+                existingItem.subtotal = existingItem.quantity * existingItem.price;
+            }
+            else{
+                existingItem.item_stock_qty = response.item_stock_qty;
+                existingItem.quantity = existingItem.quantity - 1;
+                existingItem.subtotal = existingItem.quantity * existingItem.price;
+            }
+
+            renderCart();
+            updateTotalDisplay();
+            updateChangeDisplay();
+            
+        }
+
+        function attachEvents() {
+            $('.qty-plus').off('click').on('click', function(){
+                const parent = $(this).closest('.cart-item');
+                const janNumber = parseInt(parent.data('code'));
+
+                updateQtyItemAddMinusPerItem('add', janNumber);
                 updateChangeDisplay();
                 
             });
@@ -540,17 +591,22 @@
                 const parent = $(this).closest('.cart-item');
                 const qtyInput = parent.find('.qty');
                 const quantity = parseInt(qtyInput.val());
+                const janNumber = parseInt(parent.data('code'));
+
                 if (quantity > 1) {
-                    qtyInput.val(quantity - 1);
-                    updateSubtotal(parent);
-                    updateChangeDisplay();  
+                    updateQtyItemAddMinusPerItem('minus', janNumber);
+                    updateChangeDisplay();
                 }
             });
 
             $('.remove-btn').off('click').on('click', function(){
                 const parent = $(this).closest('.cart-item');
-                const id = parent.data('id');
-                cartItems = cartItems.filter(item => item.id !== id);
+                const janNumber = parseInt(parent.data('code'));
+                
+                updateQtyItemAddMinusPerItem('remove', janNumber);
+
+                cartItems = cartItems.filter(item => item.code != janNumber);
+
                 renderCart();
                 updateTotalDisplay();
                 updateChangeDisplay();
@@ -819,6 +875,10 @@
                             }
                         });
                     }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        hideSpinner();
+                        isSubmitting = false;
+                    }
                 });
 
     
@@ -868,6 +928,9 @@
                     icon: 'error',
                     title: 'Camera Error',
                     text: 'Unable to access your camera.',
+                    customClass: {
+                        confirmButton: 'my-swal-btn'
+                    },
                 });
             });
         });

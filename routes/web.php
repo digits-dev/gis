@@ -104,10 +104,14 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::get('item_pos', [POSItemPointofSaleController::class, 'index'])->middleware('auth')->name('item_pos');
     Route::post('/check_jan_code', [POSItemPointofSaleController::class, 'check'])->name('check.jan.code');
     Route::post('/item_pos/submit', [POSItemPointofSaleController::class, 'submitTransaction'])->name('submit.item.transaction');
+    Route::post('/item_pos/item_option', [POSItemPointofSaleController::class, 'itemOption'])->name('item.pos.item.option');
+    
     Route::get('item_pos_transactions', [POSItemTransactionsHistoryController::class, 'index'])->middleware('auth');
     Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');
     Route::get('item_pos_transactions/void/{id}', [POSItemTransactionsHistoryController::class, 'void'])->middleware('auth');
     Route::get('item_pos_transactions/show/{id}', [POSItemTransactionsHistoryController::class, 'show'])->middleware('auth');
+
+
     //ITEM POS BACKEND CONTROLLER
     Route::get(config('crudbooster.ADMIN_PATH').'/item_pos_transactions_backend/void-transaction/{id}', [AdminItemPosTransactionsBackendController::class, 'voidTransaction']);
     //TOKEN DISPENSE
