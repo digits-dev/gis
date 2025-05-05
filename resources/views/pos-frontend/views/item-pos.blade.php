@@ -367,18 +367,52 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    cartItems = [];              
-                    renderCart();                  
-                    updateTotalDisplay();          
-                    $('.amount-input').val('');     
-                    $('.reference-input').val('');     
-                    $('.amount-value').text('0.00');
-                    $('.change-value').text('0.00');
-                    $('.change-amount-details').hide();
-                    $('#amount-wrapper').hide();
-                    $('#reference-wrapper').hide();
-                    $('#jan-code-input').val('');
-                    $('#paymentMethod').prop('selectedIndex', 0);
+
+                    if (isSubmitting) return;
+                    isSubmitting = true;
+
+                    showSpinner();
+
+                    $.ajax({
+                        url: "{{ route('item.pos.clear.cart') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function (response) {
+                            cartItems = [];              
+                            renderCart();                  
+                            updateTotalDisplay();          
+                            $('.amount-input').val('');     
+                            $('.reference-input').val('');     
+                            $('.amount-value').text('0.00');
+                            $('.change-value').text('0.00');
+                            $('.change-amount-details').hide();
+                            $('#amount-wrapper').hide();
+                            $('#reference-wrapper').hide();
+                            $('#jan-code-input').val('');
+                            $('#paymentMethod').prop('selectedIndex', 0);
+
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was an error please try again.',
+                                customClass: {
+                                    confirmButton: 'my-swal-btn'
+                                },
+                            });
+
+                            return;
+                        },
+                        complete: function () {
+                            hideSpinner();
+                            isSubmitting = false;
+                            return;
+                        }
+                    });
+              
                 }
             });
         });

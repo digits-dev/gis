@@ -105,6 +105,7 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::post('/check_jan_code', [POSItemPointofSaleController::class, 'check'])->name('check.jan.code');
     Route::post('/item_pos/submit', [POSItemPointofSaleController::class, 'submitTransaction'])->name('submit.item.transaction');
     Route::post('/item_pos/item_option', [POSItemPointofSaleController::class, 'itemOption'])->name('item.pos.item.option');
+    Route::post('/item_pos/clear_cart', [POSItemPointofSaleController::class, 'clearCart'])->name('item.pos.clear.cart');
     
     Route::get('item_pos_transactions', [POSItemTransactionsHistoryController::class, 'index'])->middleware('auth');
     Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');

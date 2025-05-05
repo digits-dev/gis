@@ -26,6 +26,13 @@ class POSItemPointofSaleController extends Controller
         if ($is_missing_eod_or_sod) {
             return $is_missing_eod_or_sod;
         } 
+
+        $location_id = auth()->user()->location_id;
+        $user_id = auth()->user()->id;
+
+        ItemPosReservedQuantity::where('locations_id', $location_id)
+        ->where('user_id', $user_id)
+        ->delete();
    
         $data = [];
         $data['mode_of_payments'] = ModeOfPayment::whereNull('type')->where('status', 'ACTIVE')->get();
@@ -85,6 +92,7 @@ class POSItemPointofSaleController extends Controller
                             'digits_code' => $item->item->digits_code2,
                             'jan_number' => $item->item->digits_code,
                             'item_description' => $item->item->item_description,
+                            'current_srp' => $item->item->current_srp,
                             'qty' => $requestQuantity,
                         ]);
                     }
@@ -92,14 +100,15 @@ class POSItemPointofSaleController extends Controller
 
                 $totalQty = $itemReserved->sum('qty');
                 
-            } else {
+            } 
+            else {
 
                 $totalQty = $requestQuantity;
 
-                if ($stockQty - $totalQty < $requestQuantity) {
+                if ($stockQty < $requestQuantity) {
                     return response()->json([
                         'status' => 'insufficient stock',
-                        'available_stock' => $stockQty - $totalQty,
+                        'available_stock' => $stockQty,
                     ]);
                 }
                 else{
@@ -109,6 +118,7 @@ class POSItemPointofSaleController extends Controller
                         'digits_code' => $item->item->digits_code2,
                         'jan_number' => $item->item->digits_code,
                         'item_description' => $item->item->item_description,
+                        'current_srp' => $item->item->current_srp,
                         'qty' => $requestQuantity,
                     ]);
                 }
@@ -342,6 +352,22 @@ class POSItemPointofSaleController extends Controller
 
         }
         
+    }
+
+    public function clearCart(){
+
+        $location_id = auth()->user()->location_id;
+        $user_id = auth()->user()->id;
+
+        ItemPosReservedQuantity::where('locations_id', $location_id)
+        ->where('user_id', $user_id)
+        ->delete();
+
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'cart cleared'
+        ]);
     }
     
 
