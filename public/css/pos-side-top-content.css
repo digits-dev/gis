@@ -244,8 +244,12 @@ body {
 }
 .sidebar_section nav ul li a i {
     color: #fff;
-    font-size: 25px;
+    font-size: 20px;
     min-width: 56px;
+}
+
+.sidebar_section nav ul li a span {
+    font-size: 12px;
 }
 
 .nav-item {
