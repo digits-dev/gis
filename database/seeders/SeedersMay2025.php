@@ -18,8 +18,8 @@ class SeedersMay2025 extends Seeder
             [
                 'name'         => 'Item POS',
                 'icon'         => 'fa fa-briefcase',
-                'path'         => 'item_pos',
-                'table_name'   => 'item_pos',
+                'path'         => 'item_pos_transactions_backend',
+                'table_name'   => 'item_pos_transactions_backend',
                 'controller'   => 'ItemPos\AdminItemPosTransactionsBackendController',
                 'is_protected' => 0,
                 'is_active'    => 0
