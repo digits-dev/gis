@@ -147,7 +147,7 @@
 					'to_sub_locations_id' => $sub_location_id,
 					'qty' => $value->qty,
 					'created_at' => date('Y-m-d H:i:s'),
-					'created_by' => Auth::user()->id
+					'created_by' => CRUDBooster::myId()
 				]);
 	
 				InventoryCapsuleLine::leftJoin('inventory_capsules as ic', 'ic.id', 'inventory_capsule_lines.inventory_capsules_id')
@@ -156,7 +156,7 @@
 				->where('ic.item_code', $value->digits_code)
 				->update([
 					'inventory_capsule_lines.qty' => DB::raw("inventory_capsule_lines.qty + $value->qty"),
-					'inventory_capsule_lines.updated_by' => Auth::user()->id,
+					'inventory_capsule_lines.updated_by' => CRUDBooster::myId(),
 					'inventory_capsule_lines.updated_at' => date('Y-m-d H:i:s')
 				]);
 	
@@ -166,11 +166,11 @@
 					'locations_id' => $value->locations_id,
 					'qty' => $value->qty * -1,
 					'sales_type_id' => $sales_types_id,
-					'created_by' => Auth::user()->id,
+					'created_by' => CRUDBooster::myId(),
 					'created_at' => date('Y-m-d H:i:s')
 				]);
 			}
-			$header->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
+			$header->update(['status' => "VOID", 'updated_by' => CRUDBooster::myId(), 'updated_at' =>  date('Y-m-d H:i:s')]);
 			CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Void successfully!"), 'success');
 		}
 
