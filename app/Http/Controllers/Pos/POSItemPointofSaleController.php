@@ -49,7 +49,8 @@ class POSItemPointofSaleController extends Controller
         $requestQuantity = intval($request->input('scan_qty'));
         
         $item = InventoryCapsule::whereHas('item', function ($query) use ($code) {
-            $query->where('digits_code', $code);
+            $query->where('digits_code', $code)
+            ->where('category_id', 2);
         })->with(['item', 'item_stockroom_data' => function ($query) use ($sub_location) {
             $query->where('sub_locations_id', $sub_location->id);
         }])->where('locations_id', $location_id)->first();
