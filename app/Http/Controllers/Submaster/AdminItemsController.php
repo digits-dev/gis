@@ -50,6 +50,10 @@ class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBCon
 		$this->col[] = ["label" => "Digits Code", "name" => "digits_code2"];
 		$this->col[] = ["label" => "Item Description", "name" => "item_description"];
 		$this->col[] = ["label" => "No Of Tokens", "name" => "no_of_tokens"];
+		$this->col[] = ["label" => "Current Srp", "name" => "current_srp"];
+		$this->col[] = ["label" => "Category", "name" => "category_id","join"=>"items_categories,category_description"];
+		$this->col[] = ["label" => "Product Type", "name" => "product_type_id","join"=>"items_product_types,product_type_description"];
+
 		# END COLUMNS DO NOT REMOVE THIS LINE
 
 		# START FORM DO NOT REMOVE THIS LINE
