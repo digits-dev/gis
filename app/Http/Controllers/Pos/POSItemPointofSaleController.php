@@ -297,6 +297,7 @@ class POSItemPointofSaleController extends Controller
                     'reference_number' => $itemPos->reference_number,
                     'item_code' => $item['digits_code'],
                     'capsule_action_types_id' => $capsule_type_id,
+                    'from_sub_locations_id' => $sub_location->id,
                     'locations_id' => $location_id,
                     'qty' => (int)$item['quantity'] * -1,
                     'created_at' => date('Y-m-d H:i:s'),
