@@ -16,6 +16,10 @@
 	use App\Models\Capsule\CapsuleSales;
 	use CRUDBooster;
 	use Illuminate\Support\Facades\Redirect;
+	use App\Models\Submaster\AddOns;
+	use App\Models\PosFrontend\AddonsHistory;
+	use App\Models\Submaster\AddOnMovementHistory;
+	use App\Models\Submaster\AddOnActionType;
 
 	class AdminItemPosTransactionsBackendController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -36,7 +40,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = false;
+			$this->button_export = true;
 			$this->table = "item_pos";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -136,8 +140,10 @@
 					->where('status', 'ACTIVE')
 					->pluck('id')
 					->first();
-	
 			$sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
+			$addOns = AddonsHistory::where('token_swap_id',$id)->get();
+			$addOnTypeId = AddOnActionType::where('id', 3)->first()->id;
+
 			foreach($lines ?? [] as $key => $value){
 				HistoryCapsule::insert([
 					'reference_number' => $header->reference_number,
@@ -170,6 +176,22 @@
 					'created_at' => date('Y-m-d H:i:s')
 				]);
 			}
+
+			if(!empty($addOns)){
+				foreach($addOns ?? [] as $key => $val){
+					AddOns::where('digits_code', $val->digits_code)->where('locations_id',CRUDBooster::myLocationId())->increment('qty', $val->qty);
+					AddOnMovementHistory::insert([
+						'reference_number' => $header->reference_number,
+						'digits_code' => $val->digits_code,
+						'add_on_action_types_id' => $addOnTypeId,
+						'locations_id' => CRUDBooster::myLocationId(),
+						'qty' => $val->qty,
+						'status' => 'VOID',
+						'created_at' => date('Y-m-d H:i:s'),
+						'created_by' => CRUDBooster::myId()
+					]);
+				}
+			}
 			$header->update(['status' => "VOID", 'updated_by' => CRUDBooster::myId(), 'updated_at' =>  date('Y-m-d H:i:s')]);
 			CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Void successfully!"), 'success');
 		}
@@ -181,6 +203,7 @@
 			$data = [];
 			$data['page_title'] = 'View Item POS Transactions';
 			$data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
+			$data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', CRUDBooster::myLocationId())->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
 			return view('pos-items.item-pos-transactions',$data);
 		}
 	}

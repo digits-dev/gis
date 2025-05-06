@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\Locations;
+use App\Models\PosFrontend\AddonsHistory;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 
 class ItemPos extends Model
@@ -82,6 +83,11 @@ class ItemPos extends Model
     public function item_lines(): HasMany
     {
         return $this->hasMany(ItemPosLines::class, 'item_pos_id');
+    }
+
+    public function add_ons(): HasMany
+    {
+        return $this->hasMany(AddonsHistory::class, 'token_swap_id');
     }
 
     public function creator()

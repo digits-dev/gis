@@ -16,6 +16,10 @@ use App\Http\Controllers\Pos\POSDashboardController;
 use App\Models\Capsule\HistoryCapsule;
 use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\Capsule\CapsuleSales;
+use App\Models\Submaster\AddOns;
+use App\Models\PosFrontend\AddonsHistory;
+use App\Models\Submaster\AddOnMovementHistory;
+use App\Models\Submaster\AddOnActionType;
 
 class POSItemTransactionsHistoryController extends Controller
 {
@@ -79,6 +83,7 @@ class POSItemTransactionsHistoryController extends Controller
     public function getDetail($id){
         $data = [];
         $data['items'] = ItemPos::with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
+        $data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
         return response()->json($data);
     }
 
@@ -97,7 +102,8 @@ class POSItemTransactionsHistoryController extends Controller
 				->where('status', 'ACTIVE')
 				->pluck('id')
                 ->first();
-
+        $addOns = AddonsHistory::where('token_swap_id',$id)->get();
+        $addOnTypeId = AddOnActionType::where('id', 3)->first()->id;
         $sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
         foreach($lines ?? [] as $key => $value){
             HistoryCapsule::insert([
@@ -131,6 +137,22 @@ class POSItemTransactionsHistoryController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ]);
         }
+
+        if(!empty($addOns)){
+            foreach($addOns ?? [] as $key => $val){
+                AddOns::where('digits_code', $val->digits_code)->where('locations_id',Auth::user()->location_id)->increment('qty', $val->qty);
+                AddOnMovementHistory::insert([
+                    'reference_number' => $header->reference_number,
+                    'digits_code' => $val->digits_code,
+                    'add_on_action_types_id' => $addOnTypeId,
+                    'locations_id' => Auth::user()->location_id,
+                    'qty' => $val->qty,
+                    'status' => 'VOID',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => Auth::user()->id
+                ]);
+            }
+        }
         $header->update(['status' => "VOID", 'updated_by' => Auth::user()->id, 'updated_at' =>  date('Y-m-d H:i:s')]);
         return response()->json(['message'=>'Void successfully!', 'type'=>'success' ]);
     }
@@ -138,7 +160,8 @@ class POSItemTransactionsHistoryController extends Controller
     public function show($id){
         $data = [];
         $data['page_title'] = 'View Item POS Transactions';
-        $data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
+        $data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location','add_ons'])->where('id',$id)->first();
+        $data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
         return view('pos-frontend.views.item-pos-transaction-show',$data);
     }
 }

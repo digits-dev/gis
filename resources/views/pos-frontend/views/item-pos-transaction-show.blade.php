@@ -364,6 +364,29 @@
       </tr>
     </tfoot>
   </table>
+
+  @if(!empty($addons) && isset($addons[0]))
+    <div style="text-align:center">Add Ons</div>
+    <table>
+      <thead>
+        <tr>
+          @foreach(array_keys($addons[0]->getAttributes()) as $key)
+              <th>{{ ucwords(str_replace('_', ' ', $key)) }}</th>
+          @endforeach
+        </tr>
+      </thead>
+
+      <tbody>
+        @foreach($addons as $row)
+          <tr>
+            @foreach($row->getAttributes() as $key => $value)
+                <td>{{ $value }}</td>
+            @endforeach
+          </tr>
+        @endforeach
+      </tbody>
+    </table>
+  @endif
 </div>
 @endsection
 
