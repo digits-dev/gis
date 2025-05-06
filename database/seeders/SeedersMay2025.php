@@ -74,7 +74,7 @@ class SeedersMay2025 extends Seeder
             [
                 'name'              => 'Items Category',
                 'type'              => 'Route',
-                'path'              => 'AdminItemsCategoriesControllerGetIndex',
+                'path'              => 'Submaster\AdminItemsCategoriesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 4,
@@ -92,7 +92,7 @@ class SeedersMay2025 extends Seeder
             [
                 'name'              => 'Items Product Type',
                 'type'              => 'Route',
-                'path'              => 'AdminItemsProductTypesControllerGetIndex',
+                'path'              => 'Submaster\AdminItemsProductTypesControllerGetIndex',
                 'color'             => NULL,
                 'icon'              => 'fa fa-circle-o',
                 'parent_id'         => 4,
