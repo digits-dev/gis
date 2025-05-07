@@ -366,7 +366,7 @@ width: 70%;
                     <a class="btn btn-details" href="item_pos_transactions/show/{{ $item['id'] }}""><i class="fa-solid fa-eye"></i></a>
                     @if($item['status'] != "VOID" && date('Y-m-d', strtotime($item['created_at'])) == date('Y-m-d'))
                         <a class="btn btn-void" data-id={{$item['id']}} id="btnVoid">
-                            @if (in_array(auth()->user()->id_cms_privileges, [1,5,15]))
+                            @if (in_array(auth()->user()->id_cms_privileges, [1,5,7,15,16]))
                                 <i class="fa-solid fa-times-circle"></i>
                             @endif            
                         </a>
@@ -444,7 +444,6 @@ $(document).ready(function() {
                 type: 'GET',
                 url: `item_pos_transactions/getDetail/${currentVoidId}`,
                 success: function (res) {
-                    console.log(res.items);
                     const data = res.items;
                     
                     // Transaction details table

@@ -91,7 +91,7 @@ class POSItemTransactionsHistoryController extends Controller
     public function void($id){
         $header = ItemPos::where('id',$id)->first();
         if (date('Y-m-d', strtotime($header->created_at)) != date('Y-m-d')){
-            return response()->json(['message'=>'not allowed to void' ]);
+            return response()->json(['message'=>'Cannot void transaction 24hrs above']);
         }
         if ($header->status == 'VOID') {
             return response()->json(['message'=>'error' ]);

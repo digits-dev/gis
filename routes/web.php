@@ -115,6 +115,7 @@ Route::group(['middleware' => ['web','check.user']], function() {
 
     //ITEM POS BACKEND CONTROLLER
     Route::get(config('crudbooster.ADMIN_PATH').'/item_pos_transactions_backend/void-transaction/{id}', [AdminItemPosTransactionsBackendController::class, 'voidTransaction']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/item_pos_transactions_backend/export', [AdminItemPosTransactionsBackendController::class, 'exportItemPosData'])->name('item-pos-export');
     //TOKEN DISPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');

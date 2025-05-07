@@ -3,7 +3,7 @@
 	use App\Http\Controllers\Controller;
 	use App\Models\Capsule\InventoryCapsule;
 	use App\Models\Submaster\SubLocations;
-	use Request;
+	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Auth;
 	use App\Models\ItemPos;
 	use App\Models\ItemPosLines;
@@ -20,6 +20,8 @@
 	use App\Models\PosFrontend\AddonsHistory;
 	use App\Models\Submaster\AddOnMovementHistory;
 	use App\Models\Submaster\AddOnActionType;
+	use Maatwebsite\Excel\Facades\Excel;
+	use App\Exports\ItemPosLinesExport;
 
 	class AdminItemPosTransactionsBackendController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -100,7 +102,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,5,15])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,5,7,15,16])){
 					$this->addaction[] = ['title'=>'View Void Transaction',
 					'url'=>CRUDBooster::mainpath('void-transaction/[id]'),
 					'icon'=>'fa fa-times-circle', 
@@ -112,6 +114,62 @@
 				];
 				}
 			}
+
+			if (CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = [
+					"title"=>"Export Lines",
+					"label"=>"Export Lines",
+					"icon"=>"fa fa-download",
+					"color"=>"primary",
+					"url"=>"javascript:showExport()",
+				];
+			}
+
+			$this->script_js = "
+				function showExport() {
+					$('#modal-export').modal('show');
+				}	
+			";
+
+			$this->post_index_html = "
+			<div class='modal fade' tabindex='-1' role='dialog' id='modal-export'>
+				<div class='modal-dialog'>
+					<div class='modal-content'>
+						<div class='modal-header'>
+							<button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+								<span aria-hidden='true'>×</span></button>
+							<h4 class='modal-title'><i class='fa fa-download'></i> Export ".CRUDBooster::getCurrentModule()->name."</h4>
+						</div>
+
+						<form method='post' target='_blank' action=".route('item-pos-export').">
+                        <input type='hidden' name='_token' value=".csrf_token().">
+                        ".CRUDBooster::getUrlParameters()."
+                        <div class='modal-body'>
+                            <div class='form-group'>
+                                <label>File Name</label>
+                                <input type='text' name='filename' class='form-control' required value='Export ".CRUDBooster::getCurrentModule()->name ." - ".date('Y-m-d H:i:s')."'/>
+                            </div>
+						</div>
+						<div class='modal-footer' align='right'>
+                            <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                            <button class='btn btn-primary btn-submit' type='submit'>Submit</button>
+                        </div>
+                    </form>
+					</div>
+				</div>
+			</div>
+			";
+	    }
+
+		public function hook_query_index(&$query) {
+	        if(in_array(CRUDBooster::myPrivilegeId(),[1,2,4,6,7,8,14])){
+				$query->whereNull('item_pos.deleted_at')
+					->orderBy('item_pos.id', 'desc');
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,15])){
+				$query->where('item_pos.locations_id', CRUDBooster::myLocationId())
+					->orderBy('item_pos.id', 'desc');
+			}
+
 	    }
 
 	    public function hook_row_index($column_index,&$column_value) {	        
@@ -128,7 +186,7 @@
 			
 			$header = ItemPos::where('id',$id)->first();
 			if (date('Y-m-d', strtotime($header->created_at)) != date('Y-m-d')){
-				CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("not allowed to void"), 'danger');
+				CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Cannot void transaction 24hrs above"), 'danger');
 			}
 			if ($header->status == 'VOID') {
 				CRUDBooster::redirect(CRUDBooster::adminpath('item_pos_transactions_backend'), trans("Already voided"), 'danger');
@@ -204,5 +262,11 @@
 			$data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
 			$data['addons'] = AddonsHistory::where('item_pos_id', $id)->where('add_ons.locations_id', CRUDBooster::myLocationId())->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
 			return view('pos-items.item-pos-transactions',$data);
+		}
+
+		public function exportItemPosData(Request $request) {
+			$fields = $request->filter_column;
+			$filename = $request->input('filename');
+			return Excel::download(new ItemPosLinesExport($fields), $filename.'.csv');
 		}
 	}
