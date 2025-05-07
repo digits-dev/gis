@@ -135,11 +135,10 @@
 			}
 			
 			$lines = ItemPosLines::where('item_pos_id',$id)->get();
-			$capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('description', 'Void')->value('id');
-			$sales_types_id = SalesType::where(DB::raw('UPPER(description)'), 'ITEMS')
+			$capsule_type_id = DB::table('capsule_action_types')->where('status', 'ACTIVE')->where('id', 14)->value('id');
+			$sales_types_id = SalesType::where('id',8)
 					->where('status', 'ACTIVE')
-					->pluck('id')
-					->first();
+					->first()->id;
 			$sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
 			$addOns = AddonsHistory::where('item_pos_id',$id)->get();
 			$addOnTypeId = AddOnActionType::where('id', 3)->first()->id;
