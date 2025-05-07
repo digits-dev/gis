@@ -10,6 +10,9 @@ use App\Models\Capsule\InventoryCapsuleLine;
 use App\Models\ItemPos;
 use App\Models\ItemPosLines;
 use App\Models\ItemPosReservedQuantity;
+use App\Models\PosFrontend\AddonsHistory;
+use App\Models\Submaster\AddOnMovementHistory;
+use App\Models\Submaster\AddOns;
 use App\Models\Submaster\ModeOfPayment;
 use App\Models\Submaster\SalesType;
 use App\Models\Submaster\SubLocations;
@@ -36,8 +39,9 @@ class POSItemPointofSaleController extends Controller
    
         $data = [];
         $data['mode_of_payments'] = ModeOfPayment::whereNull('type')->where('status', 'ACTIVE')->get();
- 
-        return view('pos-frontend.views.item-pos',$data);
+        $data['addons'] = AddOns::where('qty', '>', '0')->where('status', 'ACTIVE')->where('locations_id', $location_id)->get();
+
+        return view('pos-frontend.views.item-pos', $data);
     }
 
     public function check(Request $request)
@@ -247,8 +251,8 @@ class POSItemPointofSaleController extends Controller
         $amount_entered = $request->input('amount_entered');
         $change = $request->input('change');
         $reference_number = $request->input('reference_number');
+        $add_ons = $request->input('add_ons');
         $mode_of_payment_text = $request->input('mode_of_payment_text');
-        
 
         $transactionReferenceNumber = 'PS-' . str_pad(ItemPos::count() + 1, 8, '0', STR_PAD_LEFT);
         
@@ -281,6 +285,48 @@ class POSItemPointofSaleController extends Controller
             
             $itemPos = ItemPos::create($insertData);
 
+            // ADDONS
+            if (!empty($add_ons)){
+                foreach($add_ons as $add_on){
+
+                    $addons = AddOns::where('digits_code', $add_on['digits_code'])
+                    ->where('locations_id', $location_id)
+                    ->where('status', 'ACTIVE')->first();
+
+                    
+                    if (!$addons || $addons->qty < $add_on['qty']) {
+                        throw new \Exception('Insufficient quantity for add-on: ' . $add_on['description']);
+                    }
+                    
+                    // CREATING ADDONS HISTORY
+                    AddonsHistory::create([
+                        'item_pos_id' => $itemPos->id,
+                        'digits_code' => $add_on['digits_code'],
+                        'qty' => $add_on['qty'],
+                        'created_by' => $user_id,
+                        'created_at' => now(),
+
+                    ]);
+
+                    // DEDUCTING OF ADDONS QUANTITY
+                    $addons->qty = $addons->qty - $add_on['qty'];
+                    $addons->updated_by = $user_id;
+                    $addons->updated_at = now();
+                    $addons->save();
+
+                    AddOnMovementHistory::create([
+                        'reference_number' => $transactionReferenceNumber,
+                        'digits_code' => $add_on['digits_code'],
+                        'add_on_action_types_id' => 4, //items
+                        'locations_id' => $location_id,
+                        'qty' => (int)$add_on['qty'] * -1,
+                        'status' => 'POSTED',
+                    ]);
+
+                }
+             }
+
+            // ITEMS
             foreach($items as $item){
                 ItemPosLines::create([
                     'item_pos_id' => $itemPos->id,

@@ -52,6 +52,7 @@
                         </div>
                         <p id="total-items" style="font-size: 12px; font-weight: 500; color: #747474;">0 items</p>
                     </div>
+                    <button class="add-ons-button" id="addonsbutton"><i class="fa-solid fa-gift"></i> Add Ons</button>
                     <div class="item-container" style="width: 100%; height: 100%; overflow-y: auto; max-height: 400px; scrollbar-width: none;">
                         {{-- ITEMS WILL GO HERE --}}
                     </div>
@@ -161,6 +162,59 @@
         </div>
     </div>
 
+    {{-- ADDONS MODAL --}}
+    <div id="addOnsModal" style="display: none;">
+        <div style="
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        ">
+            <div class="addons-modal-wrapper">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #e2e2e2">
+                    <p style="font-weight: 500">Addons</p>
+                </div>
+                <div class="addons-modal-body">
+                    <div>
+                        <label class="payment-label">
+                            <img src="{{ asset('img/item-pos/addons.png') }}" alt="wallet" width="20">
+                            Select Addons
+                        </label>
+                        <select class="payment-select" id="addOnSelect" style="height: 40px;">
+                            <option disabled selected>Choose Addon</option>
+                            @foreach ($addons as $addOn )
+                                <option value="{{ $addOn->id }}"  data-id="{{ $addOn->id }}"  data-description="{{ $addOn->description }}" data-digits_code="{{ $addOn->digits_code }}" data-qty={{ $addOn->qty }}>{{ $addOn->description }}</option>                      
+                            @endforeach
+                        </select>
+                        <table class="responsive-table" style="font-size: 13px; margin-top: 10px; display:none" id="addons-table">
+                            <thead>
+                                <tr style="background-color: #ffffff;">
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d">Item Description</th>
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d">Quantity</th>
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="addOnTableBody">
+                              
+                            </tbody>
+                        </table>                       
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: end; gap:5px; padding: 10px 15px; border-top: 1px solid #e2e2e2">
+                    <button type="button" class="addon-button" id="addon-button-cancel" style="background-color: #6e6e6e;">
+                        <p>Cancel</p>
+                    </button>
+                    <button type="button" class="addon-button" id="addon-button-add-selected" style="background-color: #b71c1c;">
+                        <p>Add Selected</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 
@@ -453,6 +507,7 @@
                 `;
 
                 $('.clear-button').prop('disabled', true);
+                $('#addonsbutton').hide();
             } else {
 
                 cartItems.forEach((item) => {
@@ -494,6 +549,7 @@
                 });
 
                 $('.clear-button').prop('disabled', false);
+                $('#addonsbutton').show();
             }
 
             $('.item-container').html(html);
@@ -648,279 +704,7 @@
         
         }
 
-
-        // CONFIRMATION OF PAYMENT 
-
-        $('#process-button').on('click', function(){
-
-            const paymentMethod = $('#paymentMethod').val();
-            const amountInput = $('.amount-input').val();
-            const referenceInput =  $('.reference-input').val();
-            
-            const selectedPaymentText = $('#paymentMethod option:selected').text();
-            const amount = $('.amount-value').text();
-            const change = $('.change-value').text();
-            const total = $('.total-value').text();
-
-            // NUMERIC VALUES
-
-            amountNumericValue = parseInt(amount.replace(/,/g, '').split('.')[0], 10);
-            totalNumericValue = parseInt(total.replace(/,/g, '').split('.')[0], 10);
-            changeNumericValue = parseInt(change.replace(/,/g, '').split('.')[0], 10);
-
-
-            if (cartItems.length === 0){    
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Cart should not be empty',
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        confirmButton: 'my-swal-btn'
-                    },
-                });
-            }
-            else if(paymentMethod == null || paymentMethod === 0){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Select Payment Method',
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        confirmButton: 'my-swal-btn'
-                    },
-                });
-            }
-            else{
-
-                if (paymentMethod == 1){
-
-                    if(amountInput == null || amountInput == 0){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Please Enter Amount',
-                            confirmButtonText: 'OK',
-                            customClass: {
-                                confirmButton: 'my-swal-btn'
-                            },
-                        });
-                        return;
-                    }
-
-                    if (totalNumericValue > amountNumericValue){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Invalid Amount Entered',
-                            text: 'The amount should be equal to or greater than the total amount.',
-                            confirmButtonText: 'OK',
-                            customClass: {
-                                confirmButton: 'my-swal-btn'
-                            },
-                        });
-                        return;
-                    }
-
-                }
-                else{
-                    if(referenceInput == null || referenceInput == ''){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Please Enter Reference Number',
-                            confirmButtonText: 'OK',
-                            customClass: {
-                                confirmButton: 'my-swal-btn'
-                            },
-                        });
-                        return;
-                    }
-                }
-
-                let rows = '';
-                cartItems.forEach(item => {
-                    rows += `
-                        <tr>
-                            <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.name}</td>
-                            <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.code}</td>
-                            <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.quantity}</td>
-                            <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.subtotal}</td>
-                        </tr>
-                    `;
-                });
-
-                const tableHtml = `
-                    <div>
-                        <table class="responsive-table" style="font-size: 13px;">
-                            <thead>
-                                <tr style="background-color: #f2f2f2;">
-                                    <th style="padding: 8px; border: 1px solid #999;">Item Description</th>
-                                    <th style="padding: 8px; border: 1px solid #999;">JAN #</th>
-                                    <th style="padding: 8px; border: 1px solid #999;">Qty</th>
-                                    <th style="padding: 8px; border: 1px solid #999;">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rows}
-                            </tbody>
-                        </table>
-
-                         <table class="summary-table">
-                            <tr>
-                                <td class="summary-label">Mode of Payment</td>
-                                <td style="text-align: center;">${selectedPaymentText}</td>
-                            </tr>
-                            ${paymentMethod != 1 ? `
-                                <tr>
-                                    <td class="summary-label">Reference Number</td>
-                                    <td style="text-align: center;">${referenceInput}</td>
-                                </tr>
-                            ` : ''
-                            }
-                            <tr>
-                                <td class="summary-label">Total</td>
-                                <td style="text-align: center;">₱${total}</td>
-                            </tr>
-                            ${paymentMethod == 1 ? `
-                             <tr>
-                                <td class="summary-label">Amount Received</td>
-                                <td style="text-align: center;">₱${amount}</td>
-                            </tr>
-                            <tr>
-                                <td class="summary-label">Change</td>
-                                <td style="text-align: center;">₱${change}</td>
-                            </tr>` : ''
-                            
-                            }
-                           
-                        </table>
-                    </div>
-                `;
-
-                Swal.fire({
-                    title: 'Transaction Details',
-                    html: tableHtml,
-                    confirmButtonText: 'Confirm',
-                    cancelButtonText: 'Cancel',
-                    width: '100%',
-                    showCancelButton: true,
-                    reverseButtons: true,
-                    customClass: {
-                        confirmButton: 'my-swal-btn',
-                        popup: 'custom-swal'
-                    },
-                }).then((result) => {
-
-                    showSpinner();
-
-                    if (isSubmitting) return;
-                    isSubmitting = true;
-
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('submit.item.transaction') }}",
-                            type: "POST",
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                items: cartItems,
-                                mode_of_payment: paymentMethod,
-                                mode_of_payment_text: selectedPaymentText,
-                                total: totalNumericValue,
-                                amount_entered: amountNumericValue,
-                                change: changeNumericValue,
-                                reference_number: referenceInput,
-                            },
-                            success: function (response) {
-
-                                if (response.status == 'success'){
-                                    const successHtml = `
-                                        <div>
-                                            <table class="summary-table">
-                                                <tr>
-                                                    <td class="summary-label">Reference Number</td>
-                                                    <td style="text-align: center;">${response.reference_number}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="summary-label">Mode of Payment</td>
-                                                    <td style="text-align: center;">${response.mode_of_payment}</td>
-                                                </tr>
-                                                ${paymentMethod != 1 ? `
-                                                    <tr>
-                                                        <td class="summary-label">Payment Reference</td>
-                                                        <td style="text-align: center;">${response.payment_reference}</td>
-                                                    </tr>
-                                                ` : ''
-                                                }
-                                                <tr>
-                                                    <td class="summary-label">Total</td>
-                                                    <td style="text-align: center;">₱${response.total}</td>
-                                                </tr>
-                                                ${paymentMethod == 1 ? `
-                                                <tr>
-                                                    <td class="summary-label">Amount Received</td>
-                                                    <td style="text-align: center;">₱${response.amount_entered}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="summary-label">Change</td>
-                                                    <td style="text-align: center;">₱${response.change}</td>
-                                                </tr>` : ''
-                                                
-                                                }
-                                            
-                                            </table>
-                                        </div>
-                                    `;
-
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Transaction Success',
-                                        html: successHtml,
-                                        customClass: {
-                                            confirmButton: 'my-swal-btn'
-                                        },
-                                    }).then((result)=>{
-                                        if (result.isConfirmed){
-                                            window.location.href = "{{ route('item_pos') }}";
-                                        }
-                                    });
-                                }
-                                else{
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Transaction Failed',
-                                        text: 'There was an error please try again.',
-                                        customClass: {
-                                            confirmButton: 'my-swal-btn'
-                                        },
-                                    });
-                                }
-
-                               
-                            },
-                            error: function (xhr) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Transaction Failed',
-                                    text: 'There was an error please try again.',
-                                    customClass: {
-                                        confirmButton: 'my-swal-btn'
-                                    },
-                                });
-                            },
-                            complete: function () {
-                                hideSpinner();
-                                isSubmitting = false;
-                            }
-                        });
-                    }
-                    else if (result.dismiss === Swal.DismissReason.cancel) {
-                        hideSpinner();
-                        isSubmitting = false;
-                    }
-                });
-
-    
-
-            }
-
-        });
-
+        // CAMERA SCANNER
 
         let html5QrCode;
         let scannerRunning = false;
@@ -976,6 +760,452 @@
                     scannerRunning = false;
                 });
             }
+        });
+
+
+        // ADDONS MODAL
+        
+        let selectedAddOns = [];
+
+        $('#addonsbutton').on('click', function(){
+            $('#addOnsModal').fadeIn(200);
+        });
+
+
+        $('#addon-button-add-selected').prop('disabled', true);
+
+        function updateAddonsTable(){
+            $('#addOnTableBody').empty();
+
+            if (selectedAddOns.length == 0){
+                $('#addons-table').hide();
+                $('#addon-button-add-selected').prop('disabled', true);
+            }
+            else{
+                $('#addons-table').show();
+                $('#addon-button-add-selected').prop('disabled', false);
+            }
+
+            selectedAddOns.forEach((item, index) => {
+                 $('#addOnTableBody').append(`
+                    <tr data-index="${index}">
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">${item.description}</td>
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">
+                            <button class="addon-item-btn decrease">-</button>
+                            <span style="min-width: 20px; text-align: center; display: inline-block;">${item.qty}</span>
+                            <button class="addon-item-btn increase">+</button>
+                        </td>
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">
+                            <button class="remove" style="color:red; background-color:white; cursor:pointer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+        }
+
+        $('#addon-button-cancel').on('click', function () {
+            // Clear the array
+            selectedAddOns.length = 0;
+
+            // Restore all original add-on options (assuming you can access them in JS)
+            const allAddOns = @json($addons); // This outputs a JS array from the Laravel variable
+
+            // Clear the select and re-add all options
+            const $select = $('#addOnSelect');
+            $select.empty();
+            $select.append('<option disabled selected>Choose Addon</option>');
+
+            allAddOns.forEach(addOn => {
+                $select.append(
+                    $('<option>', {
+                        value: addOn.id,
+                        text: addOn.description,
+                        'data-id': addOn.id,
+                        'data-description': addOn.description,
+                        'data-digits_code': addOn.digits_code,
+                        'data-qty': addOn.qty
+                    })
+                );
+            });
+
+            // Hide the modal and update table
+            $('#addOnsModal').hide();
+            updateAddonsTable();
+        });
+
+        $('#addon-button-add-selected').on('click', function(){
+            $('#addOnsModal').hide();
+        });
+
+        $('#addOnSelect').change(function () {
+            const selected = $(this).find('option:selected');
+            const id = selected.data('id');
+            const description = selected.data('description');
+            const digits_code = selected.data('digits_code');
+            const qty = selected.data('qty');
+
+            const exists = selectedAddOns.some(item => item.id === id);
+
+            if (!exists && id) {
+                selectedAddOns.push({
+                    id: id,
+                    description: description,
+                    digits_code: digits_code,
+                    qty: 1,
+                    max_qty: qty
+                });
+
+                selected.remove();
+                
+                updateAddonsTable();
+            }
+
+            this.selectedIndex = 0;
+        });
+
+        // Quantity & Remove Handlers
+        $('#addOnTableBody').on('click', '.increase', function () {
+            const index = $(this).closest('tr').data('index');
+
+            if (selectedAddOns[index].qty >= selectedAddOns[index].max_qty){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Stock',
+                    customClass: {
+                        confirmButton: 'my-swal-btn'
+                    },
+                });
+                return;
+            }
+            else{
+                selectedAddOns[index].qty += 1;
+                updateAddonsTable();
+            }
+            
+        });
+
+        $('#addOnTableBody').on('click', '.decrease', function () {
+            const index = $(this).closest('tr').data('index');
+            if (selectedAddOns[index].qty > 1) {
+                selectedAddOns[index].qty -= 1;
+            }
+            updateAddonsTable();
+        });
+
+        $('#addOnTableBody').on('click', '.remove', function () {
+            const index = $(this).closest('tr').data('index');
+            const removed = selectedAddOns.splice(index, 1)[0];
+
+            // Re-add removed option to the select
+            $('#addOnSelect').append(
+                $('<option>', {
+                    value: removed.id,
+                    text: removed.description,
+                    'data-id': removed.id,
+                    'data-description': removed.description,
+                    'data-digits_code': removed.digits_code,
+                    'data-qty': removed.max_qty
+                })
+            );
+
+            updateAddonsTable();
+        });
+
+       
+    // CONFIRMATION OF PAYMENT
+    $('#process-button').on('click', function(){
+
+        const paymentMethod = $('#paymentMethod').val();
+        const amountInput = $('.amount-input').val();
+        const referenceInput =  $('.reference-input').val();
+
+        const selectedPaymentText = $('#paymentMethod option:selected').text();
+        const amount = $('.amount-value').text();
+        const change = $('.change-value').text();
+        const total = $('.total-value').text();
+
+        // NUMERIC VALUES
+
+        amountNumericValue = parseInt(amount.replace(/,/g, '').split('.')[0], 10);
+        totalNumericValue = parseInt(total.replace(/,/g, '').split('.')[0], 10);
+        changeNumericValue = parseInt(change.replace(/,/g, '').split('.')[0], 10);
+
+
+        if (cartItems.length === 0){    
+            Swal.fire({
+                icon: 'error',
+                title: 'Cart should not be empty',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'my-swal-btn'
+                },
+            });
+        }
+        else if(paymentMethod == null || paymentMethod === 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Select Payment Method',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'my-swal-btn'
+                },
+            });
+        }
+        else{
+
+            if (paymentMethod == 1){
+
+                if(amountInput == null || amountInput == 0){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please Enter Amount',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+
+                if (totalNumericValue > amountNumericValue){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Amount Entered',
+                        text: 'The amount should be equal to or greater than the total amount.',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+
+            }
+            else{
+                if(referenceInput == null || referenceInput == ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please Enter Reference Number',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+            }
+
+            let rows = '';
+            cartItems.forEach(item => {
+                rows += `
+                    <tr>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.name}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.code}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.quantity}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.subtotal}</td>
+                    </tr>
+                `;
+            });
+
+            const tableHtml = `
+                <div>
+                    <table class="responsive-table" style="font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 8px; border: 1px solid #999;">Item Description</th>
+                                <th style="padding: 8px; border: 1px solid #999;">JAN #</th>
+                                <th style="padding: 8px; border: 1px solid #999;">Qty</th>
+                                <th style="padding: 8px; border: 1px solid #999;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+
+                    ${selectedAddOns.length != 0 ? `
+                        <table class="responsive-table" style="margin-top: 20px; font-size: 13px;">
+                            <thead>
+                                <tr style="background-color: #f9f9f9;">
+                                    <th style="padding: 8px; border: 1px solid #999;">Addon Description</th>
+                                    <th style="padding: 8px; border: 1px solid #999;">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${selectedAddOns.map(addon => `
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #999; text-align: center;">${addon.description}</td>
+                                        <td style="padding: 8px; border: 1px solid #999; text-align: center;">${addon.qty}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : ''
+                    }
+                    
+
+                    <table class="summary-table">
+                        <tr>
+                            <td class="summary-label">Mode of Payment</td>
+                            <td style="text-align: center;">${selectedPaymentText}</td>
+                        </tr>
+                        ${paymentMethod != 1 ? `
+                            <tr>
+                                <td class="summary-label">Reference Number</td>
+                                <td style="text-align: center;">${referenceInput}</td>
+                            </tr>
+                        ` : ''
+                        }
+                        <tr>
+                            <td class="summary-label">Total</td>
+                            <td style="text-align: center;">₱${total}</td>
+                        </tr>
+                        ${paymentMethod == 1 ? `
+                        <tr>
+                            <td class="summary-label">Amount Received</td>
+                            <td style="text-align: center;">₱${amount}</td>
+                        </tr>
+                        <tr>
+                            <td class="summary-label">Change</td>
+                            <td style="text-align: center;">₱${change}</td>
+                        </tr>` : ''
+                        
+                        }
+                    
+                    </table>
+                </div>
+            `;
+
+            Swal.fire({
+                title: 'Transaction Details',
+                html: tableHtml,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+                width: '100%',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'my-swal-btn',
+                    popup: 'custom-swal'
+                },
+            }).then((result) => {
+
+                showSpinner();
+
+                if (isSubmitting) return;
+                isSubmitting = true;
+
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('submit.item.transaction') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            items: cartItems,
+                            add_ons: selectedAddOns,
+                            mode_of_payment: paymentMethod,
+                            mode_of_payment_text: selectedPaymentText,
+                            total: totalNumericValue,
+                            amount_entered: amountNumericValue,
+                            change: changeNumericValue,
+                            reference_number: referenceInput,
+                        },
+                        success: function (response) {
+
+                            if (response.status == 'success'){
+                                const successHtml = `
+                                    <div>
+                                        <table class="summary-table">
+                                            <tr>
+                                                <td class="summary-label">Reference Number</td>
+                                                <td style="text-align: center;">${response.reference_number}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="summary-label">Mode of Payment</td>
+                                                <td style="text-align: center;">${response.mode_of_payment}</td>
+                                            </tr>
+                                            ${paymentMethod != 1 ? `
+                                                <tr>
+                                                    <td class="summary-label">Payment Reference</td>
+                                                    <td style="text-align: center;">${response.payment_reference}</td>
+                                                </tr>
+                                            ` : ''
+                                            }
+                                            <tr>
+                                                <td class="summary-label">Total</td>
+                                                <td style="text-align: center;">₱${response.total}</td>
+                                            </tr>
+                                            ${paymentMethod == 1 ? `
+                                            <tr>
+                                                <td class="summary-label">Amount Received</td>
+                                                <td style="text-align: center;">₱${response.amount_entered}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="summary-label">Change</td>
+                                                <td style="text-align: center;">₱${response.change}</td>
+                                            </tr>` : ''
+                                            
+                                            }
+                                        
+                                        </table>
+                                    </div>
+                                `;
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Transaction Success',
+                                    html: successHtml,
+                                    allowOutsideClick: false,
+                                    customClass: {
+                                        confirmButton: 'my-swal-btn'
+                                    },
+                                }).then((result)=>{
+                                    if (result.isConfirmed){
+                                        window.location.href = "{{ route('item_pos') }}";
+                                    }
+                                });
+                            }
+                            else{
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Transaction Failed',
+                                    text: response.message ? response.message : 'There was an error please try again.',
+                                    customClass: {
+                                        confirmButton: 'my-swal-btn'
+                                    },
+                                });
+                            }
+
+                        
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Transaction Failed',
+                                text: 'There was an error please try again.',
+                                customClass: {
+                                    confirmButton: 'my-swal-btn'
+                                },
+                            });
+                        },
+                        complete: function () {
+                            hideSpinner();
+                            isSubmitting = false;
+                        }
+                    });
+                }
+                else if (result.dismiss === Swal.DismissReason.cancel) {
+                    hideSpinner();
+                    isSubmitting = false;
+                }
+            });
+
+
+
+        }
+
         });
 
 
