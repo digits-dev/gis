@@ -141,7 +141,7 @@
 					->pluck('id')
 					->first();
 			$sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
-			$addOns = AddonsHistory::where('token_swap_id',$id)->get();
+			$addOns = AddonsHistory::where('item_pos_id',$id)->get();
 			$addOnTypeId = AddOnActionType::where('id', 3)->first()->id;
 
 			foreach($lines ?? [] as $key => $value){
@@ -203,7 +203,7 @@
 			$data = [];
 			$data['page_title'] = 'View Item POS Transactions';
 			$data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
-			$data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', CRUDBooster::myLocationId())->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
+			$data['addons'] = AddonsHistory::where('item_pos_id', $id)->where('add_ons.locations_id', CRUDBooster::myLocationId())->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
 			return view('pos-items.item-pos-transactions',$data);
 		}
 	}

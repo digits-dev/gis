@@ -33,7 +33,7 @@ class POSItemTransactionsHistoryController extends Controller
         }
 
         $filter = $query->filter(['search' => $searchTerm]);
-        $result = $filter->orderBy('item_pos.created_at');
+        $result = $filter->orderBy('item_pos.created_at','desc');
  
         return $result->paginate(10)->through(function ($item) {
             return [
@@ -46,9 +46,9 @@ class POSItemTransactionsHistoryController extends Controller
                 'payment_reference'    => $item->payment_reference,
                 'status'               => $item->status,
                 'created_by'           => $item->creator->name ?? null,
-                'created_at'           => Carbon::parse($item->created_at)->format('Y-m-d H:i:s'),
+                'created_at'           => $item->created_at ?? NULL,
                 'updated_by'           => $item->updator->name ?? null,   
-                'updated_at'           => Carbon::parse($item->updated_at)->format('Y-m-d H:i:s'),
+                'updated_at'           => $item->updated_at ?? NULL,
             ];
         });
     }
@@ -76,6 +76,7 @@ class POSItemTransactionsHistoryController extends Controller
             'updated_by'          => 'Updated By',
             'updated_at'          => 'Updated At'
         ];
+
         $data['table_header'] =  $tableHeader;
         return view('pos-frontend.views.item-pos-transactions',$data);
     }
@@ -83,7 +84,7 @@ class POSItemTransactionsHistoryController extends Controller
     public function getDetail($id){
         $data = [];
         $data['items'] = ItemPos::with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location'])->where('id',$id)->first();
-        $data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
+        $data['addons'] = AddonsHistory::where('item_pos_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
         return response()->json($data);
     }
 
@@ -102,7 +103,7 @@ class POSItemTransactionsHistoryController extends Controller
 				->where('status', 'ACTIVE')
 				->pluck('id')
                 ->first();
-        $addOns = AddonsHistory::where('token_swap_id',$id)->get();
+        $addOns = AddonsHistory::where('item_pos_id',$id)->get();
         $addOnTypeId = AddOnActionType::where('id', 3)->first()->id;
         $sub_location_id = SubLocations::where('location_id',$header->locations_id)->value('id');
         foreach($lines ?? [] as $key => $value){
@@ -161,7 +162,7 @@ class POSItemTransactionsHistoryController extends Controller
         $data = [];
         $data['page_title'] = 'View Item POS Transactions';
         $data['items'] = ItemPos::query()->with(['item_lines','creator:id,name','updator:id,name','ModeOfPayments','location','add_ons'])->where('id',$id)->first();
-        $data['addons'] = AddonsHistory::where('token_swap_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
+        $data['addons'] = AddonsHistory::where('item_pos_id', $id)->where('add_ons.locations_id', Auth::user()->location_id)->leftjoin('add_ons', 'add_ons.digits_code', 'addons_history.digits_code')->select('add_ons.description', 'addons_history.qty' )->get();
         return view('pos-frontend.views.item-pos-transaction-show',$data);
     }
 }

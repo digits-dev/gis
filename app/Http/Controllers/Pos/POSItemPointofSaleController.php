@@ -54,7 +54,7 @@ class POSItemPointofSaleController extends Controller
         
         $item = InventoryCapsule::whereHas('item', function ($query) use ($code) {
             $query->where('digits_code', $code)
-            ->where('category_id', 2);
+            ->where('product_type_id', 6);
         })->with(['item', 'item_stockroom_data' => function ($query) use ($sub_location) {
             $query->where('sub_locations_id', $sub_location->id);
         }])->where('locations_id', $location_id)->first();
@@ -321,6 +321,8 @@ class POSItemPointofSaleController extends Controller
                         'locations_id' => $location_id,
                         'qty' => (int)$add_on['qty'] * -1,
                         'status' => 'POSTED',
+                        'created_by' => $user_id,
+                        'created_at' => now()
                     ]);
 
                 }
