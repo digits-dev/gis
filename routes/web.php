@@ -40,7 +40,10 @@ use App\Http\Controllers\Submaster\AdminItemsController;
 use App\Http\Controllers\AdminCmsUsersController;
 use App\Http\Controllers\History\AdminCollectTokenHistoriesController;
 use App\Http\Controllers\History\AdminNewCashFloatHistoriesController;
+use App\Http\Controllers\Pos\POSItemPointofSaleController;
+use App\Http\Controllers\Pos\POSItemTransactionsHistoryController;
 use App\Http\Controllers\Token\AdminCollectTokenController;
+use App\Http\Controllers\ItemPos\AdminItemPosTransactionsBackendController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,10 +99,27 @@ Route::group(['middleware' => ['web','check.user']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/store_rr_token/forPrintUpdate',[AdminStoreRrTokenController::class, 'forPrintUpdate']);
 
     Route::get(config('crudbooster.ADMIN_PATH').'/receive_token/getReceivingToken/{id}',[AdminReceiveTokenStoreController::class, 'getReceivingToken'])->name('get-receiving-token');
+
+    // ITEM POS 
+    Route::get('item_pos', [POSItemPointofSaleController::class, 'index'])->middleware('auth')->name('item_pos');
+    Route::post('/check_jan_code', [POSItemPointofSaleController::class, 'check'])->name('check.jan.code');
+    Route::post('/item_pos/submit', [POSItemPointofSaleController::class, 'submitTransaction'])->name('submit.item.transaction');
+    Route::post('/item_pos/item_option', [POSItemPointofSaleController::class, 'itemOption'])->name('item.pos.item.option');
+    Route::post('/item_pos/clear_cart', [POSItemPointofSaleController::class, 'clearCart'])->name('item.pos.clear.cart');
     
-    //TOKEN DESPENSE
+    Route::get('item_pos_transactions', [POSItemTransactionsHistoryController::class, 'index'])->middleware('auth');
+    Route::get('item_pos_transactions/getDetail/{id}', [POSItemTransactionsHistoryController::class, 'getDetail'])->middleware('auth');
+    Route::get('item_pos_transactions/void/{id}', [POSItemTransactionsHistoryController::class, 'void'])->middleware('auth');
+    Route::get('item_pos_transactions/show/{id}', [POSItemTransactionsHistoryController::class, 'show'])->middleware('auth');
+
+
+    //ITEM POS BACKEND CONTROLLER
+    Route::get(config('crudbooster.ADMIN_PATH').'/item_pos_transactions_backend/void-transaction/{id}', [AdminItemPosTransactionsBackendController::class, 'voidTransaction']);
+    Route::post(config('crudbooster.ADMIN_PATH').'/item_pos_transactions_backend/export', [AdminItemPosTransactionsBackendController::class, 'exportItemPosData'])->name('item-pos-export');
+    //TOKEN DISPENSE
     Route::get('pos_token_dispense', [POSTokenDispenseController::class, 'index'])->middleware('auth');
     Route::post('pos_token_dispense/swap-dispense', [POSTokenDispenseController::class, 'store'])->middleware('auth')->name('swap-dispense');
+
     //POS Dashboard
     Route::post('admin/dashboard/sod', [POSDashboardController::class, 'submitSOD'])->name('submitSOD');
 

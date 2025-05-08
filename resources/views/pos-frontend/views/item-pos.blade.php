@@ -1,0 +1,1215 @@
+{{-- Please always check the current plugins, css, script in content.blade.php--}}
+
+{{-- Extend the dashboard layout --}}
+@extends('pos-frontend.components.content')
+{{-- Title of the page --}}
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="{{ asset('css/item-pos.css') }}">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+</head>
+
+
+{{-- Define the content to be included in the 'content' section --}}
+@section('content')
+    <div class="container">
+        <div class="main-container" >
+            {{-- CONTAINER 1 --}}
+            <div class="container-1">
+                <form class="scanner-container" id="scanner_form">
+                    <div class="scanner-container-child1">
+                        <p>Scan JAN Code</p>
+                        <button type="button" class="active-scanner-button" id="open-scanner-btn">
+                            <img class="scanner-icon" src="{{ asset('img/item-pos/item-pos-scanner.png') }}" alt="">
+                            <p>Open Camera Scanner</p>
+                        </button>
+                    </div>
+                    <div class="scanner-container-child2">
+                        <div  style="flex:1;">
+                            <input id="jan-code-input" class="scan-input" type="text" placeholder="Enter JAN Code Here"/>
+                            <div style="display: flex; justify-content: space-between" class="scanner-qty">
+                                <p style="font-size: 12px; font-weight: 500; color: #747474;">For Manual Code Input use only</p>
+                                <div class="quantity-wrapper">
+                                    <span style="font-size: 14px; font-weight: 500">Quantity</span>
+                                    <button type="button" class="quantity-btn minus">-</button>
+                                    <span class="quantity-number">1</span>
+                                    <button type="button" class="quantity-btn plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="scan-btn" class="scan-button">
+                            <p>Scan</p>
+                        </button>
+                    </div>
+                </form>
+                <div class="items-container">
+                    <div style="display: flex;  align-items: end; justify-content: space-between">
+                        <div style="display:flex; align-items: center; gap: 8px;">
+                            <img style="width: 20px; height: auto" src="{{ asset('img/item-pos/item-pos-item-icon.png') }}" alt="">
+                            <span style="font-weight: 600">Item Details</span>
+                        </div>
+                        <p id="total-items" style="font-size: 12px; font-weight: 500; color: #747474;">0 items</p>
+                    </div>
+                    <button class="add-ons-button" id="addonsbutton"><i class="fa-solid fa-gift"></i> Add Ons</button>
+                    <div class="item-container" style="width: 100%; height: 100%; overflow-y: auto; max-height: 400px; scrollbar-width: none;">
+                        {{-- ITEMS WILL GO HERE --}}
+                    </div>
+                </div>
+            </div>
+            {{-- CONTAINER 2 --}}
+            <div class="container-2">
+                <div class="items-container">
+                    <div style="display:flex; align-items: center; gap: 10px;">
+                        <img style="width: 25px; height: auto" src="{{ asset('img/item-pos/gashapon-logo.png') }}" alt="">
+                        <span style="font-weight: 700;">Checkout</span>
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <label class="payment-label">
+                            <img src="{{ asset('img/item-pos/item-pos-payment.png') }}" alt="wallet" width="20">
+                            Payment Method
+                        </label>
+                        <select class="payment-select" id="paymentMethod" style="height: 40px;">
+                            <option disabled selected>Choose Payment Method</option>
+                            @foreach ($mode_of_payments as $mode_of_payment )
+                            <option value="{{ $mode_of_payment->id  }}">{{ $mode_of_payment->payment_description  }}</option>                      
+                            @endforeach
+                        </select>
+                    </div>
+                    <div style="margin-top: 10px; display: none" id="amount-wrapper">
+                        <label for="amount" class="amount-label">Amount</label>
+                        <input type="text" name="amount" class="amount-input" placeholder="Enter Amount">
+                    </div>    
+                    <div style="margin-top: 10px; display: none" id="reference-wrapper">
+                        <label for="reference" class="reference-label">Reference Number</label>
+                        <input type="text" name="reference" class="reference-input" placeholder="Enter Reference Number">
+                    </div>    
+                    <div class="items-container" style="margin-top: 10px; font-size: 14px; gap:5px">
+                        <div style="display: flex; justify-content: space-between">
+                            <p style="font-weight: 600">Total</p>
+                              <p>₱<span class="total-value">0.00</span></p>
+                        </div>
+                        <div class="change-amount-details" style="display:none">
+                            <div style="display: flex; justify-content: space-between">
+                                <p style="font-weight: 600">Amount</p>
+                                <p>₱<span class="amount-value">0.00</span></p>
+                            </div>
+                            <div style="border-top: 1px dashed black; margin: 4px 0;"></div>
+                            <div style="display: flex; justify-content: space-between">
+                                <p style="font-weight: 600">Change</p>
+                                  <p>₱<span class="change-value">0.00</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="scan-button" id="process-button" style="margin-top: 12px">
+                        <p>Process Payment</p>
+                    </button>            
+                    <button class="clear-button" style="margin-top: 12px">
+                        <p>Clear Cart</p>
+                    </button>            
+                </div>
+                <div class="quick-guide-wrapper">
+                    <p style="font-weight: 600; margin-bottom: 3px; font-size: 14px">Quick Guide</p>
+                    <p style="font-size: 10px">1. Scan or Enter JAN Code to add Items</p>
+                    <p style="font-size: 10px">2. Double Check Scanned Items</p>
+                    <p style="font-size: 10px">3. Adjust quantities as needed</p>
+                    <p style="font-size: 10px">4. Add Payment Method</p>
+                    <p style="font-size: 10px">5. Enter Amount to pay</p>
+                    <p style="font-size: 10px">6. Proceed transaction when finished</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loadingSpinnerModal" style="display: none;">
+        <div style="
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        ">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    {{-- SCANNER --}}
+    <div id="scannerModal" style="display: none;">
+        <div style="
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        ">
+             <div style="background: #fff; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px;">
+                <p><strong>Scan JAN Code</strong></p>
+                <p style="color: #999; font-size: 12px;" >Please present the barcode in front of the camera for scanning.</p>
+               
+                <div style="margin-top: 10px">
+                    <div id="qr-reader" style="width: 100%; height: 250px; overflow: hidden;">
+                    </div>
+                </div>
+                
+                <button id="close-scanner" style="margin-top: 10px;" class="scan-button">Close Scanner</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ADDONS MODAL --}}
+    <div id="addOnsModal" style="display: none;">
+        <div style="
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        ">
+            <div class="addons-modal-wrapper">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #e2e2e2">
+                    <p style="font-weight: 500">Addons</p>
+                </div>
+                <div class="addons-modal-body">
+                    <div>
+                        <label class="payment-label">
+                            <img src="{{ asset('img/item-pos/addons.png') }}" alt="wallet" width="20">
+                            Select Addons
+                        </label>
+                        <select class="payment-select" id="addOnSelect" style="height: 40px;">
+                            <option disabled selected>Choose Addon</option>
+                            @foreach ($addons as $addOn )
+                                <option value="{{ $addOn->id }}"  data-id="{{ $addOn->id }}"  data-description="{{ $addOn->description }}" data-digits_code="{{ $addOn->digits_code }}" data-qty={{ $addOn->qty }}>{{ $addOn->description }}</option>                      
+                            @endforeach
+                        </select>
+                        <table class="responsive-table" style="font-size: 13px; margin-top: 10px; display:none" id="addons-table">
+                            <thead>
+                                <tr style="background-color: #ffffff;">
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d">Item Description</th>
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d">Quantity</th>
+                                    <th style="padding: 8px; border: 1px solid red; color: #3d3d3d"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="addOnTableBody">
+                              
+                            </tbody>
+                        </table>                       
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: end; gap:5px; padding: 10px 15px; border-top: 1px solid #e2e2e2">
+                    <button type="button" class="addon-button" id="addon-button-cancel" style="background-color: #6e6e6e;">
+                        <p>Cancel</p>
+                    </button>
+                    <button type="button" class="addon-button" id="addon-button-add-selected" style="background-color: #b71c1c;">
+                        <p>Add Selected</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+
+{{-- Your Script --}}
+
+@section('script-js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        $(".container").fadeIn(1000);
+        
+        // ---------------------------------------------------- INITIALIZATION -----------------------------------------------//
+
+        let cartItems = [];
+
+        //  ----------------------------------------------------- MODAL -------------------------------------------------------//
+        function showSpinner() {
+            $('#loadingSpinnerModal').fadeIn(200);
+        }
+
+        function hideSpinner() {
+            $('#loadingSpinnerModal').fadeOut(200);
+        }
+
+        //  ------------------------------------------------------- FOR SCANNING JAN CODE ---------------------------------------------/
+
+        let isSubmitting = false;
+
+        $('#scan-btn').on('click', function() {
+            $(this).prop('disabled', true);
+            $('#scanner_form').submit();
+        });
+
+        $('#scanner_form').on('submit', function (e) {
+            e.preventDefault();
+
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            $('#scan-btn').text('Scanning...');
+
+            const janCode = $('#jan-code-input').val();
+            const ScannedQty = $('.quantity-number').text();
+
+            if (janCode.trim() === '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Missing JAN Code',
+                    confirmButtonText: 'OK',
+                    text: 'Please enter a JAN code before scanning.',
+                    customClass: {
+                        confirmButton: 'my-swal-btn'
+                    },
+                });
+                $('#scan-btn').prop('disabled', false);
+                $('#scan-btn').text('Scan');
+                isSubmitting = false;
+                return;
+            }
+
+            showSpinner();
+
+            $.ajax({
+                url: "{{ route('check.jan.code') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    jan_code: janCode,
+                    scan_qty: ScannedQty,
+                },
+                success: function (response) {
+                    if (response.status == 'found') {
+                        addToCart(response.item);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.status === 'not_found' ? 'Item Not Found' : 'Item Insufficient Stock',
+                            text: response.status === 'insufficient stock' && `Available stock: ${response.available_stock}`,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'my-swal-btn'
+                            },
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Scan Failed',
+                        text: 'There was an error processing the JAN code.',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                },
+                complete: function () {
+                    hideSpinner();
+                    $('#jan-code-input').val('');
+                    $('#scan-btn').prop('disabled', false);
+                    $('#scan-btn').text('Scan');
+                    $('.quantity-number').text('1');
+                    isSubmitting = false;
+                }
+            });
+        });
+
+
+
+        $('.quantity-btn').click(function() {
+            const $quantity = $(this).siblings('.quantity-number');
+            const currentVal = parseInt($quantity.text());
+            
+            if ($(this).hasClass('plus')) {
+                $quantity.text(currentVal + 1);
+            } else if ($(this).hasClass('minus')) {
+                if (currentVal > 1) { // Prevent going below 1
+                    $quantity.text(currentVal - 1);
+                }
+            }
+
+        });
+
+        // ----------------------------------------------------- PAYMENT METHOD -----------------------------------------------------//
+
+        $('#paymentMethod').change(function() {
+            const selected = $(this).val();
+
+            const amountDetails = $('.change-amount-details');
+            const amountWrapper = $('#amount-wrapper');
+            const amountInput = $('.amount-input');
+            const referenceWrapper = $('#reference-wrapper');
+            const referenceInput = $('.reference-input');
+
+            if (selected == 1) {
+                amountWrapper.fadeIn(1000);
+                amountDetails.show();
+                referenceWrapper.hide();
+                referenceInput.val('');
+            } else {
+                amountDetails.hide();
+                amountWrapper.hide();
+                amountInput.val('');
+                referenceWrapper.fadeIn(1000);
+            }
+        });
+
+
+        // ----------------------------------------------------- FOR DETAILS UI -----------------------------------------------------//
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('en-PH', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+
+        function formatWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        $('.amount-input').on('input', function() {
+            let rawInput = $(this).val().replace(/[^0-9]/g, '');
+
+            // Prevent leading zero unless it's the only digit
+            if (rawInput.length > 1 && rawInput.startsWith('0')) {
+                rawInput = rawInput.replace(/^0+/, '');
+            }
+
+            // Format with commas for display
+            let formattedInput = formatWithCommas(rawInput);
+            $(this).val(formattedInput);
+
+            // Convert to number for calculations
+            let amount = parseFloat(rawInput || 0);
+
+            $('.amount-value').text(formatCurrency(amount));
+
+            let totalText = $('.total-value').text().replace(/,/g, '');
+            let total = parseFloat(totalText || 0);
+
+            let change = amount - total;
+            if (change < 0) change = 0;
+
+            $('.change-value').text(formatCurrency(change));
+        });
+
+        // ------------------------------------------------------- CLEAR CART ----------------------------------------------//
+
+        $('.clear-button').on('click', function () {
+            Swal.fire({
+                title: 'Clear Cart?',
+                text: 'Are you sure you want to remove all items from the cart?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, clear it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'my-swal-btn',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    if (isSubmitting) return;
+                    isSubmitting = true;
+
+                    showSpinner();
+
+                    $.ajax({
+                        url: "{{ route('item.pos.clear.cart') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function (response) {
+                            cartItems = [];              
+                            renderCart();                  
+                            updateTotalDisplay();          
+                            $('.amount-input').val('');     
+                            $('.reference-input').val('');     
+                            $('.amount-value').text('0.00');
+                            $('.change-value').text('0.00');
+                            $('.change-amount-details').hide();
+                            $('#amount-wrapper').hide();
+                            $('#reference-wrapper').hide();
+                            $('#jan-code-input').val('');
+                            $('#paymentMethod').prop('selectedIndex', 0);
+
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was an error please try again.',
+                                customClass: {
+                                    confirmButton: 'my-swal-btn'
+                                },
+                            });
+
+                            return;
+                        },
+                        complete: function () {
+                            hideSpinner();
+                            isSubmitting = false;
+                            return;
+                        }
+                    });
+              
+                }
+            });
+        });
+
+        // ------------------------------------------------------- FOR ITEMS -------------------------------------------------- //
+
+        renderCart();
+
+        function addToCart(newItem) {
+            const existingItem = cartItems.find(item => item.code === newItem.code);
+            if (existingItem) {
+
+                existingItem.item_stock_qty = newItem.item_stock_qty;
+                existingItem.quantity += newItem.quantity;
+                existingItem.subtotal = existingItem.quantity * existingItem.price;
+            } else {
+                const maxId = cartItems.length > 0 ? Math.max(...cartItems.map(item => item.id)) : 0;
+                newItem.id = maxId + 1;
+                newItem.subtotal = newItem.price * newItem.quantity; 
+                cartItems.push(newItem);
+            }
+
+            renderCart();
+            updateTotalDisplay();
+            updateChangeDisplay();
+            
+        }
+
+        function renderCart() {
+            let html = '';
+
+            if (cartItems.length === 0) {
+                html = `
+                    <div class="empty-cart-wrapper" style="display: flex; flex-direction: column; gap:10px; user-select: none; justify-content: center; align-items: center; border: 1px solid #c7c7c7; height: 100%; border-style: dashed; border-radius: 8px;">
+                        <img class="empty-icon" style="width: 80px; height: auto; opacity: .7;" src="{{ asset('img/item-pos/item-pos-out-of-stock.png') }}" alt="">
+                        <p class="empty-text" style="font-size: 18px; font-weight: 500; color: #c7c7c7;">Scanned items will go here</p>
+                    </div>
+                `;
+
+                $('.clear-button').prop('disabled', true);
+                $('#addonsbutton').hide();
+            } else {
+
+                cartItems.forEach((item) => {
+                    const formattedSubtotal = formatCurrency(item.subtotal);
+
+                    html += `
+                        <div class="cart-item" data-id="${item.id}" data-stock="${item.item_stock_qty}" data-code="${item.code}">
+                            <div class="cart-item-wrapper1">
+                                <div class="item-details">
+                                    <p style="font-size:12px; font-weight: 600;">${item.name}</p>
+                                    <p style="font-size:12px; font-weight: 600; color: #A3A3A3">${item.code}</p>
+                                    <p style="font-size:12px; font-weight: 600;">₱${item.price}</p>
+                                </div>
+                                <div style="display:flex; flex-direction: column; align-items:end">
+                                    <div class="item-controls">
+                                        <button class="qty-minus">-</button>
+                                        <input type="text" class="qty" value="${item.quantity}" readonly>
+                                        <button class="qty-plus">+</button>
+                                    </div>
+                                    <div class="subtotal" style="text-align:end; margin-top:5px;">
+                                        <p style="color: #A3A3A3; font-size:10px; font-weight: 600;">Subtotal</p>
+                                        <div>
+                                            <span>₱</span>
+                                            <span class="subtotal-amount" style="font-weight: 600;">${formattedSubtotal}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="border-top: 1px solid red; margin: 5px 0"></div>
+                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                <div class="item_stock_qty" style="font-size:12px">Stock: ${item.item_stock_qty}</div>
+                                <button class="remove-btn" style="display:flex; align-items:center; background: white; cursor:pointer;">
+                                    <img style="width: 14px; height: auto" src="{{ asset('img/item-pos/item-pos-trash-can.png') }}" alt="">
+                                    <span style="font-size: 12px; margin-left:5px;">Remove</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                $('.clear-button').prop('disabled', false);
+                $('#addonsbutton').show();
+            }
+
+            $('.item-container').html(html);
+            $('#total-items').text(`${cartItems.length} items`);
+            attachEvents();
+
+        }
+
+        function updateTotalDisplay() {
+            const total = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+            $('.total-value').text(formatCurrency(total));
+        }
+
+        function updateSubtotal(parent) {
+            const id = parent.data('id');
+            const item = cartItems.find(x => x.id === id);
+
+            if (item) {
+                const qty = parseInt(parent.find('.qty').val());
+                item.quantity = qty;
+                item.subtotal = qty * item.price;
+                parent.find('.subtotal-amount').text(formatCurrency(item.subtotal));
+                updateTotalDisplay();
+            }
+        }
+
+        // PLUS AND MINUS OF EACH ITEM
+
+        function updateChangeDisplay() {
+            const amountRaw = $('.amount-input').val().replace(/,/g, '').replace(/[^0-9.]/g, '');
+            const amount = parseFloat(amountRaw || 0);
+
+            const totalText = $('.total-value').text().replace(/,/g, '');
+            const total = parseFloat(totalText || 0);
+
+            const change = amount - total;
+            $('.change-value').text(formatCurrency(change < 0 ? 0 : change));
+            $('.amount-value').text(formatCurrency(amount));
+        }
+
+        function updateQtyItemAddMinusPerItem(action, jan_number){
+
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            showSpinner();
+
+            $.ajax({
+                url: "{{ route('item.pos.item.option') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    item_action: action,
+                    jan_number: jan_number,
+                },
+                success: function (response) {
+                    if (response.status == 'error'){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Stock',
+                            customClass: {
+                                confirmButton: 'my-swal-btn'
+                            },
+                        });
+
+                        return;
+                    }
+                    else if(response.status == 'item reservation removed')
+                    {
+
+                    }
+                    else{
+                        updateCartItemQty(response);
+                    }
+
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was an error please try again.',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+
+                    return;
+                },
+                complete: function () {
+                    hideSpinner();
+                    isSubmitting = false;
+                    return;
+                }
+            });
+
+        }
+
+        function updateCartItemQty(response) {
+            const existingItem = cartItems.find(item => item.code === response.jan_number);
+
+            if (response.action === 'add'){
+                existingItem.item_stock_qty = response.item_stock_qty;
+                existingItem.quantity = existingItem.quantity + 1;
+                existingItem.subtotal = existingItem.quantity * existingItem.price;
+            }
+            else{
+                existingItem.item_stock_qty = response.item_stock_qty;
+                existingItem.quantity = existingItem.quantity - 1;
+                existingItem.subtotal = existingItem.quantity * existingItem.price;
+            }
+
+            renderCart();
+            updateTotalDisplay();
+            updateChangeDisplay();
+            
+        }
+
+        function attachEvents() {
+            $('.qty-plus').off('click').on('click', function(){
+                const parent = $(this).closest('.cart-item');
+                const janNumber = parseInt(parent.data('code'));
+
+                updateQtyItemAddMinusPerItem('add', janNumber);
+                updateChangeDisplay();
+                
+            });
+
+            $('.qty-minus').off('click').on('click', function(){
+                const parent = $(this).closest('.cart-item');
+                const qtyInput = parent.find('.qty');
+                const quantity = parseInt(qtyInput.val());
+                const janNumber = parseInt(parent.data('code'));
+
+                if (quantity > 1) {
+                    updateQtyItemAddMinusPerItem('minus', janNumber);
+                    updateChangeDisplay();
+                }
+            });
+
+            $('.remove-btn').off('click').on('click', function(){
+                const parent = $(this).closest('.cart-item');
+                const janNumber = parseInt(parent.data('code'));
+                
+                updateQtyItemAddMinusPerItem('remove', janNumber);
+
+                cartItems = cartItems.filter(item => item.code != janNumber);
+
+                renderCart();
+                updateTotalDisplay();
+                updateChangeDisplay();
+            });
+        
+        }
+
+        // CAMERA SCANNER
+
+        let html5QrCode;
+        let scannerRunning = false;
+
+        $('#open-scanner-btn').on('click', function () {
+            $('#scannerModal').fadeIn();
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    const cameraId = devices[0].id;
+
+                    html5QrCode.start(
+                        cameraId,
+                        {
+                            fps: 10,
+                            qrbox: { width: 300, height: 300 }
+                        },
+                        janCode => {
+                            $('#jan-code-input').val(janCode);
+                            $('#scannerModal').fadeOut();
+                            $('#scan-btn').trigger('click');
+
+                            html5QrCode.stop().then(() => {
+                                scannerRunning = false;
+                            });
+                        },
+                        errorMessage => {
+                            // Optional: handle scan errors
+                        }
+                    );
+                    scannerRunning = true;
+                }
+            }).catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Camera Error',
+                    text: 'Unable to access your camera.',
+                    customClass: {
+                        confirmButton: 'my-swal-btn'
+                    },
+                });
+            });
+        });
+
+        $('#close-scanner').on('click', function () {
+            $('#scannerModal').fadeOut();
+            if (scannerRunning && html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    scannerRunning = false;
+                });
+            }
+        });
+
+
+        // ADDONS MODAL
+        
+        let selectedAddOns = [];
+
+        $('#addonsbutton').on('click', function(){
+            $('#addOnsModal').fadeIn(200);
+        });
+
+
+        $('#addon-button-add-selected').prop('disabled', true);
+
+        function updateAddonsTable(){
+            $('#addOnTableBody').empty();
+
+            if (selectedAddOns.length == 0){
+                $('#addons-table').hide();
+                $('#addon-button-add-selected').prop('disabled', true);
+            }
+            else{
+                $('#addons-table').show();
+                $('#addon-button-add-selected').prop('disabled', false);
+            }
+
+            selectedAddOns.forEach((item, index) => {
+                 $('#addOnTableBody').append(`
+                    <tr data-index="${index}">
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">${item.description}</td>
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">
+                            <button class="addon-item-btn decrease">-</button>
+                            <span style="min-width: 20px; text-align: center; display: inline-block;">${item.qty}</span>
+                            <button class="addon-item-btn increase">+</button>
+                        </td>
+                        <td style="padding: 6px; border: 1px solid red; text-align: center; font-size: 13px;">
+                            <button class="remove" style="color:red; background-color:white; cursor:pointer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+        }
+
+        $('#addon-button-cancel').on('click', function () {
+            // Clear the array
+            selectedAddOns.length = 0;
+
+            // Restore all original add-on options (assuming you can access them in JS)
+            const allAddOns = @json($addons); // This outputs a JS array from the Laravel variable
+
+            // Clear the select and re-add all options
+            const $select = $('#addOnSelect');
+            $select.empty();
+            $select.append('<option disabled selected>Choose Addon</option>');
+
+            allAddOns.forEach(addOn => {
+                $select.append(
+                    $('<option>', {
+                        value: addOn.id,
+                        text: addOn.description,
+                        'data-id': addOn.id,
+                        'data-description': addOn.description,
+                        'data-digits_code': addOn.digits_code,
+                        'data-qty': addOn.qty
+                    })
+                );
+            });
+
+            // Hide the modal and update table
+            $('#addOnsModal').hide();
+            updateAddonsTable();
+        });
+
+        $('#addon-button-add-selected').on('click', function(){
+            $('#addOnsModal').hide();
+        });
+
+        $('#addOnSelect').change(function () {
+            const selected = $(this).find('option:selected');
+            const id = selected.data('id');
+            const description = selected.data('description');
+            const digits_code = selected.data('digits_code');
+            const qty = selected.data('qty');
+
+            const exists = selectedAddOns.some(item => item.id === id);
+
+            if (!exists && id) {
+                selectedAddOns.push({
+                    id: id,
+                    description: description,
+                    digits_code: digits_code,
+                    qty: 1,
+                    max_qty: qty
+                });
+
+                selected.remove();
+                
+                updateAddonsTable();
+            }
+
+            this.selectedIndex = 0;
+        });
+
+        // Quantity & Remove Handlers
+        $('#addOnTableBody').on('click', '.increase', function () {
+            const index = $(this).closest('tr').data('index');
+
+            if (selectedAddOns[index].qty >= selectedAddOns[index].max_qty){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Stock',
+                    customClass: {
+                        confirmButton: 'my-swal-btn'
+                    },
+                });
+                return;
+            }
+            else{
+                selectedAddOns[index].qty += 1;
+                updateAddonsTable();
+            }
+            
+        });
+
+        $('#addOnTableBody').on('click', '.decrease', function () {
+            const index = $(this).closest('tr').data('index');
+            if (selectedAddOns[index].qty > 1) {
+                selectedAddOns[index].qty -= 1;
+            }
+            updateAddonsTable();
+        });
+
+        $('#addOnTableBody').on('click', '.remove', function () {
+            const index = $(this).closest('tr').data('index');
+            const removed = selectedAddOns.splice(index, 1)[0];
+
+            // Re-add removed option to the select
+            $('#addOnSelect').append(
+                $('<option>', {
+                    value: removed.id,
+                    text: removed.description,
+                    'data-id': removed.id,
+                    'data-description': removed.description,
+                    'data-digits_code': removed.digits_code,
+                    'data-qty': removed.max_qty
+                })
+            );
+
+            updateAddonsTable();
+        });
+
+       
+    // CONFIRMATION OF PAYMENT
+    $('#process-button').on('click', function(){
+
+        const paymentMethod = $('#paymentMethod').val();
+        const amountInput = $('.amount-input').val();
+        const referenceInput =  $('.reference-input').val();
+
+        const selectedPaymentText = $('#paymentMethod option:selected').text();
+        const amount = $('.amount-value').text();
+        const change = $('.change-value').text();
+        const total = $('.total-value').text();
+
+        // NUMERIC VALUES
+
+        amountNumericValue = parseInt(amount.replace(/,/g, '').split('.')[0], 10);
+        totalNumericValue = parseInt(total.replace(/,/g, '').split('.')[0], 10);
+        changeNumericValue = parseInt(change.replace(/,/g, '').split('.')[0], 10);
+
+
+        if (cartItems.length === 0){    
+            Swal.fire({
+                icon: 'error',
+                title: 'Cart should not be empty',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'my-swal-btn'
+                },
+            });
+        }
+        else if(paymentMethod == null || paymentMethod === 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Select Payment Method',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'my-swal-btn'
+                },
+            });
+        }
+        else{
+
+            if (paymentMethod == 1){
+
+                if(amountInput == null || amountInput == 0){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please Enter Amount',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+
+                if (totalNumericValue > amountNumericValue){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Amount Entered',
+                        text: 'The amount should be equal to or greater than the total amount.',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+
+            }
+            else{
+                if(referenceInput == null || referenceInput == ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please Enter Reference Number',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'my-swal-btn'
+                        },
+                    });
+                    return;
+                }
+            }
+
+            let rows = '';
+            cartItems.forEach(item => {
+                rows += `
+                    <tr>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.name}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.code}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.quantity}</td>
+                        <td style="padding: 6px; border: 1px solid #999; text-align: center; font-size: 13px;">${item.subtotal}</td>
+                    </tr>
+                `;
+            });
+
+            const tableHtml = `
+                <div>
+                    <table class="responsive-table" style="font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 8px; border: 1px solid #999;">Item Description</th>
+                                <th style="padding: 8px; border: 1px solid #999;">JAN #</th>
+                                <th style="padding: 8px; border: 1px solid #999;">Qty</th>
+                                <th style="padding: 8px; border: 1px solid #999;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+
+                    ${selectedAddOns.length != 0 ? `
+                        <table class="responsive-table" style="margin-top: 20px; font-size: 13px;">
+                            <thead>
+                                <tr style="background-color: #f9f9f9;">
+                                    <th style="padding: 8px; border: 1px solid #999;">Addon Description</th>
+                                    <th style="padding: 8px; border: 1px solid #999;">Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${selectedAddOns.map(addon => `
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #999; text-align: center;">${addon.description}</td>
+                                        <td style="padding: 8px; border: 1px solid #999; text-align: center;">${addon.qty}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : ''
+                    }
+                    
+
+                    <table class="summary-table">
+                        <tr>
+                            <td class="summary-label">Mode of Payment</td>
+                            <td style="text-align: center;">${selectedPaymentText}</td>
+                        </tr>
+                        ${paymentMethod != 1 ? `
+                            <tr>
+                                <td class="summary-label">Reference Number</td>
+                                <td style="text-align: center;">${referenceInput}</td>
+                            </tr>
+                        ` : ''
+                        }
+                        <tr>
+                            <td class="summary-label">Total</td>
+                            <td style="text-align: center;">₱${total}</td>
+                        </tr>
+                        ${paymentMethod == 1 ? `
+                        <tr>
+                            <td class="summary-label">Amount Received</td>
+                            <td style="text-align: center;">₱${amount}</td>
+                        </tr>
+                        <tr>
+                            <td class="summary-label">Change</td>
+                            <td style="text-align: center;">₱${change}</td>
+                        </tr>` : ''
+                        
+                        }
+                    
+                    </table>
+                </div>
+            `;
+
+            Swal.fire({
+                title: 'Transaction Details',
+                html: tableHtml,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+                width: '100%',
+                allowOutsideClick: false,
+                showCancelButton: true,
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'my-swal-btn',
+                    popup: 'custom-swal'
+                },
+            }).then((result) => {
+
+                showSpinner();
+
+                if (isSubmitting) return;
+                isSubmitting = true;
+
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('submit.item.transaction') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            items: cartItems,
+                            add_ons: selectedAddOns,
+                            mode_of_payment: paymentMethod,
+                            mode_of_payment_text: selectedPaymentText,
+                            total: totalNumericValue,
+                            amount_entered: amountNumericValue,
+                            change: changeNumericValue,
+                            reference_number: referenceInput,
+                        },
+                        success: function (response) {
+
+                            if (response.status == 'success'){
+                                const successHtml = `
+                                    <div>
+                                        <table class="summary-table">
+                                            <tr>
+                                                <td class="summary-label">Reference Number</td>
+                                                <td style="text-align: center;">${response.reference_number}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="summary-label">Mode of Payment</td>
+                                                <td style="text-align: center;">${response.mode_of_payment}</td>
+                                            </tr>
+                                            ${paymentMethod != 1 ? `
+                                                <tr>
+                                                    <td class="summary-label">Payment Reference</td>
+                                                    <td style="text-align: center;">${response.payment_reference}</td>
+                                                </tr>
+                                            ` : ''
+                                            }
+                                            <tr>
+                                                <td class="summary-label">Total</td>
+                                                <td style="text-align: center;">₱${response.total}</td>
+                                            </tr>
+                                            ${paymentMethod == 1 ? `
+                                            <tr>
+                                                <td class="summary-label">Amount Received</td>
+                                                <td style="text-align: center;">₱${response.amount_entered}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="summary-label">Change</td>
+                                                <td style="text-align: center;">₱${response.change}</td>
+                                            </tr>` : ''
+                                            
+                                            }
+                                        
+                                        </table>
+                                    </div>
+                                `;
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Transaction Success',
+                                    html: successHtml,
+                                    allowOutsideClick: false,
+                                    customClass: {
+                                        confirmButton: 'my-swal-btn'
+                                    },
+                                }).then((result)=>{
+                                    if (result.isConfirmed){
+                                        window.location.href = "{{ route('item_pos') }}";
+                                    }
+                                });
+                            }
+                            else{
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Transaction Failed',
+                                    text: response.message ? response.message : 'There was an error please try again.',
+                                    customClass: {
+                                        confirmButton: 'my-swal-btn'
+                                    },
+                                });
+                            }
+
+                        
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Transaction Failed',
+                                text: 'There was an error please try again.',
+                                customClass: {
+                                    confirmButton: 'my-swal-btn'
+                                },
+                            });
+                        },
+                        complete: function () {
+                            hideSpinner();
+                            isSubmitting = false;
+                        }
+                    });
+                }
+                else if (result.dismiss === Swal.DismissReason.cancel) {
+                    hideSpinner();
+                    isSubmitting = false;
+                }
+            });
+
+
+
+        }
+
+        });
+
+
+    });
+
+</script>
+@endsection

@@ -30,5 +30,5 @@ class SwapHistory extends Model
                  ->orWHere('cms_users.name', 'like', '%' . request('search') . '%')
                  ->orWHere('swap_histories.status', 'like', '%' . request('search') . '%');
         }
-     }
+    }
 }

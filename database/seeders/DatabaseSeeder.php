@@ -37,7 +37,8 @@ class DatabaseSeeder extends Seeder
             // SeedersNov2524::class
             // SeedersJanuary092025::class
             // SeedersFeb072025::class
-               SeedersMarch072025::class
+            // SeedersMarch072025::class
+            SeedersMay2025::class
         ]);
 
     }

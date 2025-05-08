@@ -380,7 +380,6 @@
             url: "{{ route('submitSOD') }}",
             data: formData,
             success: function(res) {
-                console.log(res);
                 if (res.has_sod_today) {
                     Swal.fire({
                         title: `Today's SOD has been set!`,
@@ -420,7 +419,6 @@
 
             },
             error: function(err) {
-                console.log(err);
                 alert('An error occurred. Please try again later.');
             }
         });
@@ -429,7 +427,6 @@
 <script>
 
     const monthlySwaps = {!! json_encode($monthly_swap) !!}
-    console.log(monthlySwaps);
     let months = [];
     let values = [];
     monthlySwaps.forEach(month => {
@@ -440,7 +437,6 @@
         values.push(month.token_value);
     })
 
-    console.log(months);
 
     function sales() {
         var ctx = document.getElementById('myLineChart').getContext('2d');

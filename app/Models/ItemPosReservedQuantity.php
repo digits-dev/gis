@@ -1,25 +1,27 @@
 <?php
 
-namespace App\Models\PosFrontend;
+namespace App\Models;
 
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AddonsHistory extends Model
+class ItemPosReservedQuantity extends Model
 {
     use HasFactory;
-    protected $table = 'addons_history';
+
 
     protected $fillable = [
+
         'id',
-        'token_swap_id',
-        'item_pos_id',
+        'user_id',
+        'locations_id',
         'digits_code',
+        'jan_number',
+        'item_description',
         'qty',
-        'created_by',
-        'updated_by',
         'created_at',
         'updated_at',
-        'deleted_at',
+
     ];
 }
