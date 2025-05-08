@@ -364,13 +364,13 @@ width: 70%;
                 {{-- View button --}}
                 <td style="display: flex; align-items:center; justify-content: center">
                     <a class="btn btn-details" href="item_pos_transactions/show/{{ $item['id'] }}""><i class="fa-solid fa-eye"></i></a>
-                    @if($item['status'] != "VOID" && date('Y-m-d', strtotime($item['created_at'])) == date('Y-m-d'))
-                        <a class="btn btn-void" data-id={{$item['id']}} id="btnVoid">
-                            @if (in_array(auth()->user()->id_cms_privileges, [1,5,7,15,16]))
+                    @if (in_array(auth()->user()->id_cms_privileges, [1,5,7,15,16]))
+                        @if($item['status'] != "VOID" && date('Y-m-d', strtotime($item['created_at'])) == date('Y-m-d'))
+                            <a class="btn btn-void" data-id={{$item['id']}} id="btnVoid">
                                 <i class="fa-solid fa-times-circle"></i>
-                            @endif            
-                        </a>
-                    @endif
+                            </a>
+                        @endif
+                    @endif    
                 </td>
 
                 @foreach($item as $key => $value)
