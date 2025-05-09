@@ -19,7 +19,7 @@
                     <span class="nav-item {{ Request::Segment(1) == 'pos_token_swap' ? 'active_span' : '' }}">Token Swap</span>
                 </a>
             </li>
-            {{-- <li>
+            <li>
                 <a class="nav-module {{ Request::Segment(1) == 'item_pos' ? 'active' : '' }}" href="/item_pos">
                     <i class="fa-solid fa-cash-register {{ Request::Segment(1) == 'item_pos' ? 'active_i' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'item_pos' ? 'active_span' : '' }}">Item POS</span>
@@ -30,7 +30,7 @@
                     <i class="fa-solid fa-history {{ Request::Segment(1) == 'item_pos_transactions' ? 'active_i' : '' }}"></i>
                     <span class="nav-item {{ Request::Segment(1) == 'item_pos_transactions' ? 'active_span' : '' }}">Item POS Transactions</span>
                 </a>
-            </li> --}}
+            </li>
             <li>
                 <a data-item="token-dispense" class="nav-module {{ Request::Segment(1) == 'pos_token_dispense' ? 'active' : '' }}" href="/pos_token_dispense">
                     <i class="fa-solid fa-coins {{ Request::Segment(1) == 'pos_token_dispense' ? 'active_i_dispense' : '' }}"></i>
